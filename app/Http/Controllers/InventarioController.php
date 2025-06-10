@@ -24,8 +24,8 @@ class InventarioController extends Controller
     {
         // Validación
         $validated = $request->validate([
-            'codigo' => 'required|unique:inventarios|max:50',
-            'nombre' => 'required|max:100|min:3',
+            'codigo' => 'required|unique:inventarios|max:10',
+            'nombre' => 'required|max:25|min:3',
             'descripcion' => 'required|max:255|min:5',
             'cantidad' => 'required|integer|min:1',
             'precio_unitario' => 'required|numeric|min:0',
