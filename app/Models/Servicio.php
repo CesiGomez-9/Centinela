@@ -8,11 +8,21 @@ use Illuminate\Database\Eloquent\Model;
 class Servicio extends Model
 {
     use HasFactory;
-
-
     protected $fillable = [
-        'nombre', 'categoria', 'marca', 'modelo', 'descripcion',
-        'codigo_interno', 'fecha_ingreso', 'proveedor',
-        'precio_compra', 'precio_venta', 'unidades_stock'
+        'nombre_servicio',
+        'descripcion',
+        'direccion',
+        'ciudad',
+        'fecha_inicio',
+        'duracion',
+        'horario',
+        'cantidad_personal',
+        'tipo_personal',
+        'incluye_equipamiento',
+        'fecha_solicitud',
+    ];
+    protected $casts = [
+        'fecha_inicio' => 'datetime',
+        'fecha_solicitud' => 'datetime',
     ];
 }

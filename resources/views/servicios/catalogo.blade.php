@@ -26,7 +26,6 @@
     </div>
 </nav>
 
-
 <div class="container bg-white p-5 rounded shadow">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Catálogo de Servicios</h2>
@@ -41,36 +40,34 @@
         <thead class="table-dark">
         <tr>
             <th>ID</th>
-            <th>Nombre</th>
-            <th>Categoría</th>
-            <th>Marca</th>
-            <th>Modelo</th>
-            <th>Código</th>
-            <th>Ingreso</th>
-            <th>Proveedor</th>
-            <th>Compra</th>
-            <th>Venta</th>
-            <th>Stock</th>
-
+            <th>Nombre Servicio</th>
+            <th>Descripción</th>
+            <th>Dirección</th>
+            <th>Ciudad</th>
+            <th>Fecha Inicio</th>
+            <th>Duración</th>
+            <th>Horario</th>
+            <th>Cantidad Personal</th>
+            <th>Tipo Personal</th>
+            <th>Incluye Equipamiento</th>
+            <th>Fecha Solicitud</th>
         </tr>
         </thead>
         <tbody>
         @forelse($servicios as $servicio)
             <tr>
                 <td>{{ $servicio->id }}</td>
-                <td>{{ $servicio->nombre }}</td>
-                <td>{{ $servicio->categoria }}</td>
-                <td>{{ $servicio->marca }}</td>
-                <td>{{ $servicio->modelo }}</td>
-                <td>{{ $servicio->codigo_interno }}</td>
-                <td>{{ $servicio->fecha_ingreso }}</td>
-                <td>{{ $servicio->proveedor }}</td>
-                <td>L {{ number_format($servicio->precio_compra, 2) }}</td>
-                <td>L {{ number_format($servicio->precio_venta, 2) }}</td>
-                <td>{{ $servicio->unidades_stock }}</td>
-                <td class="d-flex gap-2">
-                     </form>
-                </td>
+                <td>{{ $servicio->nombre_servicio }}</td>
+                <td>{{ $servicio->descripcion }}</td>
+                <td>{{ $servicio->direccion }}</td>
+                <td>{{ $servicio->ciudad }}</td>
+                <td>{{ $servicio->fecha_inicio->format('d/m/Y') }}</td>
+                <td>{{ $servicio->duracion }}</td>
+                <td>{{ $servicio->horario }}</td>
+                <td>{{ $servicio->cantidad_personal }}</td>
+                <td>{{ $servicio->tipo_personal }}</td>
+                <td>{{ $servicio->incluye_equipamiento ? 'Sí' : 'No' }}</td>
+                <td>{{ $servicio->fecha_solicitud->format('d/m/Y') }}</td>
             </tr>
         @empty
             <tr>

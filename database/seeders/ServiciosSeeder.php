@@ -13,7 +13,7 @@ class ServiciosSeeder extends Seeder
      */
     public function run(): void
     {
-        Servicio::factory(5)->create();
+        Servicio::factory(1)->create();
 
     }
 }

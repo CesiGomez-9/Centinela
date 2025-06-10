@@ -17,17 +17,18 @@ class ServicioFactory extends Factory
     public function definition(): array
     {
         return [
-            'nombre' => fake()->word(),
-            'categoria'  => fake()->word(),
-            'marca'  => fake()->word(),
-            'modelo' => fake()->numerify('###-###'),
-            'descripcion' => $this->faker->sentence(),
-            'codigo_interno' =>fake()->unique()->numerify('#########'),
-            'fecha_ingreso' => fake()->date(),
-            'proveedor' => fake()->name(),
-            'precio_compra' => fake()->numberBetween(500, 12000),
-            'precio_venta'  => fake()->numberBetween(1000, 15000),
-            'unidades_stock' => $this->faker->numberBetween(1, 100),
+
+            'nombre_servicio'  => fake()->word(),
+            'descripcion' => fake()->sentence(3),
+            'direccion' => fake()->address,
+            'ciudad' => fake()->city,
+            'fecha_inicio' => fake()->date(),
+            'duracion' => fake()->randomElement(['1 semana', '2 semanas', '1 mes', '3 meses']),
+            'horario' => fake()->time('H:i') . ' - ' . fake()->time('H:i'),
+            'cantidad_personal' => fake()->numberBetween(1, 20),
+            'tipo_personal'  => fake()->randomElement(['Técnico', 'Ingeniero', 'Ayudante']),
+            'incluye_equipamiento' => fake()->boolean(),
+            'fecha_solicitud' => fake()->date(),
         ];
     }
 }

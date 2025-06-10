@@ -13,17 +13,17 @@ return new class extends Migration
     {
         Schema::create('servicios', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre');
-            $table->string('categoria');
-            $table->string('marca');
-            $table->string('modelo');
-            $table->text('descripcion')->nullable();
-            $table->string('codigo_interno')->unique();
-            $table->date('fecha_ingreso');
-            $table->string('proveedor')->nullable();
-            $table->decimal('precio_compra', 10, 2);
-            $table->decimal('precio_venta', 10, 2);
-            $table->integer('unidades_stock')->default(0);
+            $table->string('nombre_servicio');
+            $table->text('descripcion');
+            $table->string('direccion');
+            $table->string('ciudad');
+            $table->date('fecha_inicio');
+            $table->string('duracion');
+            $table->string('horario');
+            $table->integer('cantidad_personal');
+            $table->string('tipo_personal');
+            $table->boolean('incluye_equipamiento')->default(false);
+            $table->date('fecha_solicitud');
             $table->timestamps();
 
         });

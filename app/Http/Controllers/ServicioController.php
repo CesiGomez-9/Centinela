@@ -30,22 +30,23 @@ class ServicioController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'nombre' => 'required|string',
-            'categoria' => 'required|string',
-            'marca' => 'required|string',
-            'modelo' => 'required|string',
-            'descripcion' => 'nullable|string',
-            'codigo_interno' => 'required|unique:servicios',
-            'fecha_ingreso' => 'required|date',
-            'proveedor' => 'nullable|string',
-            'precio_compra' => 'required|numeric',
-            'precio_venta' => 'required|numeric',
-            'unidades_stock' => 'required|integer',
-        ]);
+            $request->validate([
+                'nombre_servicio' => 'required|string|max:255',
+                'descripcion' => 'required|string',
+                'direccion' => 'required|string',
+                'ciudad' => 'required|string',
+                'fecha_inicio' => 'required|date',
+                'duracion' => 'required|string',
+                'horario' => 'required|string',
+                'cantidad_personal' => 'required|integer',
+                'tipo_personal' => 'required|string',
+                'incluye_equipamiento' => 'nullable|boolean',
+                'fecha_solicitud' => 'required|date',
+            ]);
 
-        Servicio::create($validated);
-        return redirect()->back()->with('success', 'Articulo guardado correctamente.');
+        Servicio::create($request->all());
+
+        return redirect()->route('servicios.index')->with('success', 'Servicio registrado correctamente.');
     }
 
     /**
@@ -85,7 +86,7 @@ class ServicioController extends Controller
     public function catalogo()
     {
         $servicios = Servicio::all();
-        return view('servicios.catalogo', compact('servicios')); // Asegúrate que esto coincide con el archivo en views/
+        return view('servicios.catalogo', compact('servicios'));
     }
 
 }
