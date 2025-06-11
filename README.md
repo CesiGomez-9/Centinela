@@ -10,12 +10,8 @@
 Instrucciones para levantar la base de datos 1. Importa el archivo database/nombre_base_datos.sql usando MySQL Workbench o el siguiente comando: bash mysql -u root -p nombre_base_datos < database/nombre_base_datos.sql 
 
 Crea tu archivo config.php con tu conexión local:
-
 <?php $host = 'localhost'; $db = 'nombre_base_datos'; $user = 'root'; $pass = ''; ... 
-
 Abre el proyecto en PhpStorm y ejecuta desde ahí.
-
-
 
 ## About Laravel
 
