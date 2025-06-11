@@ -7,6 +7,16 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+Instrucciones para levantar la base de datos 1. Importa el archivo database/nombre_base_datos.sql usando MySQL Workbench o el siguiente comando: bash mysql -u root -p nombre_base_datos < database/nombre_base_datos.sql 
+
+Crea tu archivo config.php con tu conexión local:
+
+<?php $host = 'localhost'; $db = 'nombre_base_datos'; $user = 'root'; $pass = ''; ... 
+
+Abre el proyecto en PhpStorm y ejecuta desde ahí.
+
+
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
