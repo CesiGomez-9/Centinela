@@ -6,16 +6,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-use App\Http\Controllers\InventarioController;
-
-Route::controller(InventarioController::class)->group(function () {
-    Route::get('/inventarios', 'index')->name('inventarios.index');
-    Route::get('/inventarios/{id}', 'show')->name('inventarios.show')->whereNumber('id');
-    Route::get('/inventarios/crear', 'create')->name('inventarios.create'); /*->middleware('auth');*/
-    Route::post('/inventarios/crear', 'store')->name('inventarios.store'); #->middleware('auth');
-    /*Route::get('/inventarios/{id}/editar', 'edit')->name('inventarios.edit')->whereNumber('id'); #->middleware('auth');
-    Route::put('/inventarios/{id}/editar', 'update')->name('inventarios.update')->whereNumber('id'); #->middleware('auth');
-    Route::delete('/inventarios/{id}/eliminar', 'destroy')->name('inventarios.destroy')->whereNumber('id'); #->middleware('auth');
-    */
+Route::get('/', function () {
+    return view('index');
 });
 
+Route::get('/Proveedores/crear', [\App\Http\Controllers\ProveedorController::class, 'create'])->name('Proveedores.create');
+Route::post('/Proveedores/crear', [\App\Http\Controllers\ProveedorController::class, 'store'])->name('Proveedores.store');
+Route::get('/Proveedores', [\App\Http\Controllers\ProveedorController::class, 'index'])->name('Proveedores.indexProveedor');
+Route::get('/Proveedores/crear', [\App\Http\Controllers\ProveedorController::class, 'create'])->name('Proveedores.nuevo');
