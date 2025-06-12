@@ -3,9 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ServicioController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+
 
 
 Route::get('/', [ServicioController::class, 'index'])->name('servicios.index');
@@ -15,3 +13,4 @@ Route::delete('/servicios/{id}', [ServicioController::class, 'destroy'])->name('
 
 
 Route::get('/catalogo', [ServicioController::class, 'catalogo'])->name('servicios.catalogo');
+

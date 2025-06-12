@@ -2,17 +2,35 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Registro de Servicios</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <title>Registrar Servicio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #e6f0ff;
+            font-size: 1.1rem;
+        }
+        .form-contenedor {
+            max-width: 1000px;
+            margin: auto;
+            background-color: white;
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+        }
+    </style>
 </head>
-<body class="p-4 bg-light">
-
+<body>
 <nav class="navbar navbar-expand-lg" style="background-color: #0A1F44; padding-top: 1.2rem; padding-bottom: 1.2rem; font-family: 'Courier New', sans-serif;">
     <div class="container" style="max-width: 1600px;">
         <a class="navbar-brand text-white fw-bold" href="#">
             <img src="{{ asset('seguridad/GrupoCentinela.jpg') }}" style="height:80px; margin-right: 10px;">
             Grupo Centinela
         </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
         <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item"><a class="nav-link text-white" href="#">Registrate</a></li>
@@ -24,99 +42,190 @@
     </div>
 </nav>
 
-<div class="container bg-white p-5 rounded shadow">
+<div class="container my-5">
+    <div class="form-contenedor">
+        <h2 class="text-center mb-4 text-primary fs-3">
+            <i class="bi bi-journal-plus me-2"></i> Registrar ervicio
+        </h2>
 
-    <h2 class="mb-4">Registro de Servicio</h2>
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            </div>
+        @endif
 
-    <div class="mb-4 text-end">
-        <a href="{{ route('servicios.catalogo') }}" class="btn btn-primary">Ver catálogo de servicios</a>
+        <form id="servicioForm" action="{{ route('servicios.store') }}" method="POST" class="needs-validation" novalidate>
+            @csrf
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <label for="nombreServicio" class="form-label fs-5">Nombre del servicio</label>
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-text"><i class="bi bi-card-text"></i></span>
+                        <input type="text" id="nombreServicio" name="nombreServicio" class="form-control form-control-lg" maxlength="30"
+                               pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" title="Solo letras y espacios, máximo 30 caracteres" required>
+                        <div class="invalid-feedback">Por favor, ingresa información válida en este campo.</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="tipoServicio" class="form-label fs-5">Tipo de servicio</label>
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-text"><i class="bi bi-briefcase-fill"></i></span>
+                        <input type="text" id="tipoServicio" name="tipoServicio" class="form-control form-control-lg" maxlength="30"
+                               pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" title="Solo letras y espacios, máximo 30 caracteres" required>
+                        <div class="invalid-feedback">Por favor, ingresa información válida en este campo.</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="descripcionServicio" class="form-label fs-5">Descripción del servicio</label>
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-text"><i class="bi bi-text-paragraph"></i></span>
+                        <textarea id="descripcionServicio" name="descripcionServicio" class="form-control form-control-lg" maxlength="100"
+                                  pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" rows="3" title="Solo letras y espacios, máximo 100 caracteres" required></textarea>
+                        <div class="invalid-feedback">Por favor, ingresa información válida en este campo.</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="duracionEstimada" class="form-label fs-5">Duración estimada</label>
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-text"><i class="bi bi-clock-fill"></i></span>
+                        <input type="text" id="duracionEstimada" name="duracionEstimada" class="form-control form-control-lg" maxlength="30"
+                               pattern="^[A-Za-z0-9\s]+$" title="Solo letras, números y espacios, máximo 30 caracteres" required>
+                        <div class="invalid-feedback">Por favor, ingresa información válida en este campo.</div>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <label class="form-label fs-5">¿Requiere productos específicos?</label>
+                    <div class="form-check form-check-inline fs-5">
+                        <input class="form-check-input" type="radio" name="requiereProductos" id="requiereSi" value="sí" required>
+                        <label class="form-check-label" for="requiereSi">Sí</label>
+                    </div>
+                    <div class="form-check form-check-inline fs-5">
+                        <input class="form-check-input" type="radio" name="requiereProductos" id="requiereNo" value="no" required>
+                        <label class="form-check-label" for="requiereNo">No</label>
+                    </div>
+                    <div id="radioFeedback" class="invalid-feedback" style="display: none; margin-top: 0.3rem;">
+                        Por favor, selecciona una opción.
+                    </div>
+                </div>
+
+                <div class="col-md-12 d-none" id="especificarProductosDiv">
+                    <label for="especificarProductos" class="form-label fs-5">Especificar productos</label>
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-text"><i class="bi bi-box-seam"></i></span>
+                        <textarea id="especificarProductos" name="especificarProductos" class="form-control form-control-lg"
+                                  maxlength="100"
+                                  pattern="^[A-Za-z0-9ÁÉÍÓÚáéíóúÑñ,\\s]+$"
+                                  rows="2"
+                                  title="Solo letras, números, espacios y comas, máximo 100 caracteres"></textarea>
+                        <div class="invalid-feedback">Por favor, ingresa información válida aquí.</div>
+                    </div>
+                </div>
+
+
+                <div class="text-center mt-5">
+                    <a href="{{ route('servicios.catalogo') }}" class="btn btn-danger me-2"
+                       onclick="return confirm('¿Estás seguro que deseas cancelar? Se perderán los cambios no guardados.');">
+                        <i class="bi bi-x-circle me-2"></i> Cancelar
+                    </a>
+
+                    <button type="reset" class="btn btn-warning me-2">
+                        <i class="bi bi-eraser-fill me-2"></i> Limpiar
+                    </button>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save-fill me-2"></i> Guardar
+
+                    </button>
+                </div>
+            </div>
+        </form>
     </div>
-
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
-
-    <form action="{{ route('servicios.store') }}" method="POST">
-        @csrf
-
-        <div class="row mb-3">
-            <div class="col">
-                <label>Nombre del servicio</label>
-                <input type="text" name="nombre_servicio" class="form-control" required>
-            </div>
-            <div class="col">
-                <label>Ciudad / Municipio</label>
-                <input type="text" name="ciudad" class="form-control" required>
-            </div>
-        </div>
-
-        <div class="mb-3">
-            <label>Descripción detallada</label>
-            <textarea name="descripcion" class="form-control" rows="3" required></textarea>
-        </div>
-
-        <div class="mb-3">
-            <label>Dirección</label>
-            <input type="text" name="direccion" class="form-control" required>
-        </div>
-
-        <div class="row mb-3">
-            <div class="col">
-                <label>Fecha de inicio del servicio</label>
-                <input type="date" name="fecha_inicio" class="form-control" required>
-            </div>
-            <div class="col">
-                <label>Duración estimada</label>
-                <input type="text" name="duracion" class="form-control" required>
-            </div>
-        </div>
-
-        <div class="row mb-3">
-            <div class="col">
-                <label>Horario del servicio</label>
-                <input type="text" name="horario" class="form-control" required>
-            </div>
-            <div class="col">
-                <label>Cantidad de personal requerido</label>
-                <input type="number" name="cantidad_personal" class="form-control" required>
-            </div>
-        </div>
-
-        <div class="row mb-3">
-            <div class="col">
-                <label>Tipo de personal</label>
-                <input type="text" name="tipo_personal" class="form-control" required>
-            </div>
-        </div>
-
-        <div class="mb-3">
-            <label>Incluye equipamiento</label>
-            <select name="incluye_equipamiento" class="form-control">
-                <option value="1">Sí</option>
-                <option value="0">No</option>
-            </select>
-        </div>
-
-        <div class="mb-3">
-            <label>Fecha de solicitud</label>
-            <input type="date" name="fecha_solicitud" class="form-control" required>
-        </div>
-
-        <div class="d-flex justify-content-center gap-3">
-            <button type="submit" class="btn btn-outline-success">Guardar</button>
-            <button type="reset" class="btn btn-outline-secondary">Limpiar</button>
-            <button type="button" class="btn btn-outline-danger" onclick="eliminarServicio()">Borrar</button>
-        </div>
-    </form>
 </div>
 
 <script>
-    function eliminarServicio() {
-        if (confirm('¿Estás seguro de que deseas borrar los datos ingresados?')) {
-            document.querySelector('form').reset();
-        }
+    // Mostrar/ocultar campo de productos
+    document.querySelectorAll('input[name="requiereProductos"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            const especificarDiv = document.getElementById('especificarProductosDiv');
+            const especificarInput = document.getElementById('especificarProductos');
+
+            if (document.getElementById('requiereSi').checked) {
+                especificarDiv.classList.remove('d-none');
+                especificarInput.setAttribute('required', 'required');
+            } else {
+                especificarDiv.classList.add('d-none');
+                especificarInput.value = '';
+                especificarInput.removeAttribute('required');
+            }
+        });
+    });
+
+    // Validaciones personalizadas en input (para evitar caracteres no deseados)
+    function validarInput(e, pattern, maxLength) {
+        const input = e.target;
+        let valor = input.value;
+        let regex = new RegExp(pattern, 'g');
+        let soloPermitidos = valor.match(regex);
+        valor = soloPermitidos ? soloPermitidos.join('') : '';
+        if (valor.length > maxLength) valor = valor.substring(0, maxLength);
+        input.value = valor;
     }
+
+    document.getElementById('nombreServicio').addEventListener('input', e => {
+        // Aquí limite a 50 caracteres permitiendo letras y espacios
+        validarInput(e, '[A-Za-zÁÉÍÓÚáéíóúÑñ\\s]', 50);
+    });
+
+    document.getElementById('descripcionServicio').addEventListener('input', e => {
+        validarInput(e, '[A-Za-zÁÉÍÓÚáéíóúÑñ\\s]', 100);
+    });
+
+    document.getElementById('tipoServicio').addEventListener('input', e => {
+        validarInput(e, '[A-Za-zÁÉÍÓÚáéíóúÑñ\\s]', 30);
+    });
+
+    document.getElementById('duracionEstimada').addEventListener('input', e => {
+        validarInput(e, '[A-Za-z0-9\\s]', 30);
+    });
+
+    // Aquí el cambio: se permite la coma además de letras, números y espacios
+    document.getElementById('especificarProductos').addEventListener('input', e => {
+        validarInput(e, '[A-Za-z0-9ÁÉÍÓÚáéíóúÑñ,\\s]', 100);
+    });
+
+    // Validación Bootstrap + radios personalizados
+    (() => {
+        'use strict'
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                // Validar radios (requiere productos)
+                const radios = form.querySelectorAll('input[name="requiereProductos"]');
+                const radioChecked = Array.from(radios).some(radio => radio.checked);
+                const radioFeedback = document.getElementById('radioFeedback');
+                if (!radioChecked) {
+                    radioFeedback.style.display = 'block';
+                } else {
+                    radioFeedback.style.display = 'none';
+                }
+
+                if (!form.checkValidity() || !radioChecked) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
 </script>
 
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

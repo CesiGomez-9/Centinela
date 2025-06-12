@@ -12,19 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('servicios', function (Blueprint $table) {
-            $table->id();
-            $table->string('nombre_servicio');
-            $table->text('descripcion');
-            $table->string('direccion');
-            $table->string('ciudad');
-            $table->date('fecha_inicio');
-            $table->string('duracion');
-            $table->string('horario');
-            $table->integer('cantidad_personal');
-            $table->string('tipo_personal');
-            $table->boolean('incluye_equipamiento')->default(false);
-            $table->date('fecha_solicitud');
-            $table->timestamps();
+
+                $table->id();
+                $table->string('nombre');
+                $table->text('descripcion');
+                $table->string('tipo');
+                $table->string('duracion_estimada');
+                $table->boolean('requiere_productos')->default(false);
+                $table->text('productos_especificos')->nullable();
+                $table->timestamps();
 
         });
     }

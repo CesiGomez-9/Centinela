@@ -16,19 +16,15 @@ class ServicioFactory extends Factory
      */
     public function definition(): array
     {
+        $requiere = $this->faker->boolean();
         return [
-
-            'nombre_servicio'  => fake()->word(),
-            'descripcion' => fake()->sentence(3),
-            'direccion' => fake()->address,
-            'ciudad' => fake()->city,
-            'fecha_inicio' => fake()->date(),
-            'duracion' => fake()->randomElement(['1 semana', '2 semanas', '1 mes', '3 meses']),
-            'horario' => fake()->time('H:i') . ' - ' . fake()->time('H:i'),
-            'cantidad_personal' => fake()->numberBetween(1, 20),
-            'tipo_personal'  => fake()->randomElement(['Técnico', 'Ingeniero', 'Ayudante']),
-            'incluye_equipamiento' => fake()->boolean(),
-            'fecha_solicitud' => fake()->date(),
+            'nombre' => $this->faker->words(3, true),  // Cambiado a string
+            'descripcion' => $this->faker->paragraph,
+            'tipo' => $this->faker->randomElement(['Instalación', 'Mantenimiento', 'Asesoría']),
+            'duracion_estimada' => $this->faker->randomElement(['2 horas', '1 día', '3 días']),
+            'requiere_productos' => $requiere,
+            'productos_especificos' => $requiere ? $this->faker->words(3, true) : null,
         ];
     }
+
 }

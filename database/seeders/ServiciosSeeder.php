@@ -15,5 +15,6 @@ class ServiciosSeeder extends Seeder
     {
         Servicio::factory(1)->create();
 
+
     }
 }

@@ -30,24 +30,30 @@ class ServicioController extends Controller
      */
     public function store(Request $request)
     {
-            $request->validate([
-                'nombre_servicio' => 'required|string|max:255',
-                'descripcion' => 'required|string',
-                'direccion' => 'required|string',
-                'ciudad' => 'required|string',
-                'fecha_inicio' => 'required|date',
-                'duracion' => 'required|string',
-                'horario' => 'required|string',
-                'cantidad_personal' => 'required|integer',
-                'tipo_personal' => 'required|string',
-                'incluye_equipamiento' => 'nullable|boolean',
-                'fecha_solicitud' => 'required|date',
-            ]);
+        $validatedData = $request->validate([
+            'nombreServicio' => 'required|string|max:50',
+            'tipoServicio' => 'required|string|max:30',
+            'descripcionServicio' => 'required|string|max:100',
+            'duracionEstimada' => 'required|string|max:30',
+            'requiereProductos' => 'required|in:sí,no',
+            'especificarProductos' => 'nullable|string|max:100',
+        ]);
 
-        Servicio::create($request->all());
+        $requiereProductos = $request->requiereProductos === 'sí' ? 1 : 0;
 
-        return redirect()->route('servicios.index')->with('success', 'Servicio registrado correctamente.');
+        Servicio::create([
+            'nombre' => $request->nombreServicio,
+            'tipo' => $request->tipoServicio,
+            'descripcion' => $request->descripcionServicio,
+            'duracion_estimada' => $request->duracionEstimada,  // <-- aquí
+            'requiere_productos' => $request->requiereProductos === 'sí' ? 1 : 0,
+            'productos_especificos' => 'nullable|regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9,\s]*$/',
+        ]);
+
+        return redirect()->route('servicios.catalogo')->with('success', 'Servicio registrado exitosamente.');
     }
+
+
 
     /**
      * Display the specified resource.
@@ -83,10 +89,22 @@ class ServicioController extends Controller
 
     }
 
-    public function catalogo()
+    public function catalogo(Request $request)
     {
-        $servicios = Servicio::all();
+        $request->validate([
+            'search' => ['nullable', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/'],
+        ]);
+
+        $query = Servicio::query();
+
+        if ($request->filled('search')) {
+            $query->where('nombre', 'like', '%' . $request->search . '%');
+        }
+
+        $servicios = $query->paginate(10);
+
         return view('servicios.catalogo', compact('servicios'));
     }
+
 
 }
