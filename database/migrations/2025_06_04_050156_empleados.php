@@ -21,8 +21,8 @@ return new class extends Migration
             $table->string('telefono');
             $table->string('contactodeemergencia');
             $table->string('telefonodeemergencia');
-            $table->string('tipodesangre')();
-            $table->text('alergias')();
+            $table->string('tipodesangre');
+            $table->text('alergias');
            $table->timestamps();
 
         });

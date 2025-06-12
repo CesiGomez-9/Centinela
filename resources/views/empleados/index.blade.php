@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Empleados Registrados</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 <body style="background-color: #e6f0ff;">
 <nav class="navbar navbar-expand-lg" style="background-color: #0A1F44; padding-top: 1.2rem; padding-bottom: 1.2rem; font-family: 'Courier New', sans-serif;">
@@ -28,14 +29,37 @@
 
 <div class="container mt-5" style="max-width: 1100px;">
     <div class="card shadow p-4" style="background-color: #ffffff;">
-        <h2 class="mb-4">Empleados Registrados</h2>
+        <h3 class="text-center mb-4" style="color: #09457f;">
+            <i class="bi bi-people-fill me-2"></i>
+            Lista de empleados
+        </h3>
 
         @if(session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
         @endif
-        <div class="row mb-3">
+
+        <div class="row mb-4">
             <div class="col-auto">
-                <a href="{{ route('empleados.create') }}" class="btn btn-primary btn-sm mb-3">Registrar Nuevo Empleado</a>
+                <a href="{{ route('empleados.create') }}" class="btn btn-sm btn-outline-primary mb-2"><- Volver al formulario</a>
+            </div>
+            <div class="col d-flex justify-content-end">
+                <form id="searchForm" action="{{ route('empleados.index') }}" method="GET" class="w-100" style="max-width: 300px;" novalidate>
+                    <div class="input-group">
+                        <input
+                            type="text"
+                            name="search"
+                            id="searchInput"
+                            class="form-control form-control-sm"
+                            placeholder="Buscar por nombre"
+                            value="{{ request('search') }}"
+                            maxlength="25"
+                        >
+                        <button class="btn btn-sm btn-primary" type="submit">Buscar</button>
+                    </div>
+                    <div class="invalid-feedback d-block text-danger small mt-1 d-none" id="error-search">
+                        Ingrese un nombre antes de buscar
+                    </div>
+                </form>
             </div>
         </div>
 
@@ -44,12 +68,8 @@
             <tr>
                 <th>#</th>
                 <th>Nombre</th>
-                <th>Identidad</th>
-                <th>Correo</th>
+                <th>Dirección</th>
                 <th>Teléfono</th>
-                <th>Emergencia</th>
-                <th>Sangre</th>
-                <th>Alergias</th>
             </tr>
             </thead>
             <tbody>
@@ -57,20 +77,47 @@
                 <tr>
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $empleado->nombre }} {{ $empleado->apellido }}</td>
-                    <td>{{ $empleado->identidad }}</td>
-                    <td>{{ $empleado->email }}</td>
+                    <td>{{ $empleado->direccion }}</td>
                     <td>{{ $empleado->telefono }}</td>
-                    <td>{{ $empleado->contactodeemergencia }}<br>({{ $empleado->telefonodeemergencia }})</td>
-                    <td>{{ $empleado->tipodesangre }}</td>
-                    <td>{{ $empleado->alergias }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="8" class="text-center">No hay empleados registrados.</td>
+                    <td colspan="4" class="text-center">No hay empleados registrados.</td>
                 </tr>
             @endforelse
             </tbody>
         </table>
-    </div> </div> <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+        <div class="d-flex justify-content-center mt-4">
+            {{ $empleados->links('pagination::bootstrap-5') }}
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    document.getElementById('searchForm').addEventListener('submit', function (e) {
+        const input = document.getElementById('searchInput');
+        const error = document.getElementById('error-search');
+        const value = input.value.trim();
+        const regex = /^[A-Za-z]{1,25}$/;
+
+        if (!regex.test(value)) {
+            e.preventDefault();
+            error.classList.remove('d-none');
+            input.classList.add('is-invalid');
+        } else {
+            error.classList.add('d-none');
+            input.classList.remove('is-invalid');
+        }
+    });
+    document.getElementById('searchInput').addEventListener('keypress', function(event) {
+        const char = String.fromCharCode(event.which);
+        if (!/^[a-zA-Z]$/.test(char)) {
+            event.preventDefault();
+        }
+    });
+</script>
 </body>
 </html>
