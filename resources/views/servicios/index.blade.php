@@ -25,7 +25,7 @@
 <nav class="navbar navbar-expand-lg" style="background-color: #0A1F44; padding-top: 1.2rem; padding-bottom: 1.2rem; font-family: 'Courier New', sans-serif;">
     <div class="container" style="max-width: 1600px;">
         <a class="navbar-brand text-white fw-bold" href="#">
-            <img src="{{ asset('seguridad/GrupoCentinela.jpg') }}" style="height:80px; margin-right: 10px;">
+            <img src="{{ asset('seguridad/centinela.jpg') }}" style="height:80px; margin-right: 10px;">
             Grupo Centinela
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -45,7 +45,7 @@
 <div class="container my-5">
     <div class="form-contenedor">
         <h2 class="text-center mb-4 text-primary fs-3">
-            <i class="bi bi-journal-plus me-2"></i> Registrar ervicio
+            <i class="bi bi-journal-plus me-2"></i> Registrar servicio
         </h2>
 
         @if(session('success'))
@@ -146,6 +146,41 @@
         </form>
     </div>
 </div>
+
+<!-- Boton Limpiar -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const resetBtn = document.querySelector('button[type="reset"]');
+
+        if (resetBtn) {
+            resetBtn.addEventListener('click', function (e) {
+                e.preventDefault(); // evita el comportamiento por defecto del botón reset
+
+                const form = this.closest('form');
+                if (!form) return;
+
+                // Limpiar manualmente cada campo
+                form.querySelectorAll('input[type="text"], input[type="number"], textarea').forEach(el => {
+                    el.value = '';
+                });
+
+                form.querySelectorAll('select').forEach(el => {
+                    el.selectedIndex = 0;
+                });
+
+                // Remover clases de validación
+                form.querySelectorAll('.is-valid, .is-invalid').forEach(el => {
+                    el.classList.remove('is-valid', 'is-invalid');
+                });
+
+                // Limpiar mensajes de error si hay
+                form.querySelectorAll('.text-danger').forEach(el => {
+                    el.innerText = '';
+                });
+            });
+        }
+    });
+</script>
 
 <script>
     // Mostrar/ocultar campo de productos

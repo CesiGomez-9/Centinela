@@ -44,7 +44,7 @@
                 </div>
 
                 <h3 class="text-center mb-4" style="color: #09457f;">
-                    <i class="bi bi-person-plus-fill me-2"></i> Registrar Proveedor
+                    <i class="bi bi-person-plus-fill me-2"></i> Registrar proveedor
                 </h3>
 
                 <style>
@@ -77,6 +77,7 @@
                        maxlength="50"
                        onkeypress="soloLetras(event)"
                        onkeydown="bloquearEspacioAlInicio(event, this)"
+                       oninput="eliminarEspaciosIniciales(this)"
                        oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '')"
                        required>
                 @error('nombreEmpresa')
@@ -93,6 +94,7 @@
                        class="form-control @error('direccion') is-invalid  @enderror"
                        value="{{ old('direccion') }}"
                        onkeydown="bloquearEspacioAlInicio(event, this)"
+                       oninput="eliminarEspaciosIniciales(this)"
                 >
                 @error('direccion')
                 <div class="invalid-feedback">{{ $message }}</div>
@@ -110,7 +112,7 @@
                        maxlength="8"
                        onkeypress="soloNumeros(event)"
                        onkeydown="bloquearEspacioAlInicio(event, this)"
-                       onkeydown="bloquearEspacioAlInicio(event, this)"
+                       oninput="eliminarEspaciosIniciales(this)"
                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                        required>
                 @error('telefonodeempresa')
@@ -147,6 +149,7 @@
                        maxlength="50"
                        onkeypress="soloLetras(event)"
                        onkeydown="bloquearEspacioAlInicio(event, this)"
+                       oninput="eliminarEspaciosIniciales(this)"
                        oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '')"
                        required>
                 @error('nombrerepresentante')
@@ -165,6 +168,7 @@
                        maxlength="13"
                        onkeypress="soloNumeros(event)"
                        onkeydown="bloquearEspacioAlInicio(event, this)"
+                       oninput="eliminarEspaciosIniciales(this)"
                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                        required>
                 @error('identificacion')
@@ -198,12 +202,12 @@
     </div>
 
     <div class="text-center mt-5">
-        <a href="{{ route('Proveedores.nuevo') }}" class="btn btn-warning"
+        <a href="{{ route('Proveedores.nuevo') }}" class="btn btn-danger me-2"
            onclick="return confirm('¿Estás seguro que deseas cancelar? Se perderán los cambios no guardados.');">
             <i class="bi bi-x-circle me-2"></i> Cancelar
         </a>
 
-        <button type="button" class="btn btn-warning" onclick="limpiarFormulario()">
+        <button type="button" class="btn btn-warning me-2" onclick="limpiarFormulario()">
             <i class="bi bi-eraser-fill me-2"></i> Limpiar
         </button>
 
@@ -216,6 +220,41 @@
         </div>
     </div>
 </div>
+
+<!-- Boton Limpiar -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const resetBtn = document.querySelector('button[type="reset"]');
+
+        if (resetBtn) {
+            resetBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                const form = this.closest('form');
+                if (!form) return;
+
+                // Limpiar manualmente cada campo
+                form.querySelectorAll('input[type="text"], input[type="number"], textarea').forEach(el => {
+                    el.value = '';
+                });
+
+                form.querySelectorAll('select').forEach(el => {
+                    el.selectedIndex = 0;
+                });
+
+                // Remover clases de validación
+                form.querySelectorAll('.is-valid, .is-invalid').forEach(el => {
+                    el.classList.remove('is-valid', 'is-invalid');
+                });
+
+                // Limpiar mensajes de error si hay
+                form.querySelectorAll('.text-danger').forEach(el => {
+                    el.innerText = '';
+                });
+            });
+        }
+    });
+</script>
 
 <script>
     function validarSoloLetras(input) {
