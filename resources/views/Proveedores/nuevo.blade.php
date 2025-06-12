@@ -1,16 +1,6 @@
 @extends('plantilla')
 @section('content')
 
-@if ($errors->any())
-    <div class="alert alert-danger">
-        <strong>¡Oops!</strong> Hay problemas con los datos ingresados:<br><br>
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
 
 <!DOCTYPE html>
 <html lang="es">
@@ -19,8 +9,6 @@
     <meta charset="UTF-8">
     <title>Proveedor</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-
 
     <style>
         body {
@@ -51,111 +39,275 @@
         <div class="col-lg-10">
             <div class="bg-light p-5 rounded shadow-lg position-relative">
 
-
                 <div class="position-absolute top-0 end-0 p-3 text-secondary opacity-25">
                     <i class="bi bi-building" style="font-size: 4rem;"></i>
                 </div>
 
-                <h3 class="text-center mb-4 style="style="color: #09457f;">
-                    <i class="bi bi-person-plus-fill me-2"></i>
-                    Registrar Proveedor
+                <h3 class="text-center mb-4" style="color: #09457f;">
+                    <i class="bi bi-person-plus-fill me-2"></i> Registrar Proveedor
                 </h3>
 
-                <form action="{{ route('Proveedores.store') }}" method="POST">
-                    @csrf
+                <style>
+                    .invalid-tooltip {
+                        background-color: transparent !important;
+                        border: 1px solid #dc3545 !important;
+                        color: #dc3545 !important;
+                        box-shadow: none !important;
+                        padding: 0.5rem 1rem !important;
+                        font-size: 0.9rem !important;
+                        top: 100% !important;
+                        margin-top: 0.25rem !important;
+                        z-index: 10 !important;
+                        white-space: normal !important;
+                    }
+                </style>
 
-                    <div class="row g-4">
-                        <div class="col-md-6">
-                            <label for="nombres" class="form-label">Nombres</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                                <input type="text" name="nombres" class="form-control" required>
-                            </div>
-                        </div>
+<form action="{{ route('Proveedores.store') }}" method="POST" id="form-proveedor" novalidate>
+    @csrf
 
-                        <div class="col-md-6">
-                            <label for="apellidos" class="form-label">Apellidos</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-person-badge-fill"></i></span>
-                                <input type="text" name="apellidos" class="form-control" required>
-                            </div>
-                        </div>
+    <div class="row g-4">
 
-                        <div class="col-md-6">
-                            <label for="direccion" class="form-label">Dirección</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
-                                <input type="text" name="direccion" class="form-control">
-                            </div>
-                        </div>
+        <div class="col-md-6">
+            <label for="nombreEmpresa" class="form-label">Nombre de la empresa </label>
+            <div class="input-group has-validation">
+                <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                <input type="text" name="nombreEmpresa"
+                       class="form-control @error('nombreEmpresa') is-invalid @enderror"
+                       value="{{ old('nombreEmpresa') }}"
+                       maxlength="50"
+                       onkeypress="soloLetras(event)"
+                       onkeydown="bloquearEspacioAlInicio(event, this)"
+                       oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '')"
+                       required>
+                @error('nombreEmpresa')
+                <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+        </div>
 
-                        <div class="col-md-6">
-                            <label for="telefono" class="form-label">Teléfono</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-telephone-fill"></i></span>
-                                <input type="text" name="telefono" class="form-control">
-                            </div>
-                        </div>
+        <div class="col-md-6">
+            <label for="direccion" class="form-label">Dirección</label>
+            <div class="input-group has-validation">
+                <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
+                <input type="text" name="direccion"
+                       class="form-control @error('direccion') is-invalid  @enderror"
+                       value="{{ old('direccion') }}"
+                       onkeydown="bloquearEspacioAlInicio(event, this)"
+                >
+                @error('direccion')
+                <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+        </div>
 
-                        <div class="col-md-6">
-                            <label for="correo" class="form-label">Correo Electrónico</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
-                                <input type="email" name="correo" class="form-control">
-                            </div>
-                        </div>
+        <div class="col-md-6">
+            <label for="telefonodeempresa" class="form-label">Teléfono de la empresa</label>
+            <div class="input-group has-validation">
+                <span class="input-group-text"><i class="bi bi-telephone-fill"></i></span>
+                <input type="text" name="telefonodeempresa"
+                       class="form-control @error('telefonodeempresa') is-invalid @enderror"
+                       value="{{ old('telefonodeempresa') }}"
+                       maxlength="8"
+                       onkeypress="soloNumeros(event)"
+                       onkeydown="bloquearEspacioAlInicio(event, this)"
+                       onkeydown="bloquearEspacioAlInicio(event, this)"
+                       oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                       required>
+                @error('telefonodeempresa')
+                <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+        </div>
 
-                        <div class="col-md-6">
-                            <label for="identificacion" class="form-label">Identificación</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-card-text"></i></span>
-                                <input type="text" name="identificacion" class="form-control">
-                            </div>
-                        </div>
 
-                        <div class="col-md-6">
-                            <label for="cargocontacto" class="form-label">Cargo del contacto</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-briefcase-fill"></i></span>
-                                <input type="text" name="cargocontacto" class="form-control">
-                            </div>
-                        </div>
+        <div class="col-md-6">
+            <label for="correoempresa" class="form-label">Correo Electrónico</label>
+            <div class="input-group has-validation">
+                <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
+                <input type="email" name="correoempresa"
+                       class="form-control @error('correoempresa') is-invalid @enderror"
+                       value="{{ old('correoempresa') }}"
+                       maxlength="100"
+                       onkeydown="bloquearEspacioAlInicio(event, this)"
+                       oninput="eliminarEspaciosIniciales(this)"
+                       required>
+                @error('correoempresa')
+                <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+        </div>
 
-                        <div class="col-md-6">
-                            <label for="categoriarubro" class="form-label">Categoría o rubro</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-briefcase-fill"></i></span>
-                                <select name="categoriarubro" class="form-select" required>
-                                    <option value="">Seleccione una opción</option>
-                                    <option value="Cámaras de seguridad">Cámaras de seguridad</option>
-                                    <option value="Alarmas antirrobo">Alarmas antirrobo</option>
-                                    <option value="Cerraduras inteligentes">Cerraduras inteligentes</option>
-                                    <option value="Sensores de movimiento">Sensores de movimiento</option>
-                                    <option value="Luces con sensor de movimiento">Luces con sensor de movimiento</option>
-                                    <option value="Rejas o puertas de seguridad">Rejas o puertas de seguridad</option>
-                                    <option value="Sistema de monitoreo 24/7">Sistema de monitoreo 24/7</option>
-                                    <option value="Otros">Otros</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
+        <div class="col-md-6">
+            <label for="nombrerepresentante" class="form-label">Nombre del representante</label>
+            <div class="input-group has-validation">
+                <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                <input type="text" name="nombrerepresentante"
+                       class="form-control @error('nombrerepresentante') is-invalid @enderror"
+                       value="{{ old('nombrerepresentante') }}"
+                       maxlength="50"
+                       onkeypress="soloLetras(event)"
+                       onkeydown="bloquearEspacioAlInicio(event, this)"
+                       oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '')"
+                       required>
+                @error('nombrerepresentante')
+                <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+        </div>
 
-                    <div class="text-center mt-5">
-                        <a href="{{ route('Proveedores.nuevo') }}" class="btn btn-warning"
-                           onclick="return confirm('¿Estás seguro que deseas cancelar? Se perderán los cambios no guardados.');">
-                            <i class="bi bi-x-circle me-2"></i> Cancelar
-                        </a>
+        <div class="col-md-6">
+            <label for="identificacion" class="form-label">Identificación</label>
+            <div class="input-group has-validation">
+                <span class="input-group-text"><i class="bi bi-card-text"></i></span>
+                <input type="text" name="identificacion"
+                       class="form-control @error('identificacion') is-invalid @enderror"
+                       value="{{ old('identificacion') }}"
+                       maxlength="13"
+                       onkeypress="soloNumeros(event)"
+                       onkeydown="bloquearEspacioAlInicio(event, this)"
+                       oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                       required>
+                @error('identificacion')
+                <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+        </div>
 
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-save-fill me-2"></i> Guardar
-                        </button>
-                    </div>
-                </form>
+        <div class="col-md-6">
+            <label for="categoriarubro" class="form-label">Categoría o rubro</label>
+            <div class="input-group has-validation">
+                <span class="input-group-text"><i class="bi bi-briefcase-fill"></i></span>
+                <select name="categoriarubro" class="form-select @error('categoriarubro') is-invalid @enderror" required>
+                    <option value="">Seleccione una opción</option>
+                    <option value="Cámaras de seguridad" {{ old('categoriarubro') == 'Cámaras de seguridad' ? 'selected' : '' }}>Cámaras de seguridad</option>
+                    <option value="Alarmas antirrobo" {{ old('categoriarubro') == 'Alarmas antirrobo' ? 'selected' : '' }}>Alarmas antirrobo</option>
+                    <option value="Cerraduras inteligentes" {{ old('categoriarubro') == 'Cerraduras inteligentes' ? 'selected' : '' }}>Cerraduras inteligentes</option>
+                    <option value="Sensores de movimiento" {{ old('categoriarubro') == 'Sensores de movimiento' ? 'selected' : '' }}>Sensores de movimiento</option>
+                    <option value="Luces con sensor de movimiento" {{ old('categoriarubro') == 'Luces con sensor de movimiento' ? 'selected' : '' }}>Luces con sensor de movimiento</option>
+                    <option value="Rejas o puertas de seguridad" {{ old('categoriarubro') == 'Rejas o puertas de seguridad' ? 'selected' : '' }}>Rejas o puertas de seguridad</option>
+                    <option value="Sistema de monitoreo 24/7" {{ old('categoriarubro') == 'Sistema de monitoreo 24/7' ? 'selected' : '' }}>Sistema de monitoreo 24/7</option>
+                    <option value="Otros" {{ old('categoriarubro') == 'Otros' ? 'selected' : '' }}>Otros</option>
+                </select>
+                @error('categoriarubro')
+                <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+        </div>
 
+
+    </div>
+
+    <div class="text-center mt-5">
+        <a href="{{ route('Proveedores.nuevo') }}" class="btn btn-warning"
+           onclick="return confirm('¿Estás seguro que deseas cancelar? Se perderán los cambios no guardados.');">
+            <i class="bi bi-x-circle me-2"></i> Cancelar
+        </a>
+
+        <button type="button" class="btn btn-warning" onclick="limpiarFormulario()">
+            <i class="bi bi-eraser-fill me-2"></i> Limpiar
+        </button>
+
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-save-fill me-2"></i> Guardar
+        </button>
+    </div>
+</form>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    function validarSoloLetras(input) {
+        input.value = input.value.replace(/[^A-Za-z\s]/g, '');
+        if (input.value.length > 50) {
+            input.value = input.value.substring(0, 50);
+        }
+
+
+    }
+
+    function validarTelefono(input) {
+        input.value = input.value.replace(/[^0-9]/g, '');
+        if (input.value.length > 8) {
+            input.value = input.value.substring(0, 8);
+        }
+        if (input.value.length > 0 && !['3', '8', '9'].includes(input.value[0])) {
+            input.setCustomValidity("El teléfono debe iniciar con 3, 8 o 9");
+        } else {
+            input.setCustomValidity("");
+        }
+    }
+
+    function validarIdentificacion(input) {
+        input.value = input.value.replace(/[^0-9]/g, '');
+        if (input.value.length > 13) {
+            input.value = input.value.substring(0, 13);
+        }
+        if (input.value.length >= 2) {
+            const inicio = input.value.substring(0, 2);
+            if (!/^(0[1-9]|1[0-3])$/.test(inicio)) {
+                input.setCustomValidity("La identidad debe iniciar entre 01 y 13");
+                return;
+            }
+        }
+        input.setCustomValidity("");
+    }
+
+    function validarCorreo(input) {
+        if (input.value.length > 100) {
+            input.value = input.value.substring(0, 100);
+        }
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!regex.test(input.value)) {
+            input.setCustomValidity("Correo no válido");
+        } else {
+            input.setCustomValidity("");
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function(){
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('.is-invalid'));
+        tooltipTriggerList.forEach(function (element) {
+            new bootstrap.Tooltip(element, { placement: 'right' });
+        });
+    });
+
+    function soloLetras(e) {
+        const key = e.key;
+        const regex = /^[A-Za-z\s]$/;
+        if (!regex.test(key) && !['Backspace','Tab','ArrowLeft','ArrowRight','Delete'].includes(key)) {
+            e.preventDefault();
+        }
+
+
+    }
+
+    function soloNumeros(e) {
+        const key = e.key;
+        if (!/^[0-9]$/.test(key) && !['Backspace','Tab','ArrowLeft','ArrowRight','Delete'].includes(key)) {
+            e.preventDefault();
+        }
+    }
+
+    function bloquearEspacioAlInicio(e, input) {
+        if (e.key === ' ' && input.selectionStart === 0) {
+            e.preventDefault();
+        }
+    }
+
+    function eliminarEspaciosIniciales(input) {
+        input.value = input.value.replace(/^\s+/, '');
+    }
+
+    function limpiarFormulario() {
+        document.getElementById("form-proveedor").reset();
+    }
+</script>
+
+
+
+
 
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">

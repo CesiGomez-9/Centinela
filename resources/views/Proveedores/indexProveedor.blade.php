@@ -19,27 +19,26 @@
     <table style="border: 1px solid black; border-collapse: collapse; width: 100%;">
         <thead>
         <tr>
-            <th scope="col">Nombres</th>
-            <th scope="col">Apellidos</th>
+            <th scope="col">Nombre de la empresa</th>
             <th scope="col">Direccion</th>
-            <th scope="col">Telefono</th>
-            <th scope="col">Correo</th>
-            <th scope="col">Identidad</th>
-            <th scope="col">Cargo de contacto</th>
+            <th scope="col">Telefono de la empresa</th>
+            <th scope="col">Correo de la empresa</th>
+            <th scope="col">Nombre del representante</th>
+            <th scope="col">Identidad de respresentante</th>
             <th scope="col">Categoria o rubro</th>
         </tr>
         </thead>
         <tbody>
         @foreach($proveedores as $proveedor)
             <tr>
-                <td>{{  $proveedor->nombres  }}</td>
-                <td>{{  $proveedor->apellidos  }}</td>
+                <td>{{  $proveedor->nombreEmpresa  }}</td>
                 <td>{{  $proveedor->direccion  }}</td>
-                <td>{{  $proveedor->telefono  }}</td>
-                <td>{{  $proveedor->correo  }}</td>
+                <td>{{  $proveedor->telefonodeempresa  }}</td>
+                <td>{{  $proveedor->correoempresa  }}</td>
+                <td>{{  $proveedor->nombrerepresentante }}</td>
                 <td>{{  $proveedor->identificacion  }}</td>
-                <td>{{  $proveedor->cargocontacto  }}</td>
                 <td>{{  $proveedor->categoriarubro  }}</td>
+
 
             </tr>
         @endforeach

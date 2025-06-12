@@ -13,15 +13,16 @@ return new class extends Migration
     {
         Schema::create('proveedores', function (Blueprint $table) {
             $table->id();
-            $table->string('nombres');
-            $table->string('apellidos');
+            $table->string('nombreEmpresa',50);
             $table->string('direccion');
-            $table->string('telefono');
-            $table->string('correo');
-            $table->string('identificacion');
-            $table->string('cargocontacto');
+            $table->string('telefonodeempresa',8);
+            $table->string('correoempresa',100)->unique();
+            $table->string('nombrerepresentante',50);
+            $table->string('identificacion',13)->unique();
             $table->string('categoriarubro');
             $table->timestamps();
+
+
         });
     }
 
