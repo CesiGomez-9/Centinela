@@ -11,9 +11,9 @@ class EmpleadoController extends Controller
     {
 
         $request->validate([
-            'search' => ['nullable', 'regex:/^[A-Za-z]{1,25}$/']
+            'search' => ['nullable', 'regex:/^[A-Za-z]+(?: [A-Za-z]+)*$/', 'max:25']
         ], [
-            'search.regex' => 'La búsqueda solo puede contener letras sin espacios, números ni caracteres especiales, y máximo 25 caracteres.'
+            'search.regex' => 'Ingresa el nombre que quieras buscar'
         ]);
 
         $search = $request->input('search');

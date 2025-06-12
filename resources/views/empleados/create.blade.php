@@ -60,7 +60,7 @@
             @csrf
             <div class="row g-3">
                 <div class="col-md-4">
-                    <label class="form-label">Nombres</label>
+                    <label class="form-label">Nombre</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
                         <input type="text" id="nombre" name="nombre" maxlength="25" class="form-control" value="{{ old('nombre') }}" oninput="validarTexto(this,25)" />
@@ -68,7 +68,7 @@
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label">Apellidos</label>
+                    <label class="form-label">Apellido</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
                         <input type="text" id="apellido" name="apellido" maxlength="25" class="form-control" value="{{ old('apellido') }}" oninput="validarTexto(this,25)" />
@@ -267,14 +267,29 @@
 
 
     function validarTexto(input, maxLength) {
-        input.value = input.value.replace(/[^A-Za-z]/g, '').slice(0, maxLength);
+        let val = input.value;
+
+        // Permitir solo letras y espacios
+        val = val.replace(/[^A-Za-z ]/g, '');
+
+        // Bloquear espacios dobles seguidos
+        while (val.includes('  ')) {
+            val = val.replace(/  /g, ' ');
+        }
+
+        // Limitar longitud
+        val = val.slice(0, maxLength);
+
+        input.value = val;
     }
 
     function formatearIdentidad(input) {
+
         let val = input.value.replace(/[^0-9]/g, '');
-        if (val.startsWith('0')) {
-            input.value = '';
-            return;
+        let cerosInicio = val.match(/^0*/)[0].length;
+
+        if (cerosInicio > 4) {
+            val = val.slice(0, -1);
         }
         val = val.slice(0, 15);
         if (val.length > 8) {
