@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -70,12 +71,15 @@
             <i class="bi bi-arrow-left-circle me-2"></i>Volver al formulario
         </a>
 
-        <form id="formBuscar" action="{{ route('servicios.catalogo') }}" method="GET" class="d-flex" style="max-width: 350px;">
+        <form id="formBuscar" action="{{ route('servicios.catalogo') }}" method="GET" class="d-flex flex-column" style="max-width: 350px;">
             <div class="input-group">
                 <input type="text" id="campoBuscar" name="search" class="form-control" placeholder="Buscar por nombre..." value="{{ request('search') }}">
                 <button class="btn btn-primary" type="submit">
                     <i class="bi bi-search"></i>
                 </button>
+            </div>
+            <div id="errorBuscar" class="search-alert d-none">
+                Por favor, ingresa solo letras y no dejes el campo vacío.
             </div>
         </form>
     </div>
@@ -88,7 +92,6 @@
         </div>
     @endif
 
-    <!-- Tabla -->
     <!-- Tabla -->
     <div class="table-responsive">
         <table class="table table-bordered table-hover align-middle">
@@ -115,7 +118,6 @@
         </table>
     </div>
 
-
     <!-- Paginación -->
     <div class="d-flex justify-content-center mt-4">
         {{ $servicios->links('pagination::bootstrap-5') }}
@@ -125,18 +127,22 @@
 <!-- Validación con JavaScript -->
 <script>
     document.getElementById('formBuscar').addEventListener('submit', function (e) {
-        const input = document.getElementById('campoBuscar').value.trim();
+        const input = document.getElementById('campoBuscar');
+        const errorDiv = document.getElementById('errorBuscar');
+        const valor = input.value.trim();
         const soloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
 
-        if (input !== "" && !soloLetras.test(input)) {
+        if (valor === "" || !soloLetras.test(valor)) {
             e.preventDefault();
-            alert("Por favor, ingrese solo letras. No se permiten números ni caracteres especiales.");
+            errorDiv.classList.remove('d-none');
+        } else {
+            errorDiv.classList.add('d-none');
         }
     });
 
-    // Limpieza automática del campo mientras escribe
     document.getElementById('campoBuscar').addEventListener('input', function () {
         this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '');
+        document.getElementById('errorBuscar').classList.add('d-none');
     });
 </script>
 

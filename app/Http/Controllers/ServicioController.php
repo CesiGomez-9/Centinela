@@ -88,23 +88,26 @@ class ServicioController extends Controller
 
 
     }
-
     public function catalogo(Request $request)
     {
         $request->validate([
-            'search' => ['nullable', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/'],
+            'search' => ['nullable', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/u'],
+        ], [
+            'search.regex' => 'El campo de búsqueda solo debe contener letras y espacios.',
         ]);
 
         $query = Servicio::query();
 
         if ($request->filled('search')) {
-            $query->where('nombre', 'like', '%' . $request->search . '%');
+            $search = $request->search;
+            $query->where('nombre', 'like', '%' . $search . '%');
         }
 
-        $servicios = $query->paginate(10);
+        $servicios = $query->orderBy('nombre')->paginate(10);
 
         return view('servicios.catalogo', compact('servicios'));
     }
+
 
 
 }
