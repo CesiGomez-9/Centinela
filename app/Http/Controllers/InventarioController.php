@@ -24,11 +24,11 @@ class InventarioController extends Controller
     {
         // Validación
         $validated = $request->validate([
-            'codigo' => 'required|unique:inventarios|max:10',
-            'nombre' => 'required|max:25|min:3',
-            'descripcion' => 'required|max:255|min:5',
-            'cantidad' => 'required|integer|min:1',
-            'precio_unitario' => 'required|numeric|min:0',
+            'codigo' => 'required','unique:inventarios,codigo','min:1', 'max:10', 'regex:/^[A-Za-z0-9\-]+$/', 'regex:/.*\S.*/','not_regex:/^0+$/',
+            'nombre' => 'required|max:30|min:3','regex:/^[\pL0-9\s\-.,#]+$/u','regex:/.*\S.*/',
+            'descripcion' => 'required|max:255|min:5','regex:/^[\pL0-9\s,.\-#()]+$/u','regex:/.*\S.*/', 'not_regex:/^0+$/',
+            'cantidad' => 'required|integer|min:1|max:999|regex:/^\d{1,3}$/','regex:/.*\S.*/','not_regex:/^0+$/',
+            'precio_unitario' => 'required|numeric|min:0.01|max:999999.99', 'regex:/^\d{1,6}(\.\d{1,2})?$/','regex:/.*\S.*/', 'not_regex:/^0+$/',
         ]);
 
         // Crear un nuevo objeto inventarios
