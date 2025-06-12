@@ -1,21 +1,15 @@
 <?php
 
+use App\Http\Controllers\EmpleadoController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('empleados.index');
 });
 
-use App\Http\Controllers\InventarioController;
 
-Route::controller(InventarioController::class)->group(function () {
-    Route::get('/inventarios', 'index')->name('inventarios.index');
-    Route::get('/inventarios/{id}', 'show')->name('inventarios.show')->whereNumber('id');
-    Route::get('/inventarios/crear', 'create')->name('inventarios.create'); /*->middleware('auth');*/
-    Route::post('/inventarios/crear', 'store')->name('inventarios.store'); #->middleware('auth');
-    /*Route::get('/inventarios/{id}/editar', 'edit')->name('inventarios.edit')->whereNumber('id'); #->middleware('auth');
-    Route::put('/inventarios/{id}/editar', 'update')->name('inventarios.update')->whereNumber('id'); #->middleware('auth');
-    Route::delete('/inventarios/{id}/eliminar', 'destroy')->name('inventarios.destroy')->whereNumber('id'); #->middleware('auth');
-    */
-});
+Route::get('/empleados', [EmpleadoController::class, 'index'])->name('empleados.index');
+Route::post('/empleados', [EmpleadoController::class, 'store'])->name('empleados.store');
+Route::get('/empleados/create', [EmpleadoController::class, 'create'])->name('empleados.create');
+Route::resource('empleados', EmpleadoController::class);
 
