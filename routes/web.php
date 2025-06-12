@@ -23,7 +23,7 @@ Route::resource('empleados', EmpleadoController::class);
 Route::get('/Proveedores/crear', [ProveedorController::class, 'create'])->name('Proveedores.create');
 Route::post('/Proveedores/crear', [ProveedorController::class, 'store'])->name('Proveedores.store');
 Route::get('/Proveedores', [ProveedorController::class, 'index'])->name('Proveedores.indexProveedor');
-Route::get('/Proveedores/crear', [\App\Http\Controllers\ProveedorController::class, 'create'])->name('Proveedores.nuevo');
+Route::get('/Proveedores/crear', [ProveedorController::class, 'create'])->name('Proveedores.nuevo');
 
 Route::controller(InventarioController::class)->group(function (){
     Route::get('/inventarios', 'index')->name('inventarios.index');
