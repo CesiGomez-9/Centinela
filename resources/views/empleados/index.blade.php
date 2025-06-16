@@ -97,25 +97,42 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    document.getElementById('searchForm').addEventListener('submit', function (e) {
-        const input = document.getElementById('searchInput');
-        const error = document.getElementById('error-search');
-        const value = input.value.trim();
-        const regex = /^[A-Za-z]{1,25}$/;
+    const searchInput = document.getElementById('searchInput');
+    const searchForm = document.getElementById('searchForm');
+    const error = document.getElementById('error-search');
 
-        if (!regex.test(value)) {
+    // Regex: letras y espacios, sin espacios dobles
+    const regex = /^[A-Za-z]+(?: [A-Za-z]+)*$/;
+    // Explicación: una o más letras, seguido opcionalmente por bloques de un espacio + letras
+
+    searchForm.addEventListener('submit', function (e) {
+        const value = searchInput.value.trim();
+
+        // Validar longitud máxima aquí también
+        if (value.length > 25 || !regex.test(value)) {
             e.preventDefault();
             error.classList.remove('d-none');
-            input.classList.add('is-invalid');
+            searchInput.classList.add('is-invalid');
         } else {
             error.classList.add('d-none');
-            input.classList.remove('is-invalid');
+            searchInput.classList.remove('is-invalid');
         }
     });
-    document.getElementById('searchInput').addEventListener('keypress', function(event) {
-        const char = String.fromCharCode(event.which);
-        if (!/^[a-zA-Z]$/.test(char)) {
-            event.preventDefault();
+
+    searchInput.addEventListener('input', function () {
+        let val = this.value;
+        val = val.replace(/[^A-Za-z ]/g, '');
+        while (val.includes('  ')) {
+            val = val.replace(/  /g, ' ');
+        }
+        if (val.length > 25) {
+            val = val.slice(0, 25);
+        }
+
+        this.value = val;
+        if (regex.test(val.trim())) {
+            error.classList.add('d-none');
+            this.classList.remove('is-invalid');
         }
     });
 </script>
