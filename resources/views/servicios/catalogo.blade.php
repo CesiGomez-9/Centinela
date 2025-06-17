@@ -61,7 +61,7 @@
     <!-- Título centrado -->
     <div class="text-center mb-4">
         <h2 class="fw-bold mb-0">
-            <i class="bi bi-list-check me-2"></i>Catálogo de Servicios
+            <i class="bi bi-list-check me-2"></i>Lista de servicios
         </h2>
     </div>
 
