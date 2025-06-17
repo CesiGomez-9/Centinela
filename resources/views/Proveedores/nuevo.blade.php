@@ -301,9 +301,38 @@
     }
 
     function limpiarFormulario() {
-        document.getElementById("form-proveedor").reset();
+        const formulario = document.getElementById("form-proveedor");
+
+        // Limpiar campos manualmente
+        const elementos = formulario.querySelectorAll("input, textarea, select");
+        elementos.forEach(elemento => {
+            if (elemento.type === "checkbox" || elemento.type === "radio") {
+                elemento.checked = false;
+            } else {
+                elemento.value = "";
+            }
+        });
+
+        // Quitar clases de error
+        const inputsInvalidos = formulario.querySelectorAll('.form-control.is-invalid');
+        inputsInvalidos.forEach(input => {
+            input.classList.remove('is-invalid');
+        });
+
+        // Borrar los mensajes de error
+        const mensajesError = formulario.querySelectorAll('.invalid-feedback');
+        mensajesError.forEach(msg => {
+            msg.textContent = '';
+        });
+
+
     }
+
+
+
 </script>
+
+
 
 
 
