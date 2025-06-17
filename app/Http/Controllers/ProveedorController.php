@@ -39,7 +39,18 @@ class ProveedorController extends Controller
             'nombrerepresentante' => ['required', 'string', 'max:50', 'regex:/^[A-Za-z\s]+$/'],
             'identificacion' => ['required', 'regex:/^(0[1-9]|1[0-3])[0-9]{11}$/', 'size:13', 'unique:proveedores,identificacion'],
             'categoriarubro' => ['required', 'string'],
+
+        ], [], [
+            'nombreEmpresa' => 'nombre de la empresa',
+            'direccion' => 'dirección',
+            'telefonodeempresa' => 'teléfono de la empresa',
+            'correoempresa' => 'correo electrónico',
+            'nombrerepresentante' => 'nombre del representante',
+            'identificacion' => 'identificación',
+            'categoriarubro' => 'categoría o rubro',
+
         ]);
+
 
         $proveedor = new Proveedor();
         $proveedor->nombreEmpresa = $request->input('nombreEmpresa'); // <- aquí estaba el error, ponías 'nombres'
