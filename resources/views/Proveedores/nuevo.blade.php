@@ -201,27 +201,26 @@
 
     </div>
 
-    <div class="text-center mt-5">
+    <div class="text-center mt-5 d-flex justify-content-center gap-3">
 
-        <a href="{{ route('Proveedores.nuevo') }}" class="btn btn-danger me-2"></a>
-
+        <!-- Botón Cancelar -->
         <a href="{{ route('Proveedores.indexProveedor') }}" class="btn btn-warning"
->
            onclick="return confirm('¿Estás seguro que deseas cancelar? Se perderán los cambios no guardados.');">
             <i class="bi bi-x-circle me-2"></i> Cancelar
         </a>
 
-
-
+        <!-- Botón Limpiar -->
         <button type="button" class="btn btn-danger" onclick="limpiarFormulario()">
-
             <i class="bi bi-eraser-fill me-2"></i> Limpiar
         </button>
 
+        <!-- Botón Guardar -->
         <button type="submit" class="btn btn-primary">
             <i class="bi bi-save-fill me-2"></i> Guardar
         </button>
+
     </div>
+
 </form>
 
             </div>
