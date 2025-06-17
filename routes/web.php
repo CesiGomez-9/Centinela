@@ -32,7 +32,7 @@ Route::controller(InventarioController::class)->group(function (){
     Route::post('/inventarios/crear', 'store')->name('inventarios.store');
 });
 
-Route::get('/', [ServicioController::class, 'index'])->name('servicios.index');
+Route::get('/servicios/index', [ServicioController::class, 'index'])->name('servicios.index');
 Route::post('/servicios', [ServicioController::class, 'store'])->name('servicios.store');
 Route::delete('/servicios/{id}', [ServicioController::class, 'destroy'])->name('servicios.destroy');
 Route::get('/catalogo', [ServicioController::class, 'catalogo'])->name('servicios.catalogo');
