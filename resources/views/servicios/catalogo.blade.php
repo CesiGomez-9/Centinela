@@ -65,12 +65,14 @@
         </h2>
     </div>
 
-    <!-- Botón de volver y buscador -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+ <!-- Botón de volver a la derecha y buscador a la izquierda -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-row-reverse">
+        <!-- Botón Volver a la derecha -->
         <a href="{{ route('servicios.index') }}" class="btn btn-outline-primary btn-md">
-            <i class="bi bi-arrow-left-circle me-2"></i>Volver al formulario
+            <i class="bi bi-arrow-left-circle me-2"></i>Crear un registro nuevo
         </a>
 
+        <!-- Formulario de búsqueda a la izquierda -->
         <form id="formBuscar" action="{{ route('servicios.catalogo') }}" method="GET" class="d-flex flex-column" style="max-width: 350px;">
             <div class="input-group">
                 <input type="text" id="campoBuscar" name="search" class="form-control" placeholder="Buscar por nombre..." value="{{ request('search') }}">
@@ -83,6 +85,7 @@
             </div>
         </form>
     </div>
+
 
     <!-- Alerta de éxito -->
     @if(session('success'))
@@ -126,11 +129,9 @@
 
 <!-- Validación con JavaScript -->
 <script>
-    document.getElementById('formBuscar').addEventListener('submit', function (e) {
-        const input = document.getElementById('campoBuscar');
-        const errorDiv = document.getElementById('errorBuscar');
-        const valor = input.value.trim();
-        const soloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
+    document.getElementById('campoBuscar').addEventListener('input', function () {
+        this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '');
+    });
 
         if (valor === "" || !soloLetras.test(valor)) {
             e.preventDefault();

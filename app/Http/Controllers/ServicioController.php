@@ -90,11 +90,7 @@ class ServicioController extends Controller
     }
     public function catalogo(Request $request)
     {
-        $request->validate([
-            'search' => ['nullable', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/u'],
-        ], [
-            'search.regex' => 'El campo de búsqueda solo debe contener letras y espacios.',
-        ]);
+
 
         $query = Servicio::query();
 

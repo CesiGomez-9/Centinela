@@ -45,7 +45,7 @@
 <div class="container my-5">
     <div class="form-contenedor">
         <h2 class="text-center mb-4 text-primary fs-3">
-            <i class="bi bi-journal-plus me-2"></i> Registrar servicio
+            <i class="bi bi-journal-plus me-2"></i> Registrar un nuevo servicio
         </h2>
 
         @if(session('success'))
