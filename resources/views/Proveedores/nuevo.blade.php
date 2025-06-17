@@ -203,7 +203,7 @@
 
     <div class="text-center mt-5">
 
-        <a href="{{ route('Proveedores.nuevo') }}" class="btn btn-danger me-2"
+        <a href="{{ route('Proveedores.nuevo') }}" class="btn btn-danger me-2"></a>
 
         <a href="{{ route('Proveedores.indexProveedor') }}" class="btn btn-warning"
 >
@@ -212,7 +212,6 @@
         </a>
 
 
-        <button type="button" class="btn btn-warning me-2" onclick="limpiarFormulario()">
 
         <button type="button" class="btn btn-danger" onclick="limpiarFormulario()">
 
@@ -224,6 +223,7 @@
         </button>
     </div>
 </form>
+
             </div>
         </div>
     </div>
