@@ -12,6 +12,7 @@ Route::get('/', function () {
 
 Route::get('/', function () {
     return view('index');
+
 });
 
 
@@ -36,4 +37,11 @@ Route::get('/servicios/index', [ServicioController::class, 'index'])->name('serv
 Route::post('/servicios', [ServicioController::class, 'store'])->name('servicios.store');
 Route::delete('/servicios/{id}', [ServicioController::class, 'destroy'])->name('servicios.destroy');
 Route::get('/catalogo', [ServicioController::class, 'catalogo'])->name('servicios.catalogo');
+
+
+
+Route::get('/Proveedores/crear', [\App\Http\Controllers\ProveedorController::class, 'create'])->name('Proveedores.create');
+Route::post('/Proveedores/crear', [\App\Http\Controllers\ProveedorController::class, 'store'])->name('Proveedores.store');
+Route::get('/Proveedores', [\App\Http\Controllers\ProveedorController::class, 'index'])->name('Proveedores.indexProveedor');
+Route::get('/Proveedores/crear', [\App\Http\Controllers\ProveedorController::class, 'create'])->name('Proveedores.nuevo');
 

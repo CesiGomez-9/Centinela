@@ -202,12 +202,20 @@
     </div>
 
     <div class="text-center mt-5">
+
         <a href="{{ route('Proveedores.nuevo') }}" class="btn btn-danger me-2"
+
+        <a href="{{ route('Proveedores.indexProveedor') }}" class="btn btn-warning"
+>
            onclick="return confirm('¿Estás seguro que deseas cancelar? Se perderán los cambios no guardados.');">
             <i class="bi bi-x-circle me-2"></i> Cancelar
         </a>
 
+
         <button type="button" class="btn btn-warning me-2" onclick="limpiarFormulario()">
+
+        <button type="button" class="btn btn-danger" onclick="limpiarFormulario()">
+
             <i class="bi bi-eraser-fill me-2"></i> Limpiar
         </button>
 
@@ -340,9 +348,38 @@
     }
 
     function limpiarFormulario() {
-        document.getElementById("form-proveedor").reset();
+        const formulario = document.getElementById("form-proveedor");
+
+        // Limpiar campos manualmente
+        const elementos = formulario.querySelectorAll("input, textarea, select");
+        elementos.forEach(elemento => {
+            if (elemento.type === "checkbox" || elemento.type === "radio") {
+                elemento.checked = false;
+            } else {
+                elemento.value = "";
+            }
+        });
+
+        // Quitar clases de error
+        const inputsInvalidos = formulario.querySelectorAll('.form-control.is-invalid');
+        inputsInvalidos.forEach(input => {
+            input.classList.remove('is-invalid');
+        });
+
+        // Borrar los mensajes de error
+        const mensajesError = formulario.querySelectorAll('.invalid-feedback');
+        mensajesError.forEach(msg => {
+            msg.textContent = '';
+        });
+
+
     }
+
+
+
 </script>
+
+
 
 
 
