@@ -198,12 +198,12 @@
     </div>
 
     <div class="text-center mt-5">
-        <a href="{{ route('Proveedores.nuevo') }}" class="btn btn-warning"
+        <a href="{{ route('Proveedores.indexProveedor') }}" class="btn btn-warning"
            onclick="return confirm('¿Estás seguro que deseas cancelar? Se perderán los cambios no guardados.');">
             <i class="bi bi-x-circle me-2"></i> Cancelar
         </a>
 
-        <button type="button" class="btn btn-warning" onclick="limpiarFormulario()">
+        <button type="button" class="btn btn-danger" onclick="limpiarFormulario()">
             <i class="bi bi-eraser-fill me-2"></i> Limpiar
         </button>
 
