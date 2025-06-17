@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('telefonodeemergencia');
             $table->string('tipodesangre');
             $table->text('alergias');
+            $table->string('alergiaOtros', 50);
            $table->timestamps();
 
         });

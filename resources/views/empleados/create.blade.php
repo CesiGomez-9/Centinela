@@ -67,6 +67,7 @@
                         <div class="invalid-feedback" id="error-nombre"></div>
                     </div>
                 </div>
+
                 <div class="col-md-4">
                     <label class="form-label">Apellido</label>
                     <div class="input-group">
@@ -75,6 +76,7 @@
                     </div>
                     <div class="error-msg" id="error-apellido"></div>
                 </div>
+
                 <div class="col-md-4">
                     <label class="form-label">Identidad</label>
                     <div class="input-group">
@@ -83,6 +85,7 @@
                     </div>
                     <div class="error-msg" id="error-identidad"></div>
                 </div>
+
                 <div class="col-md-6">
                     <label class="form-label">Dirección</label>
                     <div class="input-group">
@@ -91,12 +94,14 @@
                     </div>
                     <div class="error-msg" id="error-direccion"></div>
                 </div>
+
                 <div class="col-md-6">
                     <label class="form-label">Correo electrónico</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
                         <input type="email" id="email" name="email" maxlength="20" class="form-control" value="{{ old('email') }}" oninput="validarCorreo(this,20)" />
                     </div>
+
                     <div class="error-msg" id="error-email"></div>
                 </div>
                 <div class="col-md-4">
@@ -105,6 +110,7 @@
                         <span class="input-group-text"><i class="bi bi-telephone-fill"></i></span>
                         <input type="text" id="telefono" name="telefono" maxlength="11" class="form-control" value="{{ old('telefono') }}" oninput="formatearTelefono(this)" />
                     </div>
+
                     <div class="error-msg" id="error-telefono"></div>
                 </div>
                 <div class="col-md-6">
@@ -120,8 +126,12 @@
                     </div>
                     <div class="error-msg" id="error-tipodesangre"></div>
                 </div>
-                <div class="col-md-10">
-                    <label class="form-label">Alergias (seleccione)</label><br />
+
+                    <div class="col-md-10">
+                        <label class="form-label">
+                            <i class="bi bi-exclamation-diamond-fill me-2"></i>
+                            Alergias (seleccione):
+                        </label>
                     @php
                         $tiposAlergia = ['Polvo', 'Polen', 'Medicamentos', 'Alimentos', 'Ninguno', 'Otros'];
                         $oldAlergias = old('alergias', []);
@@ -163,7 +173,7 @@
                 </h3>
 
                 <div class="col-md-4">
-                    <label class="form-label">Nombre y Apellido</label>
+                    <label class="form-label">Nombre completo</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-person-lines-fill"></i></span>
                         <input type="text" id="contactoEmergencia" name="contactodeemergencia" maxlength="25" class="form-control" value="{{ old('contactodeemergencia') }}" oninput="validarTexto(this,25)" />
@@ -268,18 +278,11 @@
 
     function validarTexto(input, maxLength) {
         let val = input.value;
-
-        // Permitir solo letras y espacios
         val = val.replace(/[^A-Za-z ]/g, '');
-
-        // Bloquear espacios dobles seguidos
         while (val.includes('  ')) {
             val = val.replace(/  /g, ' ');
         }
-
-        // Limitar longitud
         val = val.slice(0, maxLength);
-
         input.value = val;
     }
 
@@ -375,7 +378,6 @@
             document.getElementById('error-identidad').textContent = 'Formato de identidad inválido (0000-0000-00000)';
         }
 
-
         const tipoSangre = document.getElementById('tipodesangre');
         if (!tipoSangre.value) {
             valido = false;
@@ -400,7 +402,59 @@
         }
 
         return valido;
+
+
     }
+    document.addEventListener('DOMContentLoaded', function () {
+        const telefonoInput = document.getElementById('telefono');
+
+        // Validar que el primer dígito sea 9,8,2 o 3 al presionar tecla
+        telefonoInput.addEventListener('keydown', function(e) {
+            if ((this.selectionStart === 0 || this.value.length === 0)) {
+                if (!['9', '8', '2', '3'].includes(e.key)) {
+                    e.preventDefault();
+                }
+            }
+        });
+
+        // Validar que si se pega o escribe, el primer dígito sea válido
+        telefonoInput.addEventListener('input', function() {
+            if (this.value.length > 0) {
+                const primerDigito = this.value.charAt(0);
+                if (!['9', '8', '2', '3'].includes(primerDigito)) {
+                    this.value = '';
+                }
+            }
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        ['telefono', 'telefonodeemergencia'].forEach(id => {
+            const input = document.getElementById(id);
+
+            // Validar que el primer dígito sea 9,8,2 o 3 al presionar tecla
+            input.addEventListener('keydown', function(e) {
+                if ((this.selectionStart === 0 || this.value.length === 0)) {
+                    if (!['9', '8', '2', '3'].includes(e.key)) {
+                        e.preventDefault();
+                    }
+                }
+            });
+
+            // Validar que si se pega o escribe, el primer dígito sea válido
+            input.addEventListener('input', function() {
+                if (this.value.length > 0) {
+                    const primerDigito = this.value.charAt(0);
+                    if (!['9', '8', '2', '3'].includes(primerDigito)) {
+                        this.value = '';
+                    }
+                }
+            });
+        });
+
+        // Aquí puedes añadir otras funciones o event listeners que ya tengas
+    });
+
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

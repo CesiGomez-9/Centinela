@@ -68,21 +68,59 @@ class EmpleadoController extends Controller
     }
     public function show(string $id)
     {
-
+        $empleado = Empleado::findOrFail($id);
+        return view('empleados.show', compact('empleado'));
     }
 
     public function edit(string $id)
     {
-        //
+        $empleado = Empleado::findOrFail($id);
+        return view('empleados.edit', compact('empleado'));
     }
 
     public function update(Request $request, string $id)
     {
-        //
+        $empleado = Empleado::findOrFail($id);
+
+        $validated = $request->validate([
+            'nombre' => 'required|string|max:25',
+            'apellido' => 'required|string|max:25',
+            'direccion' => 'required|string|max:25',
+            'email' => 'required|email|max:20|unique:empleados,email,' . $empleado->id,
+            'telefono' => 'required|string|max:11',
+            'identidad' => 'required|string|max:15|unique:empleados,identidad,' . $empleado->id,
+            'contactodeemergencia' => 'required|string|max:25',
+            'telefonodeemergencia' => 'required|string|max:11',
+            'tipodesangre' => 'required|string',
+            'alergias' => 'required|array|min:1',
+            'alergiaOtros' => 'required|string|max:50',
+        ]);
+
+        $empleado->update([
+            'nombre' => $validated['nombre'],
+            'apellido' => $validated['apellido'],
+            'direccion' => $validated['direccion'],
+            'email' => $validated['email'],
+            'telefono' => $validated['telefono'],
+            'identidad' => $validated['identidad'],
+            'contactodeemergencia' => $validated['contactodeemergencia'],
+            'telefonodeemergencia' => $validated['telefonodeemergencia'],
+            'tipodesangre' => $validated['tipodesangre'],
+            'alergias' => json_encode($validated['alergias']),
+            'alergiaOtros' => $validated['alergiaOtros'],
+        ]);
+
+        $empleado->save();
+        return redirect()->route('empleados.index')->with('success', 'Empleado actualizado correctamente');
     }
+
 
     public function destroy(string $id)
     {
-        //
+        $empleado = Empleado::findOrFail($id);
+        $empleado->delete();
+
+        return redirect()->route('empleados.index')
+            ->with('success', 'Empleado eliminado correctamente.');
     }
 }

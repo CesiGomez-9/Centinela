@@ -34,9 +34,6 @@
             Lista de empleados
         </h3>
 
-        @if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
 
         <div class="row mb-4">
             <div class="col-auto">
@@ -62,6 +59,13 @@
                 </form>
             </div>
         </div>
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            </div>
+        @endif
 
         <table class="table table-bordered table-striped">
             <thead class="table-dark">
@@ -70,6 +74,7 @@
                 <th>Nombre</th>
                 <th>Dirección</th>
                 <th>Teléfono</th>
+                <th>Acciones</th>
             </tr>
             </thead>
             <tbody>
@@ -79,10 +84,26 @@
                     <td>{{ $empleado->nombre }} {{ $empleado->apellido }}</td>
                     <td>{{ $empleado->direccion }}</td>
                     <td>{{ $empleado->telefono }}</td>
+                    <td class="text-center">
+                        <a href="{{ route('empleados.show', $empleado->id) }}" class="btn btn-sm btn-outline-info">
+                            <i class="bi bi-eye"></i> Ver
+                        </a>
+                        <a href="{{ route('empleados.edit', $empleado->id) }}" class="btn btn-sm btn-outline-warning" title="Editar">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+
+                        <form action="{{ route('empleados.destroy', $empleado->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('¿Estás seguro de eliminar este empleado?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="4" class="text-center">No hay empleados registrados.</td>
+                    <td colspan="5" class="text-center text-muted">No hay empleados registrados.</td>
                 </tr>
             @endforelse
             </tbody>
@@ -101,14 +122,10 @@
     const searchForm = document.getElementById('searchForm');
     const error = document.getElementById('error-search');
 
-    // Regex: letras y espacios, sin espacios dobles
     const regex = /^[A-Za-z]+(?: [A-Za-z]+)*$/;
-    // Explicación: una o más letras, seguido opcionalmente por bloques de un espacio + letras
-
     searchForm.addEventListener('submit', function (e) {
         const value = searchInput.value.trim();
 
-        // Validar longitud máxima aquí también
         if (value.length > 25 || !regex.test(value)) {
             e.preventDefault();
             error.classList.remove('d-none');
