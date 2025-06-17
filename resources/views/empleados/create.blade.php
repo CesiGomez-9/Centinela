@@ -186,7 +186,8 @@
                         <i class="bi bi-x-circle me-2"></i> Cancelar
                         </a>
 
-                    <button type="reset" class="btn btn-warning me-2">
+                    <!-- Botón Limpiar -->
+                    <button type="button" class="btn btn-danger" onclick="limpiarFormulario()">
                         <i class="bi bi-eraser-fill me-2"></i> Limpiar
                     </button>
 
@@ -328,9 +329,37 @@
             }
         });
     });
-    function limpiarErrores() {
-        document.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
-        document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+
+    function limpiarFormulario() {
+        const formulario = document.getElementById("form-proveedor");
+
+        // Limpiar campos manualmente
+        const elementos = formulario.querySelectorAll("input, textarea, select");
+        elementos.forEach(elemento => {
+            if (elemento.type === "checkbox" || elemento.type === "radio") {
+                elemento.checked = false;
+            } else {
+                elemento.value = "";
+            }
+        });
+
+        // Quitar clases de error
+        const inputsInvalidos = formulario.querySelectorAll('.form-control.is-invalid');
+        inputsInvalidos.forEach(input => {
+            input.classList.remove('is-invalid');
+        });
+
+        // Borrar los mensajes de error
+        const mensajesError = formulario.querySelectorAll('.invalid-feedback');
+        mensajesError.forEach(msg => {
+            msg.textContent = '';
+        });
+
+        function limpiarErrores() {
+            document.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
+            document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+        }
+
     }
 
     function validarFormulario() {

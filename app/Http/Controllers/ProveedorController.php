@@ -37,7 +37,7 @@ class ProveedorController extends Controller
             'telefonodeempresa' => ['required', 'regex:/^[389][0-9]{7}$/', 'size:8', 'unique:proveedores,telefonodeempresa'],
             'correoempresa' => ['required', 'string', 'email', 'max:100', 'unique:proveedores,correoempresa'],
             'nombrerepresentante' => ['required', 'string', 'max:50', 'regex:/^[A-Za-z\s]+$/'],
-            'identificacion' => ['required', 'regex:/^(0[1-9]|1[0-3])[0-9]{11}$/', 'size:13', 'unique:proveedores,identificacion'],
+            'identificacion' => ['required', 'regex:/^(0[1-18]|1[0-18])[0-18]{11}$/', 'size:13', 'unique:proveedores,identificacion'],
             'categoriarubro' => ['required', 'string'],
 
         ], [], [
