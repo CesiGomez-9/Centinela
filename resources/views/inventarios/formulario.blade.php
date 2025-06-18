@@ -1,5 +1,5 @@
 @extends('layouts.plantilla')
-@section('titulo','Registrar nuevo producto al inventario')
+@section('titulo','Registrar un nuevo producto al inventario')
 @section('content')
 
     <style>
@@ -21,9 +21,9 @@
                     <h3 class="text-center mb-4" style="color: #09457f;">
                         <i class="bi bi-boxes me-2"></i>
                         @isset($inventario)
-                            Editar producto
+                            Editar un producto
                         @else
-                            Registrar nuevo producto
+                            Registrar un nuevo producto
                         @endisset
                     </h3>
 
@@ -72,10 +72,10 @@
                                 <label for="precio_unitario" class="form-label">Precio unitario</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
-                                    <input type="text" name="precio_unitario" class="form-control @error('precio_unitario') is-invalid @enderror"  maxlength="9" inputmode="decimal"
-                                           pattern="^\d{1,6}(\.\d{1,2})?$"
+                                    <input type="text" name="precio_unitario" class="form-control @error('precio_unitario')
+                                    is-invalid @enderror" maxlength="4"
                                            value="{{ old('precio_unitario', $inventario->precio_unitario ?? '') }}"
-                                           required oninput="validarPrecio(this)">
+                                           oninput="validarPrecio(this)" required >
                                 </div>
                                 @error('precio_unitario')
                                 <div class="text-danger mt-1 small">{{ $message }}</div>
@@ -95,8 +95,7 @@
                         </div>
 
                         <div class="text-center mt-5">
-                            <a href="{{ route('inventarios.index') }}" class="btn btn-danger me-2"
-                               onclick="return confirm('¿Estás seguro que deseas cancelar? Se perderán los cambios no guardados.');">
+                            <a href="{{ route('inventarios.index') }}" class="btn btn-danger me-2">
                                 <i class="bi bi-x-circle me-2"></i> Cancelar
                             </a>
 
@@ -194,18 +193,6 @@
             return false;
         }
 
-        function limitarPrecio(input) {
-            let valor = input.value.replace(/[^0-9.]/g, '');
-            let partes = valor.split('.');
-            if (partes[0].length > 6) partes[0] = partes[0].substring(0, 6);
-            if (partes[1]) {
-                partes[1] = partes[1].substring(0, 2);
-                input.value = partes[0] + '.' + partes[1];
-            } else {
-                input.value = partes[0];
-            }
-        }
-
         function validarTexto(e) {
             const key = e.keyCode || e.which;
             const tecla = String.fromCharCode(key);
@@ -245,19 +232,19 @@
             }
         });
 
-            document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function () {
             const cantidadInput = document.querySelector('input[name="cantidad"]');
 
             if (cantidadInput) {
-            cantidadInput.addEventListener('input', function () {
-            // Evitar 0 inicial o valores mayores a 999
-            let valor = this.value.replace(/^0+/, ''); // quita ceros a la izquierda
+                cantidadInput.addEventListener('input', function () {
+                    // Evitar 0 inicial o valores mayores a 999
+                    let valor = this.value.replace(/^0+/, ''); // quita ceros a la izquierda
 
-            if (parseInt(valor) > 999) valor = '999';
-            this.value = valor;
-                    });
-                }
-            });
+                    if (parseInt(valor) > 999) valor = '999';
+                    this.value = valor;
+                });
+            }
+        });
 
         function validarPrecio(input) {
             let valor = input.value;
@@ -268,8 +255,8 @@
             // Separar entero y decimal
             let partes = valor.split('.');
 
-            // Limitar parte entera a 6 dígitos
-            partes[0] = partes[0].substring(0, 6);
+            // Limitar parte entera a 9 dígitos
+            partes[0] = partes[0].substring(0, 9);
 
             // Limitar parte decimal a 2 dígitos
             if (partes[1]) {
@@ -287,6 +274,8 @@
             }
         }
 
+
+
         document.querySelector('input[name="codigo"]').addEventListener('input', function () {
             if (this.value.match(/^0+$/)) {
                 this.value = '';
@@ -298,9 +287,10 @@
             const key   = e.keyCode || e.which;
             const char  = String.fromCharCode(key);
             const input = e.target;
+            const pos   = input.selectionStart;
 
-            // 1. Bloquear '0' como primer carácter
-            if (char === '0' && input.selectionStart === 0) {
+            // 1. Bloquear si primer carácter no es letra (solo letras al inicio)
+            if (pos === 0 && !/^[A-Za-zÁÉÍÓÚáéíóúÑñ]$/.test(char)) {
                 e.preventDefault();
                 return false;
             }
