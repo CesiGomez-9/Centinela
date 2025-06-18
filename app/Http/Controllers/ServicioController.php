@@ -33,7 +33,7 @@ class ServicioController extends Controller
         $validatedData = $request->validate([
             'nombreServicio' => 'required|string|max:50',
             'tipoServicio' => 'required|string|max:30',
-            'descripcionServicio' => 'required|string|max:100',
+            'descripcionServicio' => 'required|string|max:125',
             'duracionEstimada' => 'required|string|max:30',
             'requiereProductos' => 'required|in:sí,no',
             'especificarProductos' => 'nullable|string|max:100',
@@ -90,19 +90,17 @@ class ServicioController extends Controller
     }
     public function catalogo(Request $request)
     {
+        $query = $request->input('search');
 
-
-        $query = Servicio::query();
-
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where('nombre', 'like', '%' . $search . '%');
+        if ($query) {
+            $servicios = Servicio::where('nombre', 'like', "%$query%")->paginate(10);
+        } else {
+            $servicios = Servicio::paginate(10); // sin filtro
         }
-
-        $servicios = $query->orderBy('nombre')->paginate(10);
 
         return view('servicios.catalogo', compact('servicios'));
     }
+
 
 
 

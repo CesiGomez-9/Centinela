@@ -19,6 +19,18 @@
             border-radius: 1rem;
             box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
         }
+        .was-validated .form-control:valid,
+        .was-validated .form-check-input:valid {
+            background-image: none !important;
+        }
+        .was-validated input[name="requiereProductos"]:valid {
+            background-color: transparent;
+            border-color: #0d6efd; /* azul */
+            box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25); /* sombra verde */
+            background-image: none !important; /* oculta el check */
+        }
+
+
     </style>
 </head>
 <body>
@@ -67,7 +79,7 @@
                                onkeydown="bloquearEspacioAlInicio(event, this)"
                                oninput="eliminarEspaciosIniciales(this)"
                                oninput="this.value = this.value.replace(/[^A-Za-z\s]/g,'')" required>
-                        <div class="invalid-feedback">Por favor, ingrese información aquí.</div>
+                        <div class="invalid-feedback">Por favor, ingrese su nombre.</div>
                     </div>
                 </div>
 
@@ -75,12 +87,12 @@
                     <label for="tipoServicio" class="form-label fs-5">Tipo de servicio</label>
                     <div class="input-group input-group-lg">
                         <span class="input-group-text"><i class="bi bi-briefcase-fill"></i></span>
-                        <input type="text" id="tipoServicio" name="tipoServicio" class="form-control form-control-lg" maxlength="30"
+                        <input type="text" id="tipoServicio" name="tipoServicio" class="form-control form-control-lg" maxlength="50"
                                pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" title="Solo letras y espacios, máximo 30 caracteres"
                                onkeydown="bloquearEspacioAlInicio(event, this)"
                                oninput="eliminarEspaciosIniciales(this)"
                                oninput="this.value = this.value.replace(/[^A-Za-z\s]/g,'')" required>
-                        <div class="invalid-feedback">Por favor, ingresa información aquí.</div>
+                        <div class="invalid-feedback">Por favor, ingresa el tipo de servicio.</div>
                     </div>
                 </div>
 
@@ -88,12 +100,12 @@
                     <label for="descripcionServicio" class="form-label fs-5">Descripción del servicio</label>
                     <div class="input-group input-group-lg">
                         <span class="input-group-text"><i class="bi bi-text-paragraph"></i></span>
-                        <textarea id="descripcionServicio" name="descripcionServicio" class="form-control form-control-lg" maxlength="100"
+                        <textarea id="descripcionServicio" name="descripcionServicio" class="form-control form-control-lg" maxlength="125"
                                   pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" rows="3" title="Solo letras y espacios, máximo 100 caracteres"
                                   onkeydown="bloquearEspacioAlInicio(event, this)"
                                   oninput="eliminarEspaciosIniciales(this)"
                                   oninput="this.value = this.value.replace(/[^A-Za-z\s]/g,'')" required></textarea>
-                        <div class="invalid-feedback">Por favor, ingresa información aquí.</div>
+                        <div class="invalid-feedback">Por favor, ingresar la descripcion del servicio.</div>
                     </div>
                 </div>
 
@@ -106,7 +118,7 @@
                                onkeydown="bloquearEspacioAlInicio(event, this)"
                                oninput="eliminarEspaciosIniciales(this)"
                                oninput="this.value = this.value.replace(/[^A-Za-z\s]/g,'')" required>
-                        <div class="invalid-feedback">Por favor, ingresa información aquí.</div>
+                        <div class="invalid-feedback">Por favor, ingresar la duracion estimada.</div>
                     </div>
                 </div>
 
@@ -137,18 +149,17 @@
                                   oninput="this.value = this.value.replace(/[^A-Za-z\s]/g,'')"
                                   rows="2"
                                   title="Solo letras, números, espacios y comas, máximo 100 caracteres"></textarea>
-                        <div class="invalid-feedback">Por favor, ingresa información válida aquí.</div>
+                        <div class="invalid-feedback">Por favor, ingresar los productos requeridos.</div>
                     </div>
                 </div>
 
 
                 <div class="text-center mt-5">
-                    <a href="{{ route('servicios.catalogo') }}" class="btn btn-danger me-2"
-                       onclick="return confirm('¿Estás seguro que deseas cancelar? Se perderán los cambios no guardados.');">
+                    <a href="{{ route('servicios.catalogo') }}" class="btn btn-warning me-2">
                         <i class="bi bi-x-circle me-2"></i> Cancelar
                     </a>
 
-                    <button type="reset" class="btn btn-warning me-2">
+                    <button type="reset" class="btn btn-danger me-2">
                         <i class="bi bi-eraser-fill me-2"></i> Limpiar
                     </button>
 
@@ -212,6 +223,13 @@
     document.getElementById('especificarProductos').addEventListener('input', e => {
         validarInput(e, '[A-Za-z0-9ÁÉÍÓÚáéíóúÑñ,\\s]', 100);
     });
+    // Ocultar alerta personalizada cuando se selecciona una opción de radio
+    document.querySelectorAll('input[name="requiereProductos"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            const radioFeedback = document.getElementById('radioFeedback');
+            radioFeedback.style.display = 'none';
+        });
+    });
     function bloquearEspacioAlInicio(e, input) {
         if (e.key === ' ' && input.selectionStart === 0) {
             e.preventDefault();
@@ -221,6 +239,21 @@
     function eliminarEspaciosIniciales(input) {
         input.value = input.value.replace(/^\s+/,'');
     }
+
+    const form = document.getElementById('servicioForm');
+    form.addEventListener('reset', function () {
+        // Ocultar todos los mensajes de error
+        const feedbacks = form.querySelectorAll('.invalid-feedback');
+        feedbacks.forEach(fb => fb.style.display = 'none');
+
+        // Quitar la clase was-validated para reiniciar estilos Bootstrap
+        form.classList.remove('was-validated');
+
+        // Ocultar sección de productos si estaba visible
+        document.getElementById('especificarProductosDiv').classList.add('d-none');
+        document.getElementById('especificarProductos').value = '';
+        document.getElementById('especificarProductos').removeAttribute('required');
+    });
 
     // Validación Bootstrap + radios personalizados
     (() => {
@@ -247,6 +280,7 @@
             }, false);
         });
     })();
+
 </script>
 
 

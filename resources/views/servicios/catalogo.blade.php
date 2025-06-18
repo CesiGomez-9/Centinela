@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -111,10 +111,12 @@
                     <td class="text-start">{{ $servicio->nombre }}</td>
                     <td class="text-start">{{ Str::limit($servicio->descripcion, 80) }}</td>
                     <td class="text-start">{{ $servicio->tipo }}</td>
+
+                    </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="3" class="text-center text-muted">No hay servicios registrados.</td>
+                    <td colspan="4" class="text-center text-muted">No hay servicios registrados.</td>
                 </tr>
             @endforelse
             </tbody>
@@ -129,21 +131,24 @@
 
 <!-- Validación con JavaScript -->
 <script>
-    document.getElementById('campoBuscar').addEventListener('input', function () {
+    const campoBuscar = document.getElementById('campoBuscar');
+    const errorDiv = document.getElementById('errorBuscar');
+    const soloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
+
+    campoBuscar.addEventListener('input', function () {
         this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '');
+        errorDiv.classList.add('d-none');
     });
 
-        if (valor === "" || !soloLetras.test(valor)) {
+    campoBuscar.form.addEventListener('submit', function (e) {
+        const valor = campoBuscar.value.trim();
+
+        if (valor !== "" && !soloLetras.test(valor)) {
             e.preventDefault();
             errorDiv.classList.remove('d-none');
         } else {
             errorDiv.classList.add('d-none');
         }
-    });
-
-    document.getElementById('campoBuscar').addEventListener('input', function () {
-        this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '');
-        document.getElementById('errorBuscar').classList.add('d-none');
     });
 </script>
 
