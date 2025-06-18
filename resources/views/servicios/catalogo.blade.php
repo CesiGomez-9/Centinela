@@ -69,7 +69,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4 flex-row-reverse">
         <!-- Botón Volver a la derecha -->
         <a href="{{ route('servicios.index') }}" class="btn btn-outline-primary btn-md">
-            <i class="bi bi-arrow-left-circle me-2"></i>Crear un registro nuevo
+            <i class="bi bi-pencil-square me-2"></i>Crear un registro nuevo
         </a>
 
         <!-- Formulario de búsqueda a la izquierda -->
