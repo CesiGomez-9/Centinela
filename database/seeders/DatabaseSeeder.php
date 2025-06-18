@@ -23,6 +23,10 @@ class DatabaseSeeder extends Seeder
         $this->call([
             InventariosTableSeeder::class,
         ]);
+
+        $this->call([
+            InventariosTableSeeder::class,
+        ]);
     }
 
 }

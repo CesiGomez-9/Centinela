@@ -20,7 +20,7 @@ class InventarioFactory extends Factory
             'codigo' => $this->faker->unique()->bothify('INV-####'),
             'nombre' => $this->faker->word(),
             'cantidad' => $this->faker->numberBetween(10, 100),
-            'precio_unitario' => $this->faker->randomFloat(2, 5, 500),
+            'precio_unitario' => $this->faker->randomFloat(0, 5, 9999),
             'descripcion' => $this->faker->sentence(),
         ];
     }

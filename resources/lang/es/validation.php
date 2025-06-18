@@ -1,16 +1,22 @@
 <?php
 
 return [
-    'required' => 'La informacion de :attribute es obligatorio.',
+    'required' => ':attribute es obligatorio.',
     'unique' => 'El valor de :attribute ya está en uso.',
-    'numeric' => 'La informacion de :attribute debe ser un número.',
-    'integer' => 'La informacion de :attribute debe ser un número entero.',
+    'numeric' => ':attribute debe ser un número.',
+    'integer' => ':attribute debe ser un número entero.',
+    'min' => [
+        'string' => ':attribute debe tener al menos :min caracteres.',
+    ],
+    'max' => [
+        'string' => ':attribute debe tener al menos :max caracteres.',
+    ],
 
     'attributes' => [
-        'codigo' => 'código',
-        'nombre' => 'nombre del producto',
-        'descripcion' => 'descripción',
-        'cantidad' => 'cantidad',
-        'precio_unitario' => 'precio unitario',
+        'codigo' => 'Código',
+        'nombre' => 'Nombre del producto',
+        'descripcion' => 'Descripción',
+        'cantidad' => 'Cantidad',
+        'precio_unitario' => 'Precio unitario',
     ],
 ];

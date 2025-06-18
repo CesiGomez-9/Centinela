@@ -4,12 +4,23 @@ namespace App\Http\Controllers;
 
 use App\Models\Inventario;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class InventarioController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $inventarios = Inventario::paginate(10);
+        $query = Inventario::query();
+
+        if ($request->has('search') && !empty($request->search)) {
+            $searchTerm = $request->search;
+
+            $query->where('nombre', 'LIKE', '%' . $searchTerm . '%');
+        }
+
+        $inventarios = $query->paginate(10);
+
+
         return view('inventarios.index', compact('inventarios'));
     }
 
@@ -22,23 +33,55 @@ class InventarioController extends Controller
 
     public function store(Request $request)
     {
-        // Validación
         $validated = $request->validate([
-            'codigo' => 'required','unique:inventarios,codigo','min:1', 'max:10', 'regex:/^[A-Za-z0-9\-]+$/', 'regex:/.*\S.*/','not_regex:/^0+$/',
-            'nombre' => 'required|max:30|min:3','regex:/^[\pL0-9\s\-.,#]+$/u','regex:/.*\S.*/',
-            'descripcion' => 'required|max:255|min:5','regex:/^[\pL0-9\s,.\-#()]+$/u','regex:/.*\S.*/', 'not_regex:/^0+$/',
-            'cantidad' => 'required|integer|min:1|max:999|regex:/^\d{1,3}$/','regex:/.*\S.*/','not_regex:/^0+$/',
-            'precio_unitario' => 'required|numeric|min:0.01|max:999999.99', 'regex:/^\d{1,6}(\.\d{1,2})?$/','regex:/.*\S.*/', 'not_regex:/^0+$/',
+            'codigo' => [
+                'required',
+                'min:1',
+                'max:12',
+                'regex:/^[A-Za-z0-9\-]+$/',
+                'regex:/.*\S.*/',
+                'not_regex:/^0+$/',
+                Rule::unique('inventarios', 'codigo')
+            ],
+            'nombre' => [
+                'required',
+                'min:3',
+                'max:30',
+                'regex:/^[\pL0-9\s\-.,#]+$/u',
+                'regex:/.*\S.*/'
+            ],
+            'cantidad' => [
+                'required',
+                'integer',
+                'min:1',
+                'max:999',
+                'regex:/^\d{1,3}$/',
+                'regex:/.*\S.*/',
+                'not_regex:/^0+$/'
+            ],
+            'precio_unitario' => [
+                'required',
+                'numeric',
+                'min:1',
+                'max:9999',
+                'regex:/^\d{1,9}(\.\d{1,2})?$/',
+                'regex:/.*\S.*/',
+                'not_regex:/^0+$/'
+            ],
+            'descripcion' => [
+            'required',
+            'min:1',
+            'max:255',
+                'regex:/^[\pL][\pL0-9\s,.\-#()]*$/u',
+            'regex:/.*\S.*/',
+            'not_regex:/^0+$/'
+    ],
+        ], [
+            'codigo.unique' => 'El código ingresado ya está registrado.'
         ]);
 
-        // Crear un nuevo objeto inventarios
-        $inventario = new Inventario();
-        $inventario->codigo = $request->input("codigo");
-        $inventario->nombre = $request->input('nombre');
-        $inventario->descripcion = $request->input('descripcion');
-        $inventario->cantidad = $request->input('cantidad');
-        $inventario->precio_unitario = $request->input('precio_unitario');
-        #$inventarios->user_id = Auth::id() ?? 1;
+        // Si pasa validación, se guarda
+        $inventario = new Inventario($validated);
 
         if ($inventario->save()) {
             return redirect()->route('inventarios.index')->with('status', 'Producto registrado correctamente');
@@ -46,7 +89,6 @@ class InventarioController extends Controller
             return back()->withInput()->with('error', 'Error al guardar el producto');
         }
     }
-
 
     public function show(string $id)
     {
