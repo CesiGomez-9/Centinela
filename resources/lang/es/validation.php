@@ -1,6 +1,7 @@
 <?php
 
 return [
+
     'required' => ':attribute es obligatorio.',
     'unique' => 'El valor de :attribute ya está en uso.',
     'numeric' => ':attribute debe ser un número.',
@@ -19,4 +20,5 @@ return [
         'cantidad' => 'Cantidad',
         'precio_unitario' => 'Precio unitario',
     ],
+
 ];
