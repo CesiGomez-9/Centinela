@@ -20,9 +20,6 @@ class DatabaseSeeder extends Seeder
             ServiciosSeeder::class,
         ]);
 
-        $this->call([
-            InventariosTableSeeder::class,
-        ]);
 
         $this->call([
             ProductosTableSeeder::class,
