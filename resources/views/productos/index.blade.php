@@ -31,18 +31,18 @@
                 <input type="text" id="campoBuscar" name="search" class="form-control" placeholder="Buscar por nombre..." maxlength="30" value="{{ request('search') }}"
                        onkeydown="bloquearEspacioAlInicio(event, this)"
                        oninput="eliminarEspaciosIniciales(this)">
-                <button class="btn btn-primary" type="submit">
+                <button class="btn btn-outline-dark" type="submit">
                     <i class="bi bi-search"></i>
                 </button>
                 <!-- Botón refrescar -->
-                <a href="{{ route('productos.index') }}" class="btn btn-outline-secondary">
+                <a href="{{ route('productos.index') }}" class="btn btn-outline-dark">
                     <i class="bi bi-arrow-clockwise"></i>
                 </a>
             </div>
         </form>
 
         <!-- Botón nuevo producto -->
-        <a href="{{ route('productos.create') }}" class="btn btn-outline-primary btn-md">
+        <a href="{{ route('productos.create') }}" class="btn btn-outline-dark btn-md">
             <i class="bi bi-pencil-square me-2"></i>Registrar un nuevo producto
         </a>
     </div>
@@ -81,7 +81,7 @@
                 <td>{{ $producto->modelo }}</td>
                 <td>{{ $producto->categoria }}</td>
                 <td>
-                    <a href="{{ route('productos.show', $producto->id) }}" class="btn btn-info btn-sm">Ver</a>
+                    <a href="{{ route('productos.show', $producto->id) }}" class="btn btn-outline-info btn-sm">Ver</a>
                 </td>
             </tr>
         @empty
