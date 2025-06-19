@@ -6,9 +6,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-use App\Http\Controllers\InventarioController;
+use App\Http\Controllers\ProductoController;
 
-Route::controller(InventarioController::class)->group(function () {
+Route::controller(ProductoController::class)->group(function () {
     Route::get('/productos', 'index')->name('productos.index');
     Route::get('/productos/{id}', 'show')->name('productos.show')->whereNumber('id');
     Route::get('/productos/crear', 'create')->name('productos.create');

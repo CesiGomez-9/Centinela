@@ -3,16 +3,17 @@
 namespace Database\Seeders;
 
 use App\Models\Inventario;
+use App\Models\Producto;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class InventariosTableSeeder extends Seeder
+class ProductosTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        Inventario::factory()->count(20)->create();
+        Producto::factory()->count(20)->create();
     }
 }

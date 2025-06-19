@@ -3,14 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Inventario;
+use App\Models\Producto;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
-class InventarioController extends Controller
+class ProductoController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Inventario::query();
+        $query = Producto::query();
 
         if ($request->has('search') && !empty($request->search)) {
             $searchTerm = $request->search;
@@ -87,20 +88,20 @@ class InventarioController extends Controller
                 'regex:/.*\S.*/',
                 'not_regex:/^0+$/'],
             'descripcion' => [
-            'required',
-            'min:1',
-            'max:255',
+                'required',
+                'min:1',
+                'max:255',
                 'regex:/^[\pL][\pL0-9\s,.\-#()]*$/u',
-            'regex:/.*\S.*/',
-            'not_regex:/^0+$/'
-    ],
+                'regex:/.*\S.*/',
+                'not_regex:/^0+$/'
+             ],
         ], [
             'serie.unique' => 'La serie ingresada ya está registrada.',
             'codigo.unique' => 'El código ingresado ya está registrado.'
         ]);
 
         // Si pasa validación, se guarda
-        $producto = new Inventario($validated);
+        $producto = new Producto($validated);
 
         if ($producto->save()) {
             return redirect()->route('productos.index')->with('status', 'Producto registrado correctamente');
@@ -111,7 +112,7 @@ class InventarioController extends Controller
 
     public function show(string $id)
     {
-        $producto = Inventario::findOrFail($id);
+        $producto = Producto::findOrFail($id);
         return view('productos.show', compact('producto'));
     }
 

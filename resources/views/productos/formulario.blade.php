@@ -49,7 +49,7 @@
                             <div class="col-md-6">
                                 <label for="serie" class="form-label">Serie del producto</label>
                                 <div class="input-group">
-                                    <span class="input-group-text"><i class="bi-qr-code"></i></span>
+                                    <span class="input-group-text"><i class="bi bi-upc-scan"></i></span>
                                     <input type="text" name="serie" class="form-control @error('serie') is-invalid @enderror" maxlength="10" value="{{ old('serie', $producto->serie ?? '') }}" onkeypress="validarTexto(event)" required>
                                 </div>
                                 @error('serie')
@@ -60,7 +60,7 @@
                             <div class="col-md-6">
                                 <label for="codigo" class="form-label">Código del producto</label>
                                 <div class="input-group">
-                                    <span class="input-group-text"><i class="bi bi-upc-scan"></i></span>
+                                    <span class="input-group-text"><i class="bi-qr-code"></i></span>
                                     <input type="text" name="codigo" class="form-control @error('codigo') is-invalid @enderror" maxlength="10" value="{{ old('codigo', $producto->codigo ?? '') }}" onkeypress="validarTexto(event)" required>
                                 </div>
                                 @error('codigo')
@@ -135,7 +135,7 @@
                             </div>
 
                             <div class="col-12 ">
-                                <label for="descripcion" class="form-label">Descripción</label>
+                                <label for="descripcion" class="form-label">Descripción del producto</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-file-earmark-text-fill"></i></span>
                                     <textarea name="descripcion" rows="4" class="form-control @error('descripcion') is-invalid @enderror" maxlength="255" onkeypress="return validarDescripcion(event)" required>{{ old('descripcion', $producto->descripcion ?? '') }}</textarea>
