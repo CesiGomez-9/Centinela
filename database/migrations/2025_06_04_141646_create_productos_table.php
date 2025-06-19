@@ -11,15 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('inventarios', function (Blueprint $table) {
+        Schema::create('productos', function (Blueprint $table) {
             $table->id();
+            $table->string('serie')->unique();
             $table->string('codigo')->unique();
             $table->string('nombre');
-            $table->integer('cantidad');
-            $table->decimal('precio_unitario', 8, 2);
+            $table->string('marca')->nullable();
+            $table->string('modelo')->nullable();
+            $table->string('categoria')->nullable();
+            $table->string('material')->nullable();
             $table->text('descripcion')->nullable();
             $table->timestamps();
+
         });
+
     }
 
     /**
@@ -27,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('inventarios');
+        Schema::dropIfExists('productos');
     }
 };
