@@ -18,22 +18,32 @@ class InventarioController extends Controller
             $query->where('nombre', 'LIKE', '%' . $searchTerm . '%');
         }
 
-        $inventarios = $query->paginate(10);
+        $productos = $query->paginate(10);
 
 
-        return view('inventarios.index', compact('inventarios'));
+        return view('productos.index', compact('productos'));
     }
 
 
     public function create()
     {
-        return view('inventarios.formulario');
+        return view('productos.formulario');
     }
 
 
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'serie' => [
+                'required',
+                'min:1',
+                'max:12',
+                'regex:/^[A-Za-z0-9\-]+$/',
+                'regex:/.*\S.*/',
+                'not_regex:/^0+$/',
+                'not_regex:/^[^A-Za-z0-9]/',
+                Rule::unique('productos', 'serie')
+            ],
             'codigo' => [
                 'required',
                 'min:1',
@@ -41,7 +51,8 @@ class InventarioController extends Controller
                 'regex:/^[A-Za-z0-9\-]+$/',
                 'regex:/.*\S.*/',
                 'not_regex:/^0+$/',
-                Rule::unique('inventarios', 'codigo')
+                'not_regex:/^[^A-Za-z0-9]/',
+                Rule::unique('productos', 'codigo')
             ],
             'nombre' => [
                 'required',
@@ -50,24 +61,31 @@ class InventarioController extends Controller
                 'regex:/^[\pL0-9\s\-.,#]+$/u',
                 'regex:/.*\S.*/'
             ],
-            'cantidad' => [
+            'marca' => [
                 'required',
-                'integer',
-                'min:1',
-                'max:999',
-                'regex:/^\d{1,3}$/',
-                'regex:/.*\S.*/',
-                'not_regex:/^0+$/'
+                'nullable',
+                'max:50',
+                'regex:/^[\pL0-9\s\-.,#()]*$/u',
             ],
-            'precio_unitario' => [
+            'modelo' => [
                 'required',
-                'numeric',
-                'min:1',
-                'max:9999',
-                'regex:/^\d{1,9}(\.\d{1,2})?$/',
-                'regex:/.*\S.*/',
-                'not_regex:/^0+$/'
+                'nullable',
+                'max:50',
+                'regex:/^[\pL0-9\s\-.,#()]*$/u',
             ],
+            'categoria' => [
+                'required',
+                'nullable',
+                'max:50',
+                'regex:/^[\pL0-9\s\-.,#()]*$/u',
+            ],
+            'material' => [
+                'required',
+                'min:1',
+                'max:255',
+                'regex:/^[\pL][\pL0-9\s,.\-#()]*$/u',
+                'regex:/.*\S.*/',
+                'not_regex:/^0+$/'],
             'descripcion' => [
             'required',
             'min:1',
@@ -77,14 +95,15 @@ class InventarioController extends Controller
             'not_regex:/^0+$/'
     ],
         ], [
+            'serie.unique' => 'La serie ingresada ya está registrada.',
             'codigo.unique' => 'El código ingresado ya está registrado.'
         ]);
 
         // Si pasa validación, se guarda
-        $inventario = new Inventario($validated);
+        $producto = new Inventario($validated);
 
-        if ($inventario->save()) {
-            return redirect()->route('inventarios.index')->with('status', 'Producto registrado correctamente');
+        if ($producto->save()) {
+            return redirect()->route('productos.index')->with('status', 'Producto registrado correctamente');
         } else {
             return back()->withInput()->with('error', 'Error al guardar el producto');
         }
@@ -92,21 +111,21 @@ class InventarioController extends Controller
 
     public function show(string $id)
     {
-        $inventario = Inventario::findOrFail($id);
-        return view('inventarios.show', compact('inventario'));
+        $producto = Inventario::findOrFail($id);
+        return view('productos.show', compact('producto'));
     }
 
 /*
     public function edit(string $id)
     {
-        $inventarios = inventarios::findOrFail($id);
-        return view('inventarios.formulario', compact('inventarios'));
+        $productos = productos::findOrFail($id);
+        return view('productos.formulario', compact('productos'));
     }
 
 
     public function update(Request $request, string $id)
     {
-        $inventarios = inventarios::findOrFail($id);
+        $productos = productos::findOrFail($id);
 
         $validated = $request->validate([
             'nombre' => 'required|max:100|min:3',
@@ -115,28 +134,19 @@ class InventarioController extends Controller
             'ubicacion' => 'required|max:100|min:3',
         ]);
 
-        $inventarios->nombre = $request->input('nombre');
-        $inventarios->descripcion = $request->input('descripcion');
-        $inventarios->cantidad = $request->input('cantidad');
-        $inventarios->ubicacion = $request->input('ubicacion');
+        $productos->nombre = $request->input('nombre');
+        $productos->descripcion = $request->input('descripcion');
+        $productos->cantidad = $request->input('cantidad');
+        $productos->ubicacion = $request->input('ubicacion');
 
-        if ($inventarios->save()) {
-            return redirect()->route('inventarios.index')->with('status', 'Producto editado correctamente');
+        if ($productos->save()) {
+            return redirect()->route('productos.index')->with('status', 'Producto editado correctamente');
         } else {
             return back()->withInput()->with('error', 'Error al actualizar el producto');
         }
     }
 
 
-    public function destroy(string $id)
-    {
-        $inventarios = inventarios::findOrFail($id);
 
-        if ($inventarios->delete()) {
-            return redirect()->route('inventarios.index')->with('status', 'Producto eliminado correctamente');
-        } else {
-            return redirect()->route('inventarios.index')->with('error', 'No se pudo eliminar el producto');
-        }
-    }
 */
 }

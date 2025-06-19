@@ -13,10 +13,14 @@ return [
     ],
 
     'attributes' => [
+        'serie' => 'Serie',
         'codigo' => 'Código',
         'nombre' => 'Nombre del producto',
+        'marca' => 'Marca del producto',
+        'modelo' => 'Modelo del producto',
+        'categoria' => 'Categoria del producto',
+        'material' => 'Material de fabricacióm',
         'descripcion' => 'Descripción',
-        'cantidad' => 'Cantidad',
-        'precio_unitario' => 'Precio unitario',
+
     ],
 ];

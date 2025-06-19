@@ -1,5 +1,5 @@
 @extends('layouts.plantilla')
-@section('titulo', 'Lista de inventarios')
+@section('titulo', 'Listado de productos')
 @section('content')
 
     <style>
@@ -19,14 +19,14 @@
 
     <h1 class="text-center mb-4" style="color: #09457f;">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-        <i class="bi bi-boxes me-2"></i>Lista de inventarios
+        <i class="bi bi-boxes me-2"></i>Listado de productos
     </h1>
 
 
 
     <!-- Botón de volver y buscador -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <form id="formBuscar" action="{{ route('inventarios.index') }}" method="GET" class="d-flex flex-column flex-md-row align-items-center gap-2" style="max-width: 100%;">
+        <form id="formBuscar" action="{{ route('productos.index') }}" method="GET" class="d-flex flex-column flex-md-row align-items-center gap-2" style="max-width: 100%;">
             <div class="input-group" style="max-width: 350px;">
                 <input type="text" id="campoBuscar" name="search" class="form-control" placeholder="Buscar por nombre..." maxlength="30" value="{{ request('search') }}"
                        onkeydown="bloquearEspacioAlInicio(event, this)"
@@ -35,14 +35,14 @@
                     <i class="bi bi-search"></i>
                 </button>
                 <!-- Botón refrescar -->
-                <a href="{{ route('inventarios.index') }}" class="btn btn-outline-secondary">
+                <a href="{{ route('productos.index') }}" class="btn btn-outline-secondary">
                     <i class="bi bi-arrow-clockwise"></i>
                 </a>
             </div>
         </form>
 
         <!-- Botón nuevo producto -->
-        <a href="{{ route('inventarios.create') }}" class="btn btn-outline-primary btn-md">
+        <a href="{{ route('productos.create') }}" class="btn btn-outline-primary btn-md">
             <i class="bi bi-pencil-square me-2"></i>Registrar un nuevo producto
         </a>
     </div>
@@ -62,28 +62,31 @@
         <table class="table table-bordered table-hover align-middle">
             <thead class="table-dark text-center">
             <tr>
+            <th>Serie</th>
             <th>Código</th>
             <th>Nombre</th>
-            <th>Cantidad</th>
-            <th>Precio Unitario</th>
+            <th>Marca</th>
+            <th>Modelo</th>
+                <th>Categoria</th>
             <th>Acciones</th>
         </tr>
         </thead>
         <tbody>
-        @forelse($inventarios as $inventario)
+        @forelse($productos as $producto)
             <tr>
-
-                <td>{{ $inventario->codigo }}</td>
-                <td>{{ $inventario->nombre }}</td>
-                <td>{{ $inventario->cantidad }}</td>
-                <td>Lps. {{ number_format($inventario->precio_unitario, 2) }}</td>
+                <td>{{ $producto->serie }}</td>
+                <td>{{ $producto->codigo }}</td>
+                <td>{{ $producto->nombre }}</td>
+                <td>{{ $producto->marca }}</td>
+                <td>{{ $producto->modelo }}</td>
+                <td>{{ $producto->categoria }}</td>
                 <td>
-                    <a href="{{ route('inventarios.show', $inventario->id) }}" class="btn btn-info btn-sm">Ver</a>
+                    <a href="{{ route('productos.show', $producto->id) }}" class="btn btn-info btn-sm">Ver</a>
                 </td>
             </tr>
         @empty
             <tr>
-                <td colspan="5">No hay productos en el inventario.</td>
+                <td colspan="5">No hay productos registrados.</td>
             </tr>
         @endforelse
         </tbody>
@@ -142,6 +145,6 @@
 
 
 
-    {{ $inventarios->links() }}
+    {{ $productos->links() }}
 @endsection
 

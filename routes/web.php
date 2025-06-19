@@ -9,13 +9,13 @@ Route::get('/', function () {
 use App\Http\Controllers\InventarioController;
 
 Route::controller(InventarioController::class)->group(function () {
-    Route::get('/inventarios', 'index')->name('inventarios.index');
-    Route::get('/inventarios/{id}', 'show')->name('inventarios.show')->whereNumber('id');
-    Route::get('/inventarios/crear', 'create')->name('inventarios.create');
-    Route::post('/inventarios/crear', 'store')->name('inventarios.store');
+    Route::get('/productos', 'index')->name('productos.index');
+    Route::get('/productos/{id}', 'show')->name('productos.show')->whereNumber('id');
+    Route::get('/productos/crear', 'create')->name('productos.create');
+    Route::post('/productos/crear', 'store')->name('productos.store');
 
-    #Route::get('/inventarios/{id}/editar', 'edit')->name('inventarios.edit')->whereNumber('id');
-    #Route::put('/inventarios/{id}/editar', 'update')->name('inventarios.update')->whereNumber('id');
+    #Route::get('/productos/{id}/editar', 'edit')->name('productos.edit')->whereNumber('id');
+    #Route::put('/productos/{id}/editar', 'update')->name('productos.update')->whereNumber('id');
 
 });
 
