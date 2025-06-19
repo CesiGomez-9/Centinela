@@ -34,31 +34,27 @@
             Lista de empleados
         </h3>
 
-
         <div class="row mb-4">
             <div class="col-auto">
-                <a href="{{ route('empleados.create') }}" class="btn btn-sm btn-outline-primary mb-2"><- Volver al formulario</a>
+                <a href="{{ route('empleados.create') }}" class="btn btn-sm btn-outline-primary mb-2">
+                    <i class="bi bi-pencil-square me-2"></i>Registrar un nuevo empleado
+                </a>
             </div>
             <div class="col d-flex justify-content-end">
-                <form id="searchForm" action="{{ route('empleados.index') }}" method="GET" class="w-100" style="max-width: 300px;" novalidate>
+                <div class="w-100" style="max-width: 300px;">
                     <div class="input-group">
                         <input
                             type="text"
-                            name="search"
                             id="searchInput"
                             class="form-control form-control-sm"
                             placeholder="Buscar por nombre"
-                            value="{{ request('search') }}"
-                            maxlength="25"
                         >
-                        <button class="btn btn-sm btn-primary" type="submit">Buscar</button>
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
                     </div>
-                    <div class="invalid-feedback d-block text-danger small mt-1 d-none" id="error-search">
-                        Ingrese un nombre antes de buscar
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
+
         @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 <i class="bi bi-check-circle-fill me-2"></i>
@@ -91,14 +87,6 @@
                         <a href="{{ route('empleados.edit', $empleado->id) }}" class="btn btn-sm btn-outline-warning" title="Editar">
                             <i class="bi bi-pencil-square"></i>
                         </a>
-
-                        <form action="{{ route('empleados.destroy', $empleado->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('¿Estás seguro de eliminar este empleado?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </form>
                     </td>
                 </tr>
             @empty
@@ -114,44 +102,25 @@
         </div>
     </div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
-    const searchInput = document.getElementById('searchInput');
-    const searchForm = document.getElementById('searchForm');
-    const error = document.getElementById('error-search');
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.getElementById('searchInput');
+        const filas = document.querySelectorAll('tbody tr');
 
-    const regex = /^[A-Za-z]+(?: [A-Za-z]+)*$/;
-    searchForm.addEventListener('submit', function (e) {
-        const value = searchInput.value.trim();
+        searchInput.addEventListener('input', function () {
+            const filtro = this.value.toLowerCase().trim();
 
-        if (value.length > 25 || !regex.test(value)) {
-            e.preventDefault();
-            error.classList.remove('d-none');
-            searchInput.classList.add('is-invalid');
-        } else {
-            error.classList.add('d-none');
-            searchInput.classList.remove('is-invalid');
-        }
-    });
-
-    searchInput.addEventListener('input', function () {
-        let val = this.value;
-        val = val.replace(/[^A-Za-z ]/g, '');
-        while (val.includes('  ')) {
-            val = val.replace(/  /g, ' ');
-        }
-        if (val.length > 25) {
-            val = val.slice(0, 25);
-        }
-
-        this.value = val;
-        if (regex.test(val.trim())) {
-            error.classList.add('d-none');
-            this.classList.remove('is-invalid');
-        }
+            filas.forEach(fila => {
+                const nombre = fila.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                if (nombre.includes(filtro)) {
+                    fila.style.display = '';
+                } else {
+                    fila.style.display = 'none';
+                }
+            });
+        });
     });
 </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

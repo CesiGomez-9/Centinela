@@ -11,10 +11,8 @@ Route::get('/', function () {
 Route::get('/empleados', [EmpleadoController::class, 'index'])->name('empleados.index');
 Route::post('/empleados', [EmpleadoController::class, 'store'])->name('empleados.store');
 Route::get('/empleados/create', [EmpleadoController::class, 'create'])->name('empleados.create');
-Route::resource('empleados', EmpleadoController::class);
 Route::get('/empleados/{id}', [EmpleadoController::class, 'show'])->name('empleados.show');
-Route::get('empleados/{empleado}/edit', [EmpleadoController::class, 'edit'])->name('empleados.edit');
-Route::get('/empleados/{id}', [EmpleadoController::class, 'update'])->name('empleados.update');
+Route::resource('empleados', EmpleadoController::class)->except(['index', 'show']);
 
 
 Route::controller(InventarioController::class)->group(function () {

@@ -7,6 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Empleado extends Model
 {
+
+    public $timestamps = false;
+
+    // resto del modelo...
+
     protected $fillable = [
         'nombre',
         'apellido',
@@ -17,6 +22,12 @@ class Empleado extends Model
         'contactodeemergencia',
         'telefonodeemergencia',
         'tipodesangre',
-        'alergias'
+        'alergias',
+        'alergiaOtros',
+        'alergiaAlimentos',
+        'alergiaMedicamentos'
+    ];
+    protected $casts = [
+        'alergias' => 'array',
     ];
 }
