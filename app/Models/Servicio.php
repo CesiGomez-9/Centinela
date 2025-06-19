@@ -11,9 +11,17 @@ class Servicio extends Model
     protected $fillable = [
         'nombre',
         'descripcion',
-        'tipo',
-        'duracion_estimada',
-        'requiere_productos',
-        'productos_especificos'
+        'categoria',
+        'tipo_personal',
+        'costo',
+        'duracion_cantidad',
+        'duracion_tipo',
+        'productos_tecnico',
+        'productos_vigilancia'
+    ];
+
+    protected $casts = [
+        'productos_tecnico' => 'array',
+        'productos_vigilancia' => 'array',
     ];
 }

@@ -9,28 +9,25 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
         Schema::create('servicios', function (Blueprint $table) {
-
-                $table->id();
-                $table->string('nombre');
-                $table->text('descripcion');
-                $table->string('tipo');
-                $table->string('duracion_estimada');
-                $table->boolean('requiere_productos')->default(false);
-                $table->text('productos_especificos')->nullable();
-                $table->timestamps();
-
+            $table->id();
+            $table->string('nombre', 50);
+            $table->string('descripcion', 125);
+            $table->enum('categoria', ['vigilancia', 'tecnico']);
+            $table->enum('tipo_personal', ['vigilancia', 'tecnico']);
+            $table->unsignedSmallInteger('costo'); // hasta 999
+            $table->unsignedTinyInteger('duracion_cantidad');
+            $table->enum('duracion_tipo', ['horas', 'dias', 'meses', 'años']);
+            $table->json('productos_tecnico')->nullable();
+            $table->json('productos_vigilancia')->nullable();
+            $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('servicios');
-
     }
 };

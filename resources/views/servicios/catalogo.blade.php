@@ -102,7 +102,7 @@
             <tr>
                 <th>Nombre</th>
                 <th>Descripción</th>
-                <th>Tipo</th>
+                <th>Categoria</th>
             </tr>
             </thead>
             <tbody>
@@ -110,7 +110,7 @@
                 <tr>
                     <td class="text-start">{{ $servicio->nombre }}</td>
                     <td class="text-start">{{ Str::limit($servicio->descripcion, 80) }}</td>
-                    <td class="text-start">{{ $servicio->tipo }}</td>
+                    <td class="text-start">{{ $servicio->categoria }}</td>
 
                     </td>
                 </tr>

@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Materia;
 use App\Models\Servicio;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ServicioController extends Controller
 {
@@ -30,28 +30,50 @@ class ServicioController extends Controller
      */
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
-            'nombreServicio' => 'required|string|max:50',
-            'tipoServicio' => 'required|string|max:30',
-            'descripcionServicio' => 'required|string|max:125',
-            'duracionEstimada' => 'required|string|max:30',
-            'requiereProductos' => 'required|in:sí,no',
-            'especificarProductos' => 'nullable|string|max:100',
+        $validator = Validator::make($request->all(), [
+            'nombreServicio' => ['required', 'string', 'max:50', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/'],
+            'descripcionServicio' => ['required', 'string', 'max:125', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/'],
+            'categoria' => ['required', 'in:vigilancia,tecnico'],
+            'tipo_personal' => ['required', 'in:vigilancia,tecnico'],
+            'costo' => ['required', 'digits_between:3,4', 'regex:/^[1-9][0-9]{0,3}$/'], // no puede empezar en 0
+            'duracion_cantidad' => ['required', 'integer', 'min:1', 'max:99'],
+            'duracion_tipo' => ['required', 'in:horas,dias,meses,años'],
+            'productos_categoria' => ['required', 'in:vigilancia,tecnico'],
+            'productos_vigilancia' => ['nullable', 'array'],
+            'productos_tecnico' => ['nullable', 'array'],
+        ], [
+            'nombreServicio.regex' => 'El nombre solo puede contener letras y espacios.',
+            'descripcionServicio.regex' => 'La descripción solo puede contener letras y espacios.',
+            'costo.regex' => 'El costo debe tener hasta 3 cifras y no comenzar con cero.',
         ]);
 
-        $requiereProductos = $request->requiereProductos === 'sí' ? 1 : 0;
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
 
-        Servicio::create([
-            'nombre' => $request->nombreServicio,
-            'tipo' => $request->tipoServicio,
-            'descripcion' => $request->descripcionServicio,
-            'duracion_estimada' => $request->duracionEstimada,  // <-- aquí
-            'requiere_productos' => $request->requiereProductos === 'sí' ? 1 : 0,
-            'productos_especificos' => 'nullable|regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9,\s]*$/',
-        ]);
+        $servicio = new Servicio();
+        $servicio->nombre = $request->nombreServicio;
+        $servicio->descripcion = $request->descripcionServicio;
+        $servicio->categoria = $request->categoria;
+        $servicio->tipo_personal = $request->tipo_personal;
+        $servicio->costo = $request->costo;
+        $servicio->duracion_cantidad = $request->duracion_cantidad;
+        $servicio->duracion_tipo = $request->duracion_tipo;
 
-        return redirect()->route('servicios.catalogo')->with('success', 'Servicio registrado exitosamente.');
+        if ($request->productos_categoria === 'vigilancia') {
+            $servicio->productos_vigilancia = $request->productos_vigilancia ?? [];
+            $servicio->productos_tecnico = null;
+        } else {
+            $servicio->productos_tecnico = $request->productos_tecnico ?? [];
+            $servicio->productos_vigilancia = null;
+        }
+
+        $servicio->save();
+
+        return redirect()->route('servicios.catalogo')->with('success', 'Servicio registrado correctamente.');
     }
+
+
 
 
 
