@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\EmpleadoController;
 use App\Http\Controllers\InventarioController;
+use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\ServicioController;
 use Illuminate\Support\Facades\Route;
@@ -26,11 +27,15 @@ Route::post('/Proveedores/crear', [ProveedorController::class, 'store'])->name('
 Route::get('/Proveedores', [ProveedorController::class, 'index'])->name('Proveedores.indexProveedor');
 Route::get('/Proveedores/crear', [ProveedorController::class, 'create'])->name('Proveedores.nuevo');
 
-Route::controller(InventarioController::class)->group(function (){
-    Route::get('/inventarios', 'index')->name('inventarios.index');
-    Route::get('/inventarios/{id}', 'show')->name('inventarios.show')->whereNumber('id');
-    Route::get('/inventarios/crear', 'create')->name('inventarios.create');
-    Route::post('/inventarios/crear', 'store')->name('inventarios.store');
+Route::controller(ProductoController::class)->group(function () {
+    Route::get('/productos', 'index')->name('productos.index');
+    Route::get('/productos/{id}', 'show')->name('productos.show')->whereNumber('id');
+    Route::get('/productos/crear', 'create')->name('productos.create');
+    Route::post('/productos/crear', 'store')->name('productos.store');
+
+    #Route::get('/productos/{id}/editar', 'edit')->name('productos.edit')->whereNumber('id');
+    #Route::put('/productos/{id}/editar', 'update')->name('productos.update')->whereNumber('id');
+
 });
 
 Route::get('/servicios/index', [ServicioController::class, 'index'])->name('servicios.index');
