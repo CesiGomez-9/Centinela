@@ -34,28 +34,29 @@
             Lista de empleados
         </h3>
 
-        <div class="row mb-4">
-            <div class="col-auto">
-                <a href="{{ route('empleados.create') }}" class="btn btn-sm btn-outline-primary mb-2">
-                    <i class="bi bi-pencil-square me-2"></i>Registrar un nuevo empleado
-                </a>
-            </div>
-            <div class="col d-flex justify-content-end">
+        <div class="row mb-4 align-items-center">
+            <div class="col-md-6 d-flex justify-content-start">
                 <div class="w-100" style="max-width: 300px;">
                     <div class="input-group">
                         <input
                             type="text"
                             id="searchInput"
-                            class="form-control form-control-sm"
+                            class="form-control"
                             placeholder="Buscar por nombre"
                         >
                         <span class="input-group-text"><i class="bi bi-search"></i></span>
                     </div>
                 </div>
             </div>
+            <div class="col-md-6 d-flex justify-content-end">
+                <a href="{{ route('empleados.create') }}" class="btn btn-md btn-outline-primary">
+                    <i class="bi bi-pencil-square me-2"></i>Registrar un nuevo empleado
+                </a>
+            </div>
         </div>
 
-        @if(session('success'))
+
+    @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 <i class="bi bi-check-circle-fill me-2"></i>
                 {{ session('success') }}

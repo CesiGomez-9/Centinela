@@ -10,8 +10,6 @@ class Empleado extends Model
 
     public $timestamps = false;
 
-    // resto del modelo...
-
     protected $fillable = [
         'nombre',
         'apellido',

@@ -52,7 +52,7 @@
                 <label class="form-label fw-bold">Nombre:</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                    <input type="text" id="nombre" name="nombre" value="{{ old('nombre', $empleado->nombre) }}" class="form-control">
+                    <input type="text" id="nombre" name="nombre" value="{{ old('nombre', $empleado->nombre) }}" class="form-control" data-original="{{ $empleado->nombre }}">
                     <div class="invalid-feedback" id="error-nombre"></div>
                 </div>
             </div>
@@ -61,7 +61,7 @@
                 <label class="form-label fw-bold">Apellido:</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                    <input type="text" id="apellido" name="apellido" value="{{ old('apellido', $empleado->apellido) }}" class="form-control">
+                    <input type="text" id="apellido" name="apellido" value="{{ old('apellido', $empleado->apellido) }}" class="form-control" data-original="{{ $empleado->apellido }}">
                 <div class="invalid-feedback" id="error-apellido"></div>
                 </div>
             </div>
@@ -70,7 +70,7 @@
                 <label class="form-label fw-bold">Identidad:</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-credit-card-2-front-fill"></i></span>
-                    <input type="text" id="identidad" name="identidad" value="{{ old('identidad', $empleado->identidad) }}" class="form-control" oninput="formatearIdentidad(this)">
+                    <input type="text" id="identidad" name="identidad" value="{{ old('identidad', $empleado->identidad) }}" class="form-control" oninput="formatearIdentidad(this)" data-original="{{ $empleado->identidad }}">
                 <div class="invalid-feedback" id="error-identidad"></div>
                     @error('identidad') {{ $message }} @enderror
                 </div>
@@ -80,7 +80,7 @@
                 <label class="form-label fw-bold">Dirección:</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
-                    <input type="text" id="direccion" name="direccion" value="{{ old('direccion', $empleado->direccion) }}" class="form-control" oninput="validarTexto(this,25)">
+                    <input type="text" id="direccion" name="direccion" value="{{ old('direccion', $empleado->direccion) }}" class="form-control" oninput="validarTexto(this,25)" data-original="{{ $empleado->direccion }}">
                     <div class="invalid-feedback" id="error-direccion"></div>
                 </div>
             </div>
@@ -89,7 +89,7 @@
                 <label class="form-label fw-bold">Correo electrónico:</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
-                    <input type="email" id="email" name="email" value="{{ old('email', $empleado->email) }}" class="form-control" oninput="validarCorreo(this, 50)">
+                    <input type="email" id="email" name="email" value="{{ old('email', $empleado->email) }}" class="form-control" oninput="validarCorreo(this, 50)" data-original="{{ $empleado->email }}">
                     <div class="invalid-feedback" id="error-email"></div>
                 </div>
             </div>
@@ -98,7 +98,7 @@
                 <label class="form-label fw-bold">Teléfono:</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-telephone-fill"></i></span>
-                    <input type="text" id="telefono" name="telefono" value="{{ old('telefono', $empleado->telefono) }}" class="form-control" maxlength="8" oninput="formatearTelefono(this)">
+                    <input type="text" id="telefono" name="telefono" value="{{ old('telefono', $empleado->telefono) }}" class="form-control" maxlength="8" oninput="formatearTelefono(this)" data-original="{{ $empleado->telefono }}">
                     <div class="invalid-feedback" id="error-telefono"></div>
                 </div>
             </div>
@@ -139,19 +139,17 @@
                         <label class="form-check-label">{{ $alergia }}</label>
                     </div>
                 @endforeach
-                {{-- ✅ Mostrar mensaje de error una sola vez --}}
                 @error('alergias')
                 <div class="invalid-feedback d-block">{{ $message }}</div>
                 @enderror
 
-                <!-- Campo para especificar alergia a alimentos -->
                 <input type="text" id="alergiaAlimentos" name="alergiaAlimentos" maxlength="150"
                        value="{{ old('alergiaAlimentos') }}" class="form-control mt-2 solo-letras" placeholder="Especifique alergia a alimentos"
                        style="display:none;">
                 <div class="invalid-feedback">
                     @error('alergiaAlimentos') {{ $message }} @enderror
                 </div>
-                <!-- Campo para especificar alergia a medicamentos -->
+
                 <input type="text" id="alergiaMedicamentos" name="alergiaMedicamentos" maxlength="150"
                        value="{{ old('alergiaMedicamentos') }}" class="form-control mt-2 solo-letras" placeholder="Especifique alergia a medicamentos"
                        style="display:none;">
@@ -175,7 +173,7 @@
                 <label class="form-label fw-bold">Nombre completo:</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-person-lines-fill"></i></span>
-                    <input type="text" id="contactoEmergencia" name="contactoEmergencia" value="{{ old('contactoEmergencia', $empleado->contactoEmergencia) }}" class="form-control">
+                    <input type="text" id="contactodeemergencia" name="contactodeemergencia" value="{{ old('contactodeemergencia', $empleado->contactodeemergencia) }}" class="form-control" data-original="{{ $empleado->contactodeemergencia }}">
                     <div class="invalid-feedback" id="error-contacto"></div>
                 </div>
             </div>
@@ -184,8 +182,7 @@
                 <label class="form-label fw-bold">Teléfono:</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-telephone-fill"></i></span>
-                    <input type="text" id="telefonodeemergencia" name="telefonodeemergencia" value="{{ old('telefonodeemergencia', $empleado->telefonodeemergencia) }}" class="form-control" maxlength="8" oninput="formatearTelefono(this)"
-                    >
+                    <input type="text" id="telefonodeemergencia" name="telefonodeemergencia" value="{{ old('telefonodeemergencia', $empleado->telefonodeemergencia) }}" class="form-control" maxlength="8" oninput="formatearTelefono(this)" data-original="{{ $empleado->telefonodeemergencia }}">
                 </div>
                 <div class="invalid-feedback" id="error-telefonoEmergencia"></div>
             </div>
@@ -202,7 +199,6 @@
                 <button type="submit" class="btn btn-primary">
                     <i class="bi bi-save-fill me-2"></i> Guardar
                 </button>
-
             </div>
         </div>
     </form>
@@ -226,7 +222,6 @@
             const alimentosChecked = alimentosCheckbox.checked;
             const medicamentosChecked = medicamentosCheckbox.checked;
 
-            // Si se selecciona "Otros"
             if (otrosChecked) {
                 ningunoCheckbox.checked = false;
                 ningunoCheckbox.disabled = true;
@@ -243,7 +238,6 @@
                 campoMedicamentos.value = '';
             }
 
-            // Si se selecciona "Ninguno"
             else if (ningunoChecked) {
                 otrosCheckbox.checked = false;
                 otrosCheckbox.disabled = true;
@@ -260,8 +254,6 @@
                 campoAlimentos.value = '';
                 campoMedicamentos.value = '';
             }
-
-            // Si no se seleccionó "Otros" ni "Ninguno"
             else {
                 otrosCheckbox.disabled = false;
                 ningunoCheckbox.disabled = false;
@@ -269,7 +261,6 @@
                     chk.disabled = false;
                 });
 
-                // Mostrar/ocultar campos según lo que quede seleccionado
                 campoOtros.style.display = otrosCheckbox.checked ? 'block' : 'none';
                 campoAlimentos.style.display = alimentosCheckbox.checked ? 'block' : 'none';
                 campoMedicamentos.style.display = medicamentosCheckbox.checked ? 'block' : 'none';
@@ -296,26 +287,19 @@
 
         formulario.addEventListener('reset', function () {
             setTimeout(() => {
-                // Limpiar clases de error
                 const campos = formulario.querySelectorAll('.form-control, .form-select');
                 campos.forEach(campo => {
                     campo.classList.remove('is-invalid');
                 });
-
-                // Limpiar mensajes de error
                 const mensajes = formulario.querySelectorAll('.invalid-feedback');
                 mensajes.forEach(m => {
                     m.textContent = '';
                 });
-
-                // Limpiar checkboxes seleccionados de alergias
                 const checks = formulario.querySelectorAll('input[name="alergias[]"]');
                 checks.forEach(check => {
                     check.checked = false;
                     check.classList.remove('is-invalid');
                 });
-
-                // Ocultar campo "Otros" si estaba visible
                 const campoOtros = document.getElementById('alergiaOtros');
                 if (campoOtros) {
                     campoOtros.value = '';
@@ -323,13 +307,11 @@
                     campoOtros.classList.remove('is-invalid');
                 }
 
-                // Ocultar mensajes de error personalizados
                 const errorAlergias = document.getElementById('error-alergias');
                 if (errorAlergias) {
                     errorAlergias.textContent = '';
                 }
 
-                // También podrías ocultar alimentos/medicamentos si tienes esos campos
                 const campoAlimentos = document.getElementById('alergiaAlimentos');
                 if (campoAlimentos) {
                     campoAlimentos.value = '';
@@ -350,7 +332,6 @@
     document.addEventListener('DOMContentLoaded', () => {
         const alergiasOriginales = @json($empleado->alergias);
 
-        // Restaurar valores al hacer reset
         document.querySelector('button[type="reset"]').addEventListener('click', function(e) {
             e.preventDefault();
 
@@ -377,8 +358,6 @@
 
             limpiarErrores();
         });
-
-        // Mostrar/Ocultar campo "Otros"
         const alergiaOtrosInput = document.getElementById('alergiaOtros');
         const otrosCheckbox = document.querySelector('.alergia-checkbox[value="Otros"]');
 

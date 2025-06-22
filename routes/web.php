@@ -13,6 +13,7 @@ Route::post('/empleados', [EmpleadoController::class, 'store'])->name('empleados
 Route::get('/empleados/create', [EmpleadoController::class, 'create'])->name('empleados.create');
 Route::get('/empleados/{id}', [EmpleadoController::class, 'show'])->name('empleados.show');
 Route::resource('empleados', EmpleadoController::class)->except(['index', 'show']);
+Route::put('empleados/{empleado}', [EmpleadoController::class, 'update'])->name('empleados.update');
 
 
 Route::controller(InventarioController::class)->group(function () {

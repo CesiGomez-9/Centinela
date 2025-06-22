@@ -53,65 +53,51 @@
     </div>
 
 
-    <form>
-        <div class="row g-4">
-            <div class="col-md-6">
-                <label class="form-label fw-bold"><i class="bi bi-person-fill me-2"></i>Nombre:</label>
-                <input type="text" class="form-control" value="{{ $empleado->nombre }}" readonly>
-            </div>
-            <div class="col-md-6">
-                <label class="form-label fw-bold"><i class="bi bi-person-fill me-2"></i>Apellido:</label>
-                <input type="text" class="form-control" value="{{ $empleado->apellido }}" readonly>
-            </div>
 
-            <div class="col-md-6">
-                <label class="form-label fw-bold"><i class="bi bi-credit-card-2-front-fill me-2"></i>Identidad:</label>
-                <input type="text" class="form-control" value="{{ $empleado->identidad }}" readonly>
-            </div>
-            <div class="col-md-6">
-                <label class="form-label fw-bold"><i class="bi bi-geo-alt-fill me-2"></i>Dirección:</label>
-                <input type="text" class="form-control" value="{{ $empleado->direccion }}" readonly>
-            </div>
+        <div class="row justify-content-center">
+            <div class="col-md-9">
+                <div class="card shadow-lg border-0">
+                    <div class="card-header bg-dark text-white text-center position-relative">
+                        <h5 class="mb-0">
+                            <i class="bi bi-people-fill me-2"></i> Datos del empleado
+                        </h5>
+                        {{-- Si quieres, puedes poner un texto fijo aquí --}}
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-5 fs-5">
+                            <div class="col-md-6">
+                                <p><i class="bi bi-person-fill me-2 text-dark"></i><strong>Nombre:</strong> {{ $empleado->nombre }}</p>
+                                <p><i class="bi bi-person-fill me-2 text-dark"></i><strong>Apellido:</strong> {{ $empleado->apellido }}</p>
+                                <p><i class="bi bi-credit-card-2-front-fill me-2 text-dark"></i><strong>Identidad:</strong> {{ $empleado->identidad }}</p>
+                                <p><i class="bi bi-geo-alt-fill me-2 text-dark"></i><strong>Dirección:</strong> {{ $empleado->direccion }}</p>
+                                <p><i class="bi bi-envelope-fill me-2 text-dark"></i><strong>Correo electrónico:</strong> {{ $empleado->email }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><i class="bi bi-telephone-fill me-2 text-dark"></i><strong>Teléfono:</strong> {{ $empleado->telefono }}</p>
+                                <p><i class="bi bi-droplet-fill me-2 text-dark"></i><strong>Tipo de sangre:</strong> {{ $empleado->tipodesangre }}</p>
+                                <p>
+                                    <i class="bi bi-exclamation-diamond-fill me-2 text-dark"></i>
+                                    <strong>Alergias:</strong><br>
+                                    {{ is_array($empleado->alergias) ? implode(', ', $empleado->alergias) : $empleado->alergias }}
+                                </p>
+                                <hr>
+                                <h6><i class="bi bi-people-fill me-2"></i>Contacto de emergencia</h6>
+                                <p><i class="bi bi-person-lines-fill me-2 text-dark"></i><strong>Nombre completo:</strong> {{ $empleado->contactodeemergencia }}</p>
+                                <p><i class="bi bi-telephone-plus-fill me-2 text-dark"></i><strong>Teléfono:</strong> {{ $empleado->telefonodeemergencia }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {{-- Si no usas updated_at, puedes eliminar este footer o dejar un texto fijo --}}
 
-            <div class="col-md-6">
-                <label class="form-label fw-bold"><i class="bi bi-envelope-fill me-2"></i>Correo electrónico:</label>
-                <input type="email" class="form-control" value="{{ $empleado->email }}" readonly>
+                <div class="mt-4 text-center">
+                    <a href="{{ route('empleados.index') }}" class="btn btn-outline-dark">
+                        <i class="bi bi-arrow-left me-2"></i> Volver a la lista de empleados
+                    </a>
+                </div>
             </div>
-            <div class="col-md-6">
-                <label class="form-label fw-bold"><i class="bi bi-telephone-fill me-2"></i>Teléfono:</label>
-                <input type="text" class="form-control" value="{{ $empleado->telefono }}" readonly>
-            </div>
-
-            <div class="col-md-6">
-                <label class="form-label fw-bold"><i class="bi bi-droplet-fill me-2"></i>Tipo de sangre:</label>
-                <input type="text" class="form-control" value="{{ $empleado->tipodesangre }}" readonly>
-            </div>
-
-            <div class="col-md-12">
-                <label class="form-label fw-bold"><i class="bi bi-exclamation-diamond-fill me-2"></i>Alergias:</label>
-                <textarea class="form-control" rows="2" readonly>{{ is_array($empleado->alergias) ? implode(', ', $empleado->alergias) : $empleado->alergias }}
-</textarea>
-            </div>
-            <h3 class="text-center mb-4" style="color: #09457f;">
-                <i class="bi bi-people-fill me-2"></i>
-                @isset($empleado)
-                    Contacto de emergencia
-                @else
-                    Contacto de emergencia
-                @endisset
-            </h3>
-
-            <div class="col-md-6">
-                <label class="form-label fw-bold"><i class="bi bi-person-lines-fill me-2"></i>Nombre completo:</label>
-                <input type="text" class="form-control" value="{{ $empleado->contactodeemergencia }}" readonly>
-            </div>
-            <div class="col-md-6">
-                <label class="form-label fw-bold"><i class="bi bi-telephone-plus-fill me-2"></i>Teléfono:</label>
-                <input type="text" class="form-control" value="{{ $empleado->telefonodeemergencia }}" readonly>
-            </div>
-
         </div>
-    </form>
+    </div>
+
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

@@ -155,29 +155,21 @@
                             <label class="form-check-label">{{ $al }}</label>
                         </div>
                     @endforeach
-
-                    {{-- ✅ Mostrar mensaje de error una sola vez --}}
                     @error('alergias')
                     <div class="invalid-feedback d-block">{{ $message }}</div>
                     @enderror
-
-                    <!-- Campo para especificar alergia a alimentos -->
                     <input type="text" id="alergiaAlimentos" name="alergiaAlimentos" maxlength="150"
                            value="{{ old('alergiaAlimentos') }}" class="form-control mt-2 solo-letras" placeholder="Especifique alergia a alimentos"
                            style="display:none;">
                     <div class="invalid-feedback">
                         @error('alergiaAlimentos') {{ $message }} @enderror
                     </div>
-
-                    <!-- Campo para especificar alergia a medicamentos -->
                     <input type="text" id="alergiaMedicamentos" name="alergiaMedicamentos" maxlength="150"
                            value="{{ old('alergiaMedicamentos') }}" class="form-control mt-2 solo-letras" placeholder="Especifique alergia a medicamentos"
                            style="display:none;">
                     <div class="invalid-feedback">
                         @error('alergiaMedicamentos') {{ $message }} @enderror
                     </div>
-
-                    <!-- Campo para especificar otros -->
                     <input type="text" id="alergiaOtros" name="alergiaOtros" maxlength="150"
                            value="{{ old('alergiaOtros') }}" class="form-control mt-2 solo-letras"
                            placeholder="Especifique alergia"
@@ -247,7 +239,6 @@
             const alimentosChecked = alimentosCheckbox.checked;
             const medicamentosChecked = medicamentosCheckbox.checked;
 
-            // Si se selecciona "Otros"
             if (otrosChecked) {
                 ningunoCheckbox.checked = false;
                 ningunoCheckbox.disabled = true;
@@ -264,7 +255,6 @@
                 campoMedicamentos.value = '';
             }
 
-            // Si se selecciona "Ninguno"
             else if (ningunoChecked) {
                 otrosCheckbox.checked = false;
                 otrosCheckbox.disabled = true;
@@ -282,7 +272,6 @@
                 campoMedicamentos.value = '';
             }
 
-            // Si no se seleccionó "Otros" ni "Ninguno"
             else {
                 otrosCheckbox.disabled = false;
                 ningunoCheckbox.disabled = false;
@@ -290,7 +279,6 @@
                     chk.disabled = false;
                 });
 
-                // Mostrar/ocultar campos según lo que quede seleccionado
                 campoOtros.style.display = otrosCheckbox.checked ? 'block' : 'none';
                 campoAlimentos.style.display = alimentosCheckbox.checked ? 'block' : 'none';
                 campoMedicamentos.style.display = medicamentosCheckbox.checked ? 'block' : 'none';
@@ -317,26 +305,23 @@
 
         formulario.addEventListener('reset', function () {
             setTimeout(() => {
-                // Limpiar clases de error
+
                 const campos = formulario.querySelectorAll('.form-control, .form-select');
                 campos.forEach(campo => {
                     campo.classList.remove('is-invalid');
                 });
 
-                // Limpiar mensajes de error
                 const mensajes = formulario.querySelectorAll('.invalid-feedback');
                 mensajes.forEach(m => {
                     m.textContent = '';
                 });
 
-                // Limpiar checkboxes seleccionados de alergias
                 const checks = formulario.querySelectorAll('input[name="alergias[]"]');
                 checks.forEach(check => {
                     check.checked = false;
                     check.classList.remove('is-invalid');
                 });
 
-                // Ocultar campo "Otros" si estaba visible
                 const campoOtros = document.getElementById('alergiaOtros');
                 if (campoOtros) {
                     campoOtros.value = '';
@@ -344,13 +329,11 @@
                     campoOtros.classList.remove('is-invalid');
                 }
 
-                // Ocultar mensajes de error personalizados
                 const errorAlergias = document.getElementById('error-alergias');
                 if (errorAlergias) {
                     errorAlergias.textContent = '';
                 }
 
-                // También podrías ocultar alimentos/medicamentos si tienes esos campos
                 const campoAlimentos = document.getElementById('alergiaAlimentos');
                 if (campoAlimentos) {
                     campoAlimentos.value = '';
@@ -404,8 +387,6 @@
                 e.preventDefault();
                 return;
             }
-
-            // Si el cursor está al inicio y no es un número válido, bloquea
             if (this.selectionStart === 0 && !['2', '3', '8', '9'].includes(e.key)) {
                 e.preventDefault();
             }
@@ -413,18 +394,14 @@
 
         input.addEventListener('input', function() {
             let valor = this.value.replace(/[^0-9]/g, '');
-
-            // Validar primer dígito
             if (valor.length > 0 && !['2', '3', '8', '9'].includes(valor[0])) {
                 valor = valor.slice(1);
             }
 
-            // Limitar a 8 dígitos
             if (valor.length > 8) {
                 valor = valor.slice(0, 8);
             }
 
-            // No permitir todos los dígitos iguales
             if (/^(\d)\1{7}$/.test(valor)) {
                 valor = '';
             }
@@ -452,8 +429,8 @@
 
 
         if (errores.length > 0) {
-            e.preventDefault(); // esto evita que se envíe y recargue la página
-            // No uses alert
+            e.preventDefault();
+
         }
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -461,7 +438,6 @@
         const campoOtros = document.getElementById('alergiaOtros');
         const formulario = document.getElementById('empleadoForm');
 
-        // Mostrar/ocultar campo al hacer clic en "Otros"
         checkboxOtros.addEventListener('change', function () {
             if (this.checked) {
                 campoOtros.style.display = 'block';
@@ -471,7 +447,6 @@
             }
         });
 
-        // Validar al enviar
         formulario.addEventListener('submit', function (e) {
             if (checkboxOtros.checked && campoOtros.value.trim() === '') {
                 campoOtros.classList.add('is-invalid');
@@ -479,7 +454,6 @@
             }
         });
 
-        // Limpiar alerta al escribir
         campoOtros.addEventListener('input', function () {
             if (campoOtros.value.trim() !== '') {
                 campoOtros.classList.remove('is-invalid');
@@ -495,14 +469,12 @@
                 campoOtros.style.display = 'block';
             } else {
                 campoOtros.style.display = 'none';
-                campoOtros.value = ''; // Borra el valor para que no se envíe
+                campoOtros.value = '';
             }
         });
     });
 
-
 </script>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -47,7 +47,7 @@ class EmpleadoController extends Controller
             'email' => 'required|email|max:50|unique:empleados,email',
             'telefono' => 'required|string|max:8|unique:empleados,telefono',
             'contactodeemergencia' => 'required|string|max:100',
-            'telefonodeemergencia' => 'required|string|max:8',
+            'telefonodeemergencia' => 'required|string|max:8|unique:empleados,telefonodeemergencia',
             'tipodesangre' => 'required|string',
             'alergias' => 'required|array|min:1',
             'alergiaOtros' => 'nullable|string|max:150|regex:/^[\pL\s]+$/u',
@@ -74,13 +74,11 @@ class EmpleadoController extends Controller
             'alergiaMedicamentos.regex' => 'Solo letras y espacios en el campo de medicamentos',
             'contactodeemergencia.required' => 'Debe ingresar un nombre con su apellido',
             'telefonodeemergencia.required' => 'Debe ingresar un número de teléfono',
+            'telefonodeemergencia.unique' => 'Este número de teléfono ya está registrado',
         ];
 
         $validated = $request->validate($rules, $messages);
-
         $alergias = $validated['alergias'];
-
-        // Validación condicional para alergias específicas
         $errores = [];
         if (in_array('Otros', $alergias) && empty($validated['alergiaOtros'])) {
             $errores['alergiaOtros'] = 'Debe especificar la alergia en "Otros".';
@@ -94,8 +92,6 @@ class EmpleadoController extends Controller
         if (!empty($errores)) {
             return back()->withErrors($errores)->withInput();
         }
-
-        // Concatenar detalles específicos en alergias
         if (in_array('Otros', $alergias)) {
             $index = array_search('Otros', $alergias);
             $alergias[$index] = 'Otros: ' . $validated['alergiaOtros'];
@@ -110,8 +106,6 @@ class EmpleadoController extends Controller
         }
 
         $validated['alergias'] = empty($alergias) ? ['Ninguno'] : $alergias;
-
-        // Evitar null en campos de alergias específicas
         $validated['alergiaOtros'] = $validated['alergiaOtros'] ?? '';
         $validated['alergiaAlimentos'] = $validated['alergiaAlimentos'] ?? '';
         $validated['alergiaMedicamentos'] = $validated['alergiaMedicamentos'] ?? '';
@@ -175,10 +169,7 @@ class EmpleadoController extends Controller
         ];
 
         $validated = $request->validate($rules, $messages);
-
         $alergias = $validated['alergias'];
-
-        // Validación condicional para alergias específicas
         $errores = [];
         if (in_array('Otros', $alergias) && empty($validated['alergiaOtros'])) {
             $errores['alergiaOtros'] = 'Debe especificar la alergia en "Otros".';
@@ -192,8 +183,6 @@ class EmpleadoController extends Controller
         if (!empty($errores)) {
             return back()->withErrors($errores)->withInput();
         }
-
-        // Concatenar detalles específicos en alergias
         if (in_array('Otros', $alergias)) {
             $index = array_search('Otros', $alergias);
             $alergias[$index] = 'Otros: ' . $validated['alergiaOtros'];
@@ -208,8 +197,6 @@ class EmpleadoController extends Controller
         }
 
         $validated['alergias'] = empty($alergias) ? ['Ninguno'] : $alergias;
-
-        // Evitar null en campos de alergias específicas
         $validated['alergiaOtros'] = $validated['alergiaOtros'] ?? '';
         $validated['alergiaAlimentos'] = $validated['alergiaAlimentos'] ?? '';
         $validated['alergiaMedicamentos'] = $validated['alergiaMedicamentos'] ?? '';

@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('contactodeemergencia');
             $table->string('telefonodeemergencia');
             $table->string('tipodesangre');
-            $table->text('alergias')->nullable(); // o ->default('Ninguno');
+            $table->text('alergias')->nullable();
             $table->string('alergiaOtros', 150)->nullable();
             $table->string('alergiaAlimentos', 150)->nullable();
             $table->string('alergiaMedicamentos', 150)->nullable();
