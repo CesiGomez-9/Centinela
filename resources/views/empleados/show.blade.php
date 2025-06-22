@@ -61,7 +61,6 @@
                         <h5 class="mb-0">
                             <i class="bi bi-people-fill me-2"></i> Datos del empleado
                         </h5>
-                        {{-- Si quieres, puedes poner un texto fijo aquí --}}
                     </div>
                     <div class="card-body">
                         <div class="row g-5 fs-5">
@@ -87,8 +86,6 @@
                             </div>
                         </div>
                     </div>
-                    {{-- Si no usas updated_at, puedes eliminar este footer o dejar un texto fijo --}}
-
                 <div class="mt-4 text-center">
                     <a href="{{ route('empleados.index') }}" class="btn btn-outline-dark">
                         <i class="bi bi-arrow-left me-2"></i> Volver a la lista de empleados

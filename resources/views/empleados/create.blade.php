@@ -363,7 +363,7 @@
         if (v.length >= 4) {
             const pref4 = v.slice(0,4), pref2 = v.slice(0,2);
             if (!codigosDep.includes(pref4) && !codigosDep.includes(pref2)) {
-                v = ''; // código inválido
+                v = '';
             }
         } else if (v.length >= 2) {
             if (!codigosDep.includes(v.slice(0,2))) v = '';
@@ -450,7 +450,7 @@
         formulario.addEventListener('submit', function (e) {
             if (checkboxOtros.checked && campoOtros.value.trim() === '') {
                 campoOtros.classList.add('is-invalid');
-                e.preventDefault(); // Evita envío
+                e.preventDefault();
             }
         });
 

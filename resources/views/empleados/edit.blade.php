@@ -133,8 +133,7 @@
                             type="checkbox"
                             value="{{ $alergia }}"
                             name="alergias[]"
-                            {{ in_array($alergia, $alergiasEmpleado) ? 'checked' : '' }}
-                        >
+                            {{ in_array($alergia, $alergiasEmpleado) ? 'checked' : '' }}>
 
                         <label class="form-check-label">{{ $alergia }}</label>
                     </div>
