@@ -35,7 +35,7 @@
 @endif
 
 
-<div class="container bg-white p-5 rounded shadow mt-5 mb-5" style="max-width: 950px;">
+<div class="container bg-white p-5 rounded shadow mt-5 mb-5" style="max-width: 1000px;">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="text-center mb-4" style="color: #09457f;">
             <i class="bi bi-people-fill me-2"></i>

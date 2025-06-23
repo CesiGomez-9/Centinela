@@ -26,6 +26,7 @@ class EmpleadoController extends Controller
 
         $empleados = $empleados->paginate(10);
 
+
         return view('empleados.index', compact('empleados'));
     }
 

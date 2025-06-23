@@ -428,10 +428,7 @@
 
 
 
-        if (errores.length > 0) {
-            e.preventDefault();
 
-        }
 
     document.addEventListener('DOMContentLoaded', function () {
         const checkboxOtros = document.querySelector('input[name="alergias[]"][value="Otros"]');
@@ -448,11 +445,20 @@
         });
 
         formulario.addEventListener('submit', function (e) {
+            let errores = [];
+
             if (checkboxOtros.checked && campoOtros.value.trim() === '') {
                 campoOtros.classList.add('is-invalid');
-                e.preventDefault();
+                errores.push('Debe especificar la alergia Otros');
+            } else {
+                campoOtros.classList.remove('is-invalid');
             }
-        });
+
+            if (errores.length > 0) {
+                e.preventDefault();
+                // Aquí puedes mostrar los errores si quieres
+            }
+             });
 
         campoOtros.addEventListener('input', function () {
             if (campoOtros.value.trim() !== '') {

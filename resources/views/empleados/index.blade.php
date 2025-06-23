@@ -41,9 +41,12 @@
                         <input
                             type="text"
                             id="searchInput"
+                            name="search"
+                            value="{{ request('search') }}"
                             class="form-control"
                             placeholder="Buscar por nombre"
-                        >
+                        />
+
                         <span class="input-group-text"><i class="bi bi-search"></i></span>
                     </div>
                 </div>
@@ -106,22 +109,29 @@
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const searchInput = document.getElementById('searchInput');
-        const filas = document.querySelectorAll('tbody tr');
+
+        if (searchInput.value !== '') {
+            searchInput.focus();
+            const val = searchInput.value;
+            searchInput.value = '';
+            searchInput.value = val;
+        }
+
+        let timeout = null;
 
         searchInput.addEventListener('input', function () {
-            const filtro = this.value.toLowerCase().trim();
+            clearTimeout(timeout);
 
-            filas.forEach(fila => {
-                const nombre = fila.querySelector('td:nth-child(2)').textContent.toLowerCase();
-                if (nombre.includes(filtro)) {
-                    fila.style.display = '';
-                } else {
-                    fila.style.display = 'none';
-                }
-            });
+            timeout = setTimeout(() => {
+                const search = this.value;
+                const url = new URL(window.location.href);
+                url.searchParams.set('search', search);
+                window.location.href = url.toString();
+            }, 0.5);
         });
     });
 </script>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

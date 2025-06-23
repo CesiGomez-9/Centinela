@@ -129,11 +129,11 @@
                 @foreach($tiposAlergia as $alergia)
                     <div class="form-check form-check-inline">
                         <input
-                            class="form-check-input alergia-checkbox"
-                            type="checkbox"
-                            value="{{ $alergia }}"
-                            name="alergias[]"
-                            {{ in_array($alergia, $alergiasEmpleado) ? 'checked' : '' }}>
+                                class="form-check-input alergia-checkbox"
+                                type="checkbox"
+                                value="{{ $alergia }}"
+                                name="alergias[]"
+                                {{ (is_array($alergiasEmpleado) && in_array($alergia, $alergiasEmpleado)) ? 'checked' : '' }}>
 
                         <label class="form-check-label">{{ $alergia }}</label>
                     </div>
@@ -159,7 +159,7 @@
                        value="{{ $empleado->alergiaOtros }}"
                        class="form-control mt-2 solo-letras"
                        placeholder="Especifique si es Otros"
-                       style="{{ in_array('Otros', $alergiasEmpleado) ? '' : 'display:none;' }}">
+                       style="{{ (is_array($alergiasEmpleado) && in_array('Otros', $alergiasEmpleado)) ? '' : 'display:none;' }}">
 
                 <div class="invalid-feedback" id="error-alergia"></div>
             </div>
