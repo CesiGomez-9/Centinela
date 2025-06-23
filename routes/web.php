@@ -1,12 +1,18 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProductoController;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-use App\Http\Controllers\ProductoController;
+Route::get('/', function () {
+    return view('index');
+
+});
+
+
 
 Route::controller(ProductoController::class)->group(function () {
     Route::get('/productos', 'index')->name('productos.index');
