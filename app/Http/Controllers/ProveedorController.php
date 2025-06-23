@@ -32,14 +32,48 @@ class ProveedorController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+
             'nombreEmpresa' => ['required', 'string', 'max:50', 'regex:/^[A-Za-z\s]+$/'],
-            'direccion' => ['required', 'string'],
-            'telefonodeempresa' => ['required', 'regex:/^[389][0-9]{7}$/', 'size:8', 'unique:proveedores,telefonodeempresa'],
+            'direccion' => ['required', 'string','max:150'],
+            'telefonodeempresa' => ['required', 'regex:/^[2389][0-9]{7}$/', 'size:8', 'unique:proveedores,telefonodeempresa'],
             'correoempresa' => ['required', 'string', 'email', 'max:100', 'unique:proveedores,correoempresa'],
             'nombrerepresentante' => ['required', 'string', 'max:50', 'regex:/^[A-Za-z\s]+$/'],
-            'identificacion' => ['required', 'regex:/^(0[1-9]|1[0-3])[0-9]{11}$/', 'size:13', 'unique:proveedores,identificacion'],
+            'identificacion' => [ 'required', 'regex:/^(0[1-9]|1[0-8])[0-9]{11}$/', 'unique:proveedores,identificacion'],
             'categoriarubro' => ['required', 'string'],
+        ], [  // mensajes personalizados aquí (2do parámetro)
+            'nombreEmpresa.required' => 'Debe ingresar el nombre de la empresa.',
+            'nombreEmpresa.regex' => 'El nombre de la empresa solo debe contener letras y espacios.',
+            'direccion.required' => 'Debe ingresar la dirección.',
+
+            'telefonodeempresa.required' => 'Debe ingresar el teléfono de la empresa.',
+            'telefonodeempresa.regex' => 'El teléfono debe comenzar con 2, 3, 8 o 9 y tener 8 dígitos.',
+            'telefonodeempresa.size' => 'El teléfono debe tener exactamente 8 dígitos.',
+            'telefonodeempresa.unique' => 'Este número de teléfono ya está registrado.',
+
+            'correoempresa.required' => 'Debe ingresar el correo electrónico.',
+            'correoempresa.email' => 'Debe ingresar un correo electrónico válido.',
+            'correoempresa.unique' => 'Este correo ya está registrado.',
+
+            'nombrerepresentante.required' => 'Debe ingresar el nombre del representante.',
+            'nombrerepresentante.regex' => 'El nombre del representante solo debe contener letras y espacios.',
+
+            'identificacion.required' => 'Debe ingresar la identificación.',
+            'identificacion.regex' => 'La identificación debe comenzar con 01 al 18 y tener 13 dígitos en total.',
+            'identificacion.size' => 'La identificación debe tener exactamente 13 dígitos.',
+            'identificacion.unique' => 'Esta identificación ya está registrada.',
+
+            'categoriarubro.required' => 'Debe seleccionar una categoría o rubro.'
+        ], [  // nombres personalizados (3er parámetro)
+            'nombreEmpresa' => 'nombre de la empresa',
+            'direccion' => 'dirección',
+            'telefonodeempresa' => 'teléfono de la empresa',
+            'correoempresa' => 'correo electrónico',
+            'nombrerepresentante' => 'nombre del representante',
+            'identificacion' => 'identificación',
+            'categoriarubro' => 'categoría o rubro',
+
         ]);
+
 
         $proveedor = new Proveedor();
         $proveedor->nombreEmpresa = $request->input('nombreEmpresa'); // <- aquí estaba el error, ponías 'nombres'

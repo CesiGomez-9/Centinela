@@ -1,4 +1,4 @@
-@extends('plantilla')
+@extends('layouts.plantilla')
 @section('content')
 
     <div class="hero-section text-white d-flex align-items-center justify-content-center" style="

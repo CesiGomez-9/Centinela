@@ -10,7 +10,7 @@
 <nav class="navbar navbar-expand-lg" style="background-color: #0A1F44; padding-top: 1.2rem; padding-bottom: 1.2rem; font-family: 'Courier New', sans-serif;">
     <div class="container" style="max-width: 1600px;">
         <a class="navbar-brand text-white fw-bold" href="#">
-            <img src="{{ asset('seguridad/logo.jpg') }}" style="height:80px; margin-right: 10px;">
+            <img src="{{ asset('centinela.jpg') }}" style="height:80px; margin-right: 10px;">
             Grupo Centinela
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -96,6 +96,8 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+
+
 <script>
     const searchInput = document.getElementById('searchInput');
     const searchForm = document.getElementById('searchForm');
@@ -117,7 +119,9 @@
             error.classList.add('d-none');
             searchInput.classList.remove('is-invalid');
         }
+
     });
+
 
     searchInput.addEventListener('input', function () {
         let val = this.value;

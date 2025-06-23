@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Registrar Servicio</title>
+    <title>Registrar Servicios</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
@@ -25,7 +25,7 @@
 <nav class="navbar navbar-expand-lg" style="background-color: #0A1F44; padding-top: 1.2rem; padding-bottom: 1.2rem; font-family: 'Courier New', sans-serif;">
     <div class="container" style="max-width: 1600px;">
         <a class="navbar-brand text-white fw-bold" href="#">
-            <img src="{{ asset('seguridad/centinela.jpg') }}" style="height:80px; margin-right: 10px;">
+            <img src="{{ asset('centinela.jpg') }}" style="height:80px; margin-right: 10px;">
             Grupo Centinela
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -45,7 +45,7 @@
 <div class="container my-5">
     <div class="form-contenedor">
         <h2 class="text-center mb-4 text-primary fs-3">
-            <i class="bi bi-journal-plus me-2"></i> Registrar servicio
+            <i class="bi bi-journal-plus me-2"></i> Registrar servicios
         </h2>
 
         @if(session('success'))
@@ -63,8 +63,10 @@
                     <div class="input-group input-group-lg">
                         <span class="input-group-text"><i class="bi bi-card-text"></i></span>
                         <input type="text" id="nombreServicio" name="nombreServicio" class="form-control form-control-lg" maxlength="30"
-                               pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" title="Solo letras y espacios, máximo 30 caracteres" required>
-                        <div class="invalid-feedback">Por favor, ingresa información válida en este campo.</div>
+                               pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" title="Solo letras y espacios, máximo 30 caracteres"
+                               onkeydown="bloquearEspacioAlInicio(event, this)"
+                               oninput="eliminarEspaciosIniciales(this)"required>
+                        <div class="invalid-feedback">Por favor, ingresa información válida.</div>
                     </div>
                 </div>
 
@@ -73,8 +75,10 @@
                     <div class="input-group input-group-lg">
                         <span class="input-group-text"><i class="bi bi-briefcase-fill"></i></span>
                         <input type="text" id="tipoServicio" name="tipoServicio" class="form-control form-control-lg" maxlength="30"
-                               pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" title="Solo letras y espacios, máximo 30 caracteres" required>
-                        <div class="invalid-feedback">Por favor, ingresa información válida en este campo.</div>
+                               pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" title="Solo letras y espacios, máximo 30 caracteres" onkeydown="bloquearEspacioAlInicio(event, this)"
+                               oninput="eliminarEspaciosIniciales(this)"
+                               required>
+                        <div class="invalid-feedback">Por favor, ingresa información válida .</div>
                     </div>
                 </div>
 
@@ -83,8 +87,9 @@
                     <div class="input-group input-group-lg">
                         <span class="input-group-text"><i class="bi bi-text-paragraph"></i></span>
                         <textarea id="descripcionServicio" name="descripcionServicio" class="form-control form-control-lg" maxlength="100"
-                                  pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" rows="3" title="Solo letras y espacios, máximo 100 caracteres" required></textarea>
-                        <div class="invalid-feedback">Por favor, ingresa información válida en este campo.</div>
+                                  pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" rows="3" title="Solo letras y espacios, máximo 100 caracteres" onkeydown="bloquearEspacioAlInicio(event, this)"
+                                  oninput="eliminarEspaciosIniciales(this)" required></textarea>
+                        <div class="invalid-feedback">Por favor, ingresa información válida.</div>
                     </div>
                 </div>
 
@@ -93,8 +98,9 @@
                     <div class="input-group input-group-lg">
                         <span class="input-group-text"><i class="bi bi-clock-fill"></i></span>
                         <input type="text" id="duracionEstimada" name="duracionEstimada" class="form-control form-control-lg" maxlength="30"
-                               pattern="^[A-Za-z0-9\s]+$" title="Solo letras, números y espacios, máximo 30 caracteres" required>
-                        <div class="invalid-feedback">Por favor, ingresa información válida en este campo.</div>
+                               pattern="^[A-Za-z0-9\s]+$" title="Solo letras, números y espacios, máximo 30 caracteres" onkeydown="bloquearEspacioAlInicio(event, this)"
+                               oninput="eliminarEspaciosIniciales(this)" required>
+                        <div class="invalid-feedback">Por favor, ingresa información válida.</div>
                     </div>
                 </div>
 
@@ -119,10 +125,12 @@
                         <span class="input-group-text"><i class="bi bi-box-seam"></i></span>
                         <textarea id="especificarProductos" name="especificarProductos" class="form-control form-control-lg"
                                   maxlength="100"
+                                  onkeydown="bloquearEspacioAlInicio(event, this)"
+                                  oninput="eliminarEspaciosIniciales(this)"
                                   pattern="^[A-Za-z0-9ÁÉÍÓÚáéíóúÑñ,\\s]+$"
                                   rows="2"
                                   title="Solo letras, números, espacios y comas, máximo 100 caracteres"></textarea>
-                        <div class="invalid-feedback">Por favor, ingresa información válida aquí.</div>
+                        <div class="invalid-feedback">Por favor, ingresa información válida.</div>
                     </div>
                 </div>
 
@@ -199,6 +207,16 @@
             }
         });
     });
+
+    function bloquearEspacioAlInicio(e, input) {
+        if (e.key === ' ' && input.selectionStart === 0) {
+            e.preventDefault();
+        }
+    }
+
+    function eliminarEspaciosIniciales(input) {
+        input.value = input.value.replace(/^\s+/, '');
+    }
 
     // Validaciones personalizadas en input (para evitar caracteres no deseados)
     function validarInput(e, pattern, maxLength) {
