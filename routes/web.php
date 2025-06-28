@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\EmpleadoController;
 
+use App\Http\Controllers\FacturaController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\ServicioController;
@@ -42,6 +43,22 @@ Route::get('/servicios/index', [ServicioController::class, 'index'])->name('serv
 Route::post('/servicios', [ServicioController::class, 'store'])->name('servicios.store');
 Route::delete('/servicios/{id}', [ServicioController::class, 'destroy'])->name('servicios.destroy');
 Route::get('/catalogo', [ServicioController::class, 'catalogo'])->name('servicios.catalogo');
+
+Route::controller(FacturaController::class)->group(function () {
+    Route::get('/facturas', 'index')->name('facturas.index');
+    Route::get('/facturas/{id}', 'show')->name('facturas.show')->whereNumber('id');
+    Route::get('/facturas/crear', 'create')->name('facturas.create');
+    Route::post('/facturas/crear', 'store')->name('facturas.store');
+
+    // Ruta para autocompletar productos según proveedor
+    Route::get('/facturas/proveedor/{nombre}/productos', 'obtenerProductosProveedor')
+        ->name('facturas.proveedor.productos');
+
+    #Route::get('/facturas/{id}/editar', 'edit')->name('facturas.edit')->whereNumber('id');
+    #Route::put('/facturas/{id}/editar', 'update')->name('facturas.update')->whereNumber('id');
+
+});
+
 
 
 
