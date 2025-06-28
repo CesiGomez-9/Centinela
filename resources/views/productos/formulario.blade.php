@@ -61,7 +61,9 @@
                                 <label for="codigo" class="form-label">Código del producto</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi-qr-code"></i></span>
-                                    <input type="text" name="codigo" class="form-control @error('codigo') is-invalid @enderror" maxlength="10" value="{{ old('codigo', $producto->codigo ?? '') }}" onkeypress="validarTexto(event)" required>
+                                    <input type="text" name="codigo" class="form-control @error('codigo') is-invalid @enderror"
+                                           maxlength="10" value="{{ old('codigo', $producto->codigo ?? '') }}"
+                                           onkeypress="validarTexto(event)" required>
                                 </div>
                                 @error('codigo')
                                 <div class="text-danger mt-1 small">{{ $message }}</div>
@@ -123,15 +125,29 @@
                                 </div>
                             </div>
 
-                            <div class="col-12 ">
-                                <label for="material" class="form-label">Material de fabricación</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="bi-layers"></i></span>
-                                    <textarea name="material" rows="4" class="form-control @error('material') is-invalid @enderror" maxlength="255" onkeypress="return validarDescripcion(event)" required>{{ old('material', $producto->material ?? '') }}</textarea>
+                            <div class="col-md-6">
+                                <label for="iva" class="form-label">IVA</label>
+                                <div class="input-group has-validation">
+                                    <span class="input-group-text"><i class="bi bi-briefcase-fill"></i></span>
+                                    <select name="iva" class="form-select @error('iva') is-invalid @enderror" required>
+                                        <option value="">Seleccione una opción</option>
+                                        @php
+                                            $ivas = [
+                                                'Exento',
+                                                'No exento'
+                                            ];
+                                        @endphp
+                                        @foreach ($ivas as $cat)
+                                            <option value="{{ $cat }}" {{ old('iva', $producto->iva ?? '') === $cat ? 'selected' : '' }}>
+                                                {{ $cat }}
+                                            </option>
+                                        @endforeach
+
+                                    </select>
+                                    @error('iva')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
-                                @error('material')
-                                <div class="text-danger mt-1 small">{{ $message }}</div>
-                                @enderror
                             </div>
 
                             <div class="col-12 ">

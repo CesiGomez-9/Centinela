@@ -79,6 +79,7 @@ class ProductoFactory extends Factory
         // Elegir categoría aleatoria
         $categoria = $this->faker->randomElement(array_keys($nombresPorCategoria));
 
+
         return [
             'serie' => $this->faker->unique()->bothify('PRO-####'),
             'codigo' => $this->faker->unique()->bothify('COD-####'),
@@ -86,7 +87,7 @@ class ProductoFactory extends Factory
             'marca' => $this->faker->word(),
             'modelo' => strtoupper($this->faker->bothify('MDL-##??')),
             'categoria' => $categoria,
-            'material' => $this->faker->word(),
+            'iva' => $this->faker->randomElement(['Gravado', 'No gravado']),
             'descripcion' => $this->faker->sentence(),
         ];
     }

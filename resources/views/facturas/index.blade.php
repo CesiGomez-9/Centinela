@@ -1,11 +1,12 @@
 @extends('layouts.plantilla')
-@section('titulo', 'Listado de productos')
+@section('titulo', 'Listado de facturas')
 @section('content')
 
     <style>
         table {
             width: 100%;
             border-collapse: collapse;
+
         }
 
         th, td {
@@ -13,14 +14,17 @@
             border: 1px solid #090909;
             text-align: center;
         }
+
     </style>
 
     <h1 class="text-center mb-4" style="color: #09457f;">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-        <i class="bi bi-boxes me-2"></i>Listado de productos
+        <i class="bi bi-file-text"></i>Listado de facturas de compra
     </h1>
 
-    <!-- Botón de buscador -->
+
+
+    <!-- Botón de volver y buscador -->
     <div class="row mb-4 align-items-center">
         <div class="col-md-6 d-flex justify-content-start">
             <div class="w-100" style="max-width: 300px;">
@@ -32,18 +36,18 @@
                         maxlength="30"
                         placeholder="Buscar por nombre"
                         onkeydown="bloquearEspacioAlInicio(event, this)"
-                        oninput="eliminarEspaciosIniciales(this)"
-                    >
+                        oninput="eliminarEspaciosIniciales(this)">
                     <span class="input-group-text"><i class="bi bi-search"></i></span>
                 </div>
             </div>
         </div>
         <div class="col-md-6 d-flex justify-content-end">
-            <a href="{{ route('productos.create') }}" class="btn btn-md btn-outline-dark btn-md">
-                <i class="bi bi-pencil-square me-2"></i>Registrar un nuevo producto
+            <a href="{{ route('facturas.create') }}" class="btn btn-md btn-outline-dark btn-md">
+                <i class="bi bi-pencil-square me-2"></i>Registrar una nueva factura de compra
             </a>
         </div>
     </div>
+
 
     @if(session()->has('status'))
         <div class="alert alert-warning alert-dismissible fade show" role="alert">
@@ -53,49 +57,10 @@
         </div>
     @endif
 
-    <!-- Mensaje de resultados -->
-    <div id="searchResults" class="mb-3"></div>
-
-    <div class="table-responsive">
-        <table class="table table-bordered table-hover align-middle">
-            <thead class="table-dark text-center">
-            <tr>
-                <th>Serie</th>
-                <th>Código</th>
-                <th>Nombre</th>
-                <th>Marca</th>
-                <th>Modelo</th>
-                <th>Categoria</th>
-                <th>Acciones</th>
-            </tr>
-            </thead>
-            <tbody id="productosTableBody">
-            @forelse($productos as $producto)
-                <tr class="producto-row">
-                    <td>{{ $producto->serie }}</td>
-                    <td>{{ $producto->codigo }}</td>
-                    <td class="producto-nombre">{{ $producto->nombre }}</td>
-                    <td>{{ $producto->marca }}</td>
-                    <td>{{ $producto->modelo }}</td>
-                    <td>{{ $producto->categoria }}</td>
-                    <td>
-                        <a href="{{ route('productos.show', $producto->id) }}" class="btn btn-outline-info btn-sm">Ver</a>
-                    </td>
-                </tr>
-            @empty
-                <tr id="noProductsRow">
-                    <td colspan="7">No hay productos registrados.</td>
-                </tr>
-            @endforelse
-            </tbody>
-        </table>
-    </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const searchInput = document.getElementById('searchInput');
-            const filas = document.querySelectorAll('.producto-row');
-            const searchResults = document.getElementById('searchResults');
+            const filas = document.querySelectorAll('.factura-row');
             const noProductsRow = document.getElementById('noProductsRow');
 
             searchInput.addEventListener('input', function () {
@@ -104,7 +69,7 @@
 
                 filas.forEach(fila => {
                     // Buscar en la columna "Nombre" (3ra columna, índice 2 en nth-child porque empieza en 1)
-                    const nombre = fila.querySelector('.producto-nombre').textContent.toLowerCase();
+                    const nombre = fila.querySelector('.factura-numeroFactura').textContent.toLowerCase();
 
                     if (filtro === '' || nombre.includes(filtro)) {
                         fila.style.display = '';
@@ -112,9 +77,9 @@
 
                         // Resaltar texto encontrado si hay búsqueda
                         if (filtro !== '') {
-                            resaltarTexto(fila.querySelector('.producto-nombre'), filtro);
+                            resaltarTexto(fila.querySelector('.factura-numeroFactura'), filtro);
                         } else {
-                            quitarResaltado(fila.querySelector('.producto-nombre'));
+                            quitarResaltado(fila.querySelector('.factura-numeroFactura'));
                         }
                     } else {
                         fila.style.display = 'none';
@@ -170,18 +135,19 @@
                 searchResults.innerHTML = `
                     <div class="alert alert-warning" role="alert">
                         <i class="bi bi-exclamation-triangle me-2"></i>
-                        No se encontraron productos con el nombre "<strong>${termino}</strong>"
+                        No se encontraron facturas con ese numero de factura "<strong>${termino}</strong>"
                     </div>
                 `;
             } else {
                 searchResults.innerHTML = `
                     <div class="alert alert-success" role="alert">
                         <i class="bi bi-check-circle me-2"></i>
-                        Se encontraron <strong>${cantidad}</strong> producto(s) con el nombre "<strong>${termino}</strong>"
+                        Se encontraron <strong>${cantidad}</strong> factura(s) con ese numero de factura "<strong>${termino}</strong>"
                     </div>
                 `;
             }
         }
+
 
         function bloquearEspacioAlInicio(e, input) {
             if (e.key === ' ' && input.selectionStart === 0) {
@@ -191,7 +157,6 @@
 
         function eliminarEspaciosIniciales(input) {
             input.value = input.value.replace(/^\s+/, '');
-
             // Si pega un texto largo, lo limita a 30 caracteres
             if (input.value.length > 30) {
                 input.value = input.value.substring(0, 30);
@@ -205,6 +170,6 @@
         </a>
     </div>
 
-    {{ $productos->links() }}
+    {{ $facturas->links() }}
 
 @endsection
