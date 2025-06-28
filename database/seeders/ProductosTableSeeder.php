@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Inventario;
 use App\Models\Producto;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;

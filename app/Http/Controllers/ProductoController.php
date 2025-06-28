@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Inventario;
 use App\Models\Producto;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -80,13 +79,12 @@ class ProductoController extends Controller
                 'max:50',
                 'regex:/^[\pL0-9\s\-.,#()]*$/u',
             ],
-            'material' => [
+            'iva' => [
                 'required',
-                'min:1',
-                'max:255',
-                'regex:/^[\pL][\pL0-9\s,.\-#()]*$/u',
-                'regex:/.*\S.*/',
-                'not_regex:/^0+$/'],
+                'nullable',
+                'max:50',
+                'regex:/^[\pL0-9\s\-.,#()]*$/u',
+            ],
             'descripcion' => [
                 'required',
                 'min:1',

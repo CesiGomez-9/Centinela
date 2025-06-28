@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('marca')->nullable();
             $table->string('modelo')->nullable();
             $table->string('categoria')->nullable();
-            $table->string('material')->nullable();
+            $table->string('iva')->nullable();
             $table->text('descripcion')->nullable();
             $table->timestamps();
 

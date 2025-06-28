@@ -23,6 +23,10 @@ class DatabaseSeeder extends Seeder
         $this->call([
             ProductosTableSeeder::class,
         ]);
+
+        $this->call([
+            FacturasTableSeeder::class,
+        ]);
     }
 
 }

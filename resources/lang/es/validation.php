@@ -19,8 +19,13 @@ return [
         'marca' => 'Marca del producto',
         'modelo' => 'Modelo del producto',
         'categoria' => 'Categoria del producto',
-        'material' => 'Material de fabricacióm',
+        'iva' => 'IVA',
         'descripcion' => 'Descripción',
+        'numero_factura' => 'Numero de factura',
+        'fecha' => 'Fecha',
+        'proveedor' => 'Proveedor',
+        'forma_pago' => 'Forma de pago',
+        'responsable' => 'Responsable',
 
     ],
 ];
