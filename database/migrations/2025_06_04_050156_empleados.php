@@ -18,12 +18,15 @@ return new class extends Migration
             $table->string('identidad')->unique();
             $table->string('direccion');
             $table->string('email')->unique();
-            $table->string('telefono');
+            $table->string('telefono')->unique();
             $table->string('contactodeemergencia');
             $table->string('telefonodeemergencia');
             $table->string('tipodesangre');
-            $table->text('alergias');
-           $table->timestamps();
+            $table->text('alergias')->nullable();
+            $table->string('alergiaOtros', 150)->nullable();
+            $table->string('alergiaAlimentos', 150)->nullable();
+            $table->string('alergiaMedicamentos', 150)->nullable();
+            $table->timestamps();
 
         });
     }
@@ -33,6 +36,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-
+        Schema::dropIfExists('empleados');
     }
 };

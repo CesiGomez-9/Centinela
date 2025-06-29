@@ -10,7 +10,7 @@
 <nav class="navbar navbar-expand-lg" style="background-color: #0A1F44; padding-top: 1.2rem; padding-bottom: 1.2rem; font-family: 'Courier New', sans-serif;">
     <div class="container" style="max-width: 1600px;">
         <a class="navbar-brand text-white fw-bold" href="#">
-            <img src="{{ asset('centinela.jpg') }}" style="height:80px; margin-right: 10px;">
+            <img src="{{ asset('seguridad/logo.jpg') }}" style="height:80px; margin-right: 10px;">
             Grupo Centinela
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -34,34 +34,38 @@
             Lista de empleados
         </h3>
 
-        @if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
-
-        <div class="row mb-4">
-            <div class="col-auto">
-                <a href="{{ route('empleados.create') }}" class="btn btn-sm btn-outline-primary mb-2"><- Volver al formulario</a>
-            </div>
-            <div class="col d-flex justify-content-end">
-                <form id="searchForm" action="{{ route('empleados.index') }}" method="GET" class="w-100" style="max-width: 300px;" novalidate>
+        <div class="row mb-4 align-items-center">
+            <div class="col-md-6 d-flex justify-content-start">
+                <div class="w-100" style="max-width: 300px;">
                     <div class="input-group">
                         <input
                             type="text"
-                            name="search"
                             id="searchInput"
-                            class="form-control form-control-sm"
-                            placeholder="Buscar por nombre"
+                            name="search"
                             value="{{ request('search') }}"
-                            maxlength="25"
-                        >
-                        <button class="btn btn-sm btn-primary" type="submit">Buscar</button>
+                            class="form-control"
+                            placeholder="Buscar por nombre"
+                        />
+
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
                     </div>
-                    <div class="invalid-feedback d-block text-danger small mt-1 d-none" id="error-search">
-                        Ingrese un nombre antes de buscar
-                    </div>
-                </form>
+                </div>
+            </div>
+            <div class="col-md-6 d-flex justify-content-end">
+                <a href="{{ route('empleados.create') }}" class="btn btn-md btn-outline-primary">
+                    <i class="bi bi-pencil-square me-2"></i>Registrar un nuevo empleado
+                </a>
             </div>
         </div>
+
+
+    @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            </div>
+        @endif
 
         <table class="table table-bordered table-striped">
             <thead class="table-dark">
@@ -70,6 +74,7 @@
                 <th>Nombre</th>
                 <th>Dirección</th>
                 <th>Teléfono</th>
+                <th>Acciones</th>
             </tr>
             </thead>
             <tbody>
@@ -79,10 +84,18 @@
                     <td>{{ $empleado->nombre }} {{ $empleado->apellido }}</td>
                     <td>{{ $empleado->direccion }}</td>
                     <td>{{ $empleado->telefono }}</td>
+                    <td class="text-center">
+                        <a href="{{ route('empleados.show', $empleado->id) }}" class="btn btn-sm btn-outline-info">
+                            <i class="bi bi-eye"></i> Ver
+                        </a>
+                        <a href="{{ route('empleados.edit', $empleado->id) }}" class="btn btn-sm btn-outline-warning" title="Editar">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                    </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="4" class="text-center">No hay empleados registrados.</td>
+                    <td colspan="5" class="text-center text-muted">No hay empleados registrados.</td>
                 </tr>
             @endforelse
             </tbody>
@@ -93,52 +106,32 @@
         </div>
     </div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-
-
 <script>
-    const searchInput = document.getElementById('searchInput');
-    const searchForm = document.getElementById('searchForm');
-    const error = document.getElementById('error-search');
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.getElementById('searchInput');
 
-    // Regex: letras y espacios, sin espacios dobles
-    const regex = /^[A-Za-z]+(?: [A-Za-z]+)*$/;
-    // Explicación: una o más letras, seguido opcionalmente por bloques de un espacio + letras
-
-    searchForm.addEventListener('submit', function (e) {
-        const value = searchInput.value.trim();
-
-        // Validar longitud máxima aquí también
-        if (value.length > 25 || !regex.test(value)) {
-            e.preventDefault();
-            error.classList.remove('d-none');
-            searchInput.classList.add('is-invalid');
-        } else {
-            error.classList.add('d-none');
-            searchInput.classList.remove('is-invalid');
+        if (searchInput.value !== '') {
+            searchInput.focus();
+            const val = searchInput.value;
+            searchInput.value = '';
+            searchInput.value = val;
         }
 
-    });
+        let timeout = null;
 
+        searchInput.addEventListener('input', function () {
+            clearTimeout(timeout);
 
-    searchInput.addEventListener('input', function () {
-        let val = this.value;
-        val = val.replace(/[^A-Za-z ]/g, '');
-        while (val.includes('  ')) {
-            val = val.replace(/  /g, ' ');
-        }
-        if (val.length > 25) {
-            val = val.slice(0, 25);
-        }
-
-        this.value = val;
-        if (regex.test(val.trim())) {
-            error.classList.add('d-none');
-            this.classList.remove('is-invalid');
-        }
+            timeout = setTimeout(() => {
+                const search = this.value;
+                const url = new URL(window.location.href);
+                url.searchParams.set('search', search);
+                window.location.href = url.toString();
+            }, 0.5);
+        });
     });
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
