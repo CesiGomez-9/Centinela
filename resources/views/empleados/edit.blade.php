@@ -52,8 +52,12 @@
                 <label class="form-label fw-bold">Nombre:</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                    <input type="text" id="nombre" name="nombre" value="{{ old('nombre', $empleado->nombre) }}" class="form-control" data-original="{{ $empleado->nombre }}">
-                    <div class="invalid-feedback" id="error-nombre"></div>
+                    <input type="text" id="nombre" name="nombre"
+                           value="{{ old('nombre', $empleado->nombre) }}"
+                           class="form-control" data-original="{{ $empleado->nombre }}
+                           @error('nombre') is-invalid @enderror"
+                           oninput="validarTexto(this,50)" />">
+                    <div class="invalid-feedback">@error('nombre') {{ $message }} @enderror</div>
                 </div>
             </div>
 
@@ -61,8 +65,12 @@
                 <label class="form-label fw-bold">Apellido:</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                    <input type="text" id="apellido" name="apellido" value="{{ old('apellido', $empleado->apellido) }}" class="form-control" data-original="{{ $empleado->apellido }}">
-                <div class="invalid-feedback" id="error-apellido"></div>
+                    <input type="text" id="apellido" name="apellido"
+                           value="{{ old('apellido', $empleado->apellido) }}"
+                           class="form-control" data-original="{{ $empleado->apellido }}
+                           @error('apellido') is-invalid @enderror"
+                           oninput="validarTexto(this,50)" />">
+                    <div class="invalid-feedback">@error('apellido') {{ $message }} @enderror</div>
                 </div>
             </div>
 
@@ -71,8 +79,8 @@
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-credit-card-2-front-fill"></i></span>
                     <input type="text" id="identidad" name="identidad" value="{{ old('identidad', $empleado->identidad) }}" class="form-control" oninput="formatearIdentidad(this)" data-original="{{ $empleado->identidad }}">
-                <div class="invalid-feedback" id="error-identidad"></div>
-                    @error('identidad') {{ $message }} @enderror
+                    <div class="invalid-feedback">@error('identidad') {{ $message }} @enderror</div>
+                    <div id="errorIdentidad" class="invalid-feedback"></div>
                 </div>
             </div>
 
@@ -81,7 +89,7 @@
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
                     <input type="text" id="direccion" name="direccion" value="{{ old('direccion', $empleado->direccion) }}" class="form-control" oninput="validarTexto(this,25)" data-original="{{ $empleado->direccion }}">
-                    <div class="invalid-feedback" id="error-direccion"></div>
+                    <div class="invalid-feedback">@error('direccion') {{ $message }} @enderror</div>
                 </div>
             </div>
 
@@ -90,7 +98,7 @@
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
                     <input type="email" id="email" name="email" value="{{ old('email', $empleado->email) }}" class="form-control" oninput="validarCorreo(this, 50)" data-original="{{ $empleado->email }}">
-                    <div class="invalid-feedback" id="error-email"></div>
+                    <div class="invalid-feedback">@error('email') {{ $message }} @enderror</div>
                 </div>
             </div>
 
@@ -99,7 +107,7 @@
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-telephone-fill"></i></span>
                     <input type="text" id="telefono" name="telefono" value="{{ old('telefono', $empleado->telefono) }}" class="form-control" maxlength="8" oninput="formatearTelefono(this)" data-original="{{ $empleado->telefono }}">
-                    <div class="invalid-feedback" id="error-telefono"></div>
+                    <div class="invalid-feedback">@error('telefono') {{ $message }} @enderror</div>
                 </div>
             </div>
 
@@ -114,7 +122,7 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="invalid-feedback" id="error-tipodesangre"></div>
+                <div class="invalid-feedback">@error('tipodesangre') {{ $message }} @enderror</div>
             </div>
 
             <div class="col-md-10">
@@ -161,7 +169,9 @@
                        placeholder="Especifique si es Otros"
                        style="{{ (is_array($alergiasEmpleado) && in_array('Otros', $alergiasEmpleado)) ? '' : 'display:none;' }}">
 
-                <div class="invalid-feedback" id="error-alergia"></div>
+                <div class="invalid-feedback">
+                    @error('alergiaOtros') {{ $message }} @enderror
+                </div>
             </div>
 
             <h3 class="text-center mt-4 mb-4" style="color: #09457f;">
@@ -172,8 +182,12 @@
                 <label class="form-label fw-bold">Nombre completo:</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-person-lines-fill"></i></span>
-                    <input type="text" id="contactodeemergencia" name="contactodeemergencia" value="{{ old('contactodeemergencia', $empleado->contactodeemergencia) }}" class="form-control" data-original="{{ $empleado->contactodeemergencia }}">
-                    <div class="invalid-feedback" id="error-contacto"></div>
+                    <input type="text" id="contactodeemergencia" name="contactodeemergencia"
+                           value="{{ old('contactodeemergencia', $empleado->contactodeemergencia) }}
+                           " class="form-control" data-original="{{ $empleado->contactodeemergencia }}
+                           @error('contactodeemergencia') is-invalid @enderror"
+                           oninput="validarTexto(this,100)" />">
+                    <div class="invalid-feedback">@error('contactodeemergencia') {{ $message }} @enderror</div>
                 </div>
             </div>
 
@@ -183,7 +197,7 @@
                     <span class="input-group-text"><i class="bi bi-telephone-fill"></i></span>
                     <input type="text" id="telefonodeemergencia" name="telefonodeemergencia" value="{{ old('telefonodeemergencia', $empleado->telefonodeemergencia) }}" class="form-control" maxlength="8" oninput="formatearTelefono(this)" data-original="{{ $empleado->telefonodeemergencia }}">
                 </div>
-                <div class="invalid-feedback" id="error-telefonoEmergencia"></div>
+                <div class="invalid-feedback">@error('telefonodeemergencia') {{ $message }} @enderror</div>
             </div>
 
             <div class="text-center mt-5">
@@ -204,6 +218,8 @@
 </div>
 
 <script>
+    const codigosDep = Array.from({length:18}, (_,i) => String(i+1).padStart(2,'0'));
+
     document.addEventListener('DOMContentLoaded', () => {
         const checkboxes = document.querySelectorAll('input[name="alergias[]"]');
         const otrosCheckbox = document.querySelector('input[name="alergias[]"][value="Otros"]');
@@ -253,6 +269,7 @@
                 campoAlimentos.value = '';
                 campoMedicamentos.value = '';
             }
+
             else {
                 otrosCheckbox.disabled = false;
                 ningunoCheckbox.disabled = false;
@@ -277,7 +294,7 @@
 
         campos.forEach(input => {
             input.addEventListener('input', function () {
-                this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+                this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '');
             });
         });
     });
@@ -286,19 +303,23 @@
 
         formulario.addEventListener('reset', function () {
             setTimeout(() => {
+
                 const campos = formulario.querySelectorAll('.form-control, .form-select');
                 campos.forEach(campo => {
                     campo.classList.remove('is-invalid');
                 });
+
                 const mensajes = formulario.querySelectorAll('.invalid-feedback');
                 mensajes.forEach(m => {
                     m.textContent = '';
                 });
+
                 const checks = formulario.querySelectorAll('input[name="alergias[]"]');
                 checks.forEach(check => {
                     check.checked = false;
                     check.classList.remove('is-invalid');
                 });
+
                 const campoOtros = document.getElementById('alergiaOtros');
                 if (campoOtros) {
                     campoOtros.value = '';
@@ -328,54 +349,168 @@
             }, 10);
         });
     });
-    document.addEventListener('DOMContentLoaded', () => {
-        const alergiasOriginales = @json($empleado->alergias);
 
-        document.querySelector('button[type="reset"]').addEventListener('click', function(e) {
-            e.preventDefault();
 
-            document.querySelectorAll('[data-original]').forEach(input => {
-                input.value = input.getAttribute('data-original');
-            });
 
-            const tipo = document.getElementById('tipodesangre');
-            const original = tipo.getAttribute('data-original');
-            if (original) tipo.value = original;
+    function validarTexto(input, max) {
+        input.value = input.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '').replace(/\s+/g,' ').slice(0, max);
+    }
 
-            document.querySelectorAll('.alergia-checkbox').forEach(chk => {
-                chk.checked = alergiasOriginales.includes(chk.value);
-            });
+    function formatearIdentidad(i) {
+        let v = i.value.replace(/[^0-9]/g, '');
+        if (v.length >= 4) {
+            const pref4 = v.slice(0,4), pref2 = v.slice(0,2);
+            if (!codigosDep.includes(pref4) && !codigosDep.includes(pref2)) {
+                v = '';
+            }
+        } else if (v.length >= 2) {
+            if (!codigosDep.includes(v.slice(0,2))) v = '';
+        }
+        v = v.slice(0,13);
+        if (v.length > 8) i.value = v.slice(0,4) + '-' + v.slice(4,8) + '-' + v.slice(8);
+        else if (v.length > 4) i.value = v.slice(0,4) + '-' + v.slice(4);
+        else i.value = v;
 
-            const otros = document.getElementById('alergiaOtros');
-            if (alergiasOriginales.includes('Otros')) {
-                otros.style.display = 'block';
-                otros.value = @json($empleado->alergiaOtros);
-            } else {
-                otros.style.display = 'none';
-                otros.value = '';
+        if (v.length >= 8) {
+            let anio = v.slice(4, 8);
+            let anioNum = parseInt(anio, 10);
+
+            if (isNaN(anioNum) || anioNum <= 1940) {
+                anioNum = 1940;
+            } else if (anioNum >= 2007) {
+                anioNum = 2007;
             }
 
-            limpiarErrores();
-        });
-        const alergiaOtrosInput = document.getElementById('alergiaOtros');
-        const otrosCheckbox = document.querySelector('.alergia-checkbox[value="Otros"]');
+            const anioStr = anioNum.toString().padStart(4, '0');
+            v = v.slice(0, 4) + anioStr + v.slice(8);
 
-        function toggleAlergiaOtros() {
-            if (otrosCheckbox.checked) {
-                alergiaOtrosInput.style.display = 'block';
+            if (anioNum <= 1939 || anioNum >= 2008) {
+                i.classList.add('is-invalid');
+                document.getElementById('errorIdentidad').textContent = 'El año debe ser igual o mayor a 1940 y menor o igual a 2007.';
             } else {
-                alergiaOtrosInput.style.display = 'none';
-                alergiaOtrosInput.value = '';
-                alergiaOtrosInput.classList.remove('is-invalid');
-                document.getElementById('error-alergia').textContent = '';
+                i.classList.remove('is-invalid');
+                document.getElementById('errorIdentidad').textContent = '';
             }
+        } else {
+            i.classList.remove('is-invalid');
+            document.getElementById('errorIdentidad').textContent = '';
         }
 
-        setTimeout(toggleAlergiaOtros, 0);
-        document.querySelectorAll('.alergia-checkbox').forEach(chk => {
-            chk.addEventListener('change', toggleAlergiaOtros);
+        v = v.slice(0, 13);
+        if (v.length > 8) {
+            i.value = v.slice(0, 4) + '-' + v.slice(4, 8) + '-' + v.slice(8);
+        } else if (v.length > 4) {
+            i.value = v.slice(0, 4) + '-' + v.slice(4);
+        } else {
+            i.value = v;
+        }
+    }
+
+    function configurarValidacionTelefono(id) {
+        const input = document.getElementById(id);
+
+        input.addEventListener('keydown', function(e) {
+            const teclasPermitidas = [
+                'Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Home', 'End'
+            ];
+            if (teclasPermitidas.includes(e.key)) return;
+
+            if (!/[0-9]/.test(e.key)) {
+                e.preventDefault();
+                return;
+            }
+            if (this.selectionStart === 0 && !['2', '3', '8', '9'].includes(e.key)) {
+                e.preventDefault();
+            }
+        });
+
+        input.addEventListener('input', function() {
+            let valor = this.value.replace(/[^0-9]/g, '');
+            if (valor.length > 0 && !['2', '3', '8', '9'].includes(valor[0])) {
+                valor = valor.slice(1);
+            }
+
+            if (valor.length > 8) {
+                valor = valor.slice(0, 8);
+            }
+
+            if (/^(\d)\1{7}$/.test(valor)) {
+                valor = '';
+            }
+
+            this.value = valor;
+        });
+    }
+
+    configurarValidacionTelefono('telefono');
+    configurarValidacionTelefono('telefonodeemergencia');
+
+    document.addEventListener('DOMContentLoaded', function () {
+        permitirSoloTelefonosValidos(document.getElementById('telefono'));
+        permitirSoloTelefonosValidos(document.getElementById('telefonodeemergencia'));
+    });
+
+
+    document.querySelectorAll('.alergia-checkbox').forEach(chk => {
+        chk.addEventListener('change', () => {
+            document.getElementById('alergiaOtros').style.display =
+                document.querySelector('.alergia-checkbox[value="Otros"]').checked ? 'block' : 'none';
         });
     });
+
+
+
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const checkboxOtros = document.querySelector('input[name="alergias[]"][value="Otros"]');
+        const campoOtros = document.getElementById('alergiaOtros');
+        const formulario = document.getElementById('empleadoForm');
+
+        checkboxOtros.addEventListener('change', function () {
+            if (this.checked) {
+                campoOtros.style.display = 'block';
+            } else {
+                campoOtros.style.display = 'none';
+                campoOtros.classList.remove('is-invalid');
+            }
+        });
+
+        formulario.addEventListener('submit', function (e) {
+            let errores = [];
+
+            if (checkboxOtros.checked && campoOtros.value.trim() === '') {
+                campoOtros.classList.add('is-invalid');
+                errores.push('Debe especificar la alergia Otros');
+            } else {
+                campoOtros.classList.remove('is-invalid');
+            }
+
+            if (errores.length > 0) {
+                e.preventDefault();
+            }
+        });
+
+        campoOtros.addEventListener('input', function () {
+            if (campoOtros.value.trim() !== '') {
+                campoOtros.classList.remove('is-invalid');
+            }
+        });
+    });
+    document.addEventListener('DOMContentLoaded', () => {
+        const checkboxOtros = document.querySelector('input[value="Otros"]');
+        const campoOtros = document.getElementById('alergiaOtros');
+
+        checkboxOtros.addEventListener('change', function () {
+            if (this.checked) {
+                campoOtros.style.display = 'block';
+            } else {
+                campoOtros.style.display = 'none';
+                campoOtros.value = '';
+            }
+        });
+    });
+
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

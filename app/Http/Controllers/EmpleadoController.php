@@ -41,13 +41,13 @@ class EmpleadoController extends Controller
     public function store(Request $request)
     {
         $rules = [
-            'nombre' => 'required|string|max:50',
-            'apellido' => 'required|string|max:50',
+            'nombre' => 'required|string|max:50|regex:/^[\p{L}\s]+$/u',
+            'apellido' => 'required|string|max:50|regex:/^[\p{L}\s]+$/u',
             'identidad' => 'required|string|size:15|unique:empleados,identidad',
             'direccion' => 'required|string|max:150',
             'email' => 'required|email|max:50|unique:empleados,email',
             'telefono' => 'required|string|max:8|unique:empleados,telefono',
-            'contactodeemergencia' => 'required|string|max:100',
+            'contactodeemergencia' => 'required|string|max:100|regex:/^[\p{L}\s]+$/u',
             'telefonodeemergencia' => 'required|string|max:8|unique:empleados,telefonodeemergencia',
             'tipodesangre' => 'required|string',
             'alergias' => 'required|array|min:1',
@@ -65,6 +65,7 @@ class EmpleadoController extends Controller
             'direccion.required' => 'Debe ingresar una dirección',
             'telefono.required' => 'Debe ingresar un número de teléfono',
             'telefono.unique' => 'Este número de teléfono ya está registrado',
+            'telefono.max' => 'El teléfono no debe tener más de 8 dígitos.',
             'email.required' => 'Debe ingresar un correo electrónico',
             'email.email' => 'Debe ingresar un correo electrónico válido',
             'email.unique' => 'Este correo ya está registrado',
@@ -76,6 +77,7 @@ class EmpleadoController extends Controller
             'contactodeemergencia.required' => 'Debe ingresar un nombre con su apellido',
             'telefonodeemergencia.required' => 'Debe ingresar un número de teléfono',
             'telefonodeemergencia.unique' => 'Este número de teléfono ya está registrado',
+            'telefonodeemergencia.max' => 'El teléfono de emergencia no debe tener más de 8 dígitos.',
         ];
 
         $validated = $request->validate($rules, $messages);
@@ -133,13 +135,13 @@ class EmpleadoController extends Controller
         $empleado = Empleado::findOrFail($id);
 
         $rules = [
-            'nombre' => 'required|string|max:50',
-            'apellido' => 'required|string|max:50',
+            'nombre' => 'required|string|max:50|regex:/^[\p{L}\s]+$/u',
+            'apellido' => 'required|string|max:50|regex:/^[\p{L}\s]+$/u',
             'direccion' => 'required|string|max:150',
             'email' => 'required|email|max:50|unique:empleados,email,' . $empleado->id,
             'telefono' => 'required|string|max:8|unique:empleados,telefono,' . $empleado->id,
             'identidad' => 'required|string|size:15|unique:empleados,identidad,' . $empleado->id,
-            'contactodeemergencia' => 'required|string|max:100',
+            'contactodeemergencia' => 'required|string|max:100|regex:/^[\p{L}\s]+$/u',
             'telefonodeemergencia' => 'required|string|max:8',
             'tipodesangre' => 'required|string',
             'alergias' => 'required|array|min:1',
@@ -157,11 +159,13 @@ class EmpleadoController extends Controller
             'email.unique' => 'Este correo ya está registrado',
             'telefono.required' => 'Debe ingresar un número de teléfono',
             'telefono.unique' => 'Este número de teléfono ya está registrado',
+            'telefono.max' => 'El teléfono no debe tener más de 8 dígitos.',
             'identidad.required' => 'Debe ingresar una identidad',
             'identidad.size' => 'La identidad debe tener exactamente 15 caracteres',
             'identidad.unique' => 'Esta identidad ya está registrada',
             'contactodeemergencia.required' => 'Debe ingresar un nombre con su apellido',
             'telefonodeemergencia.required' => 'Debe ingresar un número de teléfono',
+            'telefonodeemergencia.max' => 'El teléfono de emergencia no debe tener más de 8 dígitos.',
             'tipodesangre.required' => 'Debe seleccionar un tipo de sangre',
             'alergias.required' => 'Debe seleccionar al menos una alergia',
             'alergiaOtros.regex' => 'Solo letras y espacios en el campo de alergia',
@@ -172,6 +176,7 @@ class EmpleadoController extends Controller
         $validated = $request->validate($rules, $messages);
         $alergias = $validated['alergias'];
         $errores = [];
+        
         if (in_array('Otros', $alergias) && empty($validated['alergiaOtros'])) {
             $errores['alergiaOtros'] = 'Debe especificar la alergia en "Otros".';
         }
@@ -202,6 +207,25 @@ class EmpleadoController extends Controller
         $validated['alergiaAlimentos'] = $validated['alergiaAlimentos'] ?? '';
         $validated['alergiaMedicamentos'] = $validated['alergiaMedicamentos'] ?? '';
 
+        $empleado->fill([
+            'nombre' => $validated['nombre'],
+            'apellido' => $validated['apellido'],
+            'direccion' => $validated['direccion'],
+            'email' => $validated['email'],
+            'telefono' => $validated['telefono'],
+            'identidad' => $validated['identidad'],
+            'contactodeemergencia' => $validated['contactodeemergencia'],
+            'telefonodeemergencia' => $validated['telefonodeemergencia'],
+            'tipodesangre' => $validated['tipodesangre'],
+            'alergias' => $validated['alergias'],
+            'alergiaOtros' => $validated['alergiaOtros'],
+            'alergiaAlimentos' => $validated['alergiaAlimentos'],
+            'alergiaMedicamentos' => $validated['alergiaMedicamentos'],
+        ]);
+        if (!$empleado->isDirty()) {
+            return redirect()->route('empleados.show', $empleado->id)
+                ->with('info', 'No se realizaron cambios.');
+        }
         $empleado->update($validated);
 
         return redirect()->route('empleados.show', $empleado->id)->with('success', 'Empleado actualizado correctamente.');

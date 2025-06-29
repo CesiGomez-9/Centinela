@@ -10,8 +10,6 @@ class Empleado extends Model
 {
     use HasFactory;
 
-    public $timestamps = false;
-
     protected $fillable = [
         'nombre',
         'apellido',
@@ -29,5 +27,7 @@ class Empleado extends Model
     ];
     protected $casts = [
         'alergias' => 'array',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 }

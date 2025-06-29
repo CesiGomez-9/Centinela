@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('alergiaOtros', 150)->nullable();
             $table->string('alergiaAlimentos', 150)->nullable();
             $table->string('alergiaMedicamentos', 150)->nullable();
+            $table->timestamps();
 
         });
     }

@@ -24,7 +24,6 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             InventariosTableSeeder::class,
-            EmpleadoSeeder::class,
         ]);
     }
 

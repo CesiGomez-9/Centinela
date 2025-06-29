@@ -37,7 +37,7 @@
 
         <h3 class="text-center mb-4" style="color:#09457f;">
             <i class="bi bi-people-fill me-2"></i>
-            @isset($empleado) Editar empleado @else Registrar nuevo empleado @endisset
+            @isset($empleado) Editar empleado @else Registrar un nuevo empleado @endisset
         </h3>
 
         @if(session('guardado'))
@@ -85,6 +85,7 @@
                                class="form-control @error('identidad') is-invalid @enderror"
                                oninput="formatearIdentidad(this)" />
                         <div class="invalid-feedback">@error('identidad') {{ $message }} @enderror</div>
+                        <div id="errorIdentidad" class="invalid-feedback"></div>
                     </div>
                 </div>
 
@@ -296,7 +297,7 @@
 
         campos.forEach(input => {
             input.addEventListener('input', function () {
-                this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+                this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '');
             });
         });
     });
@@ -355,7 +356,7 @@
 
 
     function validarTexto(input, max) {
-        input.value = input.value.replace(/[^A-Za-z ]/g,' ').replace(/\s+/g,' ').slice(0, max);
+        input.value = input.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '').replace(/\s+/g,' ').slice(0, max);
     }
 
     function formatearIdentidad(i) {
@@ -372,7 +373,42 @@
         if (v.length > 8) i.value = v.slice(0,4) + '-' + v.slice(4,8) + '-' + v.slice(8);
         else if (v.length > 4) i.value = v.slice(0,4) + '-' + v.slice(4);
         else i.value = v;
+
+        if (v.length >= 8) {
+            let anio = v.slice(4, 8);
+            let anioNum = parseInt(anio, 10);
+
+            if (isNaN(anioNum) || anioNum <= 1940) {
+                anioNum = 1940;
+            } else if (anioNum >= 2007) {
+                anioNum = 2007;
+            }
+
+            const anioStr = anioNum.toString().padStart(4, '0');
+            v = v.slice(0, 4) + anioStr + v.slice(8);
+
+            if (anioNum <= 1939 || anioNum >= 2008) {
+                i.classList.add('is-invalid');
+                document.getElementById('errorIdentidad').textContent = 'El año debe ser igual o mayor a 1940 y menor o igual a 2007.';
+            } else {
+                i.classList.remove('is-invalid');
+                document.getElementById('errorIdentidad').textContent = '';
+            }
+        } else {
+            i.classList.remove('is-invalid');
+            document.getElementById('errorIdentidad').textContent = '';
+        }
+
+        v = v.slice(0, 13);
+        if (v.length > 8) {
+            i.value = v.slice(0, 4) + '-' + v.slice(4, 8) + '-' + v.slice(8);
+        } else if (v.length > 4) {
+            i.value = v.slice(0, 4) + '-' + v.slice(4);
+        } else {
+            i.value = v;
+        }
     }
+
 
     function configurarValidacionTelefono(id) {
         const input = document.getElementById(id);
@@ -417,19 +453,12 @@
         permitirSoloTelefonosValidos(document.getElementById('telefono'));
         permitirSoloTelefonosValidos(document.getElementById('telefonodeemergencia'));
     });
-
-
     document.querySelectorAll('.alergia-checkbox').forEach(chk => {
         chk.addEventListener('change', () => {
             document.getElementById('alergiaOtros').style.display =
                 document.querySelector('.alergia-checkbox[value="Otros"]').checked ? 'block' : 'none';
         });
     });
-
-
-
-
-
     document.addEventListener('DOMContentLoaded', function () {
         const checkboxOtros = document.querySelector('input[name="alergias[]"][value="Otros"]');
         const campoOtros = document.getElementById('alergiaOtros');
@@ -455,8 +484,7 @@
             }
 
             if (errores.length > 0) {
-                e.preventDefault();
-                // Aquí puedes mostrar los errores si quieres
+                e.preventDefault()
             }
              });
 
