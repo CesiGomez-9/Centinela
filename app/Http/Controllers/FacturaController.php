@@ -33,6 +33,9 @@ class FacturaController extends Controller
      */
     public function create()
     {
+        $empleados = \App\Models\Empleado::all();
+        return view('facturas.formulario', compact('empleados'));
+
         $nombresPorCategoria = [
             'Cámaras de seguridad' => [
                 'Cámara IP Full HD', 'Cámara Bullet 4K', 'Cámara domo PTZ',
@@ -78,19 +81,33 @@ class FacturaController extends Controller
      */
     public function store(Request $request)
     {
+        // Validar datos...
+
+        $factura = new Factura($request->all());
+
+        // Asignar responsable automático (ejemplo: usuario logueado)
+        $factura->responsable_id = auth()->user()->empleado->id ?? null;
+
+        $factura->save();
+
+        // Redireccionar o mostrar mensaje...
         $validated = $request->validate([
+
             'numero_factura' => [
                 'required',
                 'min:3',
                 'max:15',
                 'regex:/^[A-Za-z0-9\-]+$/',
                 'regex:/.*\S.*/',
+                'responsable_id' => 'required|exists:empleados,id',
                 Rule::unique('facturas', 'numero_factura')
+
             ],
             'fecha' => ['required', 'date', 'after_or_equal:2000-01-01', 'before_or_equal:2099-12-31' ],
             'proveedor' => ['required', 'min:3', 'max:30', 'regex:/^[\pL0-9\s\-.,#]+$/u', 'regex:/.*\S.*/'],
             'forma_pago' => ['required', 'in:Efectivo,Cheque,Transferencia'],
             'responsable' => ['required', 'string', 'min:3', 'max:30', 'regex:/^[\pL0-9\s\-.,#]+$/u', 'regex:/.*\S.*/'],
+            'responsable_id' => $request->responsable_id,
 
             'productos' => ['required', 'array', 'min:1'],
             'productos.*.nombre' => ['required', 'string', 'max:100'],
@@ -161,8 +178,12 @@ class FacturaController extends Controller
                 'subtotal' => $subtotal,
                 'impuestos' => $impuestos,
                 'totalF' => $totalFinal,
+
             ]);
         });
+        $validated['responsable_id'] = $request->responsable_id;
+
+        Factura::create($validated);
 
         return redirect()->route('facturas.index')->with('status', 'Factura registrada correctamente');
 
@@ -175,7 +196,10 @@ class FacturaController extends Controller
      */
     public function show(string $id)
     {
-        $factura = Factura::with('detalles')->findOrFail($id);
+        // Busca la factura por id, si no la encuentra lanza error 404
+        $factura = Factura::with(['empleado', 'productos'])->findOrFail($id);
+
+        // Retorna la vista y pasa la variable $factura
         return view('facturas.show', compact('factura'));
     }
 
@@ -202,4 +226,5 @@ class FacturaController extends Controller
     {
         //
     }
+
 }

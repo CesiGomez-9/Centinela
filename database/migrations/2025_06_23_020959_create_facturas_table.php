@@ -16,11 +16,13 @@ return new class extends Migration
             $table->string('numero_factura')->unique();
             $table->date('fecha');
             $table->string('proveedor');
-            $table->string('forma_pago', ['Efectivo', 'Cheque', 'Transferencia'])->default('Efectivo');
+            $table->enum('forma_pago', ['Efectivo', 'Cheque', 'Transferencia'])->default('Efectivo');
             $table->decimal('subtotal', 10, 2)->default(0);
             $table->decimal('impuestos', 10, 2)->default(0);
             $table->decimal('totalF', 10, 2)->default(0);
-            $table->string('responsable')->nullable();
+            $table->unsignedBigInteger('responsable_id');
+            $table->foreign('responsable_id')->references('id')->on('empleados')->onDelete('cascade');
+
             $table->timestamps();
         });
     }

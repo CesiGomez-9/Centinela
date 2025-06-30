@@ -20,6 +20,19 @@ class FacturaFactory extends Factory
 
     public function definition(): array
     {
+        $responsable = \App\Models\Empleado::inRandomOrder()->first();
+
+        if (!$responsable) {
+            // Opcional: lanzar excepción para saber que no hay empleados
+            throw new \Exception('No hay empleados registrados. Debes crear al menos uno.');
+
+            // O asignar un id fijo (si sabes que existe un empleado con id 1)
+            // $responsableId = 1;
+        } else {
+            $responsableId = $responsable->id;
+        }
+
+
         return [
             'numero_factura' => $this->faker->unique()->numerify('N°-#######'),
             'fecha' => $this->faker->date(),
@@ -39,7 +52,8 @@ class FacturaFactory extends Factory
             'subtotal' => 0,
             'impuestos' => 0,
             'totalF' => 0,
-            'responsable' => $this->faker->name(),
+            'responsable_id' => $responsable->id,
+
         ];
     }
 

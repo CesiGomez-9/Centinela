@@ -142,12 +142,22 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-6">
-                                <label class="form-label">Responsable</label>
-                                <input type="text" name="responsable" id="responsable" class="form-control" required maxlength="30">
-                                <div class="error-message" id="error-responsable"></div>
-                            </div>
+                            <form action="{{ route('facturas.store') }}" method="POST">
+                                @csrf
+                                <!-- Otros campos -->
 
+                                <p><strong>Responsable:</strong>
+                                    @if (isset($empleado))
+                                        {{ $empleado->nombre }} {{ $empleado->apellido }}
+                                    @else
+                                        No asignado
+                                    @endif
+                                </p>
+                                <input type="hidden" name="responsable_id" value="{{ $empleado->id ?? '' }}">
+
+
+
+                            </form>
                             <!-- Botones -->
                             <div class="text-center mt-5">
                                 <a href="{{ route('facturas.index') }}" class="btn btn-danger me-2">
@@ -507,7 +517,7 @@
             }
 
             // Validar responsable
-            const responsable = document.getElementById('responsable').value.trim();
+            const responsable = document.getElementById('responsable_id').value.trim();
             if (!responsable) {
                 mostrarError('responsable', 'Responsable es obligatorio');
                 esValido = false;
@@ -531,7 +541,7 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             const numeroFactura = document.getElementById('numeroFactura');
-            const responsable = document.getElementById('responsable');
+            const responsable = document.getElementById('responsable_id');
             const errorNumeroFactura = document.getElementById('errorNumeroFactura');
             const errorResponsable = document.getElementById('errorResponsable');
 

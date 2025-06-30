@@ -20,8 +20,5 @@ class DetalleFactura extends Model
     ];
 
     // Relación inversa
-    public function factura()
-    {
-        return $this->belongsTo(Factura::class);
-    }
+
 }
