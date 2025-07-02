@@ -1,22 +1,21 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta charset="UTF-8"/>
     <title>Registrar empleado</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet"/>
     <style>
-        .error-msg {
-            color: red;
-            font-size: 0.9em;
-        }
+
     </style>
 </head>
 <body style="background-color: #e6f0ff;">
-<nav class="navbar navbar-expand-lg" style="background-color: #0A1F44; padding: 1.2rem; font-family: 'Courier New', monospace;">
-    <div class="container" style="max-width: 1600px;">
+
+<nav class="navbar navbar-expand-lg" style="background-color: #0A1F44; padding:1.2rem; font-family:'Courier New', monospace;">
+    <div class="container" style="max-width:1600px;">
         <a class="navbar-brand text-white fw-bold" href="#">
-            <img src="{{ asset('seguridad/logo.jpg') }}" style="height:80px; margin-right: 10px;" />
+            <img src="{{ asset('seguridad/logo.jpg') }}" style="height:80px; margin-right:10px;"/>
             Grupo Centinela
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -32,408 +31,484 @@
         </div>
     </div>
 </nav>
+<div class="container mt-5" style="max-width:900px;">
+    <div class="card shadow p-4 bg-white position-relative">
+        <i class="bi bi-person-badge position-absolute top-0 end-0 p-3 text-secondary opacity-25" style="font-size:4rem;"></i>
 
-<div class="container mt-5" style="max-width: 900px;">
-    <div class="card shadow p-4" style="background-color: #fff;">
-        <div class="position-absolute top-0 end-0 p-3 text-secondary opacity-25">
-            <i class="bi bi-person-badge" style="font-size: 4rem;"></i>
-        </div>
-
-        <h3 class="text-center mb-4" style="color: #09457f;">
+        <h3 class="text-center mb-4" style="color:#09457f;">
             <i class="bi bi-people-fill me-2"></i>
-            @isset($empleado)
-                Editar empleado
-            @else
-                Registrar nuevo empleado
-            @endisset
+            @isset($empleado) Editar empleado @else Registrar un nuevo empleado @endisset
         </h3>
 
-        @if(session('guardado') || (isset($guardado) && $guardado))
-            <div class="alert alert-success">
-                ¡Datos del empleado guardados correctamente!
-            </div>
+        @if(session('guardado'))
+            <div class="alert alert-success">¡Datos guardados correctamente!</div>
         @endif
 
+        @if(session('duplicate_error'))
+            <div class="alert alert-danger">{{ session('duplicate_error') }}</div>
+        @endif
 
-
-        <form id="empleadoForm" method="POST" action="{{ route('empleados.store') }}" onsubmit="return validarFormulario()">
+        <form method="POST" action="{{ route('empleados.store') }}" id="empleadoForm">
             @csrf
             <div class="row g-3">
+
                 <div class="col-md-4">
                     <label class="form-label">Nombre</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                        <input type="text" id="nombre" name="nombre" maxlength="25" class="form-control" value="{{ old('nombre') }}" oninput="validarTexto(this,25)" />
-                        <div class="invalid-feedback" id="error-nombre"></div>
+                        <input type="text" id="nombre" name="nombre" maxlength="50"
+                               value="{{ old('nombre') }}"
+                               class="form-control @error('nombre') is-invalid @enderror"
+                               oninput="validarTexto(this,50)" />
+                        <div class="invalid-feedback">@error('nombre') {{ $message }} @enderror</div>
                     </div>
                 </div>
+
                 <div class="col-md-4">
                     <label class="form-label">Apellido</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                        <input type="text" id="apellido" name="apellido" maxlength="25" class="form-control" value="{{ old('apellido') }}" oninput="validarTexto(this,25)" />
+                        <input type="text" id="apellido" name="apellido" maxlength="50"
+                               value="{{ old('apellido') }}"
+                               class="form-control @error('apellido') is-invalid @enderror"
+                               oninput="validarTexto(this,50)" />
+                        <div class="invalid-feedback">@error('apellido') {{ $message }} @enderror</div>
                     </div>
-                    <div class="error-msg" id="error-apellido"></div>
                 </div>
+
                 <div class="col-md-4">
                     <label class="form-label">Identidad</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-credit-card-2-front-fill"></i></span>
-                        <input type="text" id="identidad" name="identidad" maxlength="15" class="form-control" value="{{ old('identidad') }}" oninput="formatearIdentidad(this, 15)" />
+                        <input type="text" id="identidad" name="identidad" maxlength="15"
+                               value="{{ old('identidad') }}"
+                               class="form-control @error('identidad') is-invalid @enderror"
+                               oninput="formatearIdentidad(this)" />
+                        <div class="invalid-feedback">@error('identidad') {{ $message }} @enderror</div>
+                        <div id="errorIdentidad" class="invalid-feedback"></div>
                     </div>
-                    <div class="error-msg" id="error-identidad"></div>
                 </div>
+
                 <div class="col-md-6">
                     <label class="form-label">Dirección</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
-                        <input type="text" id="direccion" name="direccion" maxlength="25" class="form-control" value="{{ old('direccion') }}" oninput="validarTexto(this,25)" />
+                        <input type="text" id="direccion" name="direccion" maxlength="150"
+                               value="{{ old('direccion') }}"
+                               class="form-control @error('direccion') is-invalid @enderror"
+                               oninput="validarTexto(this,150)" />
+                        <div class="invalid-feedback">@error('direccion') {{ $message }} @enderror</div>
                     </div>
-                    <div class="error-msg" id="error-direccion"></div>
                 </div>
+
                 <div class="col-md-6">
                     <label class="form-label">Correo electrónico</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
-                        <input type="email" id="email" name="email" maxlength="20" class="form-control" value="{{ old('email') }}" oninput="validarCorreo(this,20)" />
+                        <input type="email" id="email" name="email" maxlength="50"
+                               value="{{ old('email') }}"
+                               class="form-control @error('email') is-invalid @enderror" />
+                        <div class="invalid-feedback">@error('email') {{ $message }} @enderror</div>
                     </div>
-                    <div class="error-msg" id="error-email"></div>
                 </div>
+
                 <div class="col-md-4">
                     <label class="form-label">Teléfono</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-telephone-fill"></i></span>
-                        <input type="text" id="telefono" name="telefono" maxlength="11" class="form-control" value="{{ old('telefono') }}" oninput="formatearTelefono(this)" />
+                        <input type="text" id="telefono" name="telefono" maxlength="8"
+                               value="{{ old('telefono') }}"
+                               class="form-control @error('telefono') is-invalid @enderror"
+                               oninput="formatearTelefono(this)" />
+                        <div class="invalid-feedback">@error('telefono') {{ $message }} @enderror</div>
                     </div>
-                    <div class="error-msg" id="error-telefono"></div>
                 </div>
+
                 <div class="col-md-6">
                     <label class="form-label">Tipo de sangre</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-droplet-fill"></i></span>
-                        <select id="tipodesangre" name="tipodesangre" class="form-select">
+                        <select id="tipodesangre" name="tipodesangre"
+                                class="form-select @error('tipodesangre') is-invalid @enderror">
                             <option value="">Seleccione...</option>
                             @foreach(['A+','A-','B+','B-','AB+','AB-','O+','O-'] as $tipo)
-                                <option value="{{ $tipo }}" {{ old('tipodesangre') == $tipo ? 'selected' : '' }}>{{ $tipo }}</option>
+                                <option value="{{ $tipo }}" {{ old('tipodesangre')==$tipo?'selected':'' }}>{{ $tipo }}</option>
                             @endforeach
                         </select>
+                        <div class="invalid-feedback">@error('tipodesangre') {{ $message }} @enderror</div>
                     </div>
-                    <div class="error-msg" id="error-tipodesangre"></div>
                 </div>
+
                 <div class="col-md-10">
-                    <label class="form-label">Alergias (seleccione)</label><br />
+                    <label class="form-label"><i class="bi bi-exclamation-diamond-fill me-2"></i>Alergias (seleccione):</label><br>
+
                     @php
-                        $tiposAlergia = ['Polvo', 'Polen', 'Medicamentos', 'Alimentos', 'Ninguno', 'Otros'];
-                        $oldAlergias = old('alergias', []);
+                        $tiposAlergia = ['Polvo','Polen','Medicamentos','Alimentos','Ninguno','Otros'];
+                        $oldA = old('alergias', []);
                     @endphp
-                    @foreach($tiposAlergia as $alergia)
+
+                    @foreach($tiposAlergia as $al)
                         <div class="form-check form-check-inline">
-                            <input
-                                class="form-check-input alergia-checkbox"
-                                type="checkbox"
-                                value="{{ $alergia }}"
-                                name="alergias[]"
-                                {{ in_array($alergia, $oldAlergias) ? 'checked' : '' }}
-                            />
-                            <label class="form-check-label">{{ $alergia }}</label>
+                            <input class="form-check-input alergia-checkbox
+                   @if($errors->has('alergias')) is-invalid @endif"
+                                   type="checkbox" name="alergias[]" value="{{ $al }}"
+                                {{ in_array($al, $oldA) ? 'checked' : '' }} />
+                            <label class="form-check-label">{{ $al }}</label>
                         </div>
                     @endforeach
-                    <input
-                        type="text"
-                        id="alergiaOtros"
-                        name="alergiaOtros"
-                        maxlength="50"
-                        class="form-control mt-2"
-                        style="{{ in_array('Otros', $oldAlergias) ? 'display:block;' : 'display:none;' }}"
-                        placeholder="Especifique alergia"
-                        value="{{ old('alergiaOtros') }}"
-                        oninput="validarTexto(this,50)"
-                    />
-                    <div class="error-msg" id="error-alergia"></div>
+                    @error('alergias')
+                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                    @enderror
+                    <input type="text" id="alergiaAlimentos" name="alergiaAlimentos" maxlength="150"
+                           value="{{ old('alergiaAlimentos') }}" class="form-control mt-2 solo-letras" placeholder="Especifique alergia a alimentos"
+                           style="display:none;">
+                    <div class="invalid-feedback">
+                        @error('alergiaAlimentos') {{ $message }} @enderror
+                    </div>
+                    <input type="text" id="alergiaMedicamentos" name="alergiaMedicamentos" maxlength="150"
+                           value="{{ old('alergiaMedicamentos') }}" class="form-control mt-2 solo-letras" placeholder="Especifique alergia a medicamentos"
+                           style="display:none;">
+                    <div class="invalid-feedback">
+                        @error('alergiaMedicamentos') {{ $message }} @enderror
+                    </div>
+                    <input type="text" id="alergiaOtros" name="alergiaOtros" maxlength="150"
+                           value="{{ old('alergiaOtros') }}" class="form-control mt-2 solo-letras"
+                           placeholder="Especifique alergia"
+                           style="{{ in_array('Otros',$oldA)?'display:block;':'display:none;' }}">
+                    <div class="invalid-feedback">
+                        @error('alergiaOtros') {{ $message }} @enderror
+                    </div>
                 </div>
 
-
-                <h3 class="text-center mb-4" style="color: #09457f;">
-                    <i class="bi bi-people-fill me-2"></i>
-                    @isset($empleado)
-                        Editar empleado
-                    @else
-                        Contacto de emergencia
-                    @endisset
+                <h3 class="text-center mb-4 mt-4" style="color:#09457f;">
+                    <i class="bi bi-people-fill me-2"></i>Contacto de emergencia
                 </h3>
 
                 <div class="col-md-4">
-                    <label class="form-label">Nombre y Apellido</label>
+                    <label class="form-label">Nombre completo</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-person-lines-fill"></i></span>
-                        <input type="text" id="contactoEmergencia" name="contactodeemergencia" maxlength="25" class="form-control" value="{{ old('contactodeemergencia') }}" oninput="validarTexto(this,25)" />
+                        <input type="text" id="contactoEmergencia" name="contactodeemergencia" maxlength="100"
+                               value="{{ old('contactodeemergencia') }}"
+                               class="form-control @error('contactodeemergencia') is-invalid @enderror"
+                               oninput="validarTexto(this,100)" />
+                        <div class="invalid-feedback">@error('contactodeemergencia') {{ $message }} @enderror</div>
                     </div>
-                    <div class="error-msg" id="error-contacto"></div>
                 </div>
+
                 <div class="col-md-4">
                     <label class="form-label">Teléfono</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-telephone-fill"></i></span>
-                        <input type="text" id="telefonodeemergencia" name="telefonodeemergencia" maxlength="11" class="form-control" value="{{ old('telefonodeemergencia') }}" oninput="formatearTelefono(this)" />
+                        <input type="text" id="telefonodeemergencia" name="telefonodeemergencia" maxlength="8"
+                               value="{{ old('telefonodeemergencia') }}"
+                               class="form-control @error('telefonodeemergencia') is-invalid @enderror"
+                               oninput="formatearTelefono(this)" />
+                        <div class="invalid-feedback">@error('telefonodeemergencia') {{ $message }} @enderror</div>
                     </div>
-                    <div class="error-msg" id="error-telefonoEmergencia"></div>
                 </div>
 
-
-                <div class="text-center mt-5">
-                    <a href="{{ route('empleados.index') }}" class="btn btn-danger"
-                       onclick="return confirm('¿Estás seguro que deseas cancelar? Se perderán los cambios no guardados.');">
-                        <i class="bi bi-x-circle me-2"></i> Cancelar
-                        </a>
-
-                    <!-- Botón Limpiar -->
-                    <button type="button" class="btn btn-danger" onclick="limpiarFormulario()">
-                        <i class="bi bi-eraser-fill me-2"></i> Limpiar
-                    </button>
-
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-save-fill me-2"></i> Guardar
-                    </button>
-                    </div>
+                <div class="text-center mt-5 col-12">
+                    <a href="{{ route('empleados.index') }}" class="btn btn-danger me-2">
+                        <i class="bi bi-x-circle me-2"></i>Cancelar
+                    </a>
+                    <button type="reset" class="btn btn-warning me-2"><i class="bi bi-eraser-fill me-2"></i>Limpiar</button>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-save-fill me-2"></i>Guardar</button>
+                </div>
             </div>
-
         </form>
     </div>
-
-    @if(isset($guardado) && $guardado && isset($empleados))
-        <div class="card shadow p-4 mt-4" style="background-color: #fff;">
-            <h3>Empleados registrados</h3>
-            <ul class="list-group">
-                @foreach($empleados as $emp)
-                    <li class="list-group-item">
-                        <strong>{{ $emp->nombre }} {{ $emp->apellido }}</strong> — Identidad: {{ $emp->identidad }}
-                    </li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
 </div>
 
 <script>
+    const codigosDep = Array.from({length:18}, (_,i) => String(i+1).padStart(2,'0'));
 
+    document.addEventListener('DOMContentLoaded', () => {
+        const checkboxes = document.querySelectorAll('input[name="alergias[]"]');
+        const otrosCheckbox = document.querySelector('input[name="alergias[]"][value="Otros"]');
+        const ningunoCheckbox = document.querySelector('input[name="alergias[]"][value="Ninguno"]');
+        const alimentosCheckbox = document.querySelector('input[name="alergias[]"][value="Alimentos"]');
+        const medicamentosCheckbox = document.querySelector('input[name="alergias[]"][value="Medicamentos"]');
 
-    function cancelarFormulario() {
-        if (confirm("¿Estás seguro que deseas cancelar? Se perderán los datos ingresados.")) {
-            document.getElementById('empleadoForm').reset();
+        const campoAlimentos = document.getElementById('alergiaAlimentos');
+        const campoMedicamentos = document.getElementById('alergiaMedicamentos');
+        const campoOtros = document.getElementById('alergiaOtros');
+
+        function actualizarCampos() {
+            const otrosChecked = otrosCheckbox.checked;
+            const ningunoChecked = ningunoCheckbox.checked;
+            const alimentosChecked = alimentosCheckbox.checked;
+            const medicamentosChecked = medicamentosCheckbox.checked;
+
+            if (otrosChecked) {
+                ningunoCheckbox.checked = false;
+                ningunoCheckbox.disabled = true;
+                checkboxes.forEach(chk => {
+                    if (chk !== otrosCheckbox && chk !== ningunoCheckbox) {
+                        chk.checked = false;
+                        chk.disabled = true;
+                    }
+                });
+                campoOtros.style.display = 'block';
+                campoAlimentos.style.display = 'none';
+                campoMedicamentos.style.display = 'none';
+                campoAlimentos.value = '';
+                campoMedicamentos.value = '';
+            }
+
+            else if (ningunoChecked) {
+                otrosCheckbox.checked = false;
+                otrosCheckbox.disabled = true;
+                checkboxes.forEach(chk => {
+                    if (chk !== ningunoCheckbox && chk !== otrosCheckbox) {
+                        chk.checked = false;
+                        chk.disabled = true;
+                    }
+                });
+                campoOtros.style.display = 'none';
+                campoAlimentos.style.display = 'none';
+                campoMedicamentos.style.display = 'none';
+                campoOtros.value = '';
+                campoAlimentos.value = '';
+                campoMedicamentos.value = '';
+            }
+
+            else {
+                otrosCheckbox.disabled = false;
+                ningunoCheckbox.disabled = false;
+                checkboxes.forEach(chk => {
+                    chk.disabled = false;
+                });
+
+                campoOtros.style.display = otrosCheckbox.checked ? 'block' : 'none';
+                campoAlimentos.style.display = alimentosCheckbox.checked ? 'block' : 'none';
+                campoMedicamentos.style.display = medicamentosCheckbox.checked ? 'block' : 'none';
+            }
         }
-    }
-    document.addEventListener("DOMContentLoaded", function () {
-        const resetBtn = document.querySelector('button[type="reset"]');
 
-        if (resetBtn) {
-            resetBtn.addEventListener('click', function (e) {
-                e.preventDefault();
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', actualizarCampos);
+        });
 
-                const form = this.closest('form');
-                if (!form) return;
+        actualizarCampos();
+    });
+    document.addEventListener('DOMContentLoaded', function () {
+        const campos = document.querySelectorAll('.solo-letras');
 
-                form.querySelectorAll('input[type="text"], input[type="number"], textarea').forEach(el => {
-                    el.value = '';
-                });
-
-                form.querySelectorAll('select').forEach(el => {
-                    el.selectedIndex = 0;
-                });
-                form.querySelectorAll('.is-valid, .is-invalid').forEach(el => {
-                    el.classList.remove('is-valid', 'is-invalid');
-                });
-                form.querySelectorAll('.text-danger').forEach(el => {
-                    el.innerText = '';
-                });
+        campos.forEach(input => {
+            input.addEventListener('input', function () {
+                this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '');
             });
-        }
+        });
+    });
+    document.addEventListener('DOMContentLoaded', () => {
+        const formulario = document.getElementById('empleadoForm');
+
+        formulario.addEventListener('reset', function () {
+            setTimeout(() => {
+
+                const campos = formulario.querySelectorAll('.form-control, .form-select');
+                campos.forEach(campo => {
+                    campo.classList.remove('is-invalid');
+                });
+
+                const mensajes = formulario.querySelectorAll('.invalid-feedback');
+                mensajes.forEach(m => {
+                    m.textContent = '';
+                });
+
+                const checks = formulario.querySelectorAll('input[name="alergias[]"]');
+                checks.forEach(check => {
+                    check.checked = false;
+                    check.classList.remove('is-invalid');
+                });
+
+                const campoOtros = document.getElementById('alergiaOtros');
+                if (campoOtros) {
+                    campoOtros.value = '';
+                    campoOtros.style.display = 'none';
+                    campoOtros.classList.remove('is-invalid');
+                }
+
+                const errorAlergias = document.getElementById('error-alergias');
+                if (errorAlergias) {
+                    errorAlergias.textContent = '';
+                }
+
+                const campoAlimentos = document.getElementById('alergiaAlimentos');
+                if (campoAlimentos) {
+                    campoAlimentos.value = '';
+                    campoAlimentos.style.display = 'none';
+                    campoAlimentos.classList.remove('is-invalid');
+                }
+
+                const campoMedicamentos = document.getElementById('alergiaMedicamentos');
+                if (campoMedicamentos) {
+                    campoMedicamentos.value = '';
+                    campoMedicamentos.style.display = 'none';
+                    campoMedicamentos.classList.remove('is-invalid');
+                }
+
+            }, 10);
+        });
     });
 
 
-    function evitarPrimerCero(inputId) {
-        const input = document.getElementById(inputId);
+
+    function validarTexto(input, max) {
+        input.value = input.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '').replace(/\s+/g,' ').slice(0, max);
+    }
+
+    function formatearIdentidad(i) {
+        let v = i.value.replace(/[^0-9]/g, '');
+        if (v.length >= 4) {
+            const pref4 = v.slice(0,4), pref2 = v.slice(0,2);
+            if (!codigosDep.includes(pref4) && !codigosDep.includes(pref2)) {
+                v = '';
+            }
+        } else if (v.length >= 2) {
+            if (!codigosDep.includes(v.slice(0,2))) v = '';
+        }
+        v = v.slice(0,13);
+        if (v.length > 8) i.value = v.slice(0,4) + '-' + v.slice(4,8) + '-' + v.slice(8);
+        else if (v.length > 4) i.value = v.slice(0,4) + '-' + v.slice(4);
+        else i.value = v;
+
+        if (v.length >= 8) {
+            let anio = v.slice(4, 8);
+            let anioNum = parseInt(anio, 10);
+
+            if (isNaN(anioNum) || anioNum <= 1940) {
+                anioNum = 1940;
+            } else if (anioNum >= 2007) {
+                anioNum = 2007;
+            }
+
+            const anioStr = anioNum.toString().padStart(4, '0');
+            v = v.slice(0, 4) + anioStr + v.slice(8);
+
+            if (anioNum <= 1939 || anioNum >= 2008) {
+                i.classList.add('is-invalid');
+                document.getElementById('errorIdentidad').textContent = 'El año debe ser igual o mayor a 1940 y menor o igual a 2007.';
+            } else {
+                i.classList.remove('is-invalid');
+                document.getElementById('errorIdentidad').textContent = '';
+            }
+        } else {
+            i.classList.remove('is-invalid');
+            document.getElementById('errorIdentidad').textContent = '';
+        }
+
+        v = v.slice(0, 13);
+        if (v.length > 8) {
+            i.value = v.slice(0, 4) + '-' + v.slice(4, 8) + '-' + v.slice(8);
+        } else if (v.length > 4) {
+            i.value = v.slice(0, 4) + '-' + v.slice(4);
+        } else {
+            i.value = v;
+        }
+    }
+
+
+    function configurarValidacionTelefono(id) {
+        const input = document.getElementById(id);
+
         input.addEventListener('keydown', function(e) {
-            if ((this.selectionStart === 0 || this.value.length === 0) && e.key === '0') {
+            const teclasPermitidas = [
+                'Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Home', 'End'
+            ];
+            if (teclasPermitidas.includes(e.key)) return;
+
+            if (!/[0-9]/.test(e.key)) {
+                e.preventDefault();
+                return;
+            }
+            if (this.selectionStart === 0 && !['2', '3', '8', '9'].includes(e.key)) {
                 e.preventDefault();
             }
         });
-    }
-    evitarPrimerCero('telefono');
-    evitarPrimerCero('telefonodeemergencia');
 
+        input.addEventListener('input', function() {
+            let valor = this.value.replace(/[^0-9]/g, '');
+            if (valor.length > 0 && !['2', '3', '8', '9'].includes(valor[0])) {
+                valor = valor.slice(1);
+            }
 
-    function limpiarErrores() {
-        document.querySelectorAll('.error-msg').forEach(el => el.textContent = '');
-    }
+            if (valor.length > 8) {
+                valor = valor.slice(0, 8);
+            }
 
+            if (/^(\d)\1{7}$/.test(valor)) {
+                valor = '';
+            }
 
-    function validarTexto(input, maxLength) {
-        let val = input.value;
-
-        // Permitir solo letras y espacios
-        val = val.replace(/[^A-Za-z ]/g, '');
-
-        // Bloquear espacios dobles seguidos
-        while (val.includes('  ')) {
-            val = val.replace(/  /g, ' ');
-        }
-
-        // Limitar longitud
-        val = val.slice(0, maxLength);
-
-        input.value = val;
+            this.value = valor;
+        });
     }
 
-    function formatearIdentidad(input) {
+    configurarValidacionTelefono('telefono');
+    configurarValidacionTelefono('telefonodeemergencia');
 
-        let val = input.value.replace(/[^0-9]/g, '');
-        let cerosInicio = val.match(/^0*/)[0].length;
-
-        if (cerosInicio > 4) {
-            val = val.slice(0, -1);
-        }
-        val = val.slice(0, 15);
-        if (val.length > 8) {
-            input.value = val.slice(0, 4) + '-' + val.slice(4, 8) + '-' + val.slice(8);
-        } else if (val.length > 4) {
-            input.value = val.slice(0, 4) + '-' + val.slice(4);
-        } else {
-            input.value = val;
-        }
-    }
-
-    function formatearTelefono(input) {
-        let val = input.value.replace(/[^0-9]/g, '').slice(0,8);
-        let formatted = '';
-        for(let i=0; i<val.length; i++) {
-            if(i > 0 && i % 2 === 0) formatted += '-';
-            formatted += val[i];
-        }
-        input.value = formatted;
-    }
-    function validarCorreo(input, maxLength) {
-        let val = input.value;
-        val = val.replace(/[^a-zA-Z0-9@._\-]/g, '').slice(0, maxLength);
-        input.value = val;
-    }
-
-    const checkboxes = document.querySelectorAll('.alergia-checkbox');
-    const alergiaOtrosInput = document.getElementById('alergiaOtros');
-    checkboxes.forEach(chk => {
+    document.addEventListener('DOMContentLoaded', function () {
+        permitirSoloTelefonosValidos(document.getElementById('telefono'));
+        permitirSoloTelefonosValidos(document.getElementById('telefonodeemergencia'));
+    });
+    document.querySelectorAll('.alergia-checkbox').forEach(chk => {
         chk.addEventListener('change', () => {
-            if (document.querySelector('.alergia-checkbox[value="Otros"]').checked) {
-                alergiaOtrosInput.style.display = 'block';
+            document.getElementById('alergiaOtros').style.display =
+                document.querySelector('.alergia-checkbox[value="Otros"]').checked ? 'block' : 'none';
+        });
+    });
+    document.addEventListener('DOMContentLoaded', function () {
+        const checkboxOtros = document.querySelector('input[name="alergias[]"][value="Otros"]');
+        const campoOtros = document.getElementById('alergiaOtros');
+        const formulario = document.getElementById('empleadoForm');
+
+        checkboxOtros.addEventListener('change', function () {
+            if (this.checked) {
+                campoOtros.style.display = 'block';
             } else {
-                alergiaOtrosInput.style.display = 'none';
-                alergiaOtrosInput.value = '';
+                campoOtros.style.display = 'none';
+                campoOtros.classList.remove('is-invalid');
+            }
+        });
+
+        formulario.addEventListener('submit', function (e) {
+            let errores = [];
+
+            if (checkboxOtros.checked && campoOtros.value.trim() === '') {
+                campoOtros.classList.add('is-invalid');
+                errores.push('Debe especificar la alergia Otros');
+            } else {
+                campoOtros.classList.remove('is-invalid');
+            }
+
+            if (errores.length > 0) {
+                e.preventDefault()
+            }
+             });
+
+        campoOtros.addEventListener('input', function () {
+            if (campoOtros.value.trim() !== '') {
+                campoOtros.classList.remove('is-invalid');
+            }
+        });
+    });
+    document.addEventListener('DOMContentLoaded', () => {
+        const checkboxOtros = document.querySelector('input[value="Otros"]');
+        const campoOtros = document.getElementById('alergiaOtros');
+
+        checkboxOtros.addEventListener('change', function () {
+            if (this.checked) {
+                campoOtros.style.display = 'block';
+            } else {
+                campoOtros.style.display = 'none';
+                campoOtros.value = '';
             }
         });
     });
 
-    function limpiarFormulario() {
-        const formulario = document.getElementById("form-proveedor");
-
-        // Limpiar campos manualmente
-        const elementos = formulario.querySelectorAll("input, textarea, select");
-        elementos.forEach(elemento => {
-            if (elemento.type === "checkbox" || elemento.type === "radio") {
-                elemento.checked = false;
-            } else {
-                elemento.value = "";
-            }
-        });
-
-        // Quitar clases de error
-        const inputsInvalidos = formulario.querySelectorAll('.form-control.is-invalid');
-        inputsInvalidos.forEach(input => {
-            input.classList.remove('is-invalid');
-        });
-
-        // Borrar los mensajes de error
-        const mensajesError = formulario.querySelectorAll('.invalid-feedback');
-        mensajesError.forEach(msg => {
-            msg.textContent = '';
-        });
-
-        function limpiarErrores() {
-            document.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
-            document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
-        }
-
-    }
-
-    function validarFormulario() {
-        limpiarErrores();
-        let valido = true;
-
-        const campos = [
-            {id: 'nombre', msg: 'Debe ingresar nombres'},
-            {id: 'apellido', msg: 'Debe ingresar apellidos'},
-            {id: 'identidad', msg: 'Debe ingresar identidad'},
-            {id: 'direccion', msg: 'Debe ingresar dirección'},
-            {id: 'email', msg: 'Debe ingresar correo electrónico'},
-            {id: 'telefono', msg: 'Debe ingresar teléfono'},
-            {id: 'contactoEmergencia', msg: 'Debe ingresar nombre'},
-            {id: 'telefonodeemergencia', msg: 'Debe ingresar teléfono'},
-            {id: 'tipodesangre', msg: 'Debe seleccionar tipo de sangre'}
-        ];
-
-        campos.forEach(campo => {
-            const input = document.getElementById(campo.id);
-            if (!input.value.trim()) {
-                valido = false;
-                input.classList.add('is-invalid');
-                let errorId = `error-${campo.id}`;
-
-                if (campo.id === 'contactoEmergencia') errorId = 'error-contacto';
-                if (campo.id === 'telefonodeemergencia') errorId = 'error-telefonoEmergencia';
-
-                const errorElement = document.getElementById(errorId);
-                if (errorElement) {
-                    errorElement.textContent = campo.msg;
-                }
-            }
-        });
-
-        const identidad = document.getElementById('identidad').value;
-        const identidadRegex = /^\d{4}-\d{4}-\d{5}$/;
-        if (identidad && !identidadRegex.test(identidad)) {
-            valido = false;
-            const identidadInput = document.getElementById('identidad');
-            identidadInput.classList.add('is-invalid');
-            document.getElementById('error-identidad').textContent = 'Formato de identidad inválido (0000-0000-00000)';
-        }
-
-
-        const tipoSangre = document.getElementById('tipodesangre');
-        if (!tipoSangre.value) {
-            valido = false;
-            tipoSangre.classList.add('is-invalid');
-            document.getElementById('error-tipodesangre').textContent = 'Seleccione un tipo de sangre';
-        }
-
-        const checkboxes = document.querySelectorAll('.alergia-checkbox');
-        const algunaSeleccionada = Array.from(checkboxes).some(chk => chk.checked);
-        if (!algunaSeleccionada) {
-            valido = false;
-            document.getElementById('error-alergia').textContent = 'Debe seleccionar al menos una alergia';
-        } else {
-            if (document.querySelector('.alergia-checkbox[value="Otros"]').checked) {
-                const otros = document.getElementById('alergiaOtros');
-                if (!otros.value.trim()) {
-                    valido = false;
-                    otros.classList.add('is-invalid');
-                    document.getElementById('error-alergia').textContent = 'Debe especificar la alergia';
-                }
-            }
-        }
-
-        return valido;
-    }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-
-
-
