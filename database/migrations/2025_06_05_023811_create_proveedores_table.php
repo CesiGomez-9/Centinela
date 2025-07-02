@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('telefonodeempresa',8);
             $table->string('correoempresa',100)->unique();
             $table->string('nombrerepresentante',50);
-            $table->string('identificacion',13)->unique();
+            $table->string('telefonoderepresentante',8);
             $table->string('categoriarubro');
             $table->timestamps();
 
