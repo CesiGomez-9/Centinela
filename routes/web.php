@@ -25,6 +25,12 @@ Route::get('/Proveedores/crear', [ProveedorController::class, 'create'])->name('
 Route::post('/Proveedores/crear', [ProveedorController::class, 'store'])->name('Proveedores.store');
 Route::get('/Proveedores', [ProveedorController::class, 'index'])->name('Proveedores.indexProveedor');
 Route::get('/Proveedores/crear', [ProveedorController::class, 'create'])->name('Proveedores.nuevo');
+Route::get('/Proveedores/{id}', [ProveedorController::class, 'show'])->name('Proveedores.detalle')->whereNumber('id');
+Route::get('/Proveedores/{id}/editar', [ProveedorController::class, 'edit'])->name('Proveedores.edit');
+Route::put('/Proveedores/{id}', [ProveedorController::class, 'update'])->name('Proveedores.update');
+
+
+
 
 Route::controller(InventarioController::class)->group(function (){
     Route::get('/inventarios', 'index')->name('inventarios.index');
@@ -44,4 +50,4 @@ Route::get('/Proveedores/crear', [\App\Http\Controllers\ProveedorController::cla
 Route::post('/Proveedores/crear', [\App\Http\Controllers\ProveedorController::class, 'store'])->name('Proveedores.store');
 Route::get('/Proveedores', [\App\Http\Controllers\ProveedorController::class, 'index'])->name('Proveedores.indexProveedor');
 Route::get('/Proveedores/crear', [\App\Http\Controllers\ProveedorController::class, 'create'])->name('Proveedores.nuevo');
-
+Route::get('/Proveedores/{id}', [ProveedorController::class, 'show'])->name('Proveedores.detalle')->whereNumber('id');

@@ -9,7 +9,6 @@
     <meta charset="UTF-8">
     <title>Proveedor</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <style>
         body {
             background-color: #e6f0ff;
@@ -78,7 +77,7 @@
                                        onkeypress="soloLetras(event)"
                                        onkeydown="bloquearEspacioAlInicio(event, this)"
                                        oninput="eliminarEspaciosIniciales(this)"
-                                       oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '')"
+                                       oninput="this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '')"
                                        required>
                                 @error('nombreEmpresa')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -149,7 +148,7 @@
                                        onkeypress="soloLetras(event)"
                                        onkeydown="bloquearEspacioAlInicio(event, this)"
                                        oninput="eliminarEspaciosIniciales(this)"
-                                       oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '')"
+                                       oninput="this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '')"
                                        required>
                                 @error('nombrerepresentante')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -158,19 +157,19 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label for="identificacion" class="form-label">Identificación</label>
+                            <label for="telefonoderepresentante" class="form-label">Teléfono del representante</label>
                             <div class="input-group has-validation">
-                                <span class="input-group-text"><i class="bi bi-card-text"></i></span>
-                                <input type="text" name="identificacion"
-                                       class="form-control @error('identificacion') is-invalid @enderror"
-                                       value="{{ old('identificacion') }}"
-                                       maxlength="13"
+                                <span class="input-group-text"><i class="bi bi-telephone-fill"></i></span>
+                                <input type="text" name="telefonoderepresentante"
+                                       class="form-control @error('telefonoderepresentante') is-invalid @enderror"
+                                       value="{{ old('telefonoderepresentante') }}"
+                                       maxlength="8"
                                        onkeypress="soloNumeros(event)"
                                        onkeydown="bloquearEspacioAlInicio(event, this)"
                                        oninput="eliminarEspaciosIniciales(this)"
                                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                        required>
-                                @error('identificacion')
+                                @error('telefonoderepresentante')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -261,10 +260,11 @@
 
 <script>
     function validarSoloLetras(input) {
-        input.value = input.value.replace(/[^A-Za-z\s]/g, '');
+        input.value = input.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '');
         if (input.value.length > 50) {
             input.value = input.value.substring(0, 50);
         }
+
 
 
     }
@@ -317,10 +317,11 @@
 
     function soloLetras(e) {
         const key = e.key;
-        const regex = /^[A-Za-z\s]$/;
-        if (!regex.test(key) && !['Backspace','Tab','ArrowLeft','ArrowRight','Delete'].includes(key)) {
+        const regex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]$/;
+        if (!regex.test(key) && !['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete'].includes(key)) {
             e.preventDefault();
         }
+
 
 
     }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Proveedor;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ProveedorController extends Controller
 {
@@ -13,7 +14,7 @@ class ProveedorController extends Controller
      */
     public function index()
     {
-        $proveedores = Proveedor::all();
+        $proveedores = Proveedor::paginate(10);
         return view('Proveedores.indexProveedor')->with('proveedores', $proveedores);
     }
 
@@ -33,16 +34,16 @@ class ProveedorController extends Controller
     {
         $request->validate([
 
-            'nombreEmpresa' => ['required', 'string', 'max:50', 'regex:/^[A-Za-z\s]+$/'],
+            'nombreEmpresa' => ['required', 'string', 'max:50', 'regex:/^[\p{L}\s]+$/u'],
             'direccion' => ['required', 'string','max:150'],
             'telefonodeempresa' => ['required', 'regex:/^[2389][0-9]{7}$/', 'size:8', 'unique:proveedores,telefonodeempresa'],
             'correoempresa' => ['required', 'string', 'email', 'max:100', 'unique:proveedores,correoempresa'],
-            'nombrerepresentante' => ['required', 'string', 'max:50', 'regex:/^[A-Za-z\s]+$/'],
-            'identificacion' => [ 'required', 'regex:/^(0[1-9]|1[0-8])[0-9]{11}$/', 'unique:proveedores,identificacion'],
+            'nombrerepresentante' => ['required', 'string', 'max:50', 'regex:/^[\p{L}\s]+$/u'],
+            'telefonoderepresentante' => ['required', 'regex:/^[2389][0-9]{7}$/', 'size:8', 'unique:proveedores,telefonoderepresentante'],
             'categoriarubro' => ['required', 'string'],
-        ], [  // mensajes personalizados aquí (2do parámetro)
+        ], [
             'nombreEmpresa.required' => 'Debe ingresar el nombre de la empresa.',
-            'nombreEmpresa.regex' => 'El nombre de la empresa solo debe contener letras y espacios.',
+            'nombreEmpresa.regex' => 'El nombre de la empresa solo debe contener letras, espacios y tildes.',
             'direccion.required' => 'Debe ingresar la dirección.',
 
             'telefonodeempresa.required' => 'Debe ingresar el teléfono de la empresa.',
@@ -55,15 +56,15 @@ class ProveedorController extends Controller
             'correoempresa.unique' => 'Este correo ya está registrado.',
 
             'nombrerepresentante.required' => 'Debe ingresar el nombre del representante.',
-            'nombrerepresentante.regex' => 'El nombre del representante solo debe contener letras y espacios.',
+            'nombrerepresentante.regex' => 'El nombre del representante solo debe contener letras y espacios y tildes.',
 
-            'identificacion.required' => 'Debe ingresar la identificación.',
-            'identificacion.regex' => 'La identificación debe comenzar con 01 al 18 y tener 13 dígitos en total.',
-            'identificacion.size' => 'La identificación debe tener exactamente 13 dígitos.',
-            'identificacion.unique' => 'Esta identificación ya está registrada.',
+            'telefonoderepresentante.required' => 'Debe ingresar el teléfono del representante.',
+            'telefonoderepresentante.regex' => 'El teléfono debe comenzar con 2, 3, 8 o 9 y tener 8 dígitos.',
+            'telefonoderepresentante.size' => 'El teléfono debe tener exactamente 8 dígitos.',
+            'telefonoderepresentante.unique' => 'Este número de teléfono ya está registrado.',
 
             'categoriarubro.required' => 'Debe seleccionar una categoría o rubro.'
-        ], [  // nombres personalizados (3er parámetro)
+        ], [
             'nombreEmpresa' => 'nombre de la empresa',
             'direccion' => 'dirección',
             'telefonodeempresa' => 'teléfono de la empresa',
@@ -76,12 +77,12 @@ class ProveedorController extends Controller
 
 
         $proveedor = new Proveedor();
-        $proveedor->nombreEmpresa = $request->input('nombreEmpresa'); // <- aquí estaba el error, ponías 'nombres'
+        $proveedor->nombreEmpresa = $request->input('nombreEmpresa');
         $proveedor->direccion = $request->input('direccion');
         $proveedor->telefonodeempresa = $request->input('telefonodeempresa');
         $proveedor->correoempresa = $request->input('correoempresa');
         $proveedor->nombrerepresentante = $request->input('nombrerepresentante');
-        $proveedor->identificacion = $request->input('identificacion');
+        $proveedor->telefonoderepresentante = $request->input('telefonoderepresentante');
         $proveedor->categoriarubro = $request->input('categoriarubro');
 
         if ($proveedor->save()) {
@@ -100,6 +101,9 @@ class ProveedorController extends Controller
     public function show(string $id)
     {
         //
+
+        $proveedor = Proveedor::findOrFail($id);
+        return view('Proveedores.detalle', compact('proveedor'));
     }
 
     /**
@@ -108,6 +112,9 @@ class ProveedorController extends Controller
     public function edit(string $id)
     {
         //
+        $proveedor = Proveedor::findOrFail($id);
+        return view('Proveedores.edit', compact('proveedor'));
+
     }
 
     /**
@@ -115,7 +122,68 @@ class ProveedorController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+
+        $request->validate([
+            'nombreEmpresa' => ['required', 'string', 'max:50', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/u'],
+            'direccion' => ['required', 'string', 'max:150'],
+            'telefonodeempresa' => [
+                'required',
+                'regex:/^[2389][0-9]{7}$/',
+                'size:8',
+                Rule::unique('proveedores', 'telefonodeempresa')->ignore($id)
+            ],
+            'correoempresa' => [
+                'required',
+                'string',
+                'email',
+                'max:100',
+                Rule::unique('proveedores', 'correoempresa')->ignore($id)
+            ],
+            'nombrerepresentante' => ['required', 'string', 'max:50', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/u'],
+            'telefonoderepresentante' => [
+                'required',
+                'regex:/^[2389][0-9]{7}$/',
+                'size:8',
+                Rule::unique('proveedores', 'telefonoderepresentante')->ignore($id)
+            ],
+            'categoriarubro' => ['required', 'string'],
+        ], [
+            'nombreEmpresa.required' => 'Debe ingresar el nombre de la empresa.',
+            'nombreEmpresa.regex' => 'El nombre de la empresa solo debe contener letras y espacios.',
+            'direccion.required' => 'Debe ingresar la dirección.',
+            'telefonodeempresa.required' => 'Debe ingresar el teléfono de la empresa.',
+            'telefonodeempresa.regex' => 'El teléfono debe comenzar con 2, 3, 8 o 9 y tener 8 dígitos.',
+            'telefonodeempresa.size' => 'El teléfono debe tener exactamente 8 dígitos.',
+            'telefonodeempresa.unique' => 'Este número de teléfono ya está registrado.',
+            'correoempresa.required' => 'Debe ingresar el correo electrónico.',
+            'correoempresa.email' => 'Debe ingresar un correo electrónico válido.',
+            'correoempresa.unique' => 'Este correo ya está registrado.',
+            'nombrerepresentante.required' => 'Debe ingresar el nombre del representante.',
+            'nombrerepresentante.regex' => 'El nombre del representante solo debe contener letras y espacios.',
+            'telefonoderepresentante.required' => 'Debe ingresar el teléfono del representante.',
+            'telefonoderepresentante.regex' => 'El teléfono debe comenzar con 2, 3, 8 o 9 y tener 8 dígitos.',
+            'telefonoderepresentante.size' => 'El teléfono debe tener exactamente 8 dígitos.',
+            'telefonoderepresentante.unique' => 'Este número de teléfono ya está registrado.',
+            'categoriarubro.required' => 'Debe seleccionar una categoría o rubro.',
+        ]);
+
+        $proveedor = Proveedor::findOrFail($id); // ✅ Actualizar el existente
+        $proveedor->nombreEmpresa = $request->input('nombreEmpresa');
+        $proveedor->direccion = $request->input('direccion');
+        $proveedor->telefonodeempresa = $request->input('telefonodeempresa');
+        $proveedor->correoempresa = $request->input('correoempresa');
+        $proveedor->nombrerepresentante = $request->input('nombrerepresentante');
+        $proveedor->telefonoderepresentante = $request->input('telefonoderepresentante');
+        $proveedor->categoriarubro = $request->input('categoriarubro');
+
+        if ($proveedor->save()) {
+            return redirect()->route('Proveedores.indexProveedor')->with('exito', 'El proveedor se editó correctamente.');
+        } else {
+            return redirect()->route('Proveedores.indexProveedor')->with('fracaso', 'El proveedor no se editó correctamente.');
+        }
+
+
+
     }
 
     /**

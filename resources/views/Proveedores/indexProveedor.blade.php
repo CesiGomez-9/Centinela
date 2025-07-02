@@ -2,6 +2,14 @@
 @section('titulo', 'Proveedores')
 
 @section('content')
+    <style>
+        body{
+            background-color: #e6f0ff;
+            height: 100vh;
+            margin: 0;
+        }
+
+    </style>
     @if(session('exito'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{ session('exito') }}
@@ -16,57 +24,119 @@
         </div>
     @endif
 
-    <div style="
-   background-image: url('{{ asset('seguridad/fondolino.png') }}');
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-    padding: 40px;
-    border-radius: 15px;
-">
-        <div class="card shadow-lg">
-            <div class="card-header d-flex justify-content-between align-items-center"
-                 style="background-color:#4682b4; font-family: 'Lora';">
-                <h4 class="mb-0 text-dark">Proveedores</h4>
 
+
+    <div class="container mt-5" style="max-width: 1100px;">
+        <div class="card shadow p-4" style="background-color: #ffffff;">
+            <h3 class="text-center mb-4" style="color: #09457f;">
+                <i class="bi bi-people-fill me-2"></i>
+                Lista de proveedores
+            </h3>
+
+            <div class="row mb-4">
+                <div class="col d-flex justify-content-start">
+                    <div class="w-100" style="max-width: 300px;">
+                        <div class="input-group">
+                            <input
+                                type="text"
+                                id="searchInput"
+                                class="form-control form-control-sm"
+                                placeholder="Buscar por nombre"
+                            >
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-auto d-flex justify-content-end">
+                    <a href="{{ route('Proveedores.nuevo') }}" class="btn btn-sm btn-outline-primary mb-2">
+                        <i class="bi bi-pencil-square me-2"></i>Registrar un nuevo proveedor
+                    </a>
+                </div>
             </div>
 
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover mb-0">
-                        <thead class="table-light text-center">
-                        <tr>
-                            <th>Nombre de la empresa</th>
-                            <th>Dirección</th>
-                            <th>Teléfono</th>
-                            <th>Correo</th>
-                            <th>Representante</th>
-                            <th>Identificación</th>
-                            <th>Categoría o rubro</th>
-                        </tr>
-                        </thead>
-                        <tbody class="text-center align-middle">
-                        @forelse($proveedores as $proveedor)
-                            <tr>
-                                <td>{{ $proveedor->nombreEmpresa }}</td>
-                                <td>{{ $proveedor->direccion }}</td>
-                                <td>{{ $proveedor->telefonodeempresa }}</td>
-                                <td>{{ $proveedor->correoempresa }}</td>
-                                <td>{{ $proveedor->nombrerepresentante }}</td>
-                                <td>{{ $proveedor->identificacion }}</td>
-                                <td>{{ $proveedor->categoriarubro }}</td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="7" class="text-muted">No hay proveedores registrados.</td>
-                            </tr>
-                        @endforelse
-                        </tbody>
-                    </table>
+            @if(session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
                 </div>
+            @endif
+
+            <table class="table table-bordered table-striped">
+                <thead class="table-dark">
+                <tr>
+                    <th>N°</th>
+                    <th>Nombre de la empresa</th>
+                    <th>Dirección</th>
+                    <th>Teléfono de la empresa</th>
+                    <th>Correo de la empresa</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                @forelse ($proveedores as $proveedor)
+                    <tr>
+                        <td>{{ $loop->iteration }}</td>
+                        <td>{{ $proveedor->nombreEmpresa }}</td>
+                        <td>{{ $proveedor->direccion }}</td>
+                        <td>{{ $proveedor->telefonodeempresa }}</td>
+                        <td>{{ $proveedor->correoempresa}}</td>
+                        <td class="text-center">
+                            <a href="{{ route('Proveedores.detalle', $proveedor->id) }}" class="btn btn-sm btn-outline-info">
+                                <i class="bi bi-eye"></i> Ver
+                            </a>
+                            <a href="{{ route('Proveedores.edit', $proveedor->id) }}" class="btn btn-sm btn-outline-warning" title="Editar">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                        </td>
+
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">No hay proveedores registrados.</td>
+                    </tr>
+                @endforelse
+                </tbody>
+            </table>
+
+            <div class="d-flex justify-content-center mt-4">
+                {{ $proveedores->links('pagination::bootstrap-5') }}
+
+
             </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('searchInput');
+            const filas = document.querySelectorAll('tbody tr');
+
+            searchInput.addEventListener('input', function () {
+                const filtro = this.value.toLowerCase().trim();
+
+                filas.forEach(fila => {
+                    const nombre = fila.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                    if (nombre.includes(filtro)) {
+                        fila.style.display = '';
+                    } else {
+                        fila.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+
+    </script>
+    
+
+
+
+
+
 
 @endsection
 
