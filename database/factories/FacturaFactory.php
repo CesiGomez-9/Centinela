@@ -108,17 +108,22 @@ class FacturaFactory extends Factory
                 $producto = $this->faker->randomElement($nombresPorCategoria[$categoria]);
                 $precio = $this->faker->randomFloat(2, 10, 200);
                 $cantidad = $this->faker->numberBetween(1, 3);
-                $total = $precio * $cantidad;
-                $subtotal += $total;
+                $subtotal = $precio * $cantidad;
+                $iva = 15;
+                $ivaCalculado = ($iva / 100) * $subtotal;
+                $total = $subtotal + $ivaCalculado;
 
                 DetalleFactura::create([
                     'factura_id' => $factura->id,
                     'producto' => $producto,
                     'categoria' => $categoria,
-                    'precio' => $precio,
+                    'precioCompra' => $precio,
+                    'precioVenta' => $precio,
                     'cantidad' => $cantidad,
+                    'iva' => $iva, // O genera un iva aleatorio si deseas
                     'total' => $total,
                 ]);
+
             }
 
             $impuestos = $subtotal * 0.15;

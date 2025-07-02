@@ -126,7 +126,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label for="iva" class="form-label">IVA</label>
+                                <label for="iva" class="form-label">IVA del producto</label>
                                 <div class="input-group has-validation">
                                     <span class="input-group-text"><i class="bi bi-briefcase-fill"></i></span>
                                     <select name="iva" class="form-select @error('iva') is-invalid @enderror" required>

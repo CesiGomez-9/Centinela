@@ -23,7 +23,6 @@
     </h1>
 
 
-
     <!-- Botón de volver y buscador -->
     <div class="row mb-4 align-items-center">
         <div class="col-md-6 d-flex justify-content-start">
@@ -56,6 +55,9 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
         </div>
     @endif
+
+    <!-- Mensaje de resultados -->
+    <div id="searchResults" class="mb-3"></div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {

@@ -3,19 +3,21 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Factura extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'numero_factura',
         'fecha',
         'proveedor',
         'forma_pago',
+        'responsable',
         'subtotal',
         'impuestos',
         'totalF',
-        'responsable',
-
     ];
 
     // Relación uno a muchos con DetalleFactura

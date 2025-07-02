@@ -1,26 +1,12 @@
 @extends('layouts.plantilla')
-@section('titulo','Registrar nueva factura')
+@section('titulo','Registrar una factura')
 @section('content')
 
     <style>
         body {
-            background-color: #f2f7ff;
+            background-color: #e6f0ff;
+            margin: 0;
         }
-
-        .error-message {
-            color: #dc3545;
-            font-size: 0.875em;
-            margin-top: 0.25rem;
-            display: none;
-        }
-        .field-error {
-            border-color: #dc3545;
-        }
-
-        .form-control.invalid {
-            border-color: #dc3545;
-        }
-
     </style>
 
     <div class="container my-5">
@@ -33,55 +19,94 @@
 
                     <h3 class="text-center mb-4" style="color: #09457f;">
                         <i class="bi bi-file-text"></i>
-                        @isset($producto)
+                        @isset($factura)
                             Editar una factura de compra
                         @else
                             Registrar una nueva factura de compra
                         @endisset
                     </h3>
 
-
-                    <form method="POST" id="facturaForm" novalidate>
+                    <form method="POST" id="facturaForm" action="{{ isset($factura) ? route('facturas.update', $factura->id) : route('facturas.store') }}" novalidate>
+                        @csrf
+                        @isset($factura)
+                            @method('PUT')
+                        @endisset
                         <div class="row g-4">
+                        {{-- Número de Factura --}}
                             <div class="col-md-6">
-                                <label class="form-label">Número de factura</label>
-                                <input type="text" name="numero_factura" id="numeroFactura" class="form-control" required maxlength="15">
-                                <div class="error-message" id="error-numeroFactura">Número de factura es obligatorio</div>
+                                <label for="numeroFactura" class="form-label">Número de Factura</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-hash"></i></span>
+                                    <input type="text" name="numero_factura" id="numeroFactura"
+                                           class="form-control @error('numero_factura') is-invalid @enderror"
+                                           maxlength="20" value="{{ old('numero_factura') }}"
+                                           onkeypress="validarTexto(event)" required>
+                                </div>
+                                @error('numero_factura')
+                                <div class="text-danger mt-1 small">{{ $message }}</div>
+                                @enderror
                             </div>
 
+                            {{-- Fecha --}}
                             <div class="col-md-6">
-                                <label class="form-label">Fecha</label>
-                                <input type="date" name="fecha" id="fecha" class="form-control" min="2000-01-01" max="2099-12-31"  required>
-                                <div class="error-message" id="errorFecha">Fecha es obligatoria.</div>
+                                <label for="fecha" class="form-label">Fecha</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+                                    <input type="date" name="fecha" id="fecha" min="2000-01-01" max="2099-12-31"
+                                           class="form-control @error('fecha') is-invalid @enderror"
+                                           value="{{ old('fecha') }}" required>
+                                </div>
+                                @error('fecha')
+                                <div class="text-danger mt-1 small">{{ $message }}</div>
+                                @enderror
                             </div>
 
+                            {{-- Proveedor (Select) --}}
                             <div class="col-md-6">
-                                <label class="form-label">Proveedor</label>
-                                <select name="proveedor" class="form-select" required>
-                                    <option value="">Seleccione un proveedor</option>
-                                    <option value="TE seguridad">TE seguridad</option>
-                                    <option value="TecnoSeguridad SA">TecnoSeguridad SA</option>
-                                    <option value="Alarmas Prosegur">Alarmas Prosegur</option>
-                                    <option value="Seguridad Total">Seguridad Total</option>
-                                    <option value="LockPro Cerraduras">LockPro Cerraduras</option>
-                                    <option value="VigiTech Honduras">VigiTech Honduras</option>
-                                    <option value="Securitas HN">Securitas HN</option>
-                                    <option value="AlertaHN">AlertaHN</option>
-                                    <option value="MoniSegur">MoniSegur</option>
-                                    <option value="RejaMax">RejaMax</option>
-                                </select>
-                                <div class="error-message" id="errorProveedor">Proveedor es obligatorio.</div>
+                                <label for="proveedor" class="form-label">Proveedor</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-building"></i></span>
+                                    <select id="proveedor" name="proveedor" class="form-select" required>
+                                        <option value="">Seleccione un proveedor</option>
+                                        <option value="TE seguridad">TE seguridad</option>
+                                        <option value="TecnoSeguridad SA">TecnoSeguridad SA</option>
+                                        <option value="Alarmas Prosegur">Alarmas Prosegur</option>
+                                        <option value="Seguridad Total">Seguridad Total</option>
+                                        <option value="LockPro Cerraduras">LockPro Cerraduras</option>
+                                        <option value="VigiTech Honduras">VigiTech Honduras</option>
+                                        <option value="Securitas HN">Securitas HN</option>
+                                        <option value="AlertaHN">AlertaHN</option>
+                                        <option value="MoniSegur">MoniSegur</option>
+                                        <option value="RejaMax">RejaMax</option>
+                                    </select>
+                                </div>
+                                @error('proveedor')
+                                <div class="text-danger mt-1 small">{{ $message }}</div>
+                                @enderror
                             </div>
 
+
+                            {{-- Forma de Pago (Select) --}}
                             <div class="col-md-6">
-                                <label class="form-label">Forma de pago</label>
-                                <select name="forma_pago" class="form-select" required>
-                                    <option value="">Seleccione una forma de pago</option>
-                                    <option value="Efectivo">Efectivo</option>
-                                    <option value="Cheque">Cheque</option>
-                                    <option value="Transferencia">Transferencia</option>
-                                </select>
-                                <div class="error-message" id="errorFormaPago">Forma de pago es obligatorio.</div>
+                                <label for="formaPago" class="form-label">Forma de Pago</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-wallet-fill"></i></span>
+                                    <select name="forma_pago" id="formaPago"
+                                            class="form-select @error('forma_pago') is-invalid @enderror" required>
+                                        <option value="">Seleccione una opción</option>
+                                        @php
+                                            $formasPago = ['Efectivo', 'Cheque', 'Transferencia'];
+                                        @endphp
+                                        @foreach ($formasPago as $forma)
+                                            <option value="{{ $forma }}" {{ old('forma_pago') === $forma ? 'selected' : '' }}>
+                                                {{ $forma }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                @error('forma_pago')
+                                <div class="text-danger mt-1 small">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <!-- Botón para abrir modal -->
@@ -142,23 +167,34 @@
                                 </div>
                             </div>
 
+                            {{-- Responsable --}}
                             <div class="col-md-6">
-                                <label class="form-label">Responsable</label>
-                                <input type="text" name="responsable" id="responsable" class="form-control" required maxlength="30">
-                                <div class="error-message" id="error-responsable"></div>
+                                <label for="responsable" class="form-label">Responsable</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-person-check-fill"></i></span>
+                                    <input type="text" name="responsable" id="responsable"
+                                           class="form-control @error('responsable') is-invalid @enderror"
+                                           maxlength="50" value="{{ old('responsable') }}"
+                                           required>
+                                </div>
+                                @error('responsable')
+                                <div class="text-danger mt-1 small">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <!-- Botones -->
                             <div class="text-center mt-5">
-                                <a href="{{ route('facturas.index') }}" class="btn btn-danger me-2">
-                                    <i class="bi bi-x-circle me-2"></i> Cancelar
-                                </a>
-                                <button type="reset" class="btn btn-warning me-2" id="btnLimpiar">
-                                    <i class="bi bi-eraser-fill me-2"></i> Limpiar
-                                </button>
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="bi bi-save-fill me-2"></i> Guardar
-                                </button>
+                            <a href="{{ route('facturas.index') }}" class="btn btn-danger me-2">
+                                <i class="bi bi-x-circle me-2"></i> Cancelar
+                            </a>
+
+                            <button type="button" id="btnLimpiar" class="btn btn-warning me-2">
+                                <i class="bi bi-eraser-fill me-2"></i> Limpiar
+                            </button>
+
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save-fill me-2"></i> Guardar
+                            </button>
                             </div>
                         </div>
                     </form>
@@ -169,7 +205,7 @@
 
     <!-- Modal productos -->
     <div class="modal fade" id="productosModal" tabindex="-1" aria-labelledby="productosModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog-scrollablea modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header" style="background-color: #0A1F44; color: white;">
                     <h5 class="modal-title">Listado de Productos</h5>
@@ -187,7 +223,7 @@
                     </div>
 
                     <!-- Tabla de productos -->
-                    <div class="table-responsive" style="max-height: 500px;">
+                    <div class="table-responsive" style="max-height: 300px;">
                         <table class="table table-bordered table-hover text-center" id="tablaProductos">
                             <thead class="table-light sticky-top">
                             <tr>
@@ -213,467 +249,255 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script>
+        const fechaInput = document.getElementById('fecha');
+        const errorFecha = document.createElement('div');
+        errorFecha.style.color = 'red';
+        errorFecha.style.fontSize = '0.9rem';
+        errorFecha.style.marginTop = '4px';
+        fechaInput.parentNode.appendChild(errorFecha);
 
-        // validar fecha
-        // Función mejorada para forzar que el año siempre comience con "20"
-        function configurarValidacionFecha() {
-            const fechaInput = document.getElementById('fecha');
-
-            if (!fechaInput) return;
-
-            // Función para formatear el año
-            function formatearAnio(valor) {
-                if (!valor) return valor;
-
-                const partes = valor.split('-');
-                let anio = partes[0] || '';
-
-                // Si el año tiene menos de 4 dígitos, completar con "20"
-                if (anio.length === 1 || anio.length === 2) {
-                    anio = '20' + anio.padStart(2, '0');
-                } else if (anio.length === 3) {
-                    anio = '20' + anio.slice(-2);
-                } else if (anio.length === 4) {
-                    // Si ya tiene 4 dígitos, verificar que comience con "20"
-                    if (!anio.startsWith('20')) {
-                        // Tomar los últimos 2 dígitos
-                        anio = '20' + anio.slice(-2);
-                    }
-                } else if (anio.length > 4) {
-                    // Si tiene más de 4 dígitos, tomar solo los primeros 4 y verificar
-                    anio = anio.slice(0, 4);
-                    if (!anio.startsWith('20')) {
-                        anio = '20' + anio.slice(-2);
-                    }
-                }
-
-                // Validar rango 2000-2099
-                const anioNum = parseInt(anio);
-                if (anioNum < 2000) anio = '2000';
-                if (anioNum > 2099) anio = '2099';
-
-                return anio;
-            }
-
-            // Función para validar fecha completa
-            function validarFechaCompleta(fechaStr) {
-                if (!fechaStr) return false;
-
-                const fecha = new Date(fechaStr);
-                const partes = fechaStr.split('-');
-
-                if (partes.length !== 3) return false;
-
-                const anio = parseInt(partes[0]);
-                const mes = parseInt(partes[1]);
-                const dia = parseInt(partes[2]);
-
-                // Verificar que la fecha sea válida
-                return fecha.getFullYear() === anio &&
-                    fecha.getMonth() + 1 === mes &&
-                    fecha.getDate() === dia &&
-                    anio >= 2000 && anio <= 2099;
-            }
-
-            // Evento para formatear mientras se escribe
-            fechaInput.addEventListener('input', function(e) {
-                let valor = e.target.value;
-
-                if (valor) {
-                    const partes = valor.split('-');
-                    if (partes[0]) {
-                        const anioFormateado = formatearAnio(partes[0]);
-
-                        // Reconstruir la fecha
-                        const nuevaFecha = [anioFormateado, partes[1] || '', partes[2] || ''].join('-');
-
-                        // Solo actualizar si es diferente para evitar loops
-                        if (nuevaFecha !== valor) {
-                            // Guardar la posición del cursor
-                            const cursorPos = e.target.selectionStart;
-                            e.target.value = nuevaFecha;
-
-                            // Restaurar la posición del cursor
-                            const nuevaPos = Math.min(cursorPos, nuevaFecha.length);
-                            e.target.setSelectionRange(nuevaPos, nuevaPos);
-                        }
-                    }
-                }
-
-                // Validar fecha y mostrar/ocultar error
-                const errorFecha = document.getElementById('errorFecha');
-                if (valor && !validarFechaCompleta(valor)) {
-                    if (errorFecha) {
-                        errorFecha.textContent = 'Por favor ingrese una fecha válida (año entre 2000-2099)';
-                        errorFecha.style.display = 'block';
-                    }
-                    e.target.classList.add('field-error');
-                } else if (valor) {
-                    if (errorFecha) {
-                        errorFecha.style.display = 'none';
-                    }
-                    e.target.classList.remove('field-error');
-                }
-            });
-
-            // Evento para validar al perder el foco
-            fechaInput.addEventListener('blur', function(e) {
-                let valor = e.target.value;
-
-                if (valor) {
-                    const partes = valor.split('-');
-                    if (partes[0]) {
-                        const anioFormateado = formatearAnio(partes[0]);
-
-                        // Reconstruir la fecha
-                        const nuevaFecha = [anioFormateado, partes[1] || '', partes[2] || ''].join('-');
-                        e.target.value = nuevaFecha;
-
-                        // Validar fecha final
-                        if (!validarFechaCompleta(nuevaFecha)) {
-                            const errorFecha = document.getElementById('errorFecha');
-                            if (errorFecha) {
-                                errorFecha.textContent = 'Fecha inválida. Por favor corrija la fecha.';
-                                errorFecha.style.display = 'block';
-                            }
-                            e.target.classList.add('field-error');
-                        } else {
-                            const errorFecha = document.getElementById('errorFecha');
-                            if (errorFecha) {
-                                errorFecha.style.display = 'none';
-                            }
-                            e.target.classList.remove('field-error');
-                        }
-                    }
-                }
-            });
-
-            // Evento para manejar pegado de texto
-            fechaInput.addEventListener('paste', function(e) {
-                setTimeout(() => {
-                    let valor = e.target.value;
-
-                    if (valor) {
-                        const partes = valor.split('-');
-                        if (partes[0]) {
-                            const anioFormateado = formatearAnio(partes[0]);
-
-                            // Reconstruir la fecha
-                            const nuevaFecha = [anioFormateado, partes[1] || '', partes[2] || ''].join('-');
-                            e.target.value = nuevaFecha;
-
-                            // Disparar evento input para validación
-                            e.target.dispatchEvent(new Event('input', { bubbles: true }));
-                        }
-                    }
-                }, 0);
-            });
-
-            // Evento para teclas específicas
-            fechaInput.addEventListener('keydown', function(e) {
-                // Si presiona Enter, aplicar formato
-                if (e.key === 'Enter') {
-                    let valor = e.target.value;
-
-                    if (valor) {
-                        const partes = valor.split('-');
-                        if (partes[0]) {
-                            const anioFormateado = formatearAnio(partes[0]);
-
-                            // Reconstruir la fecha
-                            const nuevaFecha = [anioFormateado, partes[1] || '', partes[2] || ''].join('-');
-                            e.target.value = nuevaFecha;
-
-                            // Disparar evento input para validación
-                            e.target.dispatchEvent(new Event('input', { bubbles: true }));
-                        }
-                    }
-                }
-            });
-
-            // Evento para detectar cambios manuales en el año
-            fechaInput.addEventListener('keyup', function(e) {
-                // Solo procesar si se está escribiendo en la parte del año
-                const cursorPos = e.target.selectionStart;
-                const valor = e.target.value;
-
-                if (cursorPos <= 4 && valor.length >= 4) {
-                    const partes = valor.split('-');
-                    if (partes[0] && partes[0].length >= 2) {
-                        const anioFormateado = formatearAnio(partes[0]);
-
-                        if (anioFormateado !== partes[0]) {
-                            const nuevaFecha = [anioFormateado, partes[1] || '', partes[2] || ''].join('-');
-                            e.target.value = nuevaFecha;
-
-                            // Mantener cursor en posición apropiada
-                            const nuevaPos = Math.min(cursorPos, 4);
-                            e.target.setSelectionRange(nuevaPos, nuevaPos);
-                        }
-                    }
-                }
-            });
-        }
-
-        // Función de validación mejorada para el formulario
+        // Función para validar fecha - CORREGIDA
         function validarFecha() {
             const fechaInput = document.getElementById('fecha');
-            const errorFecha = document.getElementById('errorFecha');
+            const val = fechaInput.value;
 
-            if (!fechaInput || !errorFecha) return true;
-
-            const valor = fechaInput.value;
-
-            if (!valor) {
-                errorFecha.textContent = 'Fecha es obligatoria';
-                errorFecha.style.display = 'block';
-                fechaInput.classList.add('field-error');
+            if (!val) {
+                mostrarError('fecha', 'La fecha es obligatoria');
                 return false;
             }
 
-            // Validar formato y rango
-            const fecha = new Date(valor);
-            const partes = valor.split('-');
-
-            if (partes.length !== 3) {
-                errorFecha.textContent = 'Formato de fecha inválido';
-                errorFecha.style.display = 'block';
-                fechaInput.classList.add('field-error');
-                return false;
+            if (val.length === 10) {
+                const year = val.substring(0, 4);
+                if (!year.startsWith('2')) {
+                    mostrarError('fecha', 'El año debe comenzar con "2" (entre 2000 y 2099)');
+                    return false;
+                }
             }
 
-            const anio = parseInt(partes[0]);
-            const mes = parseInt(partes[1]);
-            const dia = parseInt(partes[2]);
-
-            // Verificar que la fecha sea válida
-            if (fecha.getFullYear() !== anio ||
-                fecha.getMonth() + 1 !== mes ||
-                fecha.getDate() !== dia) {
-                errorFecha.textContent = 'Fecha inválida';
-                errorFecha.style.display = 'block';
-                fechaInput.classList.add('field-error');
-                return false;
-            }
-
-            // Verificar rango de años
-            if (anio < 2000 || anio > 2099) {
-                errorFecha.textContent = 'El año debe estar entre 2000 y 2099';
-                errorFecha.style.display = 'block';
-                fechaInput.classList.add('field-error');
-                return false;
-            }
-
-            // Si llegamos aquí, la fecha es válida
-            errorFecha.style.display = 'none';
-            fechaInput.classList.remove('field-error');
+            ocultarError('fecha');
             return true;
         }
 
-        // Función actualizada para validar formulario principal
-        function validarFormularioPrincipal() {
-            let esValido = true;
+        fechaInput.addEventListener('input', function() {
+            const val = this.value;
+            if (val.length === 10) {
+                const year = val.substring(0,4);
+                if (!year.startsWith('2')) {
+                    errorFecha.textContent = 'El año debe comenzar con "2" (entre 2000 y 2099).';
+                } else {
+                    errorFecha.textContent = '';
+                }
+            } else {
+                errorFecha.textContent = '';
+            }
+        });
 
-            // Limpiar errores previos
-            ['numeroFactura', 'fecha', 'proveedor', 'formaPago', 'responsable'].forEach(campo => {
-                ocultarError(campo);
-            });
-            document.getElementById('errorProductos').style.display = 'none';
+        document.addEventListener("DOMContentLoaded", function () {
+            const numeroInput = document.querySelector('input[name="numero_factura"]');
 
-            // Validar número de factura
-            const numeroFactura = document.getElementById('numeroFactura').value.trim();
-            if (!numeroFactura) {
-                mostrarError('numeroFactura', 'Número de factura es obligatorio');
-                esValido = false;
+            if (numeroInput) {
+                numeroInput.addEventListener('keypress', function (e) {
+                    const key = e.key;
+                    const pos = this.selectionStart;
+
+                    // Solo permite letras, números y guiones
+                    const permitido = /^[A-Za-z0-9\-]$/;
+
+                    // Si el primer carácter no es letra o número, se bloquea
+                    if (pos === 0 && !/^[A-Za-z0-9]$/.test(key)) {
+                        e.preventDefault();
+                        return false;
+                    }
+
+                    // Si en cualquier posición se escribe algo no permitido, se bloquea
+                    if (!permitido.test(key)) {
+                        e.preventDefault();
+                        return false;
+                    }
+                });
+            }
+        });
+
+        function validarTexto(e) {
+            const key = e.keyCode || e.which;
+            const tecla = String.fromCharCode(key);
+            const input = e.target;
+
+            // Evitar espacio al inicio
+            if (key === 32 && input.selectionStart === 0) {
+                e.preventDefault();
+                return false;
             }
 
-            // Validar fecha usando la nueva función
-            if (!validarFecha()) {
-                esValido = false;
+            // Evitar múltiples espacios seguidos
+            const pos = input.selectionStart;
+            if (key === 32 && input.value.charAt(pos - 1) === ' ') {
+                e.preventDefault();
+                return false;
             }
 
-            // Validar proveedor
-            const proveedor = document.querySelector('select[name="proveedor"]').value;
-            if (!proveedor) {
-                mostrarError('proveedor', 'Proveedor es obligatorio');
-                esValido = false;
-            }
-
-            // Validar forma de pago
-            const formaPago = document.querySelector('select[name="forma_pago"]').value;
-            if (!formaPago) {
-                mostrarError('formaPago', 'Forma de pago es obligatorio');
-                esValido = false;
-            }
-
-            // Validar responsable
-            const responsable = document.getElementById('responsable').value.trim();
-            if (!responsable) {
-                mostrarError('responsable', 'Responsable es obligatorio');
-                esValido = false;
-            }
-
-            // Validar productos
-            const productos = document.querySelectorAll('#tablaFacturaBody tr:not(#filaVacia)');
-            if (productos.length === 0) {
-                document.getElementById('errorProductos').style.display = 'block';
-                document.getElementById('errorProductos').textContent = 'Debe agregar al menos un producto a la factura';
-                esValido = false;
-            }
-
-            return esValido;
+            return true;
         }
 
-        // Llamar cuando el DOM esté listo
-        document.addEventListener('DOMContentLoaded', function() {
-            configurarValidacionFecha();
+        document.addEventListener("DOMContentLoaded", function () {
+            // Configurar el botón Limpiar
+            const btnLimpiar = document.getElementById('btnLimpiar');
+
+            if (btnLimpiar) {
+                btnLimpiar.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    limpiarFormularioCompleto();
+                });
+            }
         });
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const numeroFactura = document.getElementById('numeroFactura');
-            const responsable = document.getElementById('responsable');
-            const errorNumeroFactura = document.getElementById('errorNumeroFactura');
-            const errorResponsable = document.getElementById('errorResponsable');
+        function limpiarFormularioCompleto() {
+            const form = document.getElementById('facturaForm');
 
+            if (!form) return;
 
-            // Función para validar números (solo dígitos)
-            function validarNumeros(input) {
-                return /^\d*$/.test(input);
+            // 1. Limpiar campos básicos del formulario
+            form.querySelectorAll('input[type="text"], input[type="date"], input[type="number"]').forEach(input => {
+                input.value = '';
+                input.classList.remove('is-valid', 'is-invalid');
+            });
+
+            // 2. Resetear selects
+            form.querySelectorAll('select').forEach(select => {
+                select.selectedIndex = 0;
+                select.classList.remove('is-valid', 'is-invalid');
+            });
+
+            // 3. Limpiar tabla de productos
+            const tablaFacturaBody = document.getElementById('tablaFacturaBody');
+            if (tablaFacturaBody) {
+                // Eliminar todas las filas excepto la fila vacía
+                const filas = tablaFacturaBody.querySelectorAll('tr:not(#filaVacia)');
+                filas.forEach(fila => fila.remove());
+
+                // Mostrar la fila vacía
+                actualizarFilaVacia();
             }
 
-            // Función para validar letras (solo letras y espacios, pero no espacios al inicio)
-            function validarLetras(input) {
-                return /^[a-zA-ZÀ-ÿ\u00f1\u00d1\s]*$/.test(input) && !input.startsWith(' ');
+            // 4. Resetear totales
+            document.getElementById('subtotalGeneral').value = '';
+            document.getElementById('impuestosGeneral').value = '';
+            document.getElementById('totalGeneral').value = '';
+
+            // 5. Limpiar mensajes de error
+            form.querySelectorAll('.text-danger, .invalid-feedback, .error-message').forEach(error => {
+                error.style.display = 'none';
+                error.textContent = '';
+            });
+
+            // 6. Ocultar error de productos si está visible
+            const errorProductos = document.getElementById('errorProductos');
+            if (errorProductos) {
+                errorProductos.style.display = 'none';
             }
 
-            // Función para prevenir espacios al inicio
-            function prevenirEspacioInicial(e) {
-                if (e.target.value === '' && e.key === ' ') {
-                    e.preventDefault();
+            // 7. Cerrar modal si está abierto
+            const modal = document.getElementById('productosModal');
+            if (modal) {
+                const modalInstance = bootstrap.Modal.getInstance(modal);
+                if (modalInstance) {
+                    modalInstance.hide();
                 }
             }
 
-            // Validación para número de factura
-            numeroFactura.addEventListener('input', function(e) {
-                let valor = e.target.value;
+            // 8. Resetear formularios del modal
+            limpiarFormulariosModal();
 
-                // Remover caracteres no numéricos
-                valor = valor.replace(/\D/g, '');
+            // 9. Enfocar el primer campo
+            const primerCampo = form.querySelector('input[name="numero_factura"]');
+            if (primerCampo) {
+                primerCampo.focus();
+            }
+        }
 
-                // Limitar a 15 caracteres
-                if (valor.length > 15) {
-                    valor = valor.substring(0, 15);
-                }
+        function limpiarFormulariosModal() {
+            // Limpiar formularios de edición de productos en el modal
+            const formulariosModal = document.querySelectorAll('.form-edicion-producto');
+            formulariosModal.forEach(form => {
+                form.reset();
 
-                e.target.value = valor;
+                // Remover clases de validación
+                form.querySelectorAll('.form-control, .form-select').forEach(input => {
+                    input.classList.remove('is-valid', 'is-invalid', 'field-error');
+                });
 
-                // Validar y mostrar/ocultar error
-                if (valor.length === 0) {
-                    errorNumeroFactura.style.display = 'block';
-                    numeroFactura.classList.add('invalid');
-                } else {
-                    errorNumeroFactura.style.display = 'none';
-                    numeroFactura.classList.remove('invalid');
-                }
+                // Limpiar mensajes de error
+                form.querySelectorAll('.error-message').forEach(error => {
+                    error.style.display = 'none';
+                });
             });
 
-            // Prevenir espacios en número de factura
-            numeroFactura.addEventListener('keypress', function(e) {
-                if (e.key === ' ') {
-                    e.preventDefault();
-                }
+            // Ocultar filas de edición y resetear botones
+            document.querySelectorAll('.producto-edicion-fila').forEach(fila => {
+                fila.style.display = 'none';
             });
 
-            // Validación para responsable
-            responsable.addEventListener('input', function(e) {
-                let valor = e.target.value;
-
-                // Remover espacios al inicio
-                valor = valor.replace(/^\s+/, '');
-
-                // Permitir solo letras y espacios
-                valor = valor.replace(/[^a-zA-ZÀ-ÿ\u00f1\u00d1\s]/g, '');
-
-                // Limitar a 30 caracteres
-                if (valor.length > 30) {
-                    valor = valor.substring(0, 30);
-                }
-
-                e.target.value = valor;
-
-                // Validar y mostrar/ocultar error
-                if (valor.length === 0) {
-                    errorResponsable.style.display = 'block';
-                    responsable.classList.add('invalid');
-                } else {
-                    errorResponsable.style.display = 'none';
-                    responsable.classList.remove('invalid');
-                }
+            document.querySelectorAll('.seleccionar-producto').forEach(btn => {
+                btn.className = 'btn btn-sm btn-info seleccionar-producto';
+                btn.innerHTML = '<i class="bi bi-check-circle"></i> Seleccionar';
             });
 
-            // Prevenir espacios al inicio en responsable
-            responsable.addEventListener('keypress', function(e) {
-                prevenirEspacioInicial(e);
-            });
+            // Resetear variable global
+            productoSeleccionadoActual = null;
 
-            // Prevenir espacios al inicio con keydown también
-            responsable.addEventListener('keydown', function(e) {
-                if (e.target.value === '' && e.key === ' ') {
-                    e.preventDefault();
+            // Limpiar buscador
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.value = '';
+
+                // Mostrar todas las filas de productos
+                document.querySelectorAll('#tablaProductosBody .producto-fila').forEach(fila => {
+                    fila.style.display = 'table-row';
+
+                    // Quitar resaltado
+                    const celdaNombre = fila.querySelector('td:first-child');
+                    if (celdaNombre) {
+                        quitarResaltado(celdaNombre);
+                    }
+                });
+
+                // Limpiar resultados de búsqueda
+                const searchResults = document.getElementById('searchResults');
+                if (searchResults) {
+                    searchResults.innerHTML = '';
                 }
-            });
+            }
+        }
 
-            // Prevenir espacios al inicio en input
-            responsable.addEventListener('beforeinput', function(e) {
-                if (e.target.value === '' && e.data === ' ') {
-                    e.preventDefault();
-                }
-            });
+        // Función auxiliar para mostrar errores
+        function mostrarError(campoId, mensaje) {
+            const campo = document.getElementById(campoId);
+            if (!campo) return;
 
-            // Prevenir pegar contenido que inicie con espacios
-            responsable.addEventListener('paste', function(e) {
-                e.preventDefault();
-                let pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            campo.classList.add('is-invalid');
 
-                // Remover espacios al inicio
-                pastedText = pastedText.replace(/^\s+/, '');
+            let errorDiv = campo.parentNode.querySelector('.text-danger');
+            if (!errorDiv) {
+                errorDiv = document.createElement('div');
+                errorDiv.className = 'text-danger mt-1 small';
+                campo.parentNode.appendChild(errorDiv);
+            }
+            errorDiv.textContent = mensaje;
+            errorDiv.style.display = 'block';
+        }
 
-                // Permitir solo letras y espacios
-                pastedText = pastedText.replace(/[^a-zA-ZÀ-ÿ\u00f1\u00d1\s]/g, '');
+        // Función auxiliar para ocultar errores
+        function ocultarError(campoId) {
+            const campo = document.getElementById(campoId);
+            if (!campo) return;
 
-                // Limitar a 30 caracteres
-                if (pastedText.length > 30) {
-                    pastedText = pastedText.substring(0, 30);
-                }
+            campo.classList.remove('is-invalid');
 
-                // Solo pegar si hay contenido válido
-                if (pastedText.length > 0) {
-                    e.target.value = pastedText;
-                    // Disparar evento input para validación
-                    e.target.dispatchEvent(new Event('input'));
-                }
-            });
-
-            numeroFactura.addEventListener('paste', function(e) {
-                e.preventDefault();
-                let pastedText = (e.clipboardData || window.clipboardData).getData('text');
-
-                // Remover caracteres no numéricos
-                pastedText = pastedText.replace(/\D/g, '');
-
-                // Limitar a 15 caracteres
-                if (pastedText.length > 15) {
-                    pastedText = pastedText.substring(0, 15);
-                }
-
-                // Solo pegar si hay contenido válido
-                if (pastedText.length > 0) {
-                    e.target.value = pastedText;
-                    // Disparar evento input para validación
-                    e.target.dispatchEvent(new Event('input'));
-                }
-            });
-        });
+            const errorDiv = campo.parentNode.querySelector('.text-danger');
+            if (errorDiv) {
+                errorDiv.style.display = 'none';
+            }
+        }
 
         // Datos de productos
         const nombresPorCategoria = {
@@ -714,100 +538,6 @@
         };
 
         let productoSeleccionadoActual = null;
-
-        // Funciones de validación
-        function mostrarError(campo, mensaje) {
-            let input;
-            let errorDiv;
-
-            if (campo === 'proveedor') {
-                input = document.querySelector('select[name="proveedor"]');
-                errorDiv = document.getElementById('errorProveedor');
-            } else if (campo === 'formaPago') {
-                input = document.querySelector('select[name="forma_pago"]');
-                errorDiv = document.getElementById('errorFormaPago');
-            } else {
-                input = document.getElementById(campo);
-                errorDiv = document.getElementById('error-' + campo) || document.getElementById('error' + campo.charAt(0).toUpperCase() + campo.slice(1));
-            }
-
-            if (input && errorDiv) {
-                input.classList.add('field-error');
-                errorDiv.style.display = 'block';
-                errorDiv.textContent = mensaje;
-            }
-        }
-
-        function ocultarError(campo) {
-            let input;
-            let errorDiv;
-
-            if (campo === 'proveedor') {
-                input = document.querySelector('select[name="proveedor"]');
-                errorDiv = document.getElementById('errorProveedor');
-            } else if (campo === 'formaPago') {
-                input = document.querySelector('select[name="forma_pago"]');
-                errorDiv = document.getElementById('errorFormaPago');
-            } else {
-                input = document.getElementById(campo);
-                errorDiv = document.getElementById('error-' + campo) || document.getElementById('error' + campo.charAt(0).toUpperCase() + campo.slice(1));
-            }
-
-            if (input && errorDiv) {
-                input.classList.remove('field-error');
-                errorDiv.style.display = 'none';
-            }
-        }
-
-
-        function validarFormularioPrincipal() {
-            let esValido = true;
-
-            // Limpiar errores previos
-            ['numeroFactura', 'fecha', 'proveedor', 'formaPago', 'responsable'].forEach(campo => {
-                ocultarError(campo);
-            });
-            document.getElementById('errorProductos').style.display = 'none';
-
-            // Validar número de factura
-            const numeroFactura = document.getElementById('numeroFactura').value.trim();
-            if (!numeroFactura) {
-                mostrarError('numeroFactura', 'Por favor ingrese un número de factura válido.');
-                esValido = false;
-            }
-
-
-
-            // Validar proveedor
-            const proveedor = document.getElementById('proveedor').value;
-            if (!proveedor) {
-                mostrarError('proveedor', 'Por favor seleccione un proveedor.');
-                esValido = false;
-            }
-
-            // Validar forma de pago
-            const formaPago = document.getElementById('formaPago').value;
-            if (!formaPago) {
-                mostrarError('formaPago', 'Por favor seleccione una forma de pago.');
-                esValido = false;
-            }
-
-            // Validar responsable
-            const responsable = document.getElementById('responsable').value.trim();
-            if (!responsable) {
-                mostrarError('responsable', 'Por favor ingrese el nombre del responsable.');
-                esValido = false;
-            }
-
-            // Validar productos
-            const productos = document.querySelectorAll('#tablaFacturaBody tr');
-            if (productos.length === 0) {
-                document.getElementById('errorProductos').style.display = 'block';
-                esValido = false;
-            }
-
-            return esValido;
-        }
 
         function validarFormularioProducto(form) {
             const precioCompra = form.querySelector('.precioCompra');
@@ -884,12 +614,34 @@
             return esValido;
         }
 
-
         // Inicializar cuando se carga la página
         document.addEventListener('DOMContentLoaded', function() {
             cargarProductosEnModal();
             configurarBuscador();
+            configurarValidacionFormulario();
         });
+
+        // NUEVA FUNCIÓN - Configurar validación del formulario principal
+        function configurarValidacionFormulario() {
+            const form = document.getElementById('facturaForm');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    console.log('Formulario enviado, validando...');
+
+                    // Validar formulario
+                    if (!validarFormularioPrincipal()) {
+                        console.log('Validación falló, previniendo envío');
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return false;
+                    }
+
+                    console.log('Validación exitosa, enviando formulario...');
+                    // Si llegamos aquí, el formulario es válido y se puede enviar
+                    return true;
+                });
+            }
+        }
 
         // Cargar productos en el modal
         function cargarProductosEnModal() {
@@ -904,53 +656,53 @@
                     fila.setAttribute('data-categoria', categoria);
 
                     fila.innerHTML = `
-                        <td>${nombre}</td>
-                        <td>${categoria}</td>
-                        <td>
-                            <button type="button" class="btn btn-sm btn-info seleccionar-producto">
-                                <i class="bi bi-check-circle"></i> Seleccionar
-                            </button>
-                        </td>
-                    `;
+                <td>${nombre}</td>
+                <td>${categoria}</td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-info seleccionar-producto">
+                        <i class="bi bi-check-circle"></i> Seleccionar
+                    </button>
+                </td>
+            `;
 
                     // Fila de edición (oculta inicialmente)
                     const filaEdicion = document.createElement('tr');
                     filaEdicion.className = 'producto-edicion-fila';
                     filaEdicion.style.display = 'none';
                     filaEdicion.innerHTML = `
-                        <td colspan="3">
-                            <form class="d-flex align-items-end gap-2 form-edicion-producto p-2" novalidate >
-                                <div class="width: 18%;">
-                                    <label class="form-label">Precio Compra (Lps)</label>
-                                    <input type="number" min="0" max="9999" maxlength="4"  class="form-control precioCompra" required>
-                                </div>
-                                <div class="width: 18%;">
-                                    <label class="form-label">Precio Venta (Lps)</label>
-                                    <input type="number" min="0" max="9999" maxlength="4" class="form-control precioVenta" required>
-                                </div>
-                                <div class="width: 10%;">
-                                    <label class="form-label">Cantidad</label>
-                                    <input type="number" min="1" max="999" maxlength="3" class="form-control cantidad" required>
-                                </div>
-                                <div class="width: 20%;">
-                                    <label class="form-label">IVA</label>
-                                    <select class="form-select iva">
-                                        <option value="">Seleccione</option>
-                                        <option value="0">0%</option>
-                                        <option value="15">15%</option>
-                                    </select>
-                                </div>
-                                <div class="d-flex gap-1">
-                                    <button type="submit" class="btn btn-primary btn-sm">
-                                        <i class="bi bi-plus-circle">Agregar</i>
-                                    </button>
-                                    <button type="button" class="btn btn-warning btn-sm limpiar-campos">
-                                         <i class="bi bi-eraser-fill">Limpiar</i>
-                                    </button>
-                                </div>
-                            </form>
-                        </td>
-                    `;
+                <td colspan="3">
+                    <form class="d-flex align-items-end gap-2 form-edicion-producto p-2" novalidate >
+                        <div class="width: 18%;">
+                            <label class="form-label">Precio Compra (Lps)</label>
+                            <input type="number" min="0" max="9999" maxlength="4"  class="form-control precioCompra" required>
+                        </div>
+                        <div class="width: 18%;">
+                            <label class="form-label">Precio Venta (Lps)</label>
+                            <input type="number" min="0" max="9999" maxlength="4" class="form-control precioVenta" required>
+                        </div>
+                        <div class="width: 10%;">
+                            <label class="form-label">Cantidad</label>
+                            <input type="number" min="1" max="999" maxlength="3" class="form-control cantidad" required>
+                        </div>
+                        <div class="width: 20%;">
+                            <label class="form-label">IVA</label>
+                            <select class="form-select iva">
+                                <option value="">Seleccione</option>
+                                <option value="0">0%</option>
+                                <option value="15">15%</option>
+                            </select>
+                        </div>
+                        <div class="d-flex gap-1">
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                <i class="bi bi-plus-circle">Agregar</i>
+                            </button>
+                            <button type="button" class="btn btn-warning btn-sm limpiar-campos">
+                                 <i class="bi bi-eraser-fill">Limpiar</i>
+                            </button>
+                        </div>
+                    </form>
+                </td>
+            `;
 
                     tbody.appendChild(fila);
                     tbody.appendChild(filaEdicion);
@@ -963,6 +715,8 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Función para limitar dígitos
             function limitarDigitos(input, maxDigitos) {
+                if (!input) return;
+
                 input.addEventListener('input', function(e) {
                     // Remover cualquier carácter que no sea número
                     let valor = e.target.value.replace(/[^0-9]/g, '');
@@ -994,14 +748,16 @@
                 });
             }
 
-            // Aplicar limitaciones
-            const precioCompra = document.querySelector('.precioCompra');
-            const precioVenta = document.querySelector('.precioVenta');
-            const cantidad = document.querySelector('.cantidad');
+            // Aplicar limitaciones cuando se cargan los productos
+            setTimeout(() => {
+                const precioCompra = document.querySelector('.precioCompra');
+                const precioVenta = document.querySelector('.precioVenta');
+                const cantidad = document.querySelector('.cantidad');
 
-            limitarDigitos(precioCompra, 4);  // Máximo 4 dígitos (9999)
-            limitarDigitos(precioVenta, 4);   // Máximo 4 dígitos (9999)
-            limitarDigitos(cantidad, 3);      // Máximo 3 dígitos (999)
+                if (precioCompra) limitarDigitos(precioCompra, 4);
+                if (precioVenta) limitarDigitos(precioVenta, 4);
+                if (cantidad) limitarDigitos(cantidad, 3);
+            }, 1000);
         });
 
         // Configurar eventos de productos
@@ -1075,8 +831,6 @@
                 });
             });
 
-
-
             // Formularios de edición de productos
             document.querySelectorAll('.form-edicion-producto').forEach(form => {
                 form.addEventListener('submit', function(e) {
@@ -1095,8 +849,6 @@
                     const precioVenta = parseFloat(this.querySelector('.precioVenta').value);
                     const cantidad = parseInt(this.querySelector('.cantidad').value);
                     const iva = parseInt(this.querySelector('.iva').value);
-
-
 
                     // Verificar si el producto ya está en la factura
                     const tablaFactura = document.getElementById('tablaFacturaBody');
@@ -1120,7 +872,6 @@
                         return;
                     }
 
-
                     // Calcular subtotal
                     const base = precioCompra * cantidad;
                     const impuesto = (iva / 100) * base;
@@ -1129,36 +880,36 @@
                     // Crear fila en la tabla de factura
                     const nuevaFila = document.createElement('tr');
                     nuevaFila.innerHTML = `
-                        <td>
-                            <input type="hidden" name="productos[][nombre]" value="${nombre}">
-                            ${nombre}
-                        </td>
-                        <td>
-                            <input type="hidden" name="productos[][categoria]" value="${categoria}">
-                            ${categoria}
-                        </td>
-                        <td>
-                            <input type="hidden" name="productos[][precioCompra]" value="${precioCompra}">
-                            ${precioCompra.toFixed(2)}
-                        </td>
-                        <td>
-                            <input type="hidden" name="productos[][cantidad]" value="${cantidad}">
-                            <input type="hidden" name="productos[][precioVenta]" value="${precioVenta}">
-                            ${cantidad}
-                        </td>
-                        <td>
-                            <input type="hidden" name="productos[][iva]" value="${iva}">
-                            ${iva}%
-                        </td>
-                        <td class="subtotal-producto">
-                            ${subtotal.toFixed(2)}
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-danger btn-sm btn-eliminar-producto" title="Eliminar producto">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </td>
-                    `;
+                <td>
+                    <input type="hidden" name="productos[][nombre]" value="${nombre}">
+                    ${nombre}
+                </td>
+                <td>
+                    <input type="hidden" name="productos[][categoria]" value="${categoria}">
+                    ${categoria}
+                </td>
+                <td>
+                    <input type="hidden" name="productos[][precioCompra]" value="${precioCompra}">
+                    ${precioCompra.toFixed(2)}
+                </td>
+                <td>
+                    <input type="hidden" name="productos[][cantidad]" value="${cantidad}">
+                    <input type="hidden" name="productos[][precioVenta]" value="${precioVenta}">
+                    ${cantidad}
+                </td>
+                <td>
+                    <input type="hidden" name="productos[][iva]" value="${iva}">
+                    ${iva}%
+                </td>
+                <td class="subtotal-producto">
+                    ${subtotal.toFixed(2)}
+                </td>
+                <td>
+                    <button type="button" class="btn btn-danger btn-sm btn-eliminar-producto" title="Eliminar producto">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            `;
 
                     tablaFactura.appendChild(nuevaFila);
                     actualizarFilaVacia();
@@ -1250,9 +1001,10 @@
             }
 
             const regex = new RegExp(`(${escapeRegex(termino)})`, 'gi');
-            const textoResaltado = textoOriginal.replace(regex, '<mark style="background-color: #ffeb3b; padding: 2px; border-radius: 3px; font-weight: bold;">$1</mark>');
+            const textoResaltado = textoOriginal.replace(regex, '<mark class="bg-warning">$1</mark>');
             elemento.innerHTML = textoResaltado;
         }
+
 
         function quitarResaltado(elemento) {
             if (!elemento) return;
@@ -1338,17 +1090,15 @@
             }
         }
 
-
         // Eliminar productos de la factura
         document.addEventListener('click', function(e) {
             if (e.target.closest('.btn-eliminar-producto')) {
-                    const fila = e.target.closest('tr');
-                    fila.remove();
-                    calcularTotalesGenerales();
-                    actualizarFilaVacia();
+                const fila = e.target.closest('tr');
+                fila.remove();
+                calcularTotalesGenerales();
+                actualizarFilaVacia();
             }
         });
-
         // Calcular totales generales
         function calcularTotalesGenerales() {
             const subtotales = document.querySelectorAll('.subtotal-producto');
@@ -1375,167 +1125,8 @@
             document.getElementById('totalGeneral').value = totalGeneral.toFixed(2);
         }
 
-        // Limpiar formulario
-        document.getElementById('btnLimpiar').addEventListener('click', function() {
-            // Resetear el formulario
-            document.getElementById('facturaForm').reset();
 
-            // Limpiar tabla de productos
-            document.getElementById('tablaFacturaBody').innerHTML = '';
-            calcularTotalesGenerales();
-            actualizarFilaVacia();
-
-            // Limpiar todas las advertencias y errores de validación
-            limpiarTodasLasAdvertencias();
-
-            // Limpiar estado del modal
-            document.querySelectorAll('.producto-edicion-fila').forEach(fila => {
-                fila.style.display = 'none';
-            });
-            document.querySelectorAll('.seleccionar-producto').forEach(btn => {
-                btn.className = 'btn btn-sm btn-info seleccionar-producto';
-                btn.innerHTML = '<i class="bi bi-check-circle"></i> Seleccionar';
-            });
-            productoSeleccionadoActual = null;
-        });
-
-        // Función para limpiar todas las advertencias y errores de validación
-        function limpiarTodasLasAdvertencias() {
-            // Lista de todos los campos que pueden tener errores
-            const campos = ['numeroFactura', 'fecha', 'proveedor', 'formaPago', 'responsable'];
-
-            // Ocultar errores de cada campo
-            campos.forEach(campo => {
-                ocultarError(campo);
-            });
-
-            // Ocultar error de productos
-            const errorProductos = document.getElementById('errorProductos');
-            if (errorProductos) {
-                errorProductos.style.display = 'none';
-            }
-
-            // Remover clases de error de todos los inputs y selects
-            document.querySelectorAll('#facturaForm .form-control, #facturaForm .form-select').forEach(input => {
-                input.classList.remove('field-error', 'invalid');
-            });
-
-            // Ocultar todos los mensajes de error visibles
-            document.querySelectorAll('#facturaForm .error-message').forEach(error => {
-                error.style.display = 'none';
-            });
-
-            // Limpiar validaciones de Bootstrap si las hay
-            document.getElementById('facturaForm').classList.remove('was-validated');
-
-            // Remover cualquier estado de validación personalizado
-            document.querySelectorAll('#facturaForm .is-invalid, #facturaForm .is-valid').forEach(element => {
-                element.classList.remove('is-invalid', 'is-valid');
-            });
-        }
-
-        // Validación del formulario al enviar
-
-        document.getElementById('facturaForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            // Validar formulario antes de enviar
-            if (!validarFormularioPrincipal()) {
-                return;
-            }
-
-            // Si llegamos aquí, el formulario es válido
-            console.log('Formulario válido - Enviando datos...');
-
-            // Aquí puedes agregar la lógica para enviar los datos
-            // Por ejemplo: this.submit(); o hacer una petición AJAX
-        });
-
-        // Actualizar la función validarFormularioPrincipal para que funcione correctamente:
-        function validarFormularioPrincipal() {
-            let esValido = true;
-
-            // Limpiar errores previos
-            ['numeroFactura', 'fecha', 'proveedor', 'formaPago', 'responsable'].forEach(campo => {
-                ocultarError(campo);
-            });
-            document.getElementById('errorProductos').style.display = 'none';
-
-            // Validar número de factura
-            const numeroFactura = document.getElementById('numeroFactura').value.trim();
-            if (!numeroFactura) {
-                mostrarError('numeroFactura', 'Número de factura es obligatorio');
-                esValido = false;
-            }
-
-            // Validar fecha
-            const fecha = document.getElementById('fecha').value;
-            if (!fecha) {
-                mostrarError('fecha', 'Fecha es obligatoria');
-                esValido = false;
-            }
-
-            // Validar proveedor
-            const proveedor = document.querySelector('select[name="proveedor"]').value;
-            if (!proveedor) {
-                mostrarError('proveedor', 'Proveedor es obligatorio');
-                esValido = false;
-            }
-
-            // Validar forma de pago
-            const formaPago = document.querySelector('select[name="forma_pago"]').value;
-            if (!formaPago) {
-                mostrarError('formaPago', 'Forma de pago es obligatorio');
-                esValido = false;
-            }
-
-            // Validar responsable
-            const responsable = document.getElementById('responsable').value.trim();
-            if (!responsable) {
-                mostrarError('responsable', 'Responsable es obligatorio');
-                esValido = false;
-            }
-
-            // Validar productos
-            const productos = document.querySelectorAll('#tablaFacturaBody tr');
-            if (productos.length === 0) {
-                document.getElementById('errorProductos').style.display = 'block';
-                document.getElementById('errorProductos').textContent = 'Debe agregar al menos un producto a la factura';
-                esValido = false;
-            }
-
-            return esValido;
-        }
-
-
-        // Limpiar modal al cerrarlo
-        document.getElementById('productosModal').addEventListener('hidden.bs.modal', function() {
-            document.getElementById('searchInput').value = '';
-
-            // Limpiar resaltados
-            document.querySelectorAll('#tablaProductosBody .producto-fila td:first-child').forEach(celda => {
-                quitarResaltado(celda);
-            });
-
-            // Limpiar resultados de búsqueda
-            const searchResults = document.getElementById('searchResults');
-            if (searchResults) {
-                searchResults.innerHTML = '';
-            }
-
-            document.querySelectorAll('.producto-edicion-fila').forEach(fila => {
-                fila.style.display = 'none';
-            });
-            document.querySelectorAll('.seleccionar-producto').forEach(btn => {
-                btn.className = 'btn btn-sm btn-info seleccionar-producto';
-                btn.innerHTML = '<i class="bi bi-check-circle"></i> Seleccionar';
-            });
-            document.querySelectorAll('.producto-fila').forEach(fila => {
-                fila.style.display = 'table-row';
-            });
-            productoSeleccionadoActual = null;
-        });
     </script>
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 @endsection
+
