@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\EmpleadoController;
+use App\Http\Controllers\FacturaController;
 use App\Http\Controllers\InventarioController;
+use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\ServicioController;
 use Illuminate\Support\Facades\Route;
@@ -29,14 +31,15 @@ Route::get('/Proveedores/{id}', [ProveedorController::class, 'show'])->name('Pro
 Route::get('/Proveedores/{id}/editar', [ProveedorController::class, 'edit'])->name('Proveedores.edit');
 Route::put('/Proveedores/{id}', [ProveedorController::class, 'update'])->name('Proveedores.update');
 
+Route::controller(ProductoController::class)->group(function () {
+    Route::get('/productos', 'index')->name('productos.index');
+    Route::get('/productos/{id}', 'show')->name('productos.show')->whereNumber('id');
+    Route::get('/productos/crear', 'create')->name('productos.create');
+    Route::post('/productos/crear', 'store')->name('productos.store');
 
+    #Route::get('/productos/{id}/editar', 'edit')->name('productos.edit')->whereNumber('id');
+    #Route::put('/productos/{id}/editar', 'update')->name('productos.update')->whereNumber('id');
 
-
-Route::controller(InventarioController::class)->group(function (){
-    Route::get('/inventarios', 'index')->name('inventarios.index');
-    Route::get('/inventarios/{id}', 'show')->name('inventarios.show')->whereNumber('id');
-    Route::get('/inventarios/crear', 'create')->name('inventarios.create');
-    Route::post('/inventarios/crear', 'store')->name('inventarios.store');
 });
 
 Route::get('/servicios/index', [ServicioController::class, 'index'])->name('servicios.index');
@@ -51,3 +54,14 @@ Route::post('/Proveedores/crear', [\App\Http\Controllers\ProveedorController::cl
 Route::get('/Proveedores', [\App\Http\Controllers\ProveedorController::class, 'index'])->name('Proveedores.indexProveedor');
 Route::get('/Proveedores/crear', [\App\Http\Controllers\ProveedorController::class, 'create'])->name('Proveedores.nuevo');
 Route::get('/Proveedores/{id}', [ProveedorController::class, 'show'])->name('Proveedores.detalle')->whereNumber('id');
+
+Route::controller(FacturaController::class)->group(function () {
+    Route::get('/facturas', 'index')->name('facturas.index');
+    Route::get('/facturas/{id}', 'show')->name('facturas.show')->whereNumber('id');
+    Route::get('/facturas/crear', 'create')->name('facturas.create');
+    Route::post('/facturas/crear', 'store')->name('facturas.store');
+
+    // Ruta para autocompletar productos según proveedor
+    Route::get('/facturas/proveedor/{nombre}/productos', 'obtenerProductosProveedor')
+        ->name('facturas.proveedor.productos');
+});

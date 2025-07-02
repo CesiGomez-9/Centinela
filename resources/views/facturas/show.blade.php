@@ -44,7 +44,7 @@
                             <div class="col-md-6">
                                 <h6><i class="bi bi-box-seam me-2"></i>Productos:</h6>
                                 <ul class="list-group">
-                                    @foreach ($factura->productos as $producto)
+                                    @foreach ($factura->producto)
                                         <li class="list-group-item d-flex justify-content-between align-items-center">
                                             {{ $producto->pivot->nombre }} (x{{ $producto->pivot->cantidad }})
                                             <span class="badge bg-primary rounded-pill">L. {{ $producto->pivot->subtotal }}</span>

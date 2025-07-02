@@ -7,6 +7,22 @@
             background-color: #e6f0ff;
             margin: 0;
         }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 0.875em;
+            margin-top: 0.25rem;
+            display: none;
+        }
+        .field-error {
+            border-color: #dc3545;
+        }
+
+        .form-control.invalid {
+            border-color: #dc3545;
+        }
+
+
     </style>
 
     <div class="container my-5">
@@ -268,10 +284,7 @@
 
             if (val.length === 10) {
                 const year = val.substring(0, 4);
-                if (!year.startsWith('2')) {
-                    mostrarError('fecha', 'El año debe comenzar con "2" (entre 2000 y 2099)');
-                    return false;
-                }
+
             }
 
             ocultarError('fecha');
@@ -283,7 +296,7 @@
             if (val.length === 10) {
                 const year = val.substring(0,4);
                 if (!year.startsWith('2')) {
-                    errorFecha.textContent = 'El año debe comenzar con "2" (entre 2000 y 2099).';
+
                 } else {
                     errorFecha.textContent = '';
                 }
@@ -1123,6 +1136,93 @@
             document.getElementById('subtotalGeneral').value = subtotalGeneral.toFixed(2);
             document.getElementById('impuestosGeneral').value = impuestosGeneral.toFixed(2);
             document.getElementById('totalGeneral').value = totalGeneral.toFixed(2);
+        }
+
+        document.getElementById('facturaForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            console.log('Probando si entra al submit...');
+
+            if (!validarFormularioPrincipal()) {
+                console.log('Formulario no válido');
+                return;
+            }
+
+            console.log('Formulario válido - Enviando datos...');
+            this.submit();
+        });
+
+        // También actualiza la función validarFormularioPrincipal para asegurar que funcione correctamente:
+        function validarFormularioPrincipal() {
+            let esValido = true;
+            let primerCampoConError = null;
+
+            // Limpiar errores previos
+            ['numeroFactura', 'fecha', 'proveedor', 'formaPago', 'responsable'].forEach(campo => {
+                ocultarError(campo);
+            });
+
+            const errorProductos = document.getElementById('errorProductos');
+            if (errorProductos) {
+                errorProductos.style.display = 'none';
+            }
+
+            // Validar número de factura
+            const numeroFactura = document.getElementById('numeroFactura').value.trim();
+            if (!numeroFactura) {
+                mostrarError('numeroFactura', 'Número de factura es obligatorio');
+                if (!primerCampoConError) primerCampoConError = document.getElementById('numeroFactura');
+                esValido = false;
+            }
+
+            // Validar fecha usando tu función existente
+            if (!validarFecha()) {
+                if (!primerCampoConError) primerCampoConError = document.getElementById('fecha');
+                esValido = false;
+            }
+
+            // Validar proveedor
+            const proveedor = document.querySelector('select[name="proveedor"]').value;
+            if (!proveedor) {
+                mostrarError('proveedor', 'Proveedor es obligatorio');
+                if (!primerCampoConError) primerCampoConError = document.querySelector('select[name="proveedor"]');
+                esValido = false;
+            }
+
+            // Validar forma de pago
+            const formaPago = document.querySelector('select[name="forma_pago"]').value;
+            if (!formaPago) {
+                mostrarError('formaPago', 'Forma de pago es obligatorio');
+                if (!primerCampoConError) primerCampoConError = document.querySelector('select[name="forma_pago"]');
+                esValido = false;
+            }
+
+            // Validar responsable
+            const responsable = document.getElementById('responsable').value.trim();
+            if (!responsable) {
+                mostrarError('responsable', 'Responsable es obligatorio');
+                if (!primerCampoConError) primerCampoConError = document.getElementById('responsable');
+                esValido = false;
+            }
+
+            // Validar productos
+            const productos = document.querySelectorAll('#tablaFacturaBody tr:not(#filaVacia)');
+            if (productos.length === 0) {
+                const errorProductos = document.getElementById('errorProductos');
+                if (errorProductos) {
+                    errorProductos.style.display = 'block';
+                    errorProductos.textContent = 'Debe agregar al menos un producto a la factura';
+                }
+                esValido = false;
+            }
+
+            // Enfocar el primer campo con error
+            if (!esValido && primerCampoConError) {
+                primerCampoConError.focus();
+                primerCampoConError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+
+            return esValido;
         }
 
 

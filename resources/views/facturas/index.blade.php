@@ -58,6 +58,42 @@
 
     <!-- Mensaje de resultados -->
     <div id="searchResults" class="mb-3"></div>
+    <table class="table table-bordered table-hover align-middle">
+        <thead class="table-dark text-center">
+        <tr>
+            <th>#</th> <!-- Columna de enumeración -->
+            <th>Número Factura</th>
+            <th>Categoría</th>
+            <th>Cantidad</th>
+            <th>Responsable</th>
+            <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody id="facturasTableBody">
+        @forelse ($facturas as $index => $factura)
+            <tr class="factura-row">
+                <td>{{ $index + 1 }}</td> <!-- Enumeración -->
+                <td class="factura-numeroFactura">{{ $factura->numero_factura }}</td>
+                <td>{{ $factura->categoria ?? 'N/A' }}</td>
+                <td>{{ $factura->cantidad ?? 'N/A' }}</td>
+                <td>
+                    @if($factura->empleado)
+                        {{ $factura->empleado->nombre }} {{ $factura->empleado->apellido }}
+                    @else
+                        No asignado
+                    @endif
+                </td>
+                <td>
+                    <a href="{{ route('facturas.show', $factura->id) }}" class="btn btn-outline-info btn-sm">Ver</a>
+                </td>
+            </tr>
+        @empty
+            <tr id="noProductsRow">
+                <td colspan="6" class="text-center">No hay facturas registradas.</td>
+            </tr>
+        @endforelse
+        </tbody>
+    </table>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
