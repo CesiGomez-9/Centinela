@@ -2,22 +2,22 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Factura extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'numero_factura',
         'fecha',
         'proveedor',
         'forma_pago',
+        'responsable',
         'subtotal',
         'impuestos',
         'totalF',
-        'responsable_id',
-
     ];
 
     // Relación uno a muchos con DetalleFactura
@@ -25,9 +25,4 @@ class Factura extends Model
     {
         return $this->hasMany(DetalleFactura::class);
     }
-    public function empleado()
-    {
-        return $this->belongsTo(Empleado::class, 'responsable_id');
-    }
-
 }

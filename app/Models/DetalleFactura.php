@@ -3,10 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class DetalleFactura extends Model
 {
-    protected $table = 'detalle_factura';
+    protected $table = 'detalles';
+
+    use HasFactory;
 
     protected $fillable = [
         'factura_id',
@@ -19,6 +22,8 @@ class DetalleFactura extends Model
         'total',
     ];
 
-    // Relación inversa
-
+    public function factura()
+    {
+        return $this->belongsTo(Factura::class);
+    }
 }
