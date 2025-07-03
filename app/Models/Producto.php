@@ -12,4 +12,6 @@ class Producto extends Model
         'serie','codigo', 'nombre', 'marca', 'modelo', 'categoria', 'iva', 'descripcion',
     ];
 
+
+
 }
