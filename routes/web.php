@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\EmpleadoController;
+use App\Http\Controllers\FacturaController;
 use App\Http\Controllers\InventarioController;
+use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\ServicioController;
 use Illuminate\Support\Facades\Route;
@@ -57,17 +59,15 @@ Route::get('/Proveedores/crear', [\App\Http\Controllers\ProveedorController::cla
 Route::get('/Proveedores/{id}', [ProveedorController::class, 'show'])->name('Proveedores.detalle')->whereNumber('id');
 
 
-use App\Http\Controllers\FacturaController;
+Route::controller(FacturaController::class)->group(function () {
+    Route::get('/facturas', 'index')->name('facturas.index');
+    Route::get('/facturas/{id}', 'show')->name('facturas.show')->whereNumber('id');
+    Route::get('/facturas/crear', 'create')->name('facturas.create');
+    Route::post('/facturas/crear', 'store')->name('facturas.store');
 
-Route::get('/facturas', [FacturaController::class, 'index'])->name('facturas.index');
-Route::get('/facturas/{id}', [FacturaController::class, 'show'])->name('facturas.show')->whereNumber('id');
-Route::get('/facturas/crear', [FacturaController::class, 'create'])->name('facturas.create');
-Route::post('/facturas/crear', [FacturaController::class, 'store'])->name('facturas.store');
+    #Route::get('/facturas/{id}/editar', 'edit')->name('facturas.edit')->whereNumber('id');
+    #Route::put('/facturas/{id}/editar', 'update')->name('facturas.update')->whereNumber('id');
 
-Route::get('/facturas/proveedor/{nombre}/productos', [FacturaController::class, 'obtenerProductosProveedor'])
-    ->name('facturas.proveedor.productos');
+});
 
-// Si luego quieres habilitar edición:
-// Route::get('/facturas/{id}/editar', [FacturaController::class, 'edit'])->name('facturas.edit')->whereNumber('id');
-// Route::put('/facturas/{id}/editar', [FacturaController::class, 'update'])->name('facturas.update')->whereNumber('id');
 
