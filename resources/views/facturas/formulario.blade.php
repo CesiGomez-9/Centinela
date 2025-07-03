@@ -60,7 +60,7 @@
                             @method('PUT')
                         @endisset
                         <div class="row g-4">
-                        {{-- Número de Factura --}}
+                            {{-- Número de Factura --}}
                             <div class="col-md-6">
                                 <label for="numeroFactura" class="form-label">Número de Factura</label>
                                 <div class="input-group">
@@ -76,12 +76,17 @@
                             </div>
 
                             {{-- Fecha --}}
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-6">
                                 <label for="fecha" class="form-label">Fecha</label>
-                                <input type="date" class="form-control" id="fecha" name="fecha"
-                                       value="{{ old('fecha', $factura->fecha ?? date('Y-m-d')) }}"
-                                       min="2025-01-01" max="2099-12-31" required>
-                                <div class="text-danger mt-1 small" id="errorFecha" style="display: none;"></div>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+                                    <input type="date" name="fecha" id="fecha" min="2025-01-01" max="2099-12-31"
+                                           class="form-control @error('fecha') is-invalid @enderror"
+                                           value="{{ old('fecha') }}" required>
+                                </div>
+                                @error('fecha')
+                                <div class="text-danger mt-1 small">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             {{-- Proveedor (Select) --}}
@@ -185,31 +190,33 @@
                             </div>
 
                             {{-- Responsable --}}
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-6">
                                 <label for="responsable" class="form-label">Responsable</label>
-                                {{-- Aquí se mostrará el nombre del empleado asociado al usuario logueado --}}
-                                <span id="responsable_display" class="form-control-plaintext border-bottom pb-1">
-        {{-- Asumiendo que el usuario logueado tiene una relación 'empleado' o que su ID es el ID del empleado --}}
-                                    {{ Auth::user()->empleado->nombre ?? Auth::user()->name ?? 'N/A' }}
-    </span>
-                                {{-- Campo oculto para enviar el ID del responsable (empleado) a la base de datos --}}
-                                <input type="hidden" id="responsable_id" name="responsable_id" value="{{ Auth::user()->empleado->id ?? Auth::id() }}">
-                                <div class="text-danger mt-1 small" id="errorResponsableId" style="display: none;"></div>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-person-check-fill"></i></span>
+                                    <input type="text" name="responsable" id="responsable"
+                                           class="form-control @error('responsable') is-invalid @enderror"
+                                           maxlength="50" value="{{ old('responsable') }}"
+                                           required>
+                                </div>
+                                @error('responsable')
+                                <div class="text-danger mt-1 small">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <!-- Botones -->
                             <div class="text-center mt-5">
-                            <a href="{{ route('facturas.index') }}" class="btn btn-danger me-2">
-                                <i class="bi bi-x-circle me-2"></i> Cancelar
-                            </a>
+                                <a href="{{ route('facturas.index') }}" class="btn btn-danger me-2">
+                                    <i class="bi bi-x-circle me-2"></i> Cancelar
+                                </a>
 
-                            <button type="button" id="btnLimpiar" class="btn btn-warning me-2">
-                                <i class="bi bi-eraser-fill me-2"></i> Limpiar
-                            </button>
+                                <button type="button" id="btnLimpiar" class="btn btn-warning me-2">
+                                    <i class="bi bi-eraser-fill me-2"></i> Limpiar
+                                </button>
 
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-save-fill me-2"></i> Guardar
-                            </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-save-fill me-2"></i> Guardar
+                                </button>
                             </div>
                         </div>
                     </form>
@@ -266,7 +273,7 @@
     <script>
         // Variables globales (si las tienes, asegúrate de que estén declaradas aquí o arriba)
         let productoSeleccionadoActual = null;
-        let productoIndexCounter = 0; // Contador para los índices de productos
+        let productoIndexCounter = 0; // Nuevo contador para los índices de productos
 
         // Datos de productos (asegúrate de que esta variable esté definida si la usas en cargarProductosEnModal)
         const nombresPorCategoria = {
@@ -323,15 +330,21 @@
                 return false;
             }
 
-            const fecha = new Date(val);
-            if (isNaN(fecha.getTime())) {
-                mostrarError('fecha', 'Formato de fecha inválido.');
+            const fechaRegex = /^\d{4}-\d{2}-\d{2}$/;
+            if (!fechaRegex.test(val)) {
+                mostrarError('fecha', 'Formato de fecha inválido');
                 return false;
             }
 
-            const year = fecha.getFullYear(); // Obtener el año de la fecha
-            if (year < 2025 || year > 2099) {
-                mostrarError('fecha', 'El año debe estar entre 2025 y 2099.');
+            const fecha = new Date(val);
+            if (isNaN(fecha.getTime())) {
+                mostrarError('fecha', 'Fecha inválida');
+                return false;
+            }
+
+            const year = parseInt(val.substring(0, 4));
+            if (year < 2025 || year > 2099) { // Ajuste para que coincida con la validación del controlador
+                mostrarError('fecha', 'El año debe estar entre 2025 y 2099');
                 return false;
             }
 
@@ -409,7 +422,6 @@
             if (primerCampo) {
                 primerCampo.focus();
             }
-            // No resetear el campo responsable_id aquí, ya que debe venir del usuario logueado
         }
 
         function limpiarFormulariosModal() {
@@ -564,10 +576,9 @@
             let esValido = true;
             let primerCampoConError = null;
 
-            ['numeroFactura', 'fecha', 'proveedor', 'formaPago'].forEach(campo => {
+            ['numeroFactura', 'fecha', 'proveedor', 'formaPago', 'responsable'].forEach(campo => {
                 ocultarError(campo);
             });
-            ocultarError('responsableId'); // Ocultar error para el nuevo campo responsable_id
 
             const errorProductos = document.getElementById('errorProductos');
             if (errorProductos) {
@@ -600,15 +611,12 @@
                 esValido = false;
             }
 
-            // Validación para el campo oculto responsable_id
-            const responsableId = document.getElementById('responsable_id').value;
-            if (!responsableId || isNaN(parseInt(responsableId))) {
-                mostrarError('responsableId', 'El ID de responsable es obligatorio.');
-                // No se puede enfocar un hidden input, pero se puede marcar su contenedor si es necesario
-                if (!primerCampoConError) primerCampoConError = document.getElementById('responsable_display'); // O un elemento visible cercano
+            const responsable = document.getElementById('responsable').value.trim();
+            if (!responsable) {
+                mostrarError('responsable', 'Responsable es obligatorio');
+                if (!primerCampoConError) primerCampoConError = document.getElementById('responsable');
                 esValido = false;
             }
-
 
             const productos = document.querySelectorAll('#tablaFacturaBody tr:not(#filaVacia)');
             if (productos.length === 0) {
@@ -865,7 +873,7 @@
                     nuevaFila.appendChild(tdCategoria);
 
                     // Celda de Precio Compra
-                    const tdPrecioCompra = document.createElement('td');
+                    const tdPrecioCompra = document.createElement('td'); // Corregido: document.createElement('td')
                     tdPrecioCompra.innerHTML = `
                     <input type="hidden" name="productos[${currentIndex}][precioCompra]" value="${precioCompra.toFixed(2)}" class="hidden-precio-compra">
                     ${precioCompra.toFixed(2)}
@@ -1079,7 +1087,7 @@
 
                 if (!inputPrecioCompra || !inputCantidad || !inputIva) {
                     console.error('ERROR: No se encontró uno o más inputs hidden de producto en la fila para calcular totales:', fila);
-                    return; // Salta esta fila si falta algún input
+                    return; // Saltar está fila si falta algun input
                 }
 
                 const precioCompra = parseFloat(inputPrecioCompra.value);
@@ -1142,17 +1150,34 @@
             let productsToLoad = [];
 
             if (oldProductosRaw && oldProductosRaw.length > 0) {
-                // Asumimos que old() ya devuelve un array de objetos si los names son productos[idx][prop]
-                // Si Laravel aún lo aplanara, se necesitaría la lógica de reconstrucción anterior.
-                productsToLoad = oldProductosRaw.map(p => ({
-                    nombre: String(p.nombre || 'N/A'),
-                    categoria: String(p.categoria || 'N/A'),
-                    precioCompra: parseFloat(p.precioCompra || 0),
-                    precioVenta: parseFloat(p.precioVenta || 0),
-                    cantidad: parseInt(p.cantidad || 0),
-                    iva: parseFloat(p.iva || 0),
-                    total: 0 // Se calculará
-                }));
+                let tempProducts = [];
+                // La lógica de reconstrucción de oldProductosRaw, si viene aplanado
+                let reconstructedProducts = [];
+                let currentReconstructedProduct = {};
+                const expectedProperties = ['nombre', 'categoria', 'precioCompra', 'cantidad', 'precioVenta', 'iva']; // Orden de las propiedades
+                let propertiesCount = 0;
+
+                oldProductosRaw.forEach(item => {
+                    const key = Object.keys(item)[0];
+                    const value = item[key];
+                    currentReconstructedProduct[key] = value;
+                    propertiesCount++;
+
+                    if (propertiesCount === expectedProperties.length) {
+                        reconstructedProducts.push({
+                            nombre: String(currentReconstructedProduct.nombre || 'N/A'),
+                            categoria: String(currentReconstructedProduct.categoria || 'N/A'),
+                            precioCompra: parseFloat(currentReconstructedProduct.precioCompra || 0),
+                            precioVenta: parseFloat(currentReconstructedProduct.precioVenta || 0),
+                            cantidad: parseInt(currentReconstructedProduct.cantidad || 0),
+                            iva: parseFloat(currentReconstructedProduct.iva || 0),
+                            total: 0 // Se calculará
+                        });
+                        currentReconstructedProduct = {};
+                        propertiesCount = 0;
+                    }
+                });
+                productsToLoad = reconstructedProducts;
 
                 // Calcular el total para los productos repoblados
                 productsToLoad.forEach(p => {
@@ -1277,8 +1302,6 @@
         });
 
     </script>
-
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 @endsection
 

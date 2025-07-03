@@ -6,7 +6,6 @@ use App\Models\Factura;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Auth; // Importar la fachada Auth
 
 class FacturaController extends Controller
 {
@@ -35,40 +34,21 @@ class FacturaController extends Controller
     {
         $proveedores = ['TE seguridad', 'TecnoSeguridad SA', 'Alarmas Prosegur', 'Seguridad Total', 'LockPro Cerraduras', 'VigiTech Honduras', 'Securitas HN', 'AlertaHN', 'MoniSegur', 'RejaMax'];
         $formasPago = ['Efectivo', 'Cheque', 'Transferencia'];
-        // No necesitamos pasar el responsable aquí, ya que se obtiene directamente en la vista con Auth::user()
 
         return view('facturas.formulario', compact('proveedores', 'formasPago'));
     }
 
     /**
      * Store a newly created resource in storage.
+     * @throws \Throwable
      */
     public function store(Request $request)
     {
-        // *** VALIDACIÓN (DESCOMENTAR CUANDO LA DEPURACIÓN HAYA TERMINADO) ***
-        $validated = $request->validate([
-            'numero_factura' => [
-                'required', 'min:3', 'max:15',
-                'regex:/^[A-Za-z0-9\-]+$/',
-                'regex:/.*\S.*/',
-                Rule::unique('facturas', 'numero_factura')
-            ],
-            'fecha' => ['required', 'date', 'after_or_equal:2025-01-01', 'before_or_equal:2099-12-31'],
-            'proveedor' => ['required', 'min:3', 'max:30', 'regex:/^[\pL0-9\s\-.,#]+$/u', 'regex:/.*\S.*/'],
-            'forma_pago' => ['required', 'in:Efectivo,Cheque,Transferencia'],
-            // Validar responsable_id en lugar de responsable (ya que es el ID del usuario)
-            'responsable_id' => ['required', 'integer', 'exists:empleados,id'], // Asumiendo que el ID existe en la tabla 'users'
-            'productos' => ['required', 'array', 'min:1'],
-            'productos.*.nombre' => ['required', 'string', 'max:100'],
-            'productos.*.categoria' => ['nullable', 'string', 'max:50'],
-            'productos.*.precioCompra' => ['required', 'numeric', 'min:0', 'max:9999'],
-            'productos.*.precioVenta' => ['required', 'numeric', 'min:0', 'max:9999'],
-            'productos.*.cantidad' => ['required', 'integer', 'min:1', 'max:999'],
-            'productos.*.iva' => ['nullable', 'numeric', 'min:0'],
-        ]);
-
         try {
             DB::transaction(function () use ($request) {
+                // *** LÍNEA DE DEPURACIÓN: Descomenta para ver la estructura exacta del array de productos ***
+                // dd($request->productos);
+
                 $subtotalGeneral = 0;
                 $impuestosGeneral = 0;
 
@@ -77,14 +57,15 @@ class FacturaController extends Controller
                     'fecha' => $request->fecha,
                     'proveedor' => $request->proveedor,
                     'forma_pago' => $request->forma_pago,
-                    'responsable' => $request->responsable_id, // Almacenar el ID del responsable
+                    'responsable' => $request->responsable,
                     'subtotal' => 0,
                     'impuestos' => 0,
                     'totalF' => 0,
                 ]);
 
                 foreach ($request->productos as $producto) {
-                    // Usar camelCase para acceder a las propiedades del array $producto
+                    // *** CAMBIO CLAVE: Usar camelCase para acceder a las propiedades del array $producto ***
+                    // Esto coincide con cómo el JavaScript envía los datos (ej. productos[0][precioCompra])
                     $baseProducto = $producto['precioCompra'] * $producto['cantidad'];
                     $ivaProducto = ($producto['iva'] / 100) * $baseProducto;
                     $totalProducto = $baseProducto + $ivaProducto;
@@ -95,8 +76,8 @@ class FacturaController extends Controller
                     $factura->detalles()->create([
                         'producto' => $producto['nombre'],
                         'categoria' => $producto['categoria'],
-                        'precio_compra' => $producto['precioCompra'],
-                        'precio_venta' => $producto['precioVenta'],
+                        'precio_compra' => $producto['precioCompra'], // Usar camelCase aquí
+                        'precio_venta' => $producto['precioVenta'],   // Usar camelCase aquí
                         'cantidad' => $producto['cantidad'],
                         'iva' => $producto['iva'],
                         'total' => $totalProducto,
@@ -112,13 +93,18 @@ class FacturaController extends Controller
                 ]);
             });
 
+            // Si la transacción es exitosa, redirige
             return redirect()->route('facturas.index')->with('status', 'Factura registrada correctamente');
 
         } catch (\Throwable $e) {
-            // En producción, aquí deberías registrar el error y mostrar un mensaje genérico.
-            // Para depuración local, puedes usar dd($e->getMessage()); o logear.
-            // dd($e->getMessage(), $e->getTraceAsString()); // Para depuración
-            return back()->withInput()->withErrors(['general' => 'Ocurrió un error al guardar la factura. Por favor, inténtelo de nuevo.']);
+            // *** IMPRIME EL ERROR DIRECTAMENTE EN LA PANTALLA ***
+            echo "<h1>Error Fatal en el Servidor</h1>";
+            echo "<p>Mensaje: " . $e->getMessage() . "</p>";
+            echo "<p>Archivo: " . $e->getFile() . "</p>";
+            echo "<p>Línea: " . $e->getLine() . "</p>";
+            echo "<h2>Stack Trace:</h2>";
+            echo "<pre>" . $e->getTraceAsString() . "</pre>";
+            exit; // Detiene la ejecución para que no haya redirección
         }
     }
 
@@ -150,28 +136,6 @@ class FacturaController extends Controller
     {
         $factura = Factura::findOrFail($id);
 
-        // *** VALIDACIÓN (DESCOMENTAR CUANDO LA DEPURACIÓN HAYA TERMINADO) ***
-        $validated = $request->validate([
-            'numero_factura' => [
-                'required', 'min:3', 'max:15',
-                'regex:/^[A-Za-z0-9\-]+$/',
-                'regex:/.*\S.*/',
-                Rule::unique('facturas', 'numero_factura')->ignore($factura->id)
-            ],
-            'fecha' => ['required', 'date', 'after_or_equal:2025-01-01', 'before_or_equal:2099-12-31'],
-            'proveedor' => ['required', 'min:3', 'max:30', 'regex:/^[\pL0-9\s\-.,#]+$/u', 'regex:/.*\S.*/'],
-            'forma_pago' => ['required', 'in:Efectivo,Cheque,Transferencia'],
-            // Validar responsable_id en lugar de responsable
-            'responsable_id' => ['required', 'integer', 'exists:users,id'],
-            'productos' => ['required', 'array', 'min:1'],
-            'productos.*.nombre' => ['required', 'string', 'max:100'],
-            'productos.*.categoria' => ['nullable', 'string', 'max:50'],
-            'productos.*.precioCompra' => ['required', 'numeric', 'min:0', 'max:9999'],
-            'productos.*.precioVenta' => ['required', 'numeric', 'min:0', 'max:9999'],
-            'productos.*.cantidad' => ['required', 'integer', 'min:1', 'max:999'],
-            'productos.*.iva' => ['nullable', 'numeric', 'min:0'],
-        ]);
-
         try {
             DB::transaction(function () use ($request, $factura) {
                 // Update main invoice fields
@@ -180,7 +144,7 @@ class FacturaController extends Controller
                     'fecha' => $request->fecha,
                     'proveedor' => $request->proveedor,
                     'forma_pago' => $request->forma_pago,
-                    'responsable' => $request->responsable_id, // Almacenar el ID del responsable
+                    'responsable' => $request->responsable,
                 ]);
 
                 // Sync invoice details
@@ -190,7 +154,7 @@ class FacturaController extends Controller
                 $impuestosGeneral = 0;
 
                 foreach ($request->productos as $producto) {
-                    // Usar camelCase para acceder a las propiedades del array $producto
+                    // *** CAMBIO CLAVE: Usar camelCase para acceder a las propiedades del array $producto ***
                     $baseProducto = $producto['precioCompra'] * $producto['cantidad'];
                     $ivaProducto = ($producto['iva'] / 100) * $baseProducto;
                     $totalProducto = $baseProducto + $ivaProducto;
@@ -201,8 +165,8 @@ class FacturaController extends Controller
                     $factura->detalles()->create([
                         'producto' => $producto['nombre'],
                         'categoria' => $producto['categoria'],
-                        'precio_compra' => $producto['precioCompra'],
-                        'precio_venta' => $producto['precioVenta'],
+                        'precio_compra' => $producto['precioCompra'], // Usar camelCase aquí
+                        'precio_venta' => $producto['precioVenta'],   // Usar camelCase aquí
                         'cantidad' => $producto['cantidad'],
                         'iva' => $producto['iva'],
                         'total' => $totalProducto,
@@ -221,10 +185,14 @@ class FacturaController extends Controller
             return redirect()->route('facturas.index')->with('status', 'Factura actualizada correctamente!');
 
         } catch (\Throwable $e) {
-            // En producción, aquí deberías registrar el error y mostrar un mensaje genérico.
-            // dd($e->getMessage(), $e->getTraceAsString()); // Para depuración
-            return back()->withInput()->withErrors(['general' => 'Ocurrió un error al actualizar la factura. Por favor, inténtelo de nuevo.']);
+            // *** IMPRIME EL ERROR DIRECTAMENTE EN LA PANTALLA ***
+            echo "<h1>Error Fatal en el Servidor (Actualización)</h1>";
+            echo "<p>Mensaje: " . $e->getMessage() . "</p>";
+            echo "<p>Archivo: " . $e->getFile() . "</p>";
+            echo "<p>Línea: " . $e->getLine() . "</p>";
+            echo "<h2>Stack Trace:</h2>";
+            echo "<pre>" . $e->getTraceAsString() . "</pre>";
+            exit; // Detiene la ejecución
         }
     }
 }
-

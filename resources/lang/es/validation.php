@@ -2,7 +2,7 @@
 
 return [
     'required' => ':attribute es obligatorio.',
-    'unique' => 'El valor de :attribute ya está en uso.',
+    'unique' => ':attribute ya está en uso.',
     'numeric' => ':attribute debe ser un número.',
     'integer' => ':attribute debe ser un número entero.',
     'min' => [
