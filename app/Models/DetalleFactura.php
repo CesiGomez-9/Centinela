@@ -15,11 +15,19 @@ class DetalleFactura extends Model
         'factura_id',
         'producto',
         'categoria',
-        'precioCompra',
-        'precioVenta',
+        'precio_compra',
+        'precio_venta',
         'cantidad',
         'iva',
         'total',
+    ];
+
+    protected $casts = [
+        'precio_compra' => 'float',
+        'precio_venta' => 'float',
+        'cantidad' => 'integer',
+        'iva' => 'float',
+        'total' => 'float',
     ];
 
     public function factura()
