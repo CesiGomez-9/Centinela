@@ -6,7 +6,7 @@ use App\Models\Factura;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
-use App\Models\DetalleFactura; // Make sure this model is imported
+use Illuminate\Support\Facades\Auth; // Importar la fachada Auth
 
 class FacturaController extends Controller
 {
@@ -33,16 +33,19 @@ class FacturaController extends Controller
      */
     public function create()
     {
-        return view('facturas.formulario');
+        $proveedores = ['TE seguridad', 'TecnoSeguridad SA', 'Alarmas Prosegur', 'Seguridad Total', 'LockPro Cerraduras', 'VigiTech Honduras', 'Securitas HN', 'AlertaHN', 'MoniSegur', 'RejaMax'];
+        $formasPago = ['Efectivo', 'Cheque', 'Transferencia'];
+        // No necesitamos pasar el responsable aquí, ya que se obtiene directamente en la vista con Auth::user()
+
+        return view('facturas.formulario', compact('proveedores', 'formasPago'));
     }
 
     /**
      * Store a newly created resource in storage.
-     * @throws \Throwable
      */
     public function store(Request $request)
     {
-        // Validation of data
+        // *** VALIDACIÓN (DESCOMENTAR CUANDO LA DEPURACIÓN HAYA TERMINADO) ***
         $validated = $request->validate([
             'numero_factura' => [
                 'required', 'min:3', 'max:15',
@@ -50,11 +53,11 @@ class FacturaController extends Controller
                 'regex:/.*\S.*/',
                 Rule::unique('facturas', 'numero_factura')
             ],
-            'fecha' => ['required', 'date', 'after_or_equal:2000-01-01', 'before_or_equal:2099-12-31'],
+            'fecha' => ['required', 'date', 'after_or_equal:2025-01-01', 'before_or_equal:2099-12-31'],
             'proveedor' => ['required', 'min:3', 'max:30', 'regex:/^[\pL0-9\s\-.,#]+$/u', 'regex:/.*\S.*/'],
             'forma_pago' => ['required', 'in:Efectivo,Cheque,Transferencia'],
-            'responsable' => ['required', 'string', 'min:3', 'max:30', 'regex:/^[\pL0-9\s\-.,#]+$/u', 'regex:/.*\S.*/'],
-
+            // Validar responsable_id en lugar de responsable (ya que es el ID del usuario)
+            'responsable_id' => ['required', 'integer', 'exists:empleados,id'], // Asumiendo que el ID existe en la tabla 'users'
             'productos' => ['required', 'array', 'min:1'],
             'productos.*.nombre' => ['required', 'string', 'max:100'],
             'productos.*.categoria' => ['nullable', 'string', 'max:50'],
@@ -64,79 +67,59 @@ class FacturaController extends Controller
             'productos.*.iva' => ['nullable', 'numeric', 'min:0'],
         ]);
 
-        // Secure Transaction
-        DB::transaction(function () use ($request) {
-            $subtotalGeneral = 0; // For the sum of the taxable bases
-            $impuestosGeneral = 0; // For the sum of calculated taxes
+        try {
+            DB::transaction(function () use ($request) {
+                $subtotalGeneral = 0;
+                $impuestosGeneral = 0;
 
-            $factura = Factura::create([
-                'numero_factura' => $request->numero_factura,
-                'fecha' => $request->fecha,
-                'proveedor' => $request->proveedor,
-                'forma_pago' => $request->forma_pago,
-                'responsable' => $request->responsable,
-                'subtotal' => 0, // Will be updated at the end
-                'impuestos' => 0, // Will be updated at the end
-                'totalF' => 0, // Will be updated at the end
-            ]);
-
-            foreach ($request->productos as $producto) {
-                $baseProducto = $producto['precioCompra'] * $producto['cantidad'];
-                $ivaProducto = ($producto['iva'] / 100) * $baseProducto;
-                $totalProducto = $baseProducto + $ivaProducto; // Total of this product including its VAT
-
-                $subtotalGeneral += $baseProducto; // Sums the taxable base to the general subtotal
-                $impuestosGeneral += $ivaProducto; // Sums the tax of this product to the total taxes
-
-                $factura->detalles()->create([
-                    'producto' => $producto['nombre'],
-                    'categoria' => $producto['categoria'],
-                    'precioCompra' => $producto['precioCompra'],
-                    'precioVenta' => $producto['precioVenta'],
-                    'cantidad' => $producto['cantidad'],
-                    'iva' => $producto['iva'],
-                    'total' => $totalProducto, // Save the product total with its VAT
+                $factura = Factura::create([
+                    'numero_factura' => $request->numero_factura,
+                    'fecha' => $request->fecha,
+                    'proveedor' => $request->proveedor,
+                    'forma_pago' => $request->forma_pago,
+                    'responsable' => $request->responsable_id, // Almacenar el ID del responsable
+                    'subtotal' => 0,
+                    'impuestos' => 0,
+                    'totalF' => 0,
                 ]);
-            }
 
-            $totalFinal = $subtotalGeneral + $impuestosGeneral;
+                foreach ($request->productos as $producto) {
+                    // Usar camelCase para acceder a las propiedades del array $producto
+                    $baseProducto = $producto['precioCompra'] * $producto['cantidad'];
+                    $ivaProducto = ($producto['iva'] / 100) * $baseProducto;
+                    $totalProducto = $baseProducto + $ivaProducto;
 
-            $factura->update([
-                'subtotal' => $subtotalGeneral,
-                'impuestos' => $impuestosGeneral,
-                'totalF' => $totalFinal,
-            ]);
-        });
+                    $subtotalGeneral += $baseProducto;
+                    $impuestosGeneral += $ivaProducto;
 
-        return redirect()->route('facturas.index')->with('status', 'Factura registrada correctamente');
-    }
+                    $factura->detalles()->create([
+                        'producto' => $producto['nombre'],
+                        'categoria' => $producto['categoria'],
+                        'precio_compra' => $producto['precioCompra'],
+                        'precio_venta' => $producto['precioVenta'],
+                        'cantidad' => $producto['cantidad'],
+                        'iva' => $producto['iva'],
+                        'total' => $totalProducto,
+                    ]);
+                }
 
-    public function obtenerProductosProveedor($nombre)
-    {
-        // Busca facturas con ese proveedor
-        $factura = Factura::where('proveedor', $nombre)
-            ->with('detalles')
-            ->latest()
-            ->first();
+                $totalFinal = $subtotalGeneral + $impuestosGeneral;
 
-        if (!$factura) {
-            return response()->json([
-                'error' => 'No se encontraron facturas para este proveedor.'
-            ], 404);
+                $factura->update([
+                    'subtotal' => $subtotalGeneral,
+                    'impuestos' => $impuestosGeneral,
+                    'totalF' => $totalFinal,
+                ]);
+            });
+
+            return redirect()->route('facturas.index')->with('status', 'Factura registrada correctamente');
+
+        } catch (\Throwable $e) {
+            // En producción, aquí deberías registrar el error y mostrar un mensaje genérico.
+            // Para depuración local, puedes usar dd($e->getMessage()); o logear.
+            // dd($e->getMessage(), $e->getTraceAsString()); // Para depuración
+            return back()->withInput()->withErrors(['general' => 'Ocurrió un error al guardar la factura. Por favor, inténtelo de nuevo.']);
         }
-
-        // Retorna los productos relacionados
-        return response()->json([
-            'productos' => $factura->detalles->map(function ($detalle) {
-                return [
-                    'producto' => $detalle->producto,
-                    'precio' => $detalle->precio, // This 'precio' might refer to precioCompra or precioVenta depending on frontend
-                    'cantidad' => $detalle->cantidad,
-                    'total' => $detalle->total,
-                    'categoria' => $detalle->categoria ?? 'Desconocida',
-                ];
-            }),
-        ]);
     }
 
     /**
@@ -154,7 +137,10 @@ class FacturaController extends Controller
     public function edit(string $id)
     {
         $factura = Factura::with('detalles')->findOrFail($id);
-        return view('facturas.formulario', compact('factura'));
+        $proveedores = ['TE seguridad', 'TecnoSeguridad SA', 'Alarmas Prosegur', 'Seguridad Total', 'LockPro Cerraduras', 'VigiTech Honduras', 'Securitas HN', 'AlertaHN', 'MoniSegur', 'RejaMax'];
+        $formasPago = ['Efectivo', 'Cheque', 'Transferencia'];
+
+        return view('facturas.formulario', compact('factura', 'proveedores', 'formasPago'));
     }
 
     /**
@@ -164,6 +150,7 @@ class FacturaController extends Controller
     {
         $factura = Factura::findOrFail($id);
 
+        // *** VALIDACIÓN (DESCOMENTAR CUANDO LA DEPURACIÓN HAYA TERMINADO) ***
         $validated = $request->validate([
             'numero_factura' => [
                 'required', 'min:3', 'max:15',
@@ -171,11 +158,11 @@ class FacturaController extends Controller
                 'regex:/.*\S.*/',
                 Rule::unique('facturas', 'numero_factura')->ignore($factura->id)
             ],
-            'fecha' => ['required', 'date', 'after_or_equal:2000-01-01', 'before_or_equal:2099-12-31'],
+            'fecha' => ['required', 'date', 'after_or_equal:2025-01-01', 'before_or_equal:2099-12-31'],
             'proveedor' => ['required', 'min:3', 'max:30', 'regex:/^[\pL0-9\s\-.,#]+$/u', 'regex:/.*\S.*/'],
             'forma_pago' => ['required', 'in:Efectivo,Cheque,Transferencia'],
-            'responsable' => ['required', 'string', 'min:3', 'max:30', 'regex:/^[\pL0-9\s\-.,#]+$/u', 'regex:/.*\S.*/'],
-
+            // Validar responsable_id en lugar de responsable
+            'responsable_id' => ['required', 'integer', 'exists:users,id'],
             'productos' => ['required', 'array', 'min:1'],
             'productos.*.nombre' => ['required', 'string', 'max:100'],
             'productos.*.categoria' => ['nullable', 'string', 'max:50'],
@@ -185,52 +172,59 @@ class FacturaController extends Controller
             'productos.*.iva' => ['nullable', 'numeric', 'min:0'],
         ]);
 
-        DB::transaction(function () use ($request, $factura) {
-            // Update main invoice fields
-            $factura->update([
-                'numero_factura' => $request->numero_factura,
-                'fecha' => $request->fecha,
-                'proveedor' => $request->proveedor,
-                'forma_pago' => $request->forma_pago,
-                'responsable' => $request->responsable,
-            ]);
-
-            // Sync invoice details
-            // 1. Delete existing details for this invoice
-            $factura->detalles()->delete();
-
-            $subtotalGeneral = 0;
-            $impuestosGeneral = 0;
-
-            // 2. Recreate details with new data
-            foreach ($request->productos as $producto) {
-                $baseProducto = $producto['precioCompra'] * $producto['cantidad'];
-                $ivaProducto = ($producto['iva'] / 100) * $baseProducto;
-                $totalProducto = $baseProducto + $ivaProducto;
-
-                $subtotalGeneral += $baseProducto;
-                $impuestosGeneral += $ivaProducto;
-
-                $factura->detalles()->create([
-                    'producto' => $producto['nombre'],
-                    'categoria' => $producto['categoria'],
-                    'precioCompra' => $producto['precioCompra'],
-                    'precioVenta' => $producto['precioVenta'],
-                    'cantidad' => $producto['cantidad'],
-                    'iva' => $producto['iva'],
-                    'total' => $totalProducto,
+        try {
+            DB::transaction(function () use ($request, $factura) {
+                // Update main invoice fields
+                $factura->update([
+                    'numero_factura' => $request->numero_factura,
+                    'fecha' => $request->fecha,
+                    'proveedor' => $request->proveedor,
+                    'forma_pago' => $request->forma_pago,
+                    'responsable' => $request->responsable_id, // Almacenar el ID del responsable
                 ]);
-            }
 
-            $totalFinal = $subtotalGeneral + $impuestosGeneral;
+                // Sync invoice details
+                $factura->detalles()->delete();
 
-            $factura->update([
-                'subtotal' => $subtotalGeneral,
-                'impuestos' => $impuestosGeneral,
-                'totalF' => $totalFinal,
-            ]);
-        });
+                $subtotalGeneral = 0;
+                $impuestosGeneral = 0;
 
-        return redirect()->route('facturas.index')->with('status', 'Factura actualizada correctamente!');
+                foreach ($request->productos as $producto) {
+                    // Usar camelCase para acceder a las propiedades del array $producto
+                    $baseProducto = $producto['precioCompra'] * $producto['cantidad'];
+                    $ivaProducto = ($producto['iva'] / 100) * $baseProducto;
+                    $totalProducto = $baseProducto + $ivaProducto;
+
+                    $subtotalGeneral += $baseProducto;
+                    $impuestosGeneral += $ivaProducto;
+
+                    $factura->detalles()->create([
+                        'producto' => $producto['nombre'],
+                        'categoria' => $producto['categoria'],
+                        'precio_compra' => $producto['precioCompra'],
+                        'precio_venta' => $producto['precioVenta'],
+                        'cantidad' => $producto['cantidad'],
+                        'iva' => $producto['iva'],
+                        'total' => $totalProducto,
+                    ]);
+                }
+
+                $totalFinal = $subtotalGeneral + $impuestosGeneral;
+
+                $factura->update([
+                    'subtotal' => $subtotalGeneral,
+                    'impuestos' => $impuestosGeneral,
+                    'totalF' => $totalFinal,
+                ]);
+            });
+
+            return redirect()->route('facturas.index')->with('status', 'Factura actualizada correctamente!');
+
+        } catch (\Throwable $e) {
+            // En producción, aquí deberías registrar el error y mostrar un mensaje genérico.
+            // dd($e->getMessage(), $e->getTraceAsString()); // Para depuración
+            return back()->withInput()->withErrors(['general' => 'Ocurrió un error al actualizar la factura. Por favor, inténtelo de nuevo.']);
+        }
     }
 }
+
