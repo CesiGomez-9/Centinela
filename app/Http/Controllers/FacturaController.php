@@ -33,6 +33,7 @@ class FacturaController extends Controller
      */
     public function create()
     {
+
         return view('facturas.formulario');
     }
 
@@ -192,7 +193,7 @@ class FacturaController extends Controller
                 'fecha' => $request->fecha,
                 'proveedor' => $request->proveedor,
                 'forma_pago' => $request->forma_pago,
-                'responsable' => $request->responsable,
+                'responsable_id' => $request->responsableId,
             ]);
 
             // Sync invoice details

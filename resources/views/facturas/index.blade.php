@@ -84,7 +84,9 @@
                     @endif
                 </td>
                 <td>
-                    <a href="{{ route('facturas.show', $factura->id) }}" class="btn btn-outline-info btn-sm">Ver</a>
+                    <a href="{{ route('facturas.show', $factura->id) }}" class="btn btn-sm btn-outline-info">
+                        <i class="bi bi-eye"></i> Ver
+                    </a>
                 </td>
             </tr>
         @empty
@@ -94,7 +96,6 @@
         @endforelse
         </tbody>
     </table>
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const searchInput = document.getElementById('searchInput');

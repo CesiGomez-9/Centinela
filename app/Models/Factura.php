@@ -25,4 +25,18 @@ class Factura extends Model
     {
         return $this->hasMany(DetalleFactura::class);
     }
+    public function proveedor()
+    {
+        return $this->belongsTo(Proveedor::class);
+    }
+
+    public function empleado()
+    {
+        return $this->belongsTo(Empleado::class);
+    }
+
+    public function producto()
+    {
+        return $this->belongsTo(Producto::class);
+    }
 }
