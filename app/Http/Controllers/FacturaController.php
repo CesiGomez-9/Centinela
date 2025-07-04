@@ -55,9 +55,9 @@ class FacturaController extends Controller
                 $factura = Factura::create([
                     'numero_factura' => $request->numero_factura,
                     'fecha' => $request->fecha,
-                    'proveedor' => $request->proveedor,
                     'forma_pago' => $request->forma_pago,
-                    'responsable' => $request->responsable,
+                    'responsable_id' => $request->responsable,
+                    'proveedor_id' => $request->proveedor_id, // ESTE CAMPO FALTABA
                     'subtotal' => 0,
                     'impuestos' => 0,
                     'totalF' => 0,
@@ -142,9 +142,9 @@ class FacturaController extends Controller
                 $factura->update([
                     'numero_factura' => $request->numero_factura,
                     'fecha' => $request->fecha,
-                    'proveedor' => $request->proveedor,
+                    'proveedor_id' => $request->proveedor,
                     'forma_pago' => $request->forma_pago,
-                    'responsable' => $request->responsable,
+                    'responsable_id' => $request->responsable,
                 ]);
 
                 // Sync invoice details

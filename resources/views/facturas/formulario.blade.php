@@ -91,20 +91,16 @@
 
                             {{-- Proveedor (Select) --}}
                             <div class="col-md-6">
-                                <label for="proveedor" class="form-label">Proveedor</label>
+                                <label for="proveedor_id" class="form-label">Proveedor</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-building"></i></span>
-                                    <select id="proveedor" name="proveedor" class="form-select" required>
-                                        <option value="">Seleccione un proveedor</option>
-                                        {{-- FIX: Use $proveedores passed from controller and old() for repopulation --}}
-                                        @foreach ($proveedores as $prov)
-                                            <option value="{{ $prov }}" {{ (old('proveedor', isset($factura) ? $factura->proveedor : '') == $prov) ? 'selected' : '' }}>
-                                                {{ $prov }}
-                                            </option>
+                                    <select name="proveedor_id" required>
+                                        @foreach($proveedores as $proveedor)
+                                            <option value="{{ $proveedor->id }}">{{ $proveedor->nombre }}</option>
                                         @endforeach
                                     </select>
                                 </div>
-                                @error('proveedor')
+                                @error('proveedor_id')
                                 <div class="text-danger mt-1 small">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -191,15 +187,15 @@
 
                             {{-- Responsable --}}
                             <div class="col-md-6">
-                                <label for="responsable" class="form-label">Responsable</label>
+                                <label for="responsable_id" class="form-label">Responsable</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-person-check-fill"></i></span>
-                                    <input type="text" name="responsable" id="responsable"
-                                           class="form-control @error('responsable') is-invalid @enderror"
-                                           maxlength="50" value="{{ old('responsable') }}"
+                                    <input type="text" name="responsable_id" id="responsable_id"
+                                           class="form-control @error('responsable_id') is-invalid @enderror"
+                                           maxlength="50" value="{{ old('responsable_id') }}"
                                            required>
                                 </div>
-                                @error('responsable')
+                                @error('responsable_id')
                                 <div class="text-danger mt-1 small">{{ $message }}</div>
                                 @enderror
                             </div>

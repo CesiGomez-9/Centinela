@@ -14,9 +14,11 @@ class Factura extends Model
         'fecha',
         'proveedor',
         'forma_pago',
-        'responsable',
+        'responsable_id',
         'subtotal',
         'impuestos',
+        'proveedores_id',
+        'productos_id',
         'totalF',
     ];
 
