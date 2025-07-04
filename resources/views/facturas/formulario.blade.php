@@ -67,7 +67,7 @@
                                     <span class="input-group-text"><i class="bi bi-hash"></i></span>
                                     <input type="text" name="numero_factura" id="numeroFactura"
                                            class="form-control @error('numero_factura') is-invalid @enderror"
-                                           maxlength="20" value="{{ old('numero_factura') }}"
+                                           maxlength="20" value="{{ old('numero_factura', isset($factura) ? $factura->numero_factura : '') }}"
                                            onkeypress="validarTexto(event)" required>
                                 </div>
                                 @error('numero_factura')
@@ -82,7 +82,7 @@
                                     <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
                                     <input type="date" name="fecha" id="fecha" min="2025-01-01" max="2099-12-31"
                                            class="form-control @error('fecha') is-invalid @enderror"
-                                           value="{{ old('fecha') }}" required>
+                                           value="{{ old('fecha', isset($factura) ? $factura->fecha : '') }}" required>
                                 </div>
                                 @error('fecha')
                                 <div class="text-danger mt-1 small">{{ $message }}</div>
@@ -94,9 +94,13 @@
                                 <label for="proveedor_id" class="form-label">Proveedor</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-building"></i></span>
-                                    <select name="proveedor_id" required>
-                                        @foreach($proveedores as $proveedor)
-                                            <option value="{{ $proveedor->id }}">{{ $proveedor->nombre }}</option>
+                                    <select id="proveedor_id" name="proveedor_id" class="form-select @error('proveedor_id') is-invalid @enderror" required>
+                                        <option value="">Seleccione un proveedor</option>
+                                        {{-- Iterar sobre los proveedores pasados desde el controlador --}}
+                                        @foreach ($proveedores as $prov)
+                                            <option value="{{ $prov->id }}" {{ (old('proveedor_id', isset($factura) ? $factura->proveedor_id : '') == $prov->id) ? 'selected' : '' }}>
+                                                {{ $prov->nombreEmpresa }}
+                                            </option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -113,7 +117,7 @@
                                     <select name="forma_pago" id="formaPago"
                                             class="form-select @error('forma_pago') is-invalid @enderror" required>
                                         <option value="">Seleccione una opción</option>
-                                        {{-- FIX: Use $formasPago passed from controller and old() for repopulation --}}
+                                        {{-- Iterar sobre las formas de pago pasadas desde el controlador --}}
                                         @foreach ($formasPago as $forma)
                                             <option value="{{ $forma }}" {{ (old('forma_pago', isset($factura) ? $factura->forma_pago : '') === $forma) ? 'selected' : '' }}>
                                                 {{ $forma }}
@@ -185,15 +189,21 @@
                                 </div>
                             </div>
 
-                            {{-- Responsable --}}
+                            {{-- Responsable (Ahora un select que usa ID) --}}
                             <div class="col-md-6">
                                 <label for="responsable_id" class="form-label">Responsable</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-person-check-fill"></i></span>
-                                    <input type="text" name="responsable_id" id="responsable_id"
-                                           class="form-control @error('responsable_id') is-invalid @enderror"
-                                           maxlength="50" value="{{ old('responsable_id') }}"
-                                           required>
+                                    <select name="responsable_id" id="responsable_id"
+                                            class="form-select @error('responsable_id') is-invalid @enderror" required>
+                                        <option value="">Seleccione un empleado</option>
+                                        {{-- Iterar sobre los empleados pasados desde el controlador --}}
+                                        @foreach ($empleados as $empleado)
+                                            <option value="{{ $empleado->id }}" {{ (old('responsable_id', isset($factura) ? $factura->responsable_id : '') == $empleado->id) ? 'selected' : '' }}>
+                                                {{ $empleado->nombre }} {{ $empleado->apellido }}
+                                            </option>
+                                        @endforeach
+                                    </select>
                                 </div>
                                 @error('responsable_id')
                                 <div class="text-danger mt-1 small">{{ $message }}</div>
@@ -572,7 +582,8 @@
             let esValido = true;
             let primerCampoConError = null;
 
-            ['numeroFactura', 'fecha', 'proveedor', 'formaPago', 'responsable'].forEach(campo => {
+            // Ocultar errores previos
+            ['numeroFactura', 'fecha', 'proveedor_id', 'formaPago', 'responsable_id'].forEach(campo => {
                 ocultarError(campo);
             });
 
@@ -581,6 +592,7 @@
                 errorProductos.style.display = 'none';
             }
 
+            // Validar Número de Factura
             const numeroFactura = document.getElementById('numeroFactura').value.trim();
             if (!numeroFactura) {
                 mostrarError('numeroFactura', 'Número de factura es obligatorio');
@@ -588,32 +600,38 @@
                 esValido = false;
             }
 
+            // Validar Fecha
             if (!validarFecha()) {
                 if (!primerCampoConError) primerCampoConError = document.getElementById('fecha');
                 esValido = false;
             }
 
-            const proveedor = document.querySelector('select[name="proveedor"]').value;
-            if (!proveedor) {
-                mostrarError('proveedor', 'Proveedor es obligatorio');
-                if (!primerCampoConError) primerCampoConError = document.querySelector('select[name="proveedor"]');
+            // Validar Proveedor (ahora usa proveedor_id)
+            const proveedorId = document.getElementById('proveedor_id').value;
+            if (!proveedorId) {
+                mostrarError('proveedor_id', 'Proveedor es obligatorio');
+                if (!primerCampoConError) primerCampoConError = document.getElementById('proveedor_id');
                 esValido = false;
             }
 
-            const formaPago = document.querySelector('select[name="forma_pago"]').value;
+            // Validar Forma de Pago
+            const formaPago = document.getElementById('formaPago').value;
             if (!formaPago) {
                 mostrarError('formaPago', 'Forma de pago es obligatorio');
-                if (!primerCampoConError) primerCampoConError = document.querySelector('select[name="forma_pago"]');
+                if (!primerCampoConError) primerCampoConError = document.getElementById('formaPago');
                 esValido = false;
             }
 
-            const responsable = document.getElementById('responsable').value.trim();
-            if (!responsable) {
-                mostrarError('responsable', 'Responsable es obligatorio');
-                if (!primerCampoConError) primerCampoConError = document.getElementById('responsable');
+            // Validar Responsable (ahora usa responsable_id)
+            const responsableId = document.getElementById('responsable_id').value;
+            if (!responsableId) {
+                mostrarError('responsable_id', 'Responsable es obligatorio');
+                if (!primerCampoConError) primerCampoConError = document.getElementById('responsable_id');
                 esValido = false;
             }
 
+
+            // Validar Productos en la tabla
             const productos = document.querySelectorAll('#tablaFacturaBody tr:not(#filaVacia)');
             if (productos.length === 0) {
                 const errorProductos = document.getElementById('errorProductos');
@@ -624,6 +642,7 @@
                 esValido = false;
             }
 
+            // Enfocar el primer campo con error si existe
             if (!esValido && primerCampoConError) {
                 primerCampoConError.focus();
                 primerCampoConError.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -933,7 +952,7 @@
             }
 
             searchInput.addEventListener('input', function() {
-                let termino = this.value.replace(/^\s*\d*\s*/, '').toLowerCase().trim();
+                let termino = this.value.replace(/^\s*\d*\s*/, '', '').toLowerCase().trim();
                 this.value = termino;
 
                 const filas = document.querySelectorAll('#tablaProductosBody .producto-fila');
@@ -1163,6 +1182,7 @@
                         reconstructedProducts.push({
                             nombre: String(currentReconstructedProduct.nombre || 'N/A'),
                             categoria: String(currentReconstructedProduct.categoria || 'N/A'),
+                            // Asegurarse de que los nombres de las propiedades coincidan con el camelCase esperado
                             precioCompra: parseFloat(currentReconstructedProduct.precioCompra || 0),
                             precioVenta: parseFloat(currentReconstructedProduct.precioVenta || 0),
                             cantidad: parseInt(currentReconstructedProduct.cantidad || 0),
@@ -1188,8 +1208,8 @@
                 productsToLoad = existingFacturaDetalles.map(detail => ({
                     nombre: String(detail.producto || 'N/A'),
                     categoria: String(detail.categoria || 'N/A'),
-                    precioCompra: parseFloat(detail.precio_compra || 0),
-                    precioVenta: parseFloat(detail.precio_venta || 0),
+                    precioCompra: parseFloat(detail.precio_compra || 0), // Mapear de snake_case a camelCase
+                    precioVenta: parseFloat(detail.precio_venta || 0),   // Mapear de snake_case a camelCase
                     cantidad: parseInt(detail.cantidad || 0),
                     iva: parseFloat(detail.iva || 0),
                     total: parseFloat(detail.total || 0)
@@ -1300,4 +1320,5 @@
     </script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 @endsection
+
 
