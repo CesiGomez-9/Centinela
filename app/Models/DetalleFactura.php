@@ -7,14 +7,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class DetalleFactura extends Model
 {
-    protected $table = 'detalles';
+    protected $table = 'detalles'; // Asegura que se use la tabla 'detalles'
 
     use HasFactory;
 
     protected $fillable = [
         'factura_id',
-        'producto',
-        'categoria',
+        'product_id', // Nuevo campo: ID del producto del inventario
+        'producto',    // Nombre del producto como string (redundante pero mantenido por compatibilidad)
+        'categoria',   // Categoría del producto como string (redundante pero mantenido por compatibilidad)
         'precio_compra',
         'precio_venta',
         'cantidad',
@@ -30,8 +31,22 @@ class DetalleFactura extends Model
         'total' => 'float',
     ];
 
+    /**
+     * Relación muchos a uno con Factura.
+     * Un detalle de factura pertenece a una única factura.
+     */
     public function factura()
     {
         return $this->belongsTo(Factura::class);
+    }
+
+    /**
+     * Relación muchos a uno con Producto.
+     * Un detalle de factura se refiere a un producto específico del inventario.
+     * Se usa un nombre diferente para la relación para evitar conflicto con el campo 'producto' (string).
+     */
+    public function productoInventario()
+    {
+        return $this->belongsTo(Producto::class, 'product_id');
     }
 }

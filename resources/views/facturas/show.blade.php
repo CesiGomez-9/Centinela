@@ -1,4 +1,4 @@
-@<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -11,7 +11,7 @@
 <nav class="navbar navbar-expand-lg" style="background-color: #0A1F44; padding-top: 1.2rem; padding-bottom: 1.2rem; font-family: 'Courier New', sans-serif;">
     <div class="container" style="max-width: 1600px;">
         <a class="navbar-brand text-white fw-bold" href="#">
-            <img src="{{ asset('seguridad/logo.jpg') }}" style="height:80px; margin-right: 10px;">
+            <img src="{{ asset('centinela.jpg') }}" style="height:80px; margin-right: 10px;">
             Grupo Centinela
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -240,7 +240,9 @@
                 <a href="{{ route('facturas.index') }}" class="btn btn-return">
                     <i class="bi bi-arrow-left me-2"></i>Volver a la lista
                 </a>
-
+                <a href="{{ route('facturas.edit', $factura->id) }}" class="btn btn-edit">
+                    <i class="bi bi-pencil-square me-2"></i>Editar factura
+                </a>
             </div>
         </div>
     </div>

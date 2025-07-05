@@ -1,4 +1,4 @@
-@extends('layouts.plantilla')
+@extends('plantilla')
 @section('titulo','Registrar un nuevo producto')
 @section('content')
 
@@ -6,6 +6,13 @@
         body {
             background-color: #e6f0ff;
             margin: 0;
+        }
+        /* Ajuste para hacer la letra más pequeña en el formulario */
+        .form-label, .form-control, .form-select, .input-group-text, .text-danger, .small {
+            font-size: 0.875rem; /* 14px, un poco más pequeño que el tamaño por defecto */
+        }
+        h3 {
+            font-size: 1.5rem; /* Ajustar el tamaño del título si es necesario */
         }
     </style>
 
@@ -31,7 +38,7 @@
                     <form method="POST" action="{{ isset($producto) ? route('productos.update', $producto->id) : route('productos.store') }}" novalidate>
                         @csrf
                         @isset($producto)
-                            @method('PUT')
+                            @method('PUT') {{-- Importante para las actualizaciones --}}
                         @endisset
 
                         <div class="row g-4">
@@ -39,7 +46,7 @@
                                 <label for="nombre" class="form-label">Nombre del producto</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-card-text"></i></span>
-                                    <input type="text" name="nombre" class="form-control @error('nombre') is-invalid @enderror" maxlength="30" value="{{ old('nombre', $producto->nombre ?? '') }}" onkeypress="return soloLetras(event)" required>
+                                    <input type="text" name="nombre" id="nombre" class="form-control @error('nombre') is-invalid @enderror" maxlength="30" value="{{ old('nombre', $producto->nombre ?? '') }}" onkeypress="return soloLetras(event)" required>
                                 </div>
                                 @error('nombre')
                                 <div class="text-danger mt-1 small">{{ $message }}</div>
@@ -50,7 +57,7 @@
                                 <label for="serie" class="form-label">Serie del producto</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-upc-scan"></i></span>
-                                    <input type="text" name="serie" class="form-control @error('serie') is-invalid @enderror" maxlength="10" value="{{ old('serie', $producto->serie ?? '') }}" onkeypress="validarTexto(event)" required>
+                                    <input type="text" name="serie" id="serie" class="form-control @error('serie') is-invalid @enderror" maxlength="10" value="{{ old('serie', $producto->serie ?? '') }}" onkeypress="validarTexto(event)" required>
                                 </div>
                                 @error('serie')
                                 <div class="text-danger mt-1 small">{{ $message }}</div>
@@ -61,7 +68,7 @@
                                 <label for="codigo" class="form-label">Código del producto</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi-qr-code"></i></span>
-                                    <input type="text" name="codigo" class="form-control @error('codigo') is-invalid @enderror"
+                                    <input type="text" name="codigo" id="codigo" class="form-control @error('codigo') is-invalid @enderror"
                                            maxlength="10" value="{{ old('codigo', $producto->codigo ?? '') }}"
                                            onkeypress="validarTexto(event)" required>
                                 </div>
@@ -70,35 +77,38 @@
                                 @enderror
                             </div>
 
-                                <div class="col-md-6">
-                                    <label for="marca" class="form-label">Marca del producto</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text"><i class="bi bi-tag"></i></span>
-                                        <input type="text" name="marca" class="form-control @error('marca') is-invalid @enderror" maxlength="30" value="{{ old('marca', $producto->marca ?? '') }}" onkeypress="return validarDescripcion(event)" required>
-                                    </div>
-                                    @error('marca')
-                                    <div class="text-danger mt-1 small">{{ $message }}</div>
-                                    @enderror
+                            <div class="col-md-6">
+                                <label for="marca" class="form-label">Marca del producto</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-tag"></i></span>
+                                    <input type="text" name="marca" id="marca" class="form-control @error('marca') is-invalid @enderror" maxlength="30" value="{{ old('marca', $producto->marca ?? '') }}" onkeypress="return validarDescripcion(event)" required>
                                 </div>
+                                @error('marca')
+                                <div class="text-danger mt-1 small">{{ $message }}</div>
+                                @enderror
+                            </div>
 
 
-                                    <div class="col-md-6">
-                                        <label for="modelo" class="form-label">Modelo del producto</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text"><i class="bi-cpu"></i></span>
-                                            <input type="text" name="modelo" class="form-control @error('modelo') is-invalid @enderror" maxlength="30" value="{{ old('modelo', $producto->modelo ?? '') }}" onkeypress="return validarDescripcion(event)" required>
-                                        </div>
-                                        @error('modelo')
-                                        <div class="text-danger mt-1 small">{{ $message }}</div>
-                                        @enderror
-                                    </div>
+                            <div class="col-md-6">
+                                <label for="modelo" class="form-label">Modelo del producto</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi-cpu"></i></span>
+                                    <input type="text" name="modelo" id="modelo" class="form-control @error('modelo') is-invalid @enderror" maxlength="30" value="{{ old('modelo', $producto->modelo ?? '') }}" onkeypress="return validarDescripcion(event)" required>
+                                </div>
+                                @error('modelo')
+                                <div class="text-danger mt-1 small">{{ $message }}</div>
+                                @enderror
+                            </div>
 
+                            {{-- Campo 'Cantidad Inicial' ELIMINADO de la vista --}}
+                            {{-- La cantidad se inicializa en 0 en el controlador al guardar un nuevo producto --}}
+                            {{-- Y solo se actualiza en el FacturaController al comprar --}}
 
-                                <div class="col-md-6">
+                            <div class="col-md-6">
                                 <label for="categoria" class="form-label">Categoría</label>
                                 <div class="input-group has-validation">
                                     <span class="input-group-text"><i class="bi bi-briefcase-fill"></i></span>
-                                    <select name="categoria" class="form-select @error('categoria') is-invalid @enderror" required>
+                                    <select name="categoria" id="categoria" class="form-select @error('categoria') is-invalid @enderror" required>
                                         <option value="">Seleccione una opción</option>
                                         @php
                                             $categorias = [
@@ -125,26 +135,23 @@
                                 </div>
                             </div>
 
+                            {{-- Campo IVA (ahora es_exento) --}}
                             <div class="col-md-6">
-                                <label for="iva" class="form-label">IVA del producto</label>
+                                <label for="es_exento" class="form-label">IVA del producto</label>
                                 <div class="input-group has-validation">
-                                    <span class="input-group-text"><i class="bi bi-briefcase-fill"></i></span>
-                                    <select name="iva" class="form-select @error('iva') is-invalid @enderror" required>
+                                    <span class="input-group-text"><i class="bi bi-percent"></i></span>
+                                    <select name="es_exento" id="es_exento" class="form-select @error('es_exento') is-invalid @enderror" required>
                                         <option value="">Seleccione una opción</option>
-                                        @php
-                                            $ivas = [
-                                                'Exento',
-                                                'No exento'
-                                            ];
-                                        @endphp
-                                        @foreach ($ivas as $cat)
-                                            <option value="{{ $cat }}" {{ old('iva', $producto->iva ?? '') === $cat ? 'selected' : '' }}>
-                                                {{ $cat }}
-                                            </option>
-                                        @endforeach
-
+                                        {{-- old('es_exento') puede ser '0' o '1' (string) si hay error de validación --}}
+                                        {{-- $producto->es_exento es un booleano (true/false) --}}
+                                        <option value="1" {{ (old('es_exento', isset($producto) ? ($producto->es_exento ? '1' : '0') : '') == '1') ? 'selected' : '' }}>
+                                            Exento (0%)
+                                        </option>
+                                        <option value="0" {{ (old('es_exento', isset($producto) ? ($producto->es_exento ? '1' : '0') : '') == '0') ? 'selected' : '' }}>
+                                            No exento (15%)
+                                        </option>
                                     </select>
-                                    @error('iva')
+                                    @error('es_exento')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
@@ -154,7 +161,7 @@
                                 <label for="descripcion" class="form-label">Descripción del producto</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-file-earmark-text-fill"></i></span>
-                                    <textarea name="descripcion" rows="4" class="form-control @error('descripcion') is-invalid @enderror" maxlength="255" onkeypress="return validarDescripcion(event)" required>{{ old('descripcion', $producto->descripcion ?? '') }}</textarea>
+                                    <textarea name="descripcion" id="descripcion" rows="4" class="form-control @error('descripcion') is-invalid @enderror" maxlength="255" onkeypress="return validarDescripcion(event)" required>{{ old('descripcion', $producto->descripcion ?? '') }}</textarea>
                                 </div>
                                 @error('descripcion')
                                 <div class="text-danger mt-1 small">{{ $message }}</div>
@@ -210,14 +217,15 @@
                     });
 
                     // Limpiar mensajes de error si hay
-                    form.querySelectorAll('.text-danger').forEach(el => {
+                    form.querySelectorAll('.text-danger, .invalid-feedback').forEach(el => {
                         el.innerText = '';
                     });
+
+                    // El campo de cantidad ya no está en el formulario, así que no necesita ser reiniciado aquí.
                 });
             }
         });
     </script>
-
 
 
     <!-- Validaciones JS -->
@@ -249,44 +257,6 @@
             }
             return true;
         }
-
-        function soloNumeros(e) {
-            const permitidos = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete'];
-            if (/\d/.test(e.key) || permitidos.includes(e.key)) {
-                return true;
-            }
-            if (e.key === '.' && !e.target.value.includes('.')) {
-                return true;
-            }
-            e.preventDefault();
-            return false;
-        }
-
-        document.addEventListener("DOMContentLoaded", function () {
-            const codigoInput = document.querySelector('input[name="codigo"]');
-
-            if (codigoInput) {
-                codigoInput.addEventListener('keypress', function (e) {
-                    const key = e.key;
-                    const pos = this.selectionStart;
-
-                    // Solo permite letras, números y guiones
-                    const permitido = /^[A-Za-z0-9\-]$/;
-
-                    // Si el primer carácter no es letra o número, se bloquea
-                    if (pos === 0 && !/^[A-Za-z0-9]$/.test(key)) {
-                        e.preventDefault();
-                        return false;
-                    }
-
-                    // Si en cualquier posición se escribe algo no permitido, se bloquea
-                    if (!permitido.test(key)) {
-                        e.preventDefault();
-                        return false;
-                    }
-                });
-            }
-        });
 
         function validarTexto(e) {
             const key = e.keyCode || e.which;

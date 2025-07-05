@@ -16,15 +16,14 @@ return new class extends Migration
             $table->string('serie')->unique();
             $table->string('codigo')->unique();
             $table->string('nombre');
-            $table->string('marca')->nullable();
-            $table->string('modelo')->nullable();
-            $table->string('categoria')->nullable();
-            $table->string('iva')->nullable();
+            $table->string('marca')->nullable(); // Ahora es requerido en el controlador, pero nullable aquí por si acaso
+            $table->string('modelo')->nullable(); // Ahora es requerido en el controlador, pero nullable aquí por si acaso
+            $table->integer('cantidad')->default(0); // Cantidad inicial del inventario
+            $table->boolean('es_exento')->default(false); // true para exento (0% IVA), false para no exento (15% IVA)
+            $table->string('categoria');
             $table->text('descripcion')->nullable();
             $table->timestamps();
-
         });
-
     }
 
     /**
