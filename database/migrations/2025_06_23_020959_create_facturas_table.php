@@ -14,8 +14,7 @@ return new class extends Migration
         Schema::create('facturas', function (Blueprint $table) {
             $table->id();
             $table->string('numero_factura')->unique();
-            $table->date('fecha');
-            $table->string('proveedor');
+            $table->date('fecha');;
             $table->enum('forma_pago', ['Efectivo', 'Cheque', 'Transferencia'])->default('Efectivo');
             $table->decimal('subtotal', 10, 2)->default(0);
             $table->decimal('impuestos', 10, 2)->default(0);

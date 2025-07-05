@@ -1182,7 +1182,6 @@
                         reconstructedProducts.push({
                             nombre: String(currentReconstructedProduct.nombre || 'N/A'),
                             categoria: String(currentReconstructedProduct.categoria || 'N/A'),
-                            // Asegurarse de que los nombres de las propiedades coincidan con el camelCase esperado
                             precioCompra: parseFloat(currentReconstructedProduct.precioCompra || 0),
                             precioVenta: parseFloat(currentReconstructedProduct.precioVenta || 0),
                             cantidad: parseInt(currentReconstructedProduct.cantidad || 0),
@@ -1206,10 +1205,11 @@
 
             } else if (existingFacturaDetalles && existingFacturaDetalles.length > 0) {
                 productsToLoad = existingFacturaDetalles.map(detail => ({
+                    product_id: detail.product_id, // 👈 AÑADIR ESTO
                     nombre: String(detail.producto || 'N/A'),
                     categoria: String(detail.categoria || 'N/A'),
-                    precioCompra: parseFloat(detail.precio_compra || 0), // Mapear de snake_case a camelCase
-                    precioVenta: parseFloat(detail.precio_venta || 0),   // Mapear de snake_case a camelCase
+                    precioCompra: parseFloat(detail.precio_compra || 0),
+                    precioVenta: parseFloat(detail.precio_venta || 0),
                     cantidad: parseInt(detail.cantidad || 0),
                     iva: parseFloat(detail.iva || 0),
                     total: parseFloat(detail.total || 0)
@@ -1246,10 +1246,12 @@
                     // Celda de Descripción (Nombre)
                     const tdNombre = document.createElement('td');
                     tdNombre.innerHTML = `
-                    <input type="hidden" name="productos[${index}][nombre]" value="${nombre}" class="hidden-nombre">
-                    ${nombre}
-                `;
+    <input type="hidden" name="productos[${index}][product_id]" value="${producto.product_id}">
+    <input type="hidden" name="productos[${index}][nombre]" value="${nombre}" class="hidden-nombre">
+    ${nombre}
+`;
                     nuevaFila.appendChild(tdNombre);
+
 
                     // Celda de Categoría
                     const tdCategoria = document.createElement('td');

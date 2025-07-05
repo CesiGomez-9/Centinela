@@ -5,9 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Factura;
 use App\Models\Proveedor; // Importar el modelo Proveedor
 use App\Models\Empleado;  // Importar el modelo Empleado
+use App\Models\Producto;  // Importar el modelo Producto
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rule; // Importar la clase Rule para validación única
 
 class FacturaController extends Controller
 {
@@ -60,6 +61,7 @@ class FacturaController extends Controller
             'forma_pago' => ['required', 'in:Efectivo,Cheque,Transferencia'], // Valida que la forma de pago sea una de las opciones
             'responsable_id' => ['required', 'exists:empleados,id'], // Valida que el ID del empleado exista en la tabla 'empleados'
             'productos' => ['required', 'array', 'min:1'], // Debe haber al menos un producto
+            'productos.*.product_id' => ['required', 'exists:productos,id'], // Nuevo: Valida que el ID del producto exista
             'productos.*.nombre' => ['required', 'string', 'max:255'],
             'productos.*.categoria' => ['required', 'string', 'max:255'],
             'productos.*.precioCompra' => ['required', 'numeric', 'min:0'],
@@ -78,6 +80,8 @@ class FacturaController extends Controller
             'responsable_id.exists' => 'El empleado responsable seleccionado no es válido.',
             'productos.required' => 'Debe agregar al menos un producto a la factura.',
             'productos.min' => 'Debe agregar al menos un producto a la factura.',
+            'productos.*.product_id.required' => 'El ID del producto es obligatorio para cada producto.',
+            'productos.*.product_id.exists' => 'Uno o más productos seleccionados no son válidos.',
         ]);
 
         try {
@@ -97,28 +101,42 @@ class FacturaController extends Controller
                 ]);
 
                 // Itera sobre los productos enviados en la solicitud
-                foreach ($request->productos as $producto) {
-                    // Calcula la base imponible del producto
-                    $baseProducto = $producto['precioCompra'] * $producto['cantidad'];
-                    // Calcula el IVA del producto
-                    $ivaProducto = ($producto['iva'] / 100) * $baseProducto;
-                    // Calcula el total del producto
-                    $totalProducto = $baseProducto + $ivaProducto;
+                foreach ($request->productos as $productoData) {
+                    // Busca el producto en la base de datos para actualizar su cantidad
+                    $producto = Producto::find($productoData['product_id']);
 
-                    // Acumula los subtotales e impuestos generales
-                    $subtotalGeneral += $baseProducto;
-                    $impuestosGeneral += $ivaProducto;
+                    if ($producto) {
+                        // Calcula la base imponible del producto
+                        $baseProducto = $productoData['precioCompra'] * $productoData['cantidad'];
+                        // Calcula el IVA del producto
+                        $ivaProducto = ($productoData['iva'] / 100) * $baseProducto;
+                        // Calcula el total del producto
+                        $totalProducto = $baseProducto + $ivaProducto;
 
-                    // Crea un detalle de factura asociado a la factura actual
-                    $factura->detalles()->create([
-                        'producto' => $producto['nombre'],
-                        'categoria' => $producto['categoria'],
-                        'precio_compra' => $producto['precioCompra'],
-                        'precio_venta' => $producto['precioVenta'],
-                        'cantidad' => $producto['cantidad'],
-                        'iva' => $producto['iva'],
-                        'total' => $totalProducto,
-                    ]);
+                        // Acumula los subtotales e impuestos generales
+                        $subtotalGeneral += $baseProducto;
+                        $impuestosGeneral += $ivaProducto;
+
+                        // Crea un detalle de factura asociado a la factura actual
+                        $factura->detalles()->create([
+                            'product_id' => $productoData['product_id'], // Guardar el product_id en detalles
+                            'producto' => $productoData['nombre'],
+                            'categoria' => $productoData['categoria'],
+                            'precio_compra' => $productoData['precioCompra'],
+                            'precio_venta' => $productoData['precioVenta'],
+                            'cantidad' => $productoData['cantidad'],
+                            'iva' => $productoData['iva'],
+                            'total' => $totalProducto,
+                        ]);
+
+                        // Decrementar la cantidad del producto en el inventario
+                        $producto->cantidad -= $productoData['cantidad'];
+                        $producto->save();
+                    } else {
+                        // Manejar el caso donde el producto no se encuentra (opcional: lanzar excepción, loggear)
+                        // Por ahora, simplemente lo ignoramos si no se encuentra
+                        \Log::warning("Producto con ID {$productoData['product_id']} no encontrado al crear factura.");
+                    }
                 }
 
                 // Calcula el total final de la factura
@@ -195,6 +213,7 @@ class FacturaController extends Controller
             'forma_pago' => ['required', 'in:Efectivo,Cheque,Transferencia'],
             'responsable_id' => ['required', 'exists:empleados,id'],
             'productos' => ['required', 'array', 'min:1'], // Debe haber al menos un producto
+            'productos.*.product_id' => ['required', 'exists:productos,id'], // Nuevo: Valida que el ID del producto exista
             'productos.*.nombre' => ['required', 'string', 'max:255'],
             'productos.*.categoria' => ['required', 'string', 'max:255'],
             'productos.*.precioCompra' => ['required', 'numeric', 'min:0'],
@@ -213,10 +232,16 @@ class FacturaController extends Controller
             'responsable_id.exists' => 'El empleado responsable seleccionado no es válido.',
             'productos.required' => 'Debe agregar al menos un producto a la factura.',
             'productos.min' => 'Debe agregar al menos un producto a la factura.',
+            'productos.*.product_id.required' => 'El ID del producto es obligatorio para cada producto.',
+            'productos.*.product_id.exists' => 'Uno o más productos seleccionados no son válidos.',
         ]);
 
         try {
             DB::transaction(function () use ($request, $factura) {
+                // Para manejar la reversión de cantidades en caso de edición:
+                // 1. Obtener las cantidades originales de los productos en esta factura
+                $originalDetails = $factura->detalles()->get()->keyBy('product_id');
+
                 // Actualiza los campos principales de la factura
                 $factura->update([
                     'numero_factura' => $request->numero_factura,
@@ -233,28 +258,63 @@ class FacturaController extends Controller
                 $impuestosGeneral = 0;
 
                 // Itera sobre los productos enviados en la solicitud
-                foreach ($request->productos as $producto) {
-                    // Calcula la base imponible del producto
-                    $baseProducto = $producto['precioCompra'] * $producto['cantidad'];
-                    // Calcula el IVA del producto
-                    $ivaProducto = ($producto['iva'] / 100) * $baseProducto;
-                    // Calcula el total del producto
-                    $totalProducto = $baseProducto + $ivaProducto;
+                foreach ($request->productos as $productoData) {
+                    // Busca el producto en la base de datos para actualizar su cantidad
+                    $producto = Producto::find($productoData['product_id']);
 
-                    // Acumula los subtotales e impuestos generales
-                    $subtotalGeneral += $baseProducto;
-                    $impuestosGeneral += $ivaProducto;
+                    if ($producto) {
+                        // Calcula la base imponible del producto
+                        $baseProducto = $productoData['precioCompra'] * $productoData['cantidad'];
+                        // Calcula el IVA del producto
+                        $ivaProducto = ($productoData['iva'] / 100) * $baseProducto;
+                        // Calcula el total del producto
+                        $totalProducto = $baseProducto + $ivaProducto;
 
-                    // Crea un nuevo detalle de factura asociado a la factura actual
-                    $factura->detalles()->create([
-                        'producto' => $producto['nombre'],
-                        'categoria' => $producto['categoria'],
-                        'precio_compra' => $producto['precioCompra'],
-                        'precio_venta' => $producto['precioVenta'],
-                        'cantidad' => $producto['cantidad'],
-                        'iva' => $producto['iva'],
-                        'total' => $totalProducto,
-                    ]);
+                        // Acumula los subtotales e impuestos generales
+                        $subtotalGeneral += $baseProducto;
+                        $impuestosGeneral += $ivaProducto;
+
+                        // Crea un nuevo detalle de factura asociado a la factura actual
+                        $factura->detalles()->create([
+                            'product_id' => $productoData['product_id'], // Guardar el product_id en detalles
+                            'producto' => $productoData['nombre'],
+                            'categoria' => $productoData['categoria'],
+                            'precio_compra' => $productoData['precioCompra'],
+                            'precio_venta' => $productoData['precioVenta'],
+                            'cantidad' => $productoData['cantidad'],
+                            'iva' => $productoData['iva'],
+                            'total' => $totalProducto,
+                        ]);
+
+                        // Ajustar la cantidad del producto en el inventario:
+                        // Si el producto existía en los detalles originales, sumar su cantidad original
+                        if (isset($originalDetails[$productoData['product_id']])) {
+                            $producto->cantidad += $originalDetails[$productoData['product_id']]->cantidad;
+                        }
+                        // Luego, restar la nueva cantidad
+                        $producto->cantidad -= $productoData['cantidad'];
+                        $producto->save();
+                    } else {
+                        \Log::warning("Producto con ID {$productoData['product_id']} no encontrado al actualizar factura.");
+                    }
+                }
+
+                // Para productos que estaban en la factura original pero no en la nueva, revertir su cantidad
+                foreach ($originalDetails as $originalDetail) {
+                    $foundInNewRequest = false;
+                    foreach ($request->productos as $newProductData) {
+                        if ($newProductData['product_id'] == $originalDetail->product_id) {
+                            $foundInNewRequest = true;
+                            break;
+                        }
+                    }
+                    if (!$foundInNewRequest) {
+                        $productToRevert = Producto::find($originalDetail->product_id);
+                        if ($productToRevert) {
+                            $productToRevert->cantidad += $originalDetail->cantidad;
+                            $productToRevert->save();
+                        }
+                    }
                 }
 
                 // Calcula el total final de la factura

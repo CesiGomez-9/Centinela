@@ -55,8 +55,8 @@ class Factura extends Model
      * se gestionan a través de la tabla 'detalles' (DetalleFactura).
      * La columna 'producto_id' en la tabla 'facturas' se ha eliminado en una migración.
      */
-    // public function producto()
-    // {
-    //     return $this->belongsTo(Producto::class);
-    // }
+     public function producto()
+    {
+         return $this->belongsTo(Producto::class);
+     }
 }
