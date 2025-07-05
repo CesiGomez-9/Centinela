@@ -1,4 +1,4 @@
-@extends('layouts.plantilla')
+@extends('plantilla')
 @section('titulo', 'Listado de facturas')
 @section('content')
 
@@ -74,8 +74,8 @@
             <tr class="factura-row">
                 <td>{{ $index + 1 }}</td> <!-- Enumeración -->
                 <td class="factura-numeroFactura">{{ $factura->numero_factura }}</td>
-                <td>{{ $factura->categoria ?? 'N/A' }}</td>
-                <td>{{ $factura->cantidad ?? 'N/A' }}</td>
+                <td>{{ $factura->producto}}</td>
+                <td>{{ $factura->cantidad}}</td>
                 <td>
                     @if($factura->empleado)
                         {{ $factura->empleado->nombre }} {{ $factura->empleado->apellido }}
@@ -146,7 +146,7 @@
                 elemento.setAttribute('data-original', textoOriginal);
             }
 
-            const regex = new RegExp(`(${escapeRegex(termino)})`, 'gi');
+            const regex = new RegExp((${escapeRegex(termino)}), 'gi');
             const textoResaltado = textoOriginal.replace(regex, '<mark style="background-color: #ffeb3b; padding: 2px;">$1</mark>');
             elemento.innerHTML = textoResaltado;
         }

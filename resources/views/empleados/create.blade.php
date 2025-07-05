@@ -15,7 +15,7 @@
 <nav class="navbar navbar-expand-lg" style="background-color: #0A1F44; padding:1.2rem; font-family:'Courier New', monospace;">
     <div class="container" style="max-width:1600px;">
         <a class="navbar-brand text-white fw-bold" href="#">
-            <img src="{{ asset('seguridad/logo.jpg') }}" style="height:80px; margin-right:10px;"/>
+            <img src="{{ asset('centinela.jpg) }}" style="height:80px; margin-right:10px;"/>
             Grupo Centinela
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">

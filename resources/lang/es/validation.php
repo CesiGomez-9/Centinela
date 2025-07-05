@@ -19,7 +19,7 @@ return [
         'marca' => 'Marca del producto',
         'modelo' => 'Modelo del producto',
         'categoria' => 'Categoria del producto',
-        'iva' => 'IVA',
+        'es_exento' => 'IVA del producto',
         'descripcion' => 'Descripción',
         'numero_factura' => 'Numero de factura',
         'fecha' => 'Fecha',
