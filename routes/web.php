@@ -1,8 +1,8 @@
 <?php
 
+use App\Http\Controllers\Api\ProductoApiController;
 use App\Http\Controllers\EmpleadoController;
 use App\Http\Controllers\FacturaController;
-use App\Http\Controllers\InventarioController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\ServicioController;
@@ -40,10 +40,12 @@ Route::controller(ProductoController::class)->group(function () {
     Route::get('/productos/crear', 'create')->name('productos.create');
     Route::post('/productos/crear', 'store')->name('productos.store');
 
-    #Route::get('/productos/{id}/editar', 'edit')->name('productos.edit')->whereNumber('id');
-    #Route::put('/productos/{id}/editar', 'update')->name('productos.update')->whereNumber('id');
 
-});;
+    Route::get('/productos/{id}/editar', 'edit')->name('productos.edit')->whereNumber('id');
+    Route::put('/productos/{id}/editar', 'update')->name('productos.update')->whereNumber('id');
+});
+
+
 
 Route::get('/servicios/index', [ServicioController::class, 'index'])->name('servicios.index');
 Route::post('/servicios', [ServicioController::class, 'store'])->name('servicios.store');
@@ -65,9 +67,9 @@ Route::controller(FacturaController::class)->group(function () {
     Route::get('/facturas/crear', 'create')->name('facturas.create');
     Route::post('/facturas/crear', 'store')->name('facturas.store');
 
-    #Route::get('/facturas/{id}/editar', 'edit')->name('facturas.edit')->whereNumber('id');
-    #Route::put('/facturas/{id}/editar', 'update')->name('facturas.update')->whereNumber('id');
 
+    Route::get('/facturas/{id}/editar', 'edit')->name('facturas.edit')->whereNumber('id');
+    Route::put('/facturas/{id}/editar', 'update')->name('facturas.update')->whereNumber('id');
 });
 
 

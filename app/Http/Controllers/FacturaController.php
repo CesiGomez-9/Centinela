@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Factura;
-use App\Models\Proveedor; // Importar el modelo Proveedor
-use App\Models\Empleado;  // Importar el modelo Empleado
-use App\Models\Producto;  // Importar el modelo Producto
+use App\Models\Proveedor;
+use App\Models\Empleado;
+use App\Models\Producto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule; // Importar la clase Rule para validación única
+use Illuminate\Validation\Rule;
 
 class FacturaController extends Controller
 {
@@ -55,13 +55,14 @@ class FacturaController extends Controller
     {
         // Validar los datos de entrada
         $request->validate([
-            'numero_factura' => ['required', 'string', 'max:20', Rule::unique('facturas', 'numero_factura')], // Valida que el número de factura sea único
-            'fecha' => ['required', 'date', 'after_or_equal:2025-01-01', 'before_or_equal:2099-12-31'], // Valida rango de fecha
-            'proveedor_id' => ['required', 'exists:proveedores,id'], // Valida que el ID del proveedor exista en la tabla 'proveedores'
-            'forma_pago' => ['required', 'in:Efectivo,Cheque,Transferencia'], // Valida que la forma de pago sea una de las opciones
-            'responsable_id' => ['required', 'exists:empleados,id'], // Valida que el ID del empleado exista en la tabla 'empleados'
-            'productos' => ['required', 'array', 'min:1'], // Debe haber al menos un producto
-            'productos.*.product_id' => ['required', 'exists:productos,id'], // Nuevo: Valida que el ID del producto exista
+            'numero_factura' => ['required', 'string', 'max:20', Rule::unique('facturas', 'numero_factura')],
+            // *** CAMBIO: Fechas max a 2025-12-31 como se había solicitado ***
+            'fecha' => ['required', 'date', 'after_or_equal:2025-01-01', 'before_or_equal:2025-12-31'],
+            'proveedor_id' => ['required', 'exists:proveedores,id'],
+            'forma_pago' => ['required', 'in:Efectivo,Cheque,Transferencia'],
+            'responsable_id' => ['required', 'exists:empleados,id'],
+            'productos' => ['required', 'array', 'min:1'],
+            'productos.*.product_id' => ['required', 'exists:productos,id'],
             'productos.*.nombre' => ['required', 'string', 'max:255'],
             'productos.*.categoria' => ['required', 'string', 'max:255'],
             'productos.*.precioCompra' => ['required', 'numeric', 'min:0'],
@@ -73,7 +74,7 @@ class FacturaController extends Controller
             'fecha.required' => 'La fecha es obligatoria.',
             'fecha.date' => 'La fecha debe ser un formato de fecha válido (YYYY-MM-DD).',
             'fecha.after_or_equal' => 'La fecha no puede ser anterior al 1 de enero de 2025.',
-            'fecha.before_or_equal' => 'La fecha no puede ser posterior al 31 de diciembre de 2099.',
+            'fecha.before_or_equal' => 'La fecha no puede ser posterior al 31 de diciembre de 2025.', // Mensaje actualizado
             'proveedor_id.required' => 'El proveedor es obligatorio.',
             'proveedor_id.exists' => 'El proveedor seleccionado no es válido.',
             'responsable_id.required' => 'El responsable es obligatorio.',
@@ -92,12 +93,12 @@ class FacturaController extends Controller
                 $factura = Factura::create([
                     'numero_factura' => $request->numero_factura,
                     'fecha' => $request->fecha,
-                    'proveedor_id' => $request->proveedor_id, // Usar el ID del proveedor
+                    'proveedor_id' => $request->proveedor_id,
                     'forma_pago' => $request->forma_pago,
-                    'responsable_id' => $request->responsable_id, // Usar el ID del empleado
-                    'subtotal' => 0, // Se actualizará al final
-                    'impuestos' => 0, // Se actualizará al final
-                    'totalF' => 0,    // Se actualizará al final
+                    'responsable_id' => $request->responsable_id,
+                    'subtotal' => 0,
+                    'impuestos' => 0,
+                    'totalF' => 0,
                 ]);
 
                 // Itera sobre los productos enviados en la solicitud
@@ -119,7 +120,7 @@ class FacturaController extends Controller
 
                         // Crea un detalle de factura asociado a la factura actual
                         $factura->detalles()->create([
-                            'product_id' => $productoData['product_id'], // Guardar el product_id en detalles
+                            'product_id' => $productoData['product_id'],
                             'producto' => $productoData['nombre'],
                             'categoria' => $productoData['categoria'],
                             'precio_compra' => $productoData['precioCompra'],
@@ -129,12 +130,10 @@ class FacturaController extends Controller
                             'total' => $totalProducto,
                         ]);
 
-                        // Decrementar la cantidad del producto en el inventario
-                        $producto->cantidad -= $productoData['cantidad'];
+                        // *** CAMBIO CRUCIAL: Sumar la cantidad al inventario para una factura de compra ***
+                        $producto->cantidad += $productoData['cantidad'];
                         $producto->save();
                     } else {
-                        // Manejar el caso donde el producto no se encuentra (opcional: lanzar excepción, loggear)
-                        // Por ahora, simplemente lo ignoramos si no se encuentra
                         \Log::warning("Producto con ID {$productoData['product_id']} no encontrado al crear factura.");
                     }
                 }
@@ -208,7 +207,8 @@ class FacturaController extends Controller
         $request->validate([
             // Valida que el número de factura sea único, excepto para la factura actual
             'numero_factura' => ['required', 'string', 'max:20', Rule::unique('facturas', 'numero_factura')->ignore($factura->id)],
-            'fecha' => ['required', 'date', 'after_or_equal:2025-01-01', 'before_or_equal:2099-12-31'],
+            // *** CAMBIO: Fechas max a 2025-12-31 como se había solicitado ***
+            'fecha' => ['required', 'date', 'after_or_equal:2025-01-01', 'before_or_equal:2025-12-31'],
             'proveedor_id' => ['required', 'exists:proveedores,id'],
             'forma_pago' => ['required', 'in:Efectivo,Cheque,Transferencia'],
             'responsable_id' => ['required', 'exists:empleados,id'],
@@ -225,7 +225,7 @@ class FacturaController extends Controller
             'fecha.required' => 'La fecha es obligatoria.',
             'fecha.date' => 'La fecha debe ser un formato de fecha válido (YYYY-MM-DD).',
             'fecha.after_or_equal' => 'La fecha no puede ser anterior al 1 de enero de 2025.',
-            'fecha.before_or_equal' => 'La fecha no puede ser posterior al 31 de diciembre de 2099.',
+            'fecha.before_or_equal' => 'La fecha no puede ser posterior al 31 de diciembre de 2025.', // Mensaje actualizado
             'proveedor_id.required' => 'El proveedor es obligatorio.',
             'proveedor_id.exists' => 'El proveedor seleccionado no es válido.',
             'responsable_id.required' => 'El responsable es obligatorio.',
@@ -238,26 +238,23 @@ class FacturaController extends Controller
 
         try {
             DB::transaction(function () use ($request, $factura) {
-                // Para manejar la reversión de cantidades en caso de edición:
-                // 1. Obtener las cantidades originales de los productos en esta factura
-                $originalDetails = $factura->detalles()->get()->keyBy('product_id');
+                // 1. Revertir las cantidades de los productos de la factura original al inventario
+                // Esto se hace ANTES de procesar los nuevos detalles.
+                foreach ($factura->detalles as $originalDetail) {
+                    $productoOriginal = Producto::find($originalDetail->product_id);
+                    if ($productoOriginal) {
+                        $productoOriginal->cantidad += $originalDetail->cantidad;
+                        $productoOriginal->save();
+                    }
+                }
 
-                // Actualiza los campos principales de la factura
-                $factura->update([
-                    'numero_factura' => $request->numero_factura,
-                    'fecha' => $request->fecha,
-                    'proveedor_id' => $request->proveedor_id, // Usar el ID del proveedor
-                    'forma_pago' => $request->forma_pago,
-                    'responsable_id' => $request->responsable_id, // Usar el ID del empleado
-                ]);
-
-                // Elimina los detalles de factura existentes para sincronizarlos con los nuevos
+                // 2. Eliminar todos los detalles de la factura existente (para reemplazarlos por los nuevos)
                 $factura->detalles()->delete();
 
                 $subtotalGeneral = 0;
                 $impuestosGeneral = 0;
 
-                // Itera sobre los productos enviados en la solicitud
+                // 3. Itera sobre los productos enviados en la solicitud (los nuevos detalles)
                 foreach ($request->productos as $productoData) {
                     // Busca el producto en la base de datos para actualizar su cantidad
                     $producto = Producto::find($productoData['product_id']);
@@ -286,34 +283,11 @@ class FacturaController extends Controller
                             'total' => $totalProducto,
                         ]);
 
-                        // Ajustar la cantidad del producto en el inventario:
-                        // Si el producto existía en los detalles originales, sumar su cantidad original
-                        if (isset($originalDetails[$productoData['product_id']])) {
-                            $producto->cantidad += $originalDetails[$productoData['product_id']]->cantidad;
-                        }
-                        // Luego, restar la nueva cantidad
-                        $producto->cantidad -= $productoData['cantidad'];
+                        // *** CAMBIO CRUCIAL: Sumar la nueva cantidad al inventario ***
+                        $producto->cantidad += $productoData['cantidad'];
                         $producto->save();
                     } else {
                         \Log::warning("Producto con ID {$productoData['product_id']} no encontrado al actualizar factura.");
-                    }
-                }
-
-                // Para productos que estaban en la factura original pero no en la nueva, revertir su cantidad
-                foreach ($originalDetails as $originalDetail) {
-                    $foundInNewRequest = false;
-                    foreach ($request->productos as $newProductData) {
-                        if ($newProductData['product_id'] == $originalDetail->product_id) {
-                            $foundInNewRequest = true;
-                            break;
-                        }
-                    }
-                    if (!$foundInNewRequest) {
-                        $productToRevert = Producto::find($originalDetail->product_id);
-                        if ($productToRevert) {
-                            $productToRevert->cantidad += $originalDetail->cantidad;
-                            $productToRevert->save();
-                        }
                     }
                 }
 
@@ -340,6 +314,38 @@ class FacturaController extends Controller
             echo "<h2>Rastreo de la Pila:</h2>";
             echo "<pre>" . $e->getTraceAsString() . "</pre>";
             exit; // Detiene la ejecución
+        }
+    }
+
+    /**
+     * Elimina el recurso especificado del almacenamiento.
+     */
+    public function destroy(string $id)
+    {
+        try {
+            DB::transaction(function () use ($id) {
+                $factura = Factura::findOrFail($id);
+
+                // Antes de eliminar los detalles de la factura, revertir las cantidades al inventario
+                foreach ($factura->detalles as $detalle) {
+                    $producto = Producto::find($detalle->product_id);
+                    if ($producto) {
+                        $producto->cantidad += $detalle->cantidad;
+                        $producto->save();
+                    }
+                }
+
+                // Eliminar los detalles de la factura
+                $factura->detalles()->delete();
+
+                // Finalmente, eliminar la factura
+                $factura->delete();
+            });
+
+            return redirect()->route('facturas.index')->with('status', 'Factura eliminada correctamente');
+        } catch (\Throwable $e) {
+            \Log::error("Error al eliminar factura y revertir productos: {$e->getMessage()}");
+            return back()->with('error', 'Hubo un error al eliminar la factura. Por favor, intente de nuevo.');
         }
     }
 }

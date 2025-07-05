@@ -1,4 +1,4 @@
-@extends('layouts.plantilla')
+@extends('plantilla')
 @section('titulo','Registrar una factura')
 @section('content')
 
@@ -20,7 +20,7 @@
             border-color: #dc3545;
         }
 
-        /* CSS de depuración: Añade esto temporalmente en tu formulario.blade.php */
+        /* CSS de depuración: Asegura la visibilidad del texto en la tabla */
         #tablaFacturaBody td {
             color: black !important; /* Fuerza el color del texto a negro */
             font-size: 1rem !important; /* Asegura un tamaño de fuente legible */
@@ -33,7 +33,16 @@
 
         /* Opcional: Si el texto está muy pegado al input hidden */
         #tablaFacturaBody td input[type="hidden"] + * {
-            margin-left: 5px; /* Pequeño margen si el texto visible es un hermano del input */
+            margin-left: 5px;
+        }
+
+        /* CSS para asegurar que el modal y su backdrop se oculten completamente */
+        .modal:not(.show) {
+            display: none !important;
+        }
+        .modal-backdrop:not(.show) {
+            display: none !important;
+            opacity: 0 !important;
         }
     </style>
 
@@ -41,6 +50,7 @@
         <div class="row justify-content-center">
             <div class="col-lg-10">
                 <div class="bg-white p-5 rounded shadow-lg position-relative">
+
                     <div class="position-absolute top-0 end-0 p-3 text-secondary opacity-25">
                         <i class="bi bi-receipt" style="font-size: 4rem;"></i>
                     </div>
@@ -70,6 +80,7 @@
                                            maxlength="20" value="{{ old('numero_factura', isset($factura) ? $factura->numero_factura : '') }}"
                                            onkeypress="validarTexto(event)" required>
                                 </div>
+                                <div class="text-danger mt-1 small error-mensaje-js"></div>
                                 @error('numero_factura')
                                 <div class="text-danger mt-1 small">{{ $message }}</div>
                                 @enderror
@@ -80,10 +91,12 @@
                                 <label for="fecha" class="form-label">Fecha</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
-                                    <input type="date" name="fecha" id="fecha" min="2025-01-01" max="2099-12-31"
+                                    {{-- Ajuste de min para Julio 2025 --}}
+                                    <input type="date" name="fecha" id="fecha" min="2025-07-01" max="2025-12-31"
                                            class="form-control @error('fecha') is-invalid @enderror"
                                            value="{{ old('fecha', isset($factura) ? $factura->fecha : '') }}" required>
                                 </div>
+                                <div class="text-danger mt-1 small error-mensaje-js"></div>
                                 @error('fecha')
                                 <div class="text-danger mt-1 small">{{ $message }}</div>
                                 @enderror
@@ -104,6 +117,7 @@
                                         @endforeach
                                     </select>
                                 </div>
+                                <div class="text-danger mt-1 small error-mensaje-js"></div>
                                 @error('proveedor_id')
                                 <div class="text-danger mt-1 small">{{ $message }}</div>
                                 @enderror
@@ -125,6 +139,7 @@
                                         @endforeach
                                     </select>
                                 </div>
+                                <div class="text-danger mt-1 small error-mensaje-js"></div>
                                 @error('forma_pago')
                                 <div class="text-danger mt-1 small">{{ $message }}</div>
                                 @enderror
@@ -143,11 +158,12 @@
                                     <table class="table table-bordered align-middle text-center" id="tablaFacturaProductos">
                                         <thead class="table-light small">
                                         <tr>
+                                            <th>N°</th>
                                             <th style="width: 30%;">Descripción</th>
                                             <th style="width: 20%;">Categoría</th>
                                             <th style="width: 15%;">Precio Compra (Lps)</th>
                                             <th style="width: 10%;">Cantidad</th>
-                                            <th style="width: 10%;">IVA %</th>
+                                            <th style="width: 10%;">IVA%</th>
                                             <th style="width: 15%;">Subtotal (Lps)</th>
                                             <th style="width: 10%;">Eliminar</th>
                                         </tr>
@@ -155,7 +171,7 @@
                                         <tbody id="tablaFacturaBody">
                                         <!-- Fila vacía para mostrar que hay una tabla -->
                                         <tr id="filaVacia" class="fila-vacia">
-                                            <td colspan="7" class="text-center text-muted py-4" style="border: 1px dashed #dee2e6; background-color: #f8f9fa;">
+                                            <td colspan="8" class="text-center text-muted py-4" style="border: 1px dashed #dee2e6; background-color: #f8f9fa;">
                                                 <i class="bi bi-inbox" style="font-size: 2rem; opacity: 0.5;"></i>
                                                 <br>
                                                 <span style="font-size: 0.9rem;">No hay productos agregados</span>
@@ -171,20 +187,23 @@
                                 </div>
                             </div>
 
-                            <!-- Totales -->
+                            <!-- Totales (Ahora como labels) -->
                             <div class="row mt-4">
                                 <div class="col-md-4 offset-md-8">
                                     <div class="mb-3">
                                         <label class="form-label">Subtotal (Lps)</label>
-                                        <input type="text" class="form-control text-end" id="subtotalGeneral" readonly>
+                                        {{-- Se cambió a label con estilo para parecer un input readonly --}}
+                                        <label class="form-control text-end" id="subtotalGeneralLabel" style="background-color: #e9ecef; border: 1px solid #ced4da; border-radius: 0.25rem; padding: 0.375rem 0.75rem;">0.00</label>
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Impuestos (Lps)</label>
-                                        <input type="text" class="form-control text-end" id="impuestosGeneral" readonly>
+                                        {{-- Se cambió a label con estilo para parecer un input readonly --}}
+                                        <label class="form-control text-end" id="impuestosGeneralLabel" style="background-color: #e9ecef; border: 1px solid #ced4da; border-radius: 0.25rem; padding: 0.375rem 0.75rem;">0.00</label>
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Total final (Lps)</label>
-                                        <input type="text" class="form-control text-end" id="totalGeneral" readonly>
+                                        {{-- Se cambió a label con estilo para parecer un input readonly --}}
+                                        <label class="form-control text-end" id="totalGeneralLabel" style="background-color: #e9ecef; border: 1px solid #ced4da; border-radius: 0.25rem; padding: 0.375rem 0.75rem;">0.00</label>
                                     </div>
                                 </div>
                             </div>
@@ -205,6 +224,7 @@
                                         @endforeach
                                     </select>
                                 </div>
+                                <div class="text-danger mt-1 small error-mensaje-js"></div>
                                 @error('responsable_id')
                                 <div class="text-danger mt-1 small">{{ $message }}</div>
                                 @enderror
@@ -213,15 +233,15 @@
                             <!-- Botones -->
                             <div class="text-center mt-5">
                                 <a href="{{ route('facturas.index') }}" class="btn btn-danger me-2">
-                                    <i class="bi bi-x-circle me-2"></i> Cancelar
+                                    <i class="bi bi-x-circle"></i> Cancelar
                                 </a>
 
                                 <button type="button" id="btnLimpiar" class="btn btn-warning me-2">
-                                    <i class="bi bi-eraser-fill me-2"></i> Limpiar
+                                    <i class="bi bi-eraser-fill"></i> Limpiar
                                 </button>
 
                                 <button type="submit" class="btn btn-primary">
-                                    <i class="bi bi-save-fill me-2"></i> Guardar
+                                    <i class="bi bi-save-fill"></i> Guardar
                                 </button>
                             </div>
                         </div>
@@ -247,6 +267,7 @@
                                 <input type="text" id="searchInput" class="form-control" placeholder="Buscar producto por nombre...">
                                 <span class="input-group-text"><i class="bi bi-search"></i></span>
                             </div>
+                            <div id="searchResults" class="mt-2"></div>
                         </div>
                     </div>
 
@@ -257,6 +278,8 @@
                             <tr>
                                 <th>Nombre</th>
                                 <th>Categoría</th>
+                                <th>Cantidad Disponible</th>
+                                <th>IVA %</th> {{-- Columna para el IVA en la tabla del modal --}}
                                 <th>Acción</th>
                             </tr>
                             </thead>
@@ -267,7 +290,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="cerrarModalProductos">
                         <i class="bi bi-x-circle"></i> Cerrar
                     </button>
                 </div>
@@ -275,50 +298,22 @@
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
     <script>
-        // Variables globales (si las tienes, asegúrate de que estén declaradas aquí o arriba)
+        document.addEventListener("DOMContentLoaded", function () {
+            // Nuevo listener para el botón cerrar del modal
+            const btnCerrarModal = document.getElementById('cerrarModalProductos');
+            if (btnCerrarModal) {
+                btnCerrarModal.addEventListener('click', function() {
+                    console.log('DEBUG: Botón "Cerrar" del modal presionado. Limpiando formularios del modal.');
+                    limpiarFormulariosModal();
+                });
+            }
+
+        });
+        // Variables globales
         let productoSeleccionadoActual = null;
         let productoIndexCounter = 0; // Nuevo contador para los índices de productos
-
-        // Datos de productos (asegúrate de que esta variable esté definida si la usas en cargarProductosEnModal)
-        const nombresPorCategoria = {
-            'Cámaras de seguridad': [
-                'Cámara IP Full HD', 'Cámara Bullet 4K', 'Cámara domo PTZ',
-                'Cámara térmica portátil', 'Cámara con visión nocturna'
-            ],
-            'Alarmas antirrobo': [
-                'Alarma inalámbrica', 'Alarma con sirena', 'Alarma de puerta y ventana',
-                'Sistema de alarma GSM', 'Alarma con detector de humo'
-            ],
-            'Cerraduras inteligentes': [
-                'Cerradura biométrica', 'Cerradura con teclado', 'Cerradura Bluetooth',
-                'Cerradura con control remoto', 'Cerradura electrónica para puertas'
-            ],
-            'Sensores de movimiento': [
-                'Sensor PIR inalámbrico', 'Sensor de movimiento con cámara',
-                'Sensor de movimiento para interiores', 'Sensor de movimiento con alarma',
-                'Sensor doble tecnología'
-            ],
-            'Luces con sensor de movimiento': [
-                'Luz LED con sensor', 'Luz solar con sensor', 'Foco exterior con sensor',
-                'Luz para jardín con sensor', 'Lámpara de seguridad con sensor'
-            ],
-            'Rejas o puertas de seguridad': [
-                'Reja metálica reforzada', 'Puerta de seguridad con cerradura',
-                'Reja plegable de acero', 'Puerta blindada residencial', 'Reja corrediza automática'
-            ],
-            'Sistema de monitoreo 24/7': [
-                'Sistema CCTV avanzado', 'Monitoreo remoto por app',
-                'Servicio de vigilancia en tiempo real', 'Sistema con alertas SMS',
-                'Monitoreo con sensores integrados'
-            ],
-            'Implementos de seguridad': [
-                'Chaleco antibalas', 'Casco de seguridad', 'Guantes tácticos',
-                'Botas reforzadas', 'Radio comunicador portátil'
-            ]
-        };
-
 
         // --- Funciones de Validación y Utilidad ---
 
@@ -348,9 +343,12 @@
                 return false;
             }
 
-            const year = parseInt(val.substring(0, 4));
-            if (year < 2025 || year > 2099) { // Ajuste para que coincida con la validación del controlador
-                mostrarError('fecha', 'El año debe estar entre 2025 y 2099');
+            const selectedDateStr = val;
+            const minDateStr = '2025-07-01';
+            const maxDateStr = '2025-12-31';
+
+            if (selectedDateStr < minDateStr || selectedDateStr > maxDateStr) {
+                mostrarError('fecha', 'La fecha debe estar entre 01/07/2025 y 31/12/2025.');
                 return false;
             }
 
@@ -400,9 +398,9 @@
                 actualizarFilaVacia();
             }
 
-            document.getElementById('subtotalGeneral').value = '';
-            document.getElementById('impuestosGeneral').value = '';
-            document.getElementById('totalGeneral').value = '';
+            document.getElementById('subtotalGeneralLabel').textContent = '0.00';
+            document.getElementById('impuestosGeneralLabel').textContent = '0.00';
+            document.getElementById('totalGeneralLabel').textContent = '0.00';
 
             form.querySelectorAll('.text-danger, .invalid-feedback, .error-message').forEach(error => {
                 error.style.display = 'none';
@@ -423,6 +421,7 @@
             }
 
             limpiarFormulariosModal();
+            document.body.classList.remove('modal-open'); // Asegurar remoción de la clase
 
             const primerCampo = form.querySelector('input[name="numero_factura"]');
             if (primerCampo) {
@@ -456,13 +455,8 @@
             const searchInput = document.getElementById('searchInput');
             if (searchInput) {
                 searchInput.value = '';
-                document.querySelectorAll('#tablaProductosBody .producto-fila').forEach(fila => {
-                    fila.style.display = 'table-row';
-                    const celdaNombre = fila.querySelector('td:first-child');
-                    if (celdaNombre) {
-                        quitarResaltado(celdaNombre);
-                    }
-                });
+                // Recargar productos en el modal para mostrar todos de nuevo
+                cargarProductosEnModal();
                 const searchResults = document.getElementById('searchResults');
                 if (searchResults) {
                     searchResults.innerHTML = '';
@@ -479,21 +473,32 @@
 
             campo.classList.add('is-invalid');
 
-            let errorDiv = campo.parentNode.querySelector('.text-danger');
-            if (!errorDiv) {
-                errorDiv = document.createElement('div');
-                errorDiv.className = 'text-danger mt-1 small';
-                errorDiv.style.opacity = '0';
-                errorDiv.style.transition = 'opacity 0.3s ease';
-                campo.parentNode.appendChild(errorDiv);
+            let errorDiv = campo.nextElementSibling; // Intenta con el siguiente elemento hermano
+            if (!errorDiv || !errorDiv.classList.contains('error-mensaje-js')) {
+                // Si no lo encuentra como siguiente hermano, busca dentro del mismo padre
+                errorDiv = campo.parentNode.querySelector('.error-mensaje-js');
+                if (!errorDiv) {
+                    // Si aún no lo encuentra (por ejemplo, si el input está dentro de un input-group),
+                    // busca en el padre del input-group (el col-md-6 en tu caso)
+                    const parentCol = campo.closest('.col-md-6, .col-md-4, .col-12'); // Busca el contenedor de la columna
+                    if (parentCol) {
+                        errorDiv = parentCol.querySelector('.error-mensaje-js');
+                    }
+                }
             }
 
-            errorDiv.textContent = mensaje;
-            errorDiv.style.display = 'block';
-
-            setTimeout(() => {
-                errorDiv.style.opacity = '1';
-            }, 10);
+            if (errorDiv) {
+                errorDiv.textContent = mensaje;
+                errorDiv.style.display = 'block'; // Asegura que sea visible
+            } else {
+                console.warn(`No se encontró un div.error-mensaje-js para el campo ${campoId}.`);
+                // Fallback: si no se encuentra el div predefinido, crear uno (menos ideal)
+                errorDiv = document.createElement('div');
+                errorDiv.className = 'text-danger mt-1 small error-mensaje-js';
+                campo.parentNode.appendChild(errorDiv);
+                errorDiv.textContent = mensaje;
+                errorDiv.style.display = 'block';
+            }
         }
 
         function ocultarError(campoId) {
@@ -502,20 +507,31 @@
 
             campo.classList.remove('is-invalid');
 
-            const errorDiv = campo.parentNode.querySelector('.text-danger');
+            let errorDiv = campo.nextElementSibling;
+            if (!errorDiv || !errorDiv.classList.contains('error-mensaje-js')) {
+                errorDiv = campo.parentNode.querySelector('.error-mensaje-js');
+                if (!errorDiv) {
+                    const parentCol = campo.closest('.col-md-6, .col-md-4, .col-12');
+                    if (parentCol) {
+                        errorDiv = parentCol.querySelector('.error-mensaje-js');
+                    }
+                }
+            }
+
             if (errorDiv) {
+                errorDiv.textContent = ''; // Limpiar el texto también
                 errorDiv.style.display = 'none';
             }
         }
 
         function validarFormularioProducto(form) {
-            const precioCompra = form.querySelector('.precioCompra');
-            const precioVenta = form.querySelector('.precioVenta');
-            const cantidad = form.querySelector('.cantidad');
-            const iva = form.querySelector('.iva');
+            const precioCompraInput = form.querySelector('.precioCompra');
+            const precioVentaInput = form.querySelector('.precioVenta');
+            const cantidadInput = form.querySelector('.cantidad');
 
             let esValido = true;
 
+            // Limpiar mensajes de error previos
             form.querySelectorAll('.error-message').forEach(error => {
                 error.style.display = 'none';
             });
@@ -523,54 +539,59 @@
                 field.classList.remove('field-error');
             });
 
-            if (!precioCompra.value || parseFloat(precioCompra.value) < 0) { // Cambiado a < 0 para permitir 0
-                precioCompra.classList.add('field-error');
-                let errorDiv = precioCompra.parentNode.querySelector('.error-message');
-                if (!errorDiv) {
+            const precioCompra = parseFloat(precioCompraInput.value);
+            const precioVenta = parseFloat(precioVentaInput.value);
+            const cantidad = parseInt(cantidadInput.value);
+
+            // Validar Precio Compra
+            if (isNaN(precioCompra) || precioCompra <= 0) {
+                precioCompraInput.classList.add('field-error');
+                let errorDiv = precioCompraInput.parentNode.querySelector('.error-message');
+                if (!errorDiv) { // Crear si no existe
                     errorDiv = document.createElement('div');
                     errorDiv.className = 'error-message';
-                    precioCompra.parentNode.appendChild(errorDiv);
+                    precioCompraInput.parentNode.appendChild(errorDiv);
                 }
-                errorDiv.textContent = 'Precio de compra es obligatorio y no puede ser negativo.';
+                errorDiv.textContent = 'Precio de compra debe ser mayor que cero.';
                 errorDiv.style.display = 'block';
                 esValido = false;
             }
 
-            if (!precioVenta.value || parseFloat(precioVenta.value) < 0) { // Cambiado a < 0 para permitir 0
-                precioVenta.classList.add('field-error');
-                let errorDiv = precioVenta.parentNode.querySelector('.error-message');
-                if (!errorDiv) {
+            // Validar Precio Venta
+            if (isNaN(precioVenta) || precioVenta <= 0) {
+                precioVentaInput.classList.add('field-error');
+                let errorDiv = precioVentaInput.parentNode.querySelector('.error-message');
+                if (!errorDiv) { // Crear si no existe
                     errorDiv = document.createElement('div');
                     errorDiv.className = 'error-message';
-                    precioVenta.parentNode.appendChild(errorDiv);
+                    precioVentaInput.parentNode.appendChild(errorDiv);
                 }
-                errorDiv.textContent = 'Precio de venta es obligatorio y no puede ser negativo.';
+                errorDiv.textContent = 'Precio de venta debe ser mayor que cero.';
+                errorDiv.style.display = 'block';
+                esValido = false;
+            } else if (precioVenta < precioCompra) { // Validar que precioVenta no sea menor que precioCompra
+                precioVentaInput.classList.add('field-error');
+                let errorDiv = precioVentaInput.parentNode.querySelector('.error-message');
+                if (!errorDiv) { // Crear si no existe
+                    errorDiv = document.createElement('div');
+                    errorDiv.className = 'error-message';
+                    precioVentaInput.parentNode.appendChild(errorDiv);
+                }
+                errorDiv.textContent = 'Precio de venta no puede ser menor que el precio de compra.';
                 errorDiv.style.display = 'block';
                 esValido = false;
             }
 
-            if (!cantidad.value || parseInt(cantidad.value) <= 0) {
-                cantidad.classList.add('field-error');
-                let errorDiv = cantidad.parentNode.querySelector('.error-message');
-                if (!errorDiv) {
+            // Validar Cantidad (solo mayor que cero)
+            if (isNaN(cantidad) || cantidad <= 0) {
+                cantidadInput.classList.add('field-error');
+                let errorDiv = cantidadInput.parentNode.querySelector('.error-message');
+                if (!errorDiv) { // Crear si no existe
                     errorDiv = document.createElement('div');
                     errorDiv.className = 'error-message';
-                    cantidad.parentNode.appendChild(errorDiv);
+                    cantidadInput.parentNode.appendChild(errorDiv);
                 }
-                errorDiv.textContent = 'Cantidad es obligatoria.';
-                errorDiv.style.display = 'block';
-                esValido = false;
-            }
-
-            if (!iva.value || iva.value.trim() === "") {
-                iva.classList.add('field-error');
-                let errorDiv = iva.parentNode.querySelector('.error-message');
-                if (!errorDiv) {
-                    errorDiv = document.createElement('div');
-                    errorDiv.className = 'error-message';
-                    iva.parentNode.appendChild(errorDiv);
-                }
-                errorDiv.textContent = 'IVA es obligatorio.';
+                errorDiv.textContent = 'Cantidad debe ser un número entero mayor que cero.';
                 errorDiv.style.display = 'block';
                 esValido = false;
             }
@@ -670,20 +691,48 @@
             }
         }
 
-        function cargarProductosEnModal() {
+        // --- Función para cargar productos en el modal desde la API ---
+        async function cargarProductosEnModal(searchTerm = '') {
             const tbody = document.getElementById('tablaProductosBody');
-            tbody.innerHTML = '';
+            // Colspan ajustado a 5 (Nombre, Categoría, Cantidad Disponible, IVA %, Acción)
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center py-3">Cargando productos...</td></tr>';
 
-            Object.entries(nombresPorCategoria).forEach(([categoria, productos]) => {
-                productos.forEach(nombre => {
+            try {
+                // Construir la URL de la API con el término de búsqueda
+                const apiUrl = `/api/productos?search=${encodeURIComponent(searchTerm)}`;
+                const response = await fetch(apiUrl);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const productos = await response.json();
+
+                tbody.innerHTML = ''; // Limpiar antes de añadir nuevos resultados
+
+                if (productos.length === 0) {
+                    // Colspan ajustado a 5
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-3 text-muted">No se encontraron productos.</td></tr>';
+                    // Actualizar el mensaje de resultados de búsqueda
+                    mostrarResultados(searchTerm, 0);
+                    return;
+                }
+
+                productos.forEach(producto => {
                     const fila = document.createElement('tr');
                     fila.className = 'producto-fila';
-                    fila.setAttribute('data-nombre', nombre);
-                    fila.setAttribute('data-categoria', categoria);
+                    fila.setAttribute('data-id', producto.id); // Guardar el ID del producto
+                    fila.setAttribute('data-nombre', producto.nombre);
+                    fila.setAttribute('data-categoria', producto.categoria);
+                    fila.setAttribute('data-cantidad-disponible', producto.cantidad); // Cantidad disponible
+                    fila.setAttribute('data-es-exento', producto.es_exento ? 'true' : 'false'); // Si es exento o no
+
+                    const ivaDisplay = producto.es_exento ? '0% (Exento)' : '15% (No Exento)';
 
                     fila.innerHTML = `
-                    <td>${nombre}</td>
-                    <td>${categoria}</td>
+                    <td>${producto.nombre}</td>
+                    <td>${producto.categoria}</td>
+                    <td><span class="badge bg-secondary">${producto.cantidad}</span></td>
+                    <td>${ivaDisplay}</td> {{-- Mostrar el IVA --}}
                     <td>
                         <button type="button" class="btn btn-sm btn-info seleccionar-producto">
                             <i class="bi bi-check-circle"></i> Seleccionar
@@ -694,73 +743,149 @@
                     const filaEdicion = document.createElement('tr');
                     filaEdicion.className = 'producto-edicion-fila';
                     filaEdicion.style.display = 'none';
+                    // Colspan ajustado a 4 (se eliminó el campo IVA)
                     filaEdicion.innerHTML = `
-                    <td colspan="3">
+                    <td colspan="4">
                         <form class="d-flex align-items-end gap-2 form-edicion-producto p-2" novalidate >
-                            <div style="width: 18%;">
+                            <div style="width: 25%;">
                                 <label class="form-label">Precio Compra (Lps)</label>
-                                <input type="number" min="0" max="9999" maxlength="4"  class="form-control precioCompra" required>
+                                <input type="number" step="0.01" min="0.01" max="9999" class="form-control precioCompra" required>
+                                <div class="error-message"></div>
                             </div>
-                            <div style="width: 18%;">
+                            <div style="width: 25%;">
                                 <label class="form-label">Precio Venta (Lps)</label>
-                                <input type="number" min="0" max="9999" maxlength="4" class="form-control precioVenta" required>
-                            </div>
-                            <div style="width: 10%;">
-                                <label class="form-label">Cantidad</label>
-                                <input type="number" min="1" max="999" maxlength="3" class="form-control cantidad" required>
+                                <input type="number" step="0.01" min="0.01" max="9999" class="form-control precioVenta" required>
+                                <div class="error-message"></div>
                             </div>
                             <div style="width: 20%;">
-                                <label class="form-label">IVA</label>
-                                <select class="form-select iva">
-                                    <option value="">Seleccione</option>
-                                    <option value="0">0%</option>
-                                    <option value="15">15%</option>
-                                </select>
-                            </div>
-                            <div class="d-flex gap-1">
-                                <button type="submit" class="btn btn-primary btn-sm">
-                                    <i class="bi bi-plus-circle">Agregar</i>
-                                </button>
-                                <button type="button" class="btn btn-warning btn-sm limpiar-campos">
-                                     <i class="bi bi-eraser-fill">Limpiar</i>
-                                </button>
-                            </div>
-                        </form>
-                    </td>
-                `;
+                                <label class="form-label">Cantidad</label>
+                                {{-- Se permite ingresar cualquier cantidad mayor que cero, hasta 999 --}}
+                    <input type="number" min="1" max="999" class="form-control cantidad" required>
+                    <div class="error-message"></div>
+                </div>
+                <div class="d-flex gap-1">
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="bi bi-plus-circle"></i> Agregar
+                    </button>
+                    <button type="button" class="btn btn-warning btn-sm limpiar-campos">
+                         <i class="bi bi-eraser-fill"></i> Limpiar
+                    </button>
+                </div>
+            </form>
+        </td>
+`;
                     tbody.appendChild(fila);
                     tbody.appendChild(filaEdicion);
                 });
-            });
-            configurarEventosProductos();
+                configurarEventosProductos(); // Reconfigurar eventos después de cargar productos
+                mostrarResultados(searchTerm, productos.length); // Actualizar el mensaje de resultados
+            } catch (error) {
+                console.error('Error al cargar productos:', error);
+                // Colspan ajustado a 5
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-3 text-danger">Error al cargar productos. Intente de nuevo.</td></tr>';
+                mostrarResultados(searchTerm, 0); // Mostrar 0 resultados en caso de error
+            }
         }
 
-        function limitarDigitos(input, maxDigitos) {
-            if (!input) return;
+
+        /**
+         * Maneja la entrada de caracteres para campos numéricos (type="number").
+         * Permite solo dígitos y un punto decimal opcional para campos decimales.
+         * Formatea a 2 decimales en el evento 'blur' para campos decimales.
+         * Los límites numéricos (min/max) se manejan con los atributos HTML del input.
+         *
+         * @param {HTMLInputElement} input El elemento input.
+         * @param {number} maxIntegerDigits El número máximo de dígitos permitidos en la parte entera.
+         * @param {boolean} isDecimal Indica si el campo acepta decimales.
+         */
+        function handleNumericInput(input, maxIntegerDigits, isDecimal) {
+            input.addEventListener('keypress', function(e) {
+                const key = e.key;
+                // Permitir Backspace, Delete, flechas, Tab
+                if (['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(key)) {
+                    return true;
+                }
+
+                if (isDecimal) {
+                    // Permitir dígitos y un solo punto decimal
+                    if (key === '.') {
+                        if (e.target.value.includes('.')) {
+                            e.preventDefault(); // Ya hay un punto, prevenir otro
+                        }
+                        return true;
+                    }
+                    if (!/[0-9]/.test(key)) {
+                        e.preventDefault(); // No es un dígito
+                    }
+                } else {
+                    // Solo permitir dígitos para enteros
+                    if (!/[0-9]/.test(key)) {
+                        e.preventDefault(); // No es un dígito
+                    }
+                    // No permitir punto decimal para campos no decimales
+                    if (key === '.') {
+                        e.preventDefault();
+                    }
+                }
+            });
 
             input.addEventListener('input', function(e) {
-                let valor = e.target.value.replace(/[^0-9]/g, '');
-                if (valor.length > maxDigitos) {
-                    valor = valor.slice(0, maxDigitos);
+                let value = e.target.value;
+                let sanitizedValue = '';
+
+                if (isDecimal) {
+                    sanitizedValue = value.replace(/[^0-9.]/g, '');
+                    const parts = sanitizedValue.split('.');
+                    if (parts.length > 2) { // Si hay más de un punto, mantener solo el primero
+                        sanitizedValue = parts[0] + '.' + parts.slice(1).join('');
+                    }
+                    // Limitar la parte entera
+                    if (parts[0].length > maxIntegerDigits) {
+                        sanitizedValue = parts[0].slice(0, maxIntegerDigits) + (parts[1] ? '.' + parts[1] : '');
+                    }
+                    // Limitar a 2 decimales
+                    if (parts[1] && parts[1].length > 2) {
+                        sanitizedValue = parts[0] + '.' + parts[1].slice(0, 2);
+                    }
+                } else {
+                    sanitizedValue = value.replace(/[^0-9]/g, '');
+                    if (sanitizedValue.length > maxIntegerDigits) {
+                        sanitizedValue = sanitizedValue.slice(0, maxIntegerDigits);
+                    }
                 }
-                e.target.value = valor;
+                e.target.value = sanitizedValue;
             });
 
-            input.addEventListener('keypress', function(e) {
-                if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
-                    e.preventDefault();
-                }
-            });
 
             input.addEventListener('blur', function(e) {
-                let valor = parseInt(e.target.value) || 0;
-                let max = parseInt(e.target.getAttribute('max'));
+                let value = e.target.value;
+                if (value === '') {
+                    return; // Si el campo está vacío, no hacer nada en blur
+                }
 
-                if (valor > max) {
-                    e.target.value = max;
+                let numValue = parseFloat(value);
+                let min = parseFloat(e.target.getAttribute('min'));
+                let max = parseFloat(e.target.getAttribute('max'));
+
+                if (isNaN(numValue)) {
+                    e.target.value = '';
+                    return;
+                }
+
+                // Aplicar límites min/max del HTML
+                if (!isNaN(min) && numValue < min) {
+                    e.target.value = min.toFixed(isDecimal ? 2 : 0);
+                } else if (!isNaN(max) && numValue > max) {
+                    e.target.value = max.toFixed(isDecimal ? 2 : 0);
+                }
+
+                // Asegurar formato decimal si es un campo decimal
+                if (isDecimal && e.target.value !== '') {
+                    e.target.value = parseFloat(e.target.value).toFixed(2);
                 }
             });
         }
+
 
         // --- Función para configurar eventos de productos (la que añade productos desde el modal) ---
         function configurarEventosProductos() {
@@ -770,12 +895,14 @@
                     const fila = this.closest('tr');
                     const filaEdicion = fila.nextElementSibling;
 
+                    // Ocultar todos los formularios de edición de productos
                     document.querySelectorAll('.producto-edicion-fila').forEach(f => {
                         if (f !== filaEdicion) {
                             f.style.display = 'none';
                         }
                     });
 
+                    // Restablecer el estado de todos los botones "Seleccionar"
                     document.querySelectorAll('.seleccionar-producto').forEach(b => {
                         b.className = 'btn btn-sm btn-info seleccionar-producto';
                         b.innerHTML = '<i class="bi bi-check-circle"></i> Seleccionar';
@@ -788,7 +915,11 @@
                         productoSeleccionadoActual = fila;
 
                         const form = filaEdicion.querySelector('.form-edicion-producto');
-                        form.reset();
+                        form.reset(); // Limpiar campos del formulario de edición
+
+                        // Establecer cantidad por defecto a vacío
+                        form.querySelector('.cantidad').value = ''; // CAMBIO: Campo de cantidad inicia vacío
+
                         form.querySelector('.precioCompra').focus();
                     } else {
                         filaEdicion.style.display = 'none';
@@ -810,11 +941,10 @@
                     });
                     form.classList.remove('was-validated');
                     form.querySelectorAll('.invalid-feedback, .valid-feedback, .error-message, .text-danger, .text-success').forEach(mensaje => {
-                        mensaje.remove();
-                    });
-                    form.querySelectorAll('.mensaje-error, .mensaje-validacion').forEach(elemento => {
-                        elemento.textContent = '';
-                        elemento.style.display = 'none';
+                        // Eliminar mensajes de error dinámicamente creados
+                        if (mensaje.parentNode) { // Verificar si el elemento todavía tiene un padre
+                            mensaje.remove();
+                        }
                     });
                 });
             });
@@ -823,28 +953,35 @@
             document.querySelectorAll('.form-edicion-producto').forEach(form => {
                 form.addEventListener('submit', function(e) {
                     e.preventDefault();
+                    console.log('DEBUG: Intentando agregar producto. Validando formulario de producto...');
 
                     if (!validarFormularioProducto(this)) {
+                        console.log('DEBUG: Validación del formulario de producto falló.');
                         return;
                     }
+                    console.log('DEBUG: Validación del formulario de producto exitosa.');
 
                     const filaEdicion = this.closest('.producto-edicion-fila');
                     const filaProducto = filaEdicion.previousElementSibling;
 
+                    const product_id = filaProducto.dataset.id; // ID del producto del inventario
                     const nombre = filaProducto.dataset.nombre;
                     const categoria = filaProducto.dataset.categoria;
                     const precioCompra = parseFloat(this.querySelector('.precioCompra').value);
                     const precioVenta = parseFloat(this.querySelector('.precioVenta').value);
                     const cantidad = parseInt(this.querySelector('.cantidad').value);
-                    const iva = parseInt(this.querySelector('.iva').value);
+                    // Obtener el IVA del atributo data-es-exento del producto original
+                    const iva = filaProducto.dataset.esExento === 'true' ? 0 : 15;
+
 
                     const tablaFactura = document.getElementById('tablaFacturaBody');
+                    // Verificar si el producto ya está en la factura por su product_id
                     const productosExistentes = Array.from(tablaFactura.querySelectorAll('tr')).map(tr => {
-                        const nombreInput = tr.querySelector('input[name^="productos["][name$="][nombre]"]'); // Usar selector más robusto
-                        return nombreInput ? nombreInput.value : null;
+                        const idInput = tr.querySelector('input[name^="productos["][name$="][product_id]"]');
+                        return idInput ? idInput.value : null;
                     });
 
-                    if (productosExistentes.includes(nombre)) {
+                    if (productosExistentes.includes(product_id)) {
                         let errorDiv = this.querySelector('.error-producto-existente');
                         if (!errorDiv) {
                             errorDiv = document.createElement('div');
@@ -855,6 +992,7 @@
                         } else {
                             errorDiv.style.display = 'block';
                         }
+                        console.log('DEBUG: Producto ya existente en la factura.');
                         return;
                     }
 
@@ -869,76 +1007,69 @@
                     // Asignar un índice único al producto
                     const currentIndex = productoIndexCounter++;
 
-                    // *** CONSTRUCCIÓN DE CELDAS PARA LA ADICIÓN DESDE EL MODAL (AHORA CON ÍNDICES) ***
-
-                    // Celda de Descripción (Nombre)
-                    const tdNombre = document.createElement('td');
-                    tdNombre.innerHTML = `
+                    // CONSTRUCCIÓN DE CELDAS PARA LA ADICIÓN DESDE EL MODAL (AHORA SIN CAMPO IVA EN FORMULARIO OCULTO)
+                    nuevaFila.dataset.index = currentIndex;
+                    nuevaFila.innerHTML = `
+                <td>${currentIndex + 1}</td> <td>
+                    <input type="hidden" name="productos[${currentIndex}][product_id]" value="${product_id}" class="hidden-product-id">
                     <input type="hidden" name="productos[${currentIndex}][nombre]" value="${nombre}" class="hidden-nombre">
                     ${nombre}
-                `;
-                    nuevaFila.appendChild(tdNombre);
-
-                    // Celda de Categoría
-                    const tdCategoria = document.createElement('td');
-                    tdCategoria.innerHTML = `
+                </td>
+                <td>
                     <input type="hidden" name="productos[${currentIndex}][categoria]" value="${categoria}" class="hidden-categoria">
                     ${categoria}
-                `;
-                    nuevaFila.appendChild(tdCategoria);
-
-                    // Celda de Precio Compra
-                    const tdPrecioCompra = document.createElement('td'); // Corregido: document.createElement('td')
-                    tdPrecioCompra.innerHTML = `
+                </td>
+                <td>
                     <input type="hidden" name="productos[${currentIndex}][precioCompra]" value="${precioCompra.toFixed(2)}" class="hidden-precio-compra">
                     ${precioCompra.toFixed(2)}
-                `;
-                    nuevaFila.appendChild(tdPrecioCompra);
-
-                    // Celda de Cantidad
-                    const tdCantidad = document.createElement('td');
-                    tdCantidad.innerHTML = `
+                </td>
+                <td>
                     <input type="hidden" name="productos[${currentIndex}][cantidad]" value="${cantidad}" class="hidden-cantidad">
                     <input type="hidden" name="productos[${currentIndex}][precioVenta]" value="${precioVenta.toFixed(2)}" class="hidden-precio-venta">
                     ${cantidad}
-                `;
-                    nuevaFila.appendChild(tdCantidad);
-
-                    // Celda de IVA
-                    const tdIva = document.createElement('td');
-                    tdIva.innerHTML = `
+                </td>
+                <td>
                     <input type="hidden" name="productos[${currentIndex}][iva]" value="${iva}" class="hidden-iva">
                     ${iva}%
-                `;
-                    nuevaFila.appendChild(tdIva);
-
-                    // Celda de Subtotal
-                    const tdSubtotal = document.createElement('td');
-                    tdSubtotal.className = 'subtotal-producto';
-                    tdSubtotal.textContent = subtotal.toFixed(2);
-                    nuevaFila.appendChild(tdSubtotal);
-
-                    // Celda de Eliminar
-                    const tdAccion = document.createElement('td');
-                    tdAccion.innerHTML = `
+                </td>
+                <td class="subtotal-producto">${subtotal.toFixed(2)}</td>
+                <td>
                     <button type="button" class="btn btn-danger btn-sm btn-eliminar-producto" title="Eliminar producto">
                         <i class="bi bi-trash"></i>
                     </button>
-                `;
-                    nuevaFila.appendChild(tdAccion);
-                    // *** FIN CONSTRUCCIÓN DE CELDAS ***
+                </td>
+            `;
+                    // FIN CONSTRUCCIÓN DE CELDAS
 
                     tablaFactura.appendChild(nuevaFila);
                     actualizarFilaVacia();
 
-                    filaEdicion.style.display = 'none';
-                    const btnSeleccionar = filaProducto.querySelector('.seleccionar-producto');
-                    btnSeleccionar.className = 'btn btn-sm btn-info seleccionar-producto';
-                    btnSeleccionar.innerHTML = '<i class="bi bi-check-circle"></i> Seleccionar';
-                    productoSeleccionadoActual = null;
+                    // Cerrar modal y limpiar campos
+                    const modalElement = document.getElementById('productosModal');
+                    const modalInstance = bootstrap.Modal.getInstance(modalElement);
+
+                    if (modalInstance) {
+                        // Usa hide() que es el método correcto para iniciar el cierre
+                        modalInstance.hide();
+
+                        // Para ser extra seguro si el backdrop o modal-open se pegan por alguna razón
+                        // Puedes agregar un pequeño retraso y forzar la remoción después de que Bootstrap debería haber actuado
+                        setTimeout(() => {
+                            const backdrop = document.querySelector('.modal-backdrop');
+                            if (backdrop) {
+                                backdrop.remove();
+                                console.log('DEBUG: Forced modal backdrop removal.');
+                            }
+                            document.body.classList.remove('modal-open');
+                            console.log('DEBUG: Forced modal-open class removal.');
+                        }, 300); // Darle un poco más de tiempo que el setTimeout inicial si es necesario
+                    }
+                    limpiarFormulariosModal(); // Limpiar el formulario de edición en el modal
+                    console.log('DEBUG: Formularios del modal limpiados.');
 
                     calcularTotalesGenerales();
                     document.getElementById('errorProductos').style.display = 'none';
+                    console.log('DEBUG: Producto agregado y totales recalculados.');
                 });
             });
         }
@@ -951,48 +1082,15 @@
                 return;
             }
 
+            // Usar un debounce para evitar muchas peticiones en poco tiempo
+            let searchTimeout;
             searchInput.addEventListener('input', function() {
-                let termino = this.value.replace(/^\s*\d*\s*/, '', '').toLowerCase().trim();
-                this.value = termino;
+                clearTimeout(searchTimeout);
+                const termino = this.value.replace(/^\s*\d*\s*/, '').toLowerCase().trim();
 
-                const filas = document.querySelectorAll('#tablaProductosBody .producto-fila');
-                let resultadosVisibles = 0;
-
-                filas.forEach(fila => {
-                    const nombre = fila.dataset.nombre ? fila.dataset.nombre.toLowerCase() : '';
-                    const filaEdicion = fila.nextElementSibling;
-
-                    const celdaNombre = fila.querySelector('td:first-child');
-
-                    if (termino === '' || nombre.includes(termino)) {
-                        fila.style.display = 'table-row';
-                        resultadosVisibles++;
-
-                        if (filaEdicion && filaEdicion.style.display !== 'none') {
-                            filaEdicion.style.display = 'none';
-                            const btnSeleccionar = fila.querySelector('.seleccionar-producto');
-                            if (btnSeleccionar) {
-                                btnSeleccionar.className = 'btn btn-sm btn-info seleccionar-producto';
-                                btnSeleccionar.innerHTML = '<i class="bi bi-check-circle"></i> Seleccionar';
-                            }
-                        }
-
-                        if (celdaNombre) {
-                            if (termino !== '') {
-                                resaltarTexto(celdaNombre, termino);
-                            } else {
-                                quitarResaltado(celdaNombre);
-                            }
-                        }
-                    } else {
-                        fila.style.display = 'none';
-                        if (filaEdicion) {
-                            filaEdicion.style.display = 'none';
-                        }
-                    }
-                });
-
-                mostrarResultados(termino, resultadosVisibles);
+                searchTimeout = setTimeout(() => {
+                    cargarProductosEnModal(termino); // Llamar a la función que carga desde la API
+                }, 300); // Esperar 300ms después de que el usuario deja de escribir
             });
         }
 
@@ -1069,7 +1167,7 @@
                     nuevaFilaVacia.id = 'filaVacia';
                     nuevaFilaVacia.className = 'fila-vacia';
                     nuevaFilaVacia.innerHTML = `
-                    <td colspan="7" class="text-center text-muted py-4" style="border: 1px dashed #dee2e6; background-color: #f8f9fa;">
+                    <td colspan="8" class="text-center text-muted py-4" style="border: 1px dashed #dee2e6; background-color: #f8f9fa;">
                         <i class="bi bi-inbox" style="font-size: 2rem; opacity: 0.5;"></i>
                         <br>
                         <span style="font-size: 0.9rem;">No hay productos agregados</span>
@@ -1089,25 +1187,15 @@
         }
 
         function calcularTotalesGenerales() {
-            const subtotales = document.querySelectorAll('.subtotal-producto');
+            const tablaFacturaBody = document.getElementById('tablaFacturaBody');
+            const filasProductos = tablaFacturaBody.querySelectorAll('tr:not(#filaVacia)');
             let subtotalGeneral = 0;
             let impuestosGeneral = 0;
 
-            subtotales.forEach(td => {
-                const fila = td.closest('tr');
-                // Usar las clases para seleccionar los inputs hidden
-                const inputPrecioCompra = fila.querySelector('.hidden-precio-compra');
-                const inputCantidad = fila.querySelector('.hidden-cantidad');
-                const inputIva = fila.querySelector('.hidden-iva');
-
-                if (!inputPrecioCompra || !inputCantidad || !inputIva) {
-                    console.error('ERROR: No se encontró uno o más inputs hidden de producto en la fila para calcular totales:', fila);
-                    return; // Saltar está fila si falta algun input
-                }
-
-                const precioCompra = parseFloat(inputPrecioCompra.value);
-                const cantidad = parseInt(inputCantidad.value);
-                const iva = parseInt(inputIva.value);
+            filasProductos.forEach(fila => {
+                const precioCompra = parseFloat(fila.querySelector('.hidden-precio-compra').value);
+                const cantidad = parseInt(fila.querySelector('.hidden-cantidad').value);
+                const iva = parseInt(fila.querySelector('.hidden-iva').value);
 
                 const base = precioCompra * cantidad;
                 const impuesto = (iva / 100) * base;
@@ -1116,11 +1204,12 @@
                 impuestosGeneral += impuesto;
             });
 
-            const totalGeneral = subtotalGeneral + impuestosGeneral;
+            const totalGeneral = subtotalGeneral + impuestosGeneral; // Cálculo del total final
 
-            document.getElementById('subtotalGeneral').value = subtotalGeneral.toFixed(2); // Suma base + impuesto
-            document.getElementById('impuestosGeneral').value = impuestosGeneral.toFixed(2); // Solo impuestos
-            document.getElementById('totalGeneral').value = totalGeneral.toFixed(2); // Total final
+            // Actualizar los labels de totales
+            document.getElementById('subtotalGeneralLabel').textContent = subtotalGeneral.toFixed(2);
+            document.getElementById('impuestosGeneralLabel').textContent = impuestosGeneral.toFixed(2);
+            document.getElementById('totalGeneralLabel').textContent = totalGeneral.toFixed(2);
         }
 
         // --- DOMContentLoaded Listener ---
@@ -1134,21 +1223,26 @@
                 });
             }
 
-            // Limitar dígitos para campos numéricos (inicializar para inputs existentes en el modal)
+            // Aplicar handleNumericInput a los campos de precio y cantidad en el modal
+            // Se usa un pequeño retraso para asegurar que los inputs estén en el DOM
             setTimeout(() => {
-                const precioCompraInputs = document.querySelectorAll('.precioCompra');
-                const precioVentaInputs = document.querySelectorAll('.precioVenta');
-                const cantidadInputs = document.querySelectorAll('.cantidad');
+                document.querySelectorAll('.form-edicion-producto .precioCompra').forEach(input => {
+                    handleNumericInput(input, 4, true); // 4 dígitos para la parte entera, es decimal
+                });
+                document.querySelectorAll('.form-edicion-producto .precioVenta').forEach(input => {
+                    handleNumericInput(input, 4, true); // 4 dígitos para la parte entera, es decimal
+                });
+                document.querySelectorAll('.form-edicion-producto .cantidad').forEach(input => {
+                    handleNumericInput(input, 3, false); // 3 dígitos para la cantidad, no es decimal
+                });
+            }, 500);
 
-                precioCompraInputs.forEach(input => limitarDigitos(input, 4));
-                precioVentaInputs.forEach(input => limitarDigitos(input, 4));
-                cantidadInputs.forEach(input => limitarDigitos(input, 3));
-            }, 1000); // Pequeño retraso para asegurar que los inputs del modal estén en el DOM
 
             // Configurar validación del formulario principal
             configurarValidacionFormulario();
 
             // Cargar productos en el modal (inicializar la tabla de búsqueda de productos)
+            // Se llama sin término de búsqueda inicial para mostrar todos los productos
             cargarProductosEnModal();
 
             // Configurar buscador
@@ -1165,21 +1259,23 @@
             let productsToLoad = [];
 
             if (oldProductosRaw && oldProductosRaw.length > 0) {
-                let tempProducts = [];
-                // La lógica de reconstrucción de oldProductosRaw, si viene aplanado
                 let reconstructedProducts = [];
                 let currentReconstructedProduct = {};
-                const expectedProperties = ['nombre', 'categoria', 'precioCompra', 'cantidad', 'precioVenta', 'iva']; // Orden de las propiedades
+                // Propiedades esperadas en el orden en que Laravel podría enviarlas aplanadas
+                const expectedProperties = ['product_id', 'nombre', 'categoria', 'precioCompra', 'precioVenta', 'cantidad', 'iva'];
                 let propertiesCount = 0;
 
-                oldProductosRaw.forEach(item => {
+                oldProductosRaw.forEach((item, rawIndex) => {
                     const key = Object.keys(item)[0];
                     const value = item[key];
                     currentReconstructedProduct[key] = value;
                     propertiesCount++;
 
-                    if (propertiesCount === expectedProperties.length) {
+                    // Si hemos recolectado todas las propiedades esperadas para un producto
+                    // o si es el último elemento y tenemos un producto parcial
+                    if (propertiesCount === expectedProperties.length || rawIndex === oldProductosRaw.length - 1) {
                         reconstructedProducts.push({
+                            product_id: String(currentReconstructedProduct.product_id || 'N/A'),
                             nombre: String(currentReconstructedProduct.nombre || 'N/A'),
                             categoria: String(currentReconstructedProduct.categoria || 'N/A'),
                             precioCompra: parseFloat(currentReconstructedProduct.precioCompra || 0),
@@ -1205,11 +1301,11 @@
 
             } else if (existingFacturaDetalles && existingFacturaDetalles.length > 0) {
                 productsToLoad = existingFacturaDetalles.map(detail => ({
-                    product_id: detail.product_id, // 👈 AÑADIR ESTO
+                    product_id: String(detail.product_id || 'N/A'), // Asegurarse de que product_id esté presente
                     nombre: String(detail.producto || 'N/A'),
                     categoria: String(detail.categoria || 'N/A'),
-                    precioCompra: parseFloat(detail.precio_compra || 0),
-                    precioVenta: parseFloat(detail.precio_venta || 0),
+                    precioCompra: parseFloat(detail.precio_compra || 0), // Mapear de snake_case a camelCase
+                    precioVenta: parseFloat(detail.precio_venta || 0),   // Mapear de snake_case a camelCase
                     cantidad: parseInt(detail.cantidad || 0),
                     iva: parseFloat(detail.iva || 0),
                     total: parseFloat(detail.total || 0)
@@ -1228,6 +1324,7 @@
                 productsToLoad.forEach((producto, index) => { // Añadir 'index' aquí
                     console.log('DEBUG: Procesando producto para la tabla (estructura final):', producto);
 
+                    const product_id = producto.product_id;
                     const nombre = producto.nombre;
                     const categoria = producto.categoria;
                     const precioCompra = producto.precioCompra;
@@ -1240,18 +1337,20 @@
                     console.log(`DEBUG: Valores para HTML - Nombre: ${nombre}, Precio Compra: ${precioCompra}, Cantidad: ${cantidad}, IVA: ${iva}, Subtotal Display: ${subtotalDisplay}`);
 
                     const nuevaFila = document.createElement('tr');
-
-                    // *** CONSTRUCCIÓN DE CELDAS REPOPULACIÓN (AHORA CON ÍNDICES) ***
-
+                    nuevaFila.dataset.index = index;
+                    // *** CONSTRUCCIÓN DE CELDAS REPOPULACIÓN (AHORA CON product_id) ***
+                    // NUEVA CELDA para el número de enumeración
+                    const tdNumero = document.createElement('td');
+                    tdNumero.textContent = index + 1; // La enumeración empieza desde 1
+                    nuevaFila.appendChild(tdNumero);
                     // Celda de Descripción (Nombre)
                     const tdNombre = document.createElement('td');
                     tdNombre.innerHTML = `
-    <input type="hidden" name="productos[${index}][product_id]" value="${producto.product_id}">
-    <input type="hidden" name="productos[${index}][nombre]" value="${nombre}" class="hidden-nombre">
-    ${nombre}
-`;
+                    <input type="hidden" name="productos[${index}][product_id]" value="${product_id}" class="hidden-product-id">
+                    <input type="hidden" name="productos[${index}][nombre]" value="${nombre}" class="hidden-nombre">
+                    ${nombre}
+                `;
                     nuevaFila.appendChild(tdNombre);
-
 
                     // Celda de Categoría
                     const tdCategoria = document.createElement('td');
@@ -1306,6 +1405,9 @@
                 });
                 actualizarFilaVacia();
                 calcularTotalesGenerales();
+            } else {
+                actualizarFilaVacia(); // Asegurarse de que la fila vacía se muestre si no hay productos
+                calcularTotalesGenerales(); // Asegurarse de que los totales estén en 0.00
             }
         });
 
@@ -1319,8 +1421,33 @@
             }
         });
 
+        /// Listener para el evento 'hidden.bs.modal' de Bootstrap
+        const productosModalElement = document.getElementById('productosModal');
+        if (productosModalElement) {
+            productosModalElement.addEventListener('hidden.bs.modal', function () {
+                console.log('DEBUG: El modal de productos ha terminado de ocultarse (evento hidden.bs.modal disparado).');
+
+                // *** ELIMINA ESTE BLOQUE DE CÓDIGO YA QUE CAUSA EL PROBLEMA DEL BACKDROP AUSENTE ***
+                // const backdrop = document.querySelector('.modal-backdrop');
+                // if (backdrop) {
+                //     backdrop.remove();
+                //     console.log('DEBUG: Modal backdrop eliminado manualmente.');
+                // }
+                // **********************************************************************************
+
+                // Asegurar que la clase modal-open se elimine del body
+                document.body.classList.remove('modal-open');
+                console.log('DEBUG: Clase modal-open eliminada del body.');
+
+                // Forzar la restauración del scroll del body si se ve afectado
+                document.body.style.overflow = ''; // Restablece a valor por defecto
+                document.body.style.paddingRight = ''; // Limpiar padding que Bootstrap añade
+                document.documentElement.style.overflow = ''; // Para el elemento html también
+
+                console.log('DEBUG: Body overflow/padding-right restored.');
+            });
+        }
+
     </script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 @endsection
-
-

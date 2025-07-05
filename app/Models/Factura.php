@@ -44,19 +44,7 @@ class Factura extends Model
      */
     public function empleado()
     {
-        // Si renombraste responsable_id a empleado_id en la migración,
-        // esto debería ser $this->belongsTo(Empleado::class, 'empleado_id');
-        // Pero si mantuviste responsable_id, es $this->belongsTo(Empleado::class, 'responsable_id');
         return $this->belongsTo(Empleado::class, 'responsable_id');
     }
-
-    /*
-     * La relación 'producto()' se elimina porque los productos de una factura
-     * se gestionan a través de la tabla 'detalles' (DetalleFactura).
-     * La columna 'producto_id' en la tabla 'facturas' se ha eliminado en una migración.
-     */
-     public function producto()
-    {
-         return $this->belongsTo(Producto::class);
-     }
 }
+
