@@ -25,5 +25,9 @@ class Producto extends Model
         'cantidad' => 'integer',
         'es_exento' => 'boolean', // Asegúrate de que esté aquí
     ];
+    public function detalles()
+    {
+        return $this->hasMany(Detalle::class);
+    }
 }
 

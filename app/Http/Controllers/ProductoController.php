@@ -124,6 +124,7 @@ class ProductoController extends Controller
         // Asegurar que la cantidad se inicialice en 0 al crear un nuevo producto
         $producto->cantidad = 0;
 
+
         if ($producto->save()) {
             return redirect()->route('productos.index')->with('status', 'Producto registrado correctamente');
         } else {

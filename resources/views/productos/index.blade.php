@@ -17,7 +17,7 @@
 
     <h1 class="text-center mb-4" style="color: #09457f;">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-        <i class="bi bi-boxes me-2"></i>Listado de productos
+        <i class="bi bi-boxes me-2"></i>Inventario de productos
     </h1>
 
     <!-- Botón de buscador -->
@@ -60,58 +60,72 @@
         <table class="table table-bordered table-hover align-middle">
             <thead class="table-dark text-center">
             <tr>
+                <th>#</th> {{-- Enumeración --}}
                 <th>Serie</th>
                 <th>Código</th>
                 <th>Nombre</th>
                 <th>Marca</th>
                 <th>Modelo</th>
                 <th>Categoria</th>
+                <th>Cantidad</th>
                 <th>Acciones</th>
             </tr>
             </thead>
             <tbody id="productosTableBody">
             @forelse($productos as $producto)
                 <tr class="producto-row">
+                    <td>{{ $loop->iteration }}</td> {{-- Enumeración automática --}}
                     <td>{{ $producto->serie }}</td>
                     <td>{{ $producto->codigo }}</td>
                     <td class="producto-nombre">{{ $producto->nombre }}</td>
                     <td>{{ $producto->marca }}</td>
                     <td>{{ $producto->modelo }}</td>
                     <td>{{ $producto->categoria }}</td>
+                    <td>{{ $producto->cantidad }}</td>
                     <td>
                         <a href="{{ route('productos.show', $producto->id) }}" class="btn btn-outline-info btn-sm">Ver</a>
                     </td>
                 </tr>
             @empty
                 <tr id="noProductsRow">
-                    <td colspan="7">No hay productos registrados.</td>
+                    <td colspan="9" class="text-center">No hay productos registrados.</td>
                 </tr>
             @endforelse
             </tbody>
         </table>
+
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const searchInput = document.getElementById('searchInput');
             const filas = document.querySelectorAll('.producto-row');
-            const searchResults = document.getElementById('searchResults');
             const noProductsRow = document.getElementById('noProductsRow');
+            const searchResults = document.getElementById('searchResults');
 
             searchInput.addEventListener('input', function () {
                 const filtro = this.value.toLowerCase().trim();
                 let resultadosVisibles = 0;
 
                 filas.forEach(fila => {
-                    // Buscar en la columna "Nombre" (3ra columna, índice 2 en nth-child porque empieza en 1)
+                    // Obtener texto de serie (primera celda), código (segunda celda) y nombre (.producto-nombre)
+                    const celdas = fila.querySelectorAll('td');
+                    const serie = celdas[0].textContent.toLowerCase();
+                    const codigo = celdas[1].textContent.toLowerCase();
                     const nombre = fila.querySelector('.producto-nombre').textContent.toLowerCase();
 
-                    if (filtro === '' || nombre.includes(filtro)) {
+                    // Comprobar si filtro está en alguna de las 3 columnas
+                    if (
+                        filtro === '' ||
+                        serie.includes(filtro) ||
+                        codigo.includes(filtro) ||
+                        nombre.includes(filtro)
+                    ) {
                         fila.style.display = '';
                         resultadosVisibles++;
 
-                        // Resaltar texto encontrado si hay búsqueda
                         if (filtro !== '') {
+                            // Resaltar texto solo en el nombre (puedes adaptar si quieres en serie o código también)
                             resaltarTexto(fila.querySelector('.producto-nombre'), filtro);
                         } else {
                             quitarResaltado(fila.querySelector('.producto-nombre'));
@@ -124,7 +138,7 @@
                 // Mostrar mensaje de resultados
                 mostrarResultados(filtro, resultadosVisibles);
 
-                // Ocultar/mostrar mensaje de "no hay productos" según corresponda
+                // Mostrar/ocultar fila "no hay productos"
                 if (noProductsRow) {
                     if (filtro === '') {
                         noProductsRow.style.display = filas.length === 0 ? '' : 'none';
@@ -134,6 +148,7 @@
                 }
             });
         });
+
 
         function resaltarTexto(elemento, termino) {
             const textoOriginal = elemento.getAttribute('data-original') || elemento.textContent;
@@ -174,12 +189,8 @@
                     </div>
                 `;
             } else {
-                searchResults.innerHTML = `
-                    <div class="alert alert-success" role="alert">
-                        <i class="bi bi-check-circle me-2"></i>
-                        Se encontraron <strong>${cantidad}</strong> producto(s) con el nombre "<strong>${termino}</strong>"
-                    </div>
-                `;
+
+
             }
         }
 

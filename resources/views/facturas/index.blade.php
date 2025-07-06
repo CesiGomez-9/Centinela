@@ -61,10 +61,10 @@
     <table class="table table-bordered table-hover align-middle">
         <thead class="table-dark text-center">
         <tr>
-            <th>#</th> <!-- Columna de enumeración -->
+            <th>#</th>
             <th>Número Factura</th>
-            <th>Categoría</th>
-            <th>Cantidad</th>
+            <th>Fecha de la factura</th>
+            <th>Total de la factura</th>
             <th>Responsable</th>
             <th>Acciones</th>
         </tr>
@@ -72,10 +72,18 @@
         <tbody id="facturasTableBody">
         @forelse ($facturas as $index => $factura)
             <tr class="factura-row">
-                <td>{{ $index + 1 }}</td> <!-- Enumeración -->
+                <td>{{ $index + 1 }}</td>
+
+                {{-- Número de factura --}}
                 <td class="factura-numeroFactura">{{ $factura->numero_factura }}</td>
-                <td>{{ $factura->producto}}</td>
-                <td>{{ $factura->cantidad}}</td>
+
+                {{-- Fecha de la factura --}}
+                <td class="factura-fecha">{{ \Carbon\Carbon::parse($factura->fecha)->format('d/m/Y') }}</td>
+
+                {{-- Total de la factura --}}
+                <td class="factura-totalF">L. {{ number_format($factura->totalF, 2) }}</td>
+
+                {{-- Responsable --}}
                 <td>
                     @if($factura->empleado)
                         {{ $factura->empleado->nombre }} {{ $factura->empleado->apellido }}
@@ -83,6 +91,8 @@
                         No asignado
                     @endif
                 </td>
+
+                {{-- Acciones --}}
                 <td>
                     <a href="{{ route('facturas.show', $factura->id) }}" class="btn btn-sm btn-outline-info">
                         <i class="bi bi-eye"></i> Ver
@@ -96,6 +106,10 @@
         @endforelse
         </tbody>
     </table>
+
+
+
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const searchInput = document.getElementById('searchInput');
@@ -107,18 +121,22 @@
                 let resultadosVisibles = 0;
 
                 filas.forEach(fila => {
-                    // Buscar en la columna "Nombre" (3ra columna, índice 2 en nth-child porque empieza en 1)
-                    const nombre = fila.querySelector('.factura-numeroFactura').textContent.toLowerCase();
+                    // Obtener número de factura y categorías
+                    const numeroFactura = fila.querySelector('.factura-numeroFactura').textContent.toLowerCase();
+                    const categoria = fila.querySelector('.factura-categoria').textContent.toLowerCase();
 
-                    if (filtro === '' || nombre.includes(filtro)) {
+                    // Comprobar si el filtro está en número de factura o en categoría
+                    if (filtro === '' || numeroFactura.includes(filtro) || categoria.includes(filtro)) {
                         fila.style.display = '';
                         resultadosVisibles++;
 
-                        // Resaltar texto encontrado si hay búsqueda
+                        // Resaltar texto en número de factura
                         if (filtro !== '') {
                             resaltarTexto(fila.querySelector('.factura-numeroFactura'), filtro);
+                            resaltarTexto(fila.querySelector('.factura-categoria'), filtro);
                         } else {
                             quitarResaltado(fila.querySelector('.factura-numeroFactura'));
+                            quitarResaltado(fila.querySelector('.factura-categoria'));
                         }
                     } else {
                         fila.style.display = 'none';
@@ -128,7 +146,7 @@
                 // Mostrar mensaje de resultados
                 mostrarResultados(filtro, resultadosVisibles);
 
-                // Ocultar/mostrar mensaje de "no hay productos" según corresponda
+                // Mostrar/ocultar fila "no hay productos"
                 if (noProductsRow) {
                     if (filtro === '') {
                         noProductsRow.style.display = filas.length === 0 ? '' : 'none';
@@ -146,7 +164,7 @@
                 elemento.setAttribute('data-original', textoOriginal);
             }
 
-            const regex = new RegExp((${escapeRegex(termino)}), 'gi');
+            const regex = new RegExp(`(${escapeRegex(termino)})`, 'gi');
             const textoResaltado = textoOriginal.replace(regex, '<mark style="background-color: #ffeb3b; padding: 2px;">$1</mark>');
             elemento.innerHTML = textoResaltado;
         }
@@ -172,21 +190,17 @@
 
             if (cantidad === 0) {
                 searchResults.innerHTML = `
-                    <div class="alert alert-warning" role="alert">
-                        <i class="bi bi-exclamation-triangle me-2"></i>
-                        No se encontraron facturas con ese numero de factura "<strong>${termino}</strong>"
-                    </div>
-                `;
+                <div class="alert alert-warning" role="alert">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    No se encontraron facturas con el término "<strong>${termino}</strong>"
+                </div>
+            `;
             } else {
                 searchResults.innerHTML = `
-                    <div class="alert alert-success" role="alert">
-                        <i class="bi bi-check-circle me-2"></i>
-                        Se encontraron <strong>${cantidad}</strong> factura(s) con ese numero de factura "<strong>${termino}</strong>"
-                    </div>
-                `;
+
+            `;
             }
         }
-
 
         function bloquearEspacioAlInicio(e, input) {
             if (e.key === ' ' && input.selectionStart === 0) {
@@ -196,12 +210,14 @@
 
         function eliminarEspaciosIniciales(input) {
             input.value = input.value.replace(/^\s+/, '');
+
             // Si pega un texto largo, lo limita a 30 caracteres
             if (input.value.length > 30) {
                 input.value = input.value.substring(0, 30);
             }
         }
     </script>
+
 
     <div class="d-flex justify-content mt-5">
         <a href="/" class="btn btn-outline-dark">

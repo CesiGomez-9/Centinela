@@ -35,7 +35,7 @@ class Factura extends Model
      */
     public function proveedor()
     {
-        return $this->belongsTo(Proveedor::class);
+        return $this->belongsTo(Proveedor::class, 'proveedor_id'); // este es el nombre correcto de tu columna
     }
 
     /**

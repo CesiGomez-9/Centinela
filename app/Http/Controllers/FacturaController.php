@@ -17,6 +17,11 @@ class FacturaController extends Controller
      */
     public function index(Request $request)
     {
+        $facturas = Factura::with(['detalles', 'empleado'])->orderBy('numero_factura')->paginate(10);
+
+        return view('facturas.index', compact('facturas'));
+
+
         // Cargar las relaciones 'detalles', 'proveedor' y 'empleado'
         $query = Factura::with(['detalles', 'proveedor', 'empleado']);
 
@@ -169,6 +174,7 @@ class FacturaController extends Controller
      */
     public function show(string $id)
     {
+
         // Cargar las relaciones 'detalles', 'proveedor' y 'empleado'
         $factura = Factura::with(['detalles', 'proveedor', 'empleado'])->findOrFail($id);
         return view('facturas.show', compact('factura'));
@@ -240,12 +246,11 @@ class FacturaController extends Controller
             DB::transaction(function () use ($request, $factura) {
                 // 1. Revertir las cantidades de los productos de la factura original al inventario
                 // Esto se hace ANTES de procesar los nuevos detalles.
-                foreach ($factura->detalles as $originalDetail) {
-                    $productoOriginal = Producto::find($originalDetail->product_id);
-                    if ($productoOriginal) {
-                        $productoOriginal->cantidad += $originalDetail->cantidad;
-                        $productoOriginal->save();
-                    }
+                foreach ($request->detalles as $detalle) {
+                    $producto = Producto::find($detalle['producto_id']);
+                    $producto->cantidad += $detalle['cantidad']; // Aquí sumas la cantidad
+                    $producto->save();
+
                 }
 
                 // 2. Eliminar todos los detalles de la factura existente (para reemplazarlos por los nuevos)
