@@ -350,29 +350,22 @@
 
         formulario.addEventListener('reset', function () {
             setTimeout(() => {
-
-                // Limpiar valores de todos los campos input, select, textarea
                 const campos = formulario.querySelectorAll('input, select, textarea');
                 campos.forEach(campo => {
                     if (campo.type === 'hidden' && campo.name === '_token') {
-                        return; // saltar este campo, no modificar
+                        return;
                     }
-
                     if (campo.type === 'checkbox' || campo.type === 'radio') {
                         campo.checked = false;
                     } else {
                         campo.value = '';
                     }
-                    campo.classList.remove('is-invalid'); // quitar alertas visuales
+                    campo.classList.remove('is-invalid');
                 });
-
-                // Quitar textos de error
                 const mensajes = formulario.querySelectorAll('.invalid-feedback');
                 mensajes.forEach(m => {
                     m.textContent = '';
                 });
-
-                // Además ocultar campos adicionales de alergias y limpiar valores específicos
                 const campoOtros = document.getElementById('alergiaOtros');
                 if (campoOtros) {
                     campoOtros.value = '';
