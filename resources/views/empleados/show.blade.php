@@ -185,34 +185,42 @@
                             <p><i class="bi bi-person-fill me-2"></i><strong>Nombre:</strong> {{ $empleado->nombre }}</p>
                             <p><i class="bi bi-person-fill me-2"></i><strong>Apellido:</strong> {{ $empleado->apellido }}</p>
                             <p><i class="bi bi-credit-card-2-front-fill me-2"></i><strong>Identidad:</strong> {{ $empleado->identidad }}</p>
+                            <p><i class="bi bi-geo-alt-fill me-2"></i><strong>Departamento:</strong> {{ $empleado->departamento }}</p>
                             <p><i class="bi bi-geo-alt-fill me-2"></i><strong>Dirección:</strong> {{ $empleado->direccion }}</p>
                         </div>
                         <div class="col-md-6">
                             <p><i class="bi bi-envelope-fill me-2"></i><strong>Correo:</strong> {{ $empleado->email }}</p>
                             <p><i class="bi bi-telephone-fill me-2"></i><strong>Teléfono:</strong> {{ $empleado->telefono }}</p>
                             <p><i class="bi bi-droplet-fill me-2"></i><strong>Tipo de sangre:</strong> {{ $empleado->tipodesangre }}</p>
-                              <p>
-                                  <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                                <strong>Alergias:</strong><br>
-                                {{ is_array($empleado->alergias) ? implode(', ', $empleado->alergias) : $empleado->alergias }}
-                        </p>
+                            <p><i class="bi bi-exclamation-triangle-fill me-2"></i><strong>Alergias:</strong><br>
+                            @if(is_array($empleado->alergias))
+                                <ul class="mb-0 ps-4" style="border-left: 4px solid #cda34f; padding-left: 10px;">
+                                    @foreach($empleado->alergias as $alergia)
+                                        <li>{{ $alergia }}</li>
+                                    @endforeach
+                                </ul>
+                                @else
+                                    {{ $empleado->$alergia }}
+                                @endif
+                                </p>
                         </div>
                     </div>
-                    <div class="section-header">
-                        <h5><i class="bi bi-person-badge-fill me-2"></i>Contacto de emergencia</h5>
+                    <div class="section-header mt-4">
+                        <h5 class="mb-0"><i class="bi bi-person-badge-fill me-2"></i>Contacto de emergencia</h5>
                     </div>
-                    <div class="d-flex align-items-center gap-3">
-                        <p class="mb-0">
-                            <i class="bi bi-person-lines-fill me-2"></i><strong>Nombre completo:</strong> {{ $empleado->contactodeemergencia }}
-                        </p>
-                        <p class="mb-0">
-                            <i class="bi bi-telephone-plus-fill me-2"></i><strong>Teléfono:</strong> {{ $empleado->telefonodeemergencia }}
-                        </p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><i class="bi bi-person-lines-fill me-2"></i><strong>Nombre completo:</strong> {{ $empleado->contactodeemergencia }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><i class="bi bi-telephone-plus-fill me-2"></i><strong>Teléfono:</strong> {{ $empleado->telefonodeemergencia }}</p>
+                        </div>
                     </div>
-                <div class="card-footer text-end">
-                    <small>Última actualización: {{ $empleado->updated_at ? $empleado->updated_at->diffForHumans() : 'Fecha no disponible' }}</small>
+
+                    <div class="card-footer text-end">
+                        <small>Última actualización: {{ $empleado->updated_at ? $empleado->updated_at->diffForHumans() : 'Fecha no disponible' }}</small>
+                    </div>
                 </div>
-            </div>
             </div>
 
             <div class="d-flex justify-content-center align-items-center gap-3 mt-4 flex-wrap">
