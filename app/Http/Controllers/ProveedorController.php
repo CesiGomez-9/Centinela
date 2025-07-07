@@ -12,10 +12,28 @@ class ProveedorController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $proveedores = Proveedor::paginate(10);
-        return view('Proveedores.indexProveedor')->with('proveedores', $proveedores);
+
+
+        $search = $request->input('search');
+
+        $proveedores = Proveedor::query();
+
+        if ($search) {
+            $proveedores = $proveedores->where(function ($q) use ($search) {
+                $q->where('nombreEmpresa',  'like', "%{$search}%")
+                    ->orWhere('categoriarubro', 'like', "%{$search}%")
+                    ->orWhere('departamento',   'like', "%{$search}%");
+            });
+        }
+
+
+
+        $proveedores = $proveedores->paginate(10);
+
+
+        return view('Proveedores.indexProveedor', compact('proveedores'));
     }
 
     /**
@@ -35,12 +53,14 @@ class ProveedorController extends Controller
         $request->validate([
 
             'nombreEmpresa' => ['required', 'string', 'max:50', 'regex:/^[\p{L}\s]+$/u'],
-            'direccion' => ['required', 'string','max:150'],
+            'direccion' => ['required', 'string','max:250'],
             'telefonodeempresa' => ['required', 'regex:/^[2389][0-9]{7}$/', 'size:8', 'unique:proveedores,telefonodeempresa'],
-            'correoempresa' => ['required', 'string', 'email', 'max:100', 'unique:proveedores,correoempresa'],
+            'correoempresa' => ['required', 'string', 'email', 'max:50', 'unique:proveedores,correoempresa'],
             'nombrerepresentante' => ['required', 'string', 'max:50', 'regex:/^[\p{L}\s]+$/u'],
             'telefonoderepresentante' => ['required', 'regex:/^[2389][0-9]{7}$/', 'size:8', 'unique:proveedores,telefonoderepresentante'],
             'categoriarubro' => ['required', 'string'],
+            'departamento' => ['required', 'string'],
+
         ], [
             'nombreEmpresa.required' => 'Debe ingresar el nombre de la empresa.',
             'nombreEmpresa.regex' => 'El nombre de la empresa solo debe contener letras, espacios y tildes.',
@@ -63,7 +83,8 @@ class ProveedorController extends Controller
             'telefonoderepresentante.size' => 'El teléfono debe tener exactamente 8 dígitos.',
             'telefonoderepresentante.unique' => 'Este número de teléfono ya está registrado.',
 
-            'categoriarubro.required' => 'Debe seleccionar una categoría o rubro.'
+            'categoriarubro.required' => 'Debe seleccionar una categoría o rubro.',
+            'departamento.required' => 'Debe seleccionar una categoría o rubro.'
         ], [
             'nombreEmpresa' => 'nombre de la empresa',
             'direccion' => 'dirección',
@@ -72,6 +93,7 @@ class ProveedorController extends Controller
             'nombrerepresentante' => 'nombre del representante',
             'identificacion' => 'identificación',
             'categoriarubro' => 'categoría o rubro',
+            'departamento'=>'departamento'
 
         ]);
 
@@ -84,6 +106,7 @@ class ProveedorController extends Controller
         $proveedor->nombrerepresentante = $request->input('nombrerepresentante');
         $proveedor->telefonoderepresentante = $request->input('telefonoderepresentante');
         $proveedor->categoriarubro = $request->input('categoriarubro');
+        $proveedor->departamento = $request->input('departamento');
 
         if ($proveedor->save()) {
             return redirect()->route('Proveedores.indexProveedor')->with('exito', 'El proveedor se guardó correctamente.');
@@ -125,7 +148,7 @@ class ProveedorController extends Controller
 
         $request->validate([
             'nombreEmpresa' => ['required', 'string', 'max:50', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/u'],
-            'direccion' => ['required', 'string', 'max:150'],
+            'direccion' => ['required', 'string', 'max:250'],
             'telefonodeempresa' => [
                 'required',
                 'regex:/^[2389][0-9]{7}$/',
@@ -136,7 +159,7 @@ class ProveedorController extends Controller
                 'required',
                 'string',
                 'email',
-                'max:100',
+                'max:50',
                 Rule::unique('proveedores', 'correoempresa')->ignore($id)
             ],
             'nombrerepresentante' => ['required', 'string', 'max:50', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/u'],
@@ -147,6 +170,7 @@ class ProveedorController extends Controller
                 Rule::unique('proveedores', 'telefonoderepresentante')->ignore($id)
             ],
             'categoriarubro' => ['required', 'string'],
+            'departamento' => ['required', 'string'],
         ], [
             'nombreEmpresa.required' => 'Debe ingresar el nombre de la empresa.',
             'nombreEmpresa.regex' => 'El nombre de la empresa solo debe contener letras y espacios.',
@@ -165,6 +189,7 @@ class ProveedorController extends Controller
             'telefonoderepresentante.size' => 'El teléfono debe tener exactamente 8 dígitos.',
             'telefonoderepresentante.unique' => 'Este número de teléfono ya está registrado.',
             'categoriarubro.required' => 'Debe seleccionar una categoría o rubro.',
+            'departamento.required' => 'Debe seleccionar una categoría o rubro.',
         ]);
 
         $proveedor = Proveedor::findOrFail($id); // ✅ Actualizar el existente
@@ -175,6 +200,7 @@ class ProveedorController extends Controller
         $proveedor->nombrerepresentante = $request->input('nombrerepresentante');
         $proveedor->telefonoderepresentante = $request->input('telefonoderepresentante');
         $proveedor->categoriarubro = $request->input('categoriarubro');
+        $proveedor->departamento = $request->input('departamento');
 
         if ($proveedor->save()) {
             return redirect()->route('Proveedores.indexProveedor')->with('exito', 'El proveedor se editó correctamente.');

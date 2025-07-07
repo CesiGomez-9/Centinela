@@ -19,6 +19,7 @@ class Proveedor extends Model
         'nombrerepresentante',
         'telefonoderepresentante',
         'categoriarubro',
+        'departamento',
     ];
 
 
