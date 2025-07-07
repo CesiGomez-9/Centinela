@@ -350,11 +350,8 @@
 
         resetBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            // Quitar estilos de error
             form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
             form.querySelectorAll('.invalid-feedback').forEach(div => div.textContent = '');
-
-            // Restaurar inputs con valores originales "puros"
             form.querySelector('#nombre').value = valoresOriginales.nombre || '';
             form.querySelector('#apellido').value = valoresOriginales.apellido || '';
             form.querySelector('#identidad').value = valoresOriginales.identidad || '';
@@ -365,19 +362,17 @@
             form.querySelector('#direccion').value = valoresOriginales.direccion || '';
             form.querySelector('#contactodeemergencia').value = valoresOriginales.contactodeemergencia || '';
             form.querySelector('#telefonodeemergencia').value = valoresOriginales.telefonodeemergencia || '';
-
-            // Restaurar checkboxes de alergias
             const checkboxes = form.querySelectorAll('input.alergia-checkbox[type="checkbox"]');
             checkboxes.forEach(chk => {
-                chk.checked = valoresOriginales.alergias.includes(chk.value);
+                const val = chk.value;
+                const match = valoresOriginales.alergias.some(orig => {
+                    return orig === val || orig.startsWith(val + ':');
+                });
+                chk.checked = match;
             });
-
-            // Restaurar inputs adicionales de alergias
             form.querySelector('#alergiaAlimentos').value = valoresOriginales.alergiaAlimentos || '';
             form.querySelector('#alergiaMedicamentos').value = valoresOriginales.alergiaMedicamentos || '';
             form.querySelector('#alergiaOtros').value = valoresOriginales.alergiaOtros || '';
-
-            // Mostrar u ocultar campos extra de alergias según correspondan
             toggleCamposAlergiasConValores(valoresOriginales.alergias);
         });
 
@@ -394,7 +389,7 @@
                     campos[key].value = campos[key].getAttribute('data-original') || '';
                 } else {
                     campos[key].style.display = 'none';
-                    campos[key].value = '';
+                    campos[key].value = campos[key].getAttribute('data-original') || '';
                 }
             }
         }
