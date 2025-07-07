@@ -20,6 +20,7 @@ class Empleado extends Model
         'contactodeemergencia',
         'telefonodeemergencia',
         'tipodesangre',
+        'departamento',
         'alergias',
         'alergiaOtros',
         'alergiaAlimentos',
