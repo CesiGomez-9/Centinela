@@ -74,7 +74,7 @@
                                 <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
                                 <textarea name="direccion"
                                           class="form-control @error('direccion') is-invalid @enderror"
-                                          maxlength="150"
+                                          maxlength="250"
                                           style="resize: none; height: 38px;"
                                           onkeydown="bloquearEspacioAlInicio(event, this)"
                                           oninput="eliminarEspaciosIniciales(this)">{{ old('direccion', $proveedor->direccion) }}</textarea>
@@ -183,6 +183,38 @@
                                 @enderror
                             </div>
                         </div>
+
+                        <div class="col-md-6">
+                            <label for="departamento" class="form-label">Departamento</label>
+                            <div class="input-group has-validation">
+                                <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
+                                <select name="departamento" class="form-select @error('departamento') is-invalid @enderror" required>
+                                    <option value="">Seleccione un departamento</option>
+                                    <option value="Atlántida" {{ (old('departamento', $proveedor->departamento) == 'Atlántida') ? 'selected' : '' }}>Atlántida</option>
+                                    <option value="Choluteca" {{ (old('departamento', $proveedor->departamento) == 'Choluteca') ? 'selected' : '' }}>Choluteca</option>
+                                    <option value="Colón" {{ (old('departamento', $proveedor->departamento) == 'Colón') ? 'selected' : '' }}>Colón</option>
+                                    <option value="Comayagua" {{ (old('departamento', $proveedor->departamento) == 'Comayagua') ? 'selected' : '' }}>Comayagua</option>
+                                    <option value="Copán" {{ (old('departamento', $proveedor->departamento) == 'Copán') ? 'selected' : '' }}>Copán</option>
+                                    <option value="Cortés" {{ (old('departamento', $proveedor->departamento) == 'Cortés') ? 'selected' : '' }}>Cortés</option>
+                                    <option value="El Paraíso" {{ (old('departamento', $proveedor->departamento) == 'El Paraíso') ? 'selected' : '' }}>El Paraíso</option>
+                                    <option value="Francisco Morazán" {{ (old('departamento', $proveedor->departamento) == 'Francisco Morazán') ? 'selected' : '' }}>Francisco Morazán</option>
+                                    <option value="Gracias a Dios" {{ (old('departamento', $proveedor->departamento) == 'Gracias a Dios') ? 'selected' : '' }}>Gracias a Dios</option>
+                                    <option value="Intibucá" {{ (old('departamento', $proveedor->departamento) == 'Intibucá') ? 'selected' : '' }}>Intibucá</option>
+                                    <option value="Islas de la Bahía" {{ (old('departamento', $proveedor->departamento) == 'Islas de la Bahía') ? 'selected' : '' }}>Islas de la Bahía</option>
+                                    <option value="La Paz" {{ (old('departamento', $proveedor->departamento) == 'La Paz') ? 'selected' : '' }}>La Paz</option>
+                                    <option value="Lempira" {{ (old('departamento', $proveedor->departamento) == 'Lempira') ? 'selected' : '' }}>Lempira</option>
+                                    <option value="Ocotepeque" {{ (old('departamento', $proveedor->departamento) == 'Ocotepeque') ? 'selected' : '' }}>Ocotepeque</option>
+                                    <option value="Olancho" {{ (old('departamento', $proveedor->departamento) == 'Olancho') ? 'selected' : '' }}>Olancho</option>
+                                    <option value="Santa Bárbara" {{ (old('departamento', $proveedor->departamento) == 'Santa Bárbara') ? 'selected' : '' }}>Santa Bárbara</option>
+                                    <option value="Valle" {{ (old('departamento', $proveedor->departamento) == 'Valle') ? 'selected' : '' }}>Valle</option>
+                                    <option value="Yoro" {{ (old('departamento', $proveedor->departamento) == 'Yoro') ? 'selected' : '' }}>Yoro</option>
+                                </select>
+                                @error('departamento')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
                     </div>
 
                     {{-- Botones --}}
@@ -190,9 +222,11 @@
                         <a href="{{ route('Proveedores.indexProveedor') }}" class="btn btn-danger">
                             <i class="bi bi-x-circle me-2"></i> Cancelar
                         </a>
-                        <button type="reset" class="btn btn-warning">
+                        <a href="{{ route('Proveedores.edit', $proveedor->id) }}"
+                           class="btn btn-warning">
                             <i class="bi bi-arrow-counterclockwise me-2"></i> Restablecer
-                        </button>
+                        </a>
+
                         <button type="submit" class="btn btn-primary">
                             <i class="bi bi-save-fill me-2"></i> Guardar Cambios
                         </button>
