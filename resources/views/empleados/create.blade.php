@@ -84,7 +84,7 @@
                         <div id="errorIdentidad" class="invalid-feedback"></div>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label class="form-label fw-bold">Teléfono</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-telephone-fill"></i></span>
@@ -97,7 +97,7 @@
                 </div>
 
 
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label class="form-label fw-bold">Correo electrónico</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
@@ -108,7 +108,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label class="form-label fw-bold">Tipo de sangre</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-droplet-fill"></i></span>
@@ -120,6 +120,24 @@
                             @endforeach
                         </select>
                         <div class="invalid-feedback">@error('tipodesangre') {{ $message }} @enderror</div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Departamento</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
+                        <select id="departamento" name="departamento"
+                                class="form-select @error('departamento') is-invalid @enderror">
+                            <option value="">Seleccione...</option>
+                            @foreach(['Atlántida', 'Choluteca ', 'Colón', 'Comayagua ', 'Copán',
+                                'Cortés ', 'El Paraíso', 'Francisco Morazán', 'Gracias a Dios',
+                                'Intibucá ', 'Islas de la Bahía', 'La Paz', 'Lempira',
+                                'Ocotepeque', 'Olancho ', 'Santa Bárbara', 'Valle ', 'Yoro'] as $tipo)
+                                <option value="{{ $tipo }}" {{ old('departamento')==$tipo?'selected':'' }}>{{ $tipo }}</option>
+                            @endforeach
+                        </select>
+                        <div class="invalid-feedback">@error('departamento') {{ $message }} @enderror</div>
                     </div>
                 </div>
 
@@ -193,32 +211,17 @@
                     <div class="invalid-feedback d-block">{{ $message }}</div>
                     @enderror
                 </div>
-                <div class="col-md-4">
-                    <label class="form-label fw-bold">Departamento</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
-                        <select id="departamento" name="departamento"
-                                class="form-select @error('departamento') is-invalid @enderror">
-                            <option value="">Seleccione...</option>
-                            @foreach(['Atlántida', 'Choluteca ', 'Colón', 'Comayagua ', 'Copán',
-                                'Cortés ', 'El Paraíso', 'Francisco Morazán', 'Gracias a Dios',
-                                'Intibucá ', 'Islas de la Bahía', 'La Paz', 'Lempira',
-                                'Ocotepeque', 'Olancho ', 'Santa Bárbara', 'Valle ', 'Yoro'] as $tipo)
-                                <option value="{{ $tipo }}" {{ old('departamento')==$tipo?'selected':'' }}>{{ $tipo }}</option>
-                            @endforeach
-                        </select>
-                        <div class="invalid-feedback">@error('departamento') {{ $message }} @enderror</div>
-                    </div>
-                </div>
 
-                <div class="col-md-6">
+
+                <div class="col-md-8">
                     <label class="form-label fw-bold">Dirección</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
                         <textarea id="direccion" name="direccion" maxlength="250"
                                   class="form-control @error('direccion') is-invalid @enderror"
-                                  oninput="validarTexto(this,250)" rows="1"
-                                  style="resize: vertical;">{{ old('direccion') }}</textarea>
+                                  oninput="autoAjustarAltura(this); validarTexto(this, 250)"
+                                  rows="1"
+                                  style="resize: none; overflow: hidden;">{{ old('direccion') }}</textarea>
                         <div class="invalid-feedback">@error('direccion') {{ $message }} @enderror</div>
                     </div>
                 </div>
@@ -265,6 +268,12 @@
 </div>
 
 <script>
+
+    function autoAjustarAltura(textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = (textarea.scrollHeight) + 'px';
+    }
+
     const codigosDep = Array.from({length:18}, (_,i) => String(i+1).padStart(2,'0'));
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -425,59 +434,59 @@
         "18": [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11"] // Yoro
     };
 
-
     function formatearIdentidad(i) {
+
         let v = i.value.replace(/[^0-9]/g, '');
+        if (v.length > 13) {
+            v = v.slice(0, 13);
+        }
+
+
         if (v.length >= 4) {
-            const pref4 = v.slice(0,4), pref2 = v.slice(0,2);
-            if (!codigosDep.includes(pref2)) {
-                v = '';
-            } else {
-                const departamento = pref2;
-                const municipio = v.slice(2,4);
-                if (!municipiosPorDepartamento[departamento] || !municipiosPorDepartamento[departamento].includes(municipio)) {
-                    v = '';
-                }
+            const departamento = v.slice(0, 2);
+            const municipio = v.slice(2, 4);
+
+            if (!codigosDep.includes(departamento)) {
+                i.classList.add('is-invalid');
+                document.getElementById('errorIdentidad').textContent = 'Código de departamento inválido.';
+                i.value = v;
+                return;
+            } else if (!municipiosPorDepartamento[departamento] || !municipiosPorDepartamento[departamento].includes(municipio)) {
+                i.classList.add('is-invalid');
+                document.getElementById('errorIdentidad').textContent = 'Código de municipio inválido para el departamento.';
+                i.value = v;
+                return;
             }
         } else if (v.length >= 2) {
-            if (!codigosDep.includes(v.slice(0,2))) v = '';
+            const departamento = v.slice(0, 2);
+            if (!codigosDep.includes(departamento)) {
+                i.classList.add('is-invalid');
+                document.getElementById('errorIdentidad').textContent = 'Código de departamento inválido.';
+                i.value = v;
+                return;
+            }
         }
-        v = v.slice(0,13);
-        if (v.length > 8) i.value = v.slice(0,4) + '-' + v.slice(4,8) + '-' + v.slice(8);
-        else if (v.length > 4) i.value = v.slice(0,4) + '-' + v.slice(4);
-        else i.value = v;
-
         if (v.length >= 8) {
             let anio = v.slice(4, 8);
             let anioNum = parseInt(anio, 10);
 
             if (isNaN(anioNum) || anioNum < 1940 || anioNum > 2007) {
                 i.classList.add('is-invalid');
-                document.getElementById('errorIdentidad').textContent = 'El año debe ser igual o mayor a 1940 y menor o igual a 2007.';
-            } else {
-                i.classList.remove('is-invalid');
-                document.getElementById('errorIdentidad').textContent = '';
+                document.getElementById('errorIdentidad').textContent = 'El año debe ser entre 1940 y 2007.';
+                i.value = v;
+                return;
             }
-        } else {
-            i.classList.remove('is-invalid');
-            document.getElementById('errorIdentidad').textContent = '';
         }
-
-        v = v.slice(0, 13);
-        if (v.length > 8) {
-            i.value = v.slice(0, 4) + '-' + v.slice(4, 8) + '-' + v.slice(8);
-        } else if (v.length > 4) {
-            i.value = v.slice(0, 4) + '-' + v.slice(4);
-        } else {
-            i.value = v;
-        }
+        i.classList.remove('is-invalid');
+        document.getElementById('errorIdentidad').textContent = '';
+        i.value = v;
     }
 
 
     function configurarValidacionTelefono(id) {
         const input = document.getElementById(id);
 
-        input.addEventListener('keydown', function(e) {
+        input.addEventListener('keydown', function (e) {
             const teclasPermitidas = [
                 'Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Home', 'End'
             ];
@@ -487,27 +496,56 @@
                 e.preventDefault();
                 return;
             }
+
             if (this.selectionStart === 0 && !['2', '3', '8', '9'].includes(e.key)) {
                 e.preventDefault();
             }
         });
 
-        input.addEventListener('input', function() {
+        input.addEventListener('input', function () {
             let valor = this.value.replace(/[^0-9]/g, '');
-            if (valor.length > 0 && !['2', '3', '8', '9'].includes(valor[0])) {
-                valor = valor.slice(1);
-            }
 
             if (valor.length > 8) {
                 valor = valor.slice(0, 8);
             }
 
             if (/^(\d)\1{7}$/.test(valor)) {
-                valor = '';
+                this.classList.add('is-invalid');
+                mostrarError(this, 'No puede tener todos los dígitos iguales.');
+            } else if (valor.length === 8 && !['2', '3', '8', '9'].includes(valor[0])) {
+                this.classList.add('is-invalid');
+                mostrarError(this, 'Debe comenzar con 2, 3, 8 o 9.');
+            } else {
+                this.classList.remove('is-invalid');
+                limpiarError(this);
             }
 
             this.value = valor;
         });
+    }
+
+    function mostrarError(input, mensaje) {
+        const errorId = 'error-' + input.id;
+        let errorEl = document.getElementById(errorId);
+
+        if (!errorEl) {
+            errorEl = document.createElement('div');
+            errorEl.classList.add('invalid-feedback');
+            errorEl.id = errorId;
+            input.parentNode.appendChild(errorEl);
+        }
+
+        errorEl.textContent = mensaje;
+        input.classList.add('is-invalid');
+    }
+
+    function limpiarError(input) {
+        const errorId = 'error-' + input.id;
+        const errorEl = document.getElementById(errorId);
+        if (errorEl) {
+            errorEl.remove();
+        }
+        input.classList.remove('is-invalid');
     }
 
     configurarValidacionTelefono('telefono');
@@ -516,6 +554,53 @@
     document.addEventListener('DOMContentLoaded', function () {
         permitirSoloTelefonosValidos(document.getElementById('telefono'));
         permitirSoloTelefonosValidos(document.getElementById('telefonodeemergencia'));
+
+        const formulario = document.getElementById('formulario'); // Asegúrate de que tu formulario tenga este ID
+        const telefono = document.getElementById('telefono');
+        const telefonoEmergencia = document.getElementById('telefonodeemergencia');
+
+        formulario.addEventListener('submit', function (e) {
+            const regexTelefono = /^[2389]\d{7}$/;
+
+            let errores = false;
+
+            if (!regexTelefono.test(telefono.value)) {
+                mostrarError(telefono, 'Debe tener 8 dígitos y comenzar con 2, 3, 8 o 9');
+                errores = true;
+            } else {
+                limpiarError(telefono);
+            }
+
+            if (!regexTelefono.test(telefonoEmergencia.value)) {
+                mostrarError(telefonoEmergencia, 'Debe tener 8 dígitos y comenzar con 2, 3, 8 o 9');
+                errores = true;
+            } else {
+                limpiarError(telefonoEmergencia);
+            }
+
+            if (errores) {
+                e.preventDefault(); // Evita el envío si hay errores
+            }
+        });
+
+        function mostrarError(input, mensaje) {
+            let feedback = input.nextElementSibling;
+            if (!feedback || !feedback.classList.contains('invalid-feedback')) {
+                feedback = document.createElement('div');
+                feedback.classList.add('invalid-feedback');
+                input.parentNode.appendChild(feedback);
+            }
+            input.classList.add('is-invalid');
+            feedback.textContent = mensaje;
+        }
+
+        function limpiarError(input) {
+            let feedback = input.nextElementSibling;
+            if (feedback && feedback.classList.contains('invalid-feedback')) {
+                feedback.textContent = '';
+            }
+            input.classList.remove('is-invalid');
+        }
     });
     document.querySelectorAll('.alergia-checkbox').forEach(chk => {
         chk.addEventListener('change', () => {

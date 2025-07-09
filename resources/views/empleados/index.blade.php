@@ -59,6 +59,7 @@
         </div>
 
 
+
     @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 <i class="bi bi-check-circle-fill me-2"></i>
@@ -102,6 +103,17 @@
             @endforelse
             </tbody>
         </table>
+
+        @if(request('search') && $empleados->total() > 0)
+            <div class="mb-3 text-muted">
+                Mostrando {{ $empleados->count() }} de {{ $empleados->total() }} empleados encontrados para
+                "<strong>{{ request('search') }}</strong>".
+            </div>
+        @elseif(request('search') && $empleados->total() === 0)
+            <div class="mb-3 text-danger">
+                No se encontraron resultados para "<strong>{{ request('search') }}</strong>".
+            </div>
+        @endif
 
         <div class="d-flex justify-content-center mt-4">
             {{ $empleados->links('pagination::bootstrap-5') }}
