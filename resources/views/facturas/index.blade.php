@@ -33,7 +33,11 @@
                         id="searchInput"
                         class="form-control"
                         maxlength="30"
+<<<<<<< HEAD
+                        placeholder="Buscar por numero de factura "
+=======
                         placeholder="Buscar por número o fecha"
+>>>>>>> 29a2ebc08363c3b5d1eb7e542b68549ef1e1a141
                         onkeydown="bloquearEspacioAlInicio(event, this)"
                         oninput="eliminarEspaciosIniciales(this)">
                     <span class="input-group-text"><i class="bi bi-search"></i></span>
@@ -57,7 +61,11 @@
     @endif
 
     <!-- Mensaje de resultados -->
+<<<<<<< HEAD
+=======
     <div id="searchResults" class="mb-3"></div>
+
+>>>>>>> 29a2ebc08363c3b5d1eb7e542b68549ef1e1a141
     <table class="table table-bordered table-hover align-middle">
         <thead class="table-dark text-center">
         <tr>
@@ -106,8 +114,7 @@
         @endforelse
         </tbody>
     </table>
-
-
+    <div id="searchResults" class="mb-3"></div>
 
 
     <script>
@@ -171,15 +178,16 @@
             const textoOriginal = elemento.getAttribute('data-original');
             if (textoOriginal) {
                 elemento.textContent = textoOriginal;
+                elemento.removeAttribute('data-original');
             }
         }
 
         function escapeRegex(string) {
             return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         }
-
         function mostrarResultados(termino, cantidad) {
             const searchResults = document.getElementById('searchResults');
+            const totalFilas = document.querySelectorAll('.factura-row').length;
 
             if (termino === '') {
                 searchResults.innerHTML = '';
@@ -188,17 +196,21 @@
 
             if (cantidad === 0) {
                 searchResults.innerHTML = `
-                <div class="alert alert-warning" role="alert">
-                    <i class="bi bi-exclamation-triangle me-2"></i>
-                    No se encontraron facturas con el término "<strong>${termino}</strong>"
-                </div>
-            `;
+            <div class="alert alert-warning" role="alert">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                No se encontraron facturas con el término "<strong>${termino}</strong>"
+            </div>
+        `;
             } else {
                 searchResults.innerHTML = `
-
-            `;
+            <div>
+                Mostrando <strong>${cantidad}</strong> de <strong>${totalFilas}</strong> facturas encontradas para "<strong>${termino}</strong>"
+            </div>
+        `;
             }
         }
+
+
 
         function bloquearEspacioAlInicio(e, input) {
             if (e.key === ' ' && input.selectionStart === 0) {
@@ -209,12 +221,12 @@
         function eliminarEspaciosIniciales(input) {
             input.value = input.value.replace(/^\s+/, '');
 
-            // Si pega un texto largo, lo limita a 30 caracteres
             if (input.value.length > 30) {
                 input.value = input.value.substring(0, 30);
             }
         }
     </script>
+
 
 
     <div class="d-flex justify-content mt-5">

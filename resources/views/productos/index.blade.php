@@ -30,7 +30,11 @@
                         id="searchInput"
                         class="form-control"
                         maxlength="30"
-                        placeholder="Buscar por nombre o serie"
+<<<<<<< HEAD
+                        placeholder="Buscar por serie"
+=======
+                        placeholder="Buscar por nombre, serie o código"
+>>>>>>> 29a2ebc08363c3b5d1eb7e542b68549ef1e1a141
                         onkeydown="bloquearEspacioAlInicio(event, this)"
                         oninput="eliminarEspaciosIniciales(this)"
                     >
@@ -54,7 +58,6 @@
     @endif
 
     <!-- Mensaje de resultados -->
-    <div id="searchResults" class="mb-3"></div>
 
     <div class="table-responsive">
         <table class="table table-bordered table-hover align-middle">
@@ -83,7 +86,8 @@
                     <td>{{ $producto->categoria }}</td>
                     <td>{{ $producto->cantidad }}</td>
                     <td>
-                        <a href="{{ route('productos.show', $producto->id) }}" class="btn btn-outline-info btn-sm">Ver</a>
+                        <a href="{{ route('productos.show', $producto->id) }}" class="btn btn-outline-info btn-sm">
+                            <i class="bi bi-eye"></i>Ver</a>
                     </td>
                 </tr>
             @empty
@@ -93,20 +97,52 @@
             @endforelse
             </tbody>
         </table>
+        <div id="searchResults" class="mb-3"></div>
 
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
             const searchInput = document.getElementById('searchInput');
             const filas = document.querySelectorAll('.producto-row');
             const noProductsRow = document.getElementById('noProductsRow');
             const searchResults = document.getElementById('searchResults');
 
             searchInput.addEventListener('input', function () {
-                const filtro = this.value.toLowerCase().trim();
-                let resultadosVisibles = 0;
+            const filtro = this.value.toLowerCase().trim();
+            let resultadosVisibles = 0;
 
+<<<<<<< HEAD
+            filas.forEach(fila => {
+            // Obtener todas las celdas de la fila
+            const celdas = fila.querySelectorAll('td');
+            const serie = celdas[1].textContent.toLowerCase(); // segunda celda
+            const codigo = celdas[2].textContent.toLowerCase(); // tercera celda
+            const nombre = celdas[3].textContent.toLowerCase(); // cuarta celda
+
+            if (
+            filtro === '' ||
+            serie.includes(filtro) ||
+            codigo.includes(filtro) ||
+            nombre.includes(filtro)
+            ) {
+            fila.style.display = '';
+            resultadosVisibles++;
+
+            if (filtro !== '') {
+            resaltarTexto(celdas[1], filtro); // Resaltar serie
+            resaltarTexto(celdas[2], filtro); // Resaltar código
+            resaltarTexto(celdas[3], filtro); // Resaltar nombre
+        } else {
+            quitarResaltado(celdas[1]);
+            quitarResaltado(celdas[2]);
+            quitarResaltado(celdas[3]);
+        }
+        } else {
+            fila.style.display = 'none';
+        }
+=======
                 filas.forEach(fila => {
                     // Obtener todas las celdas de la fila
                     const celdas = fila.querySelectorAll('td');
@@ -149,53 +185,75 @@
                     }
                 }
             });
+>>>>>>> 29a2ebc08363c3b5d1eb7e542b68549ef1e1a141
         });
 
-        function resaltarTexto(elemento, termino) {
+            // Mostrar mensaje de resultados
+            mostrarResultados(filtro, resultadosVisibles);
+
+            // Mostrar/ocultar fila "no hay productos"
+            if (noProductsRow) {
+            if (filtro === '') {
+            noProductsRow.style.display = filas.length === 0 ? '' : 'none';
+        } else {
+            noProductsRow.style.display = resultadosVisibles === 0 ? '' : 'none';
+        }
+        }
+        });
+        });
+
+            function resaltarTexto(elemento, termino) {
             const textoOriginal = elemento.getAttribute('data-original') || elemento.textContent;
 
             if (!elemento.getAttribute('data-original')) {
-                elemento.setAttribute('data-original', textoOriginal);
-            }
+            elemento.setAttribute('data-original', textoOriginal);
+        }
 
             const regex = new RegExp(`(${escapeRegex(termino)})`, 'gi');
             const textoResaltado = textoOriginal.replace(regex, '<mark style="background-color: #ffeb3b; padding: 2px;">$1</mark>');
             elemento.innerHTML = textoResaltado;
         }
 
-        function quitarResaltado(elemento) {
+            function quitarResaltado(elemento) {
             const textoOriginal = elemento.getAttribute('data-original');
             if (textoOriginal) {
-                elemento.textContent = textoOriginal;
-            }
+            elemento.textContent = textoOriginal;
+            elemento.removeAttribute('data-original');
+        }
         }
 
-        function escapeRegex(string) {
+            function escapeRegex(string) {
             return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         }
 
-        function mostrarResultados(termino, cantidad) {
-            const searchResults = document.getElementById('searchResults');
+            function mostrarResultados(termino, cantidad) {
+                const searchResults = document.getElementById('searchResults');
+                const totalFilas = document.querySelectorAll('.producto-row').length;
 
-            if (termino === '') {
-                searchResults.innerHTML = '';
-                return;
+                if (termino === '') {
+                    searchResults.innerHTML = '';
+                    return;
+                }
+
+                if (cantidad === 0) {
+                    searchResults.innerHTML = `
+            <div class="alert alert-warning" role="alert">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                No se encontraron productos con el término "<strong>${termino}</strong>"
+            </div>
+        `;
+                } else {
+                    searchResults.innerHTML = `
+            <div>
+                Mostrando <strong>${cantidad}</strong> de <strong>${totalFilas}</strong> productos encontrados para "<strong>${termino}</strong>"
+            </div>
+        `;
+                }
             }
 
-            if (cantidad === 0) {
-                searchResults.innerHTML = `
-                    <div class="alert alert-warning" role="alert">
-                        <i class="bi bi-exclamation-triangle me-2"></i>
-                        No se encontraron productos con el nombre "<strong>${termino}</strong>"
-                    </div>
-                `;
-            } else {
 
 
-            }
-        }
-
-        function bloquearEspacioAlInicio(e, input) {
+            function bloquearEspacioAlInicio(e, input) {
             if (e.key === ' ' && input.selectionStart === 0) {
                 e.preventDefault();
             }

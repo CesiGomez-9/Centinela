@@ -85,7 +85,7 @@
                     <div id="errorIdentidad" class="invalid-feedback"></div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label class="form-label fw-bold">Teléfono:</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-telephone-fill"></i></span>
@@ -97,7 +97,7 @@
                     <div class="invalid-feedback">@error('telefono') {{ $message }} @enderror</div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label class="form-label fw-bold">Correo electrónico:</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
@@ -109,7 +109,7 @@
                     <div class="invalid-feedback">@error('email') {{ $message }} @enderror</div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label class="form-label fw-bold">Tipo de sangre:</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-droplet-fill"></i></span>
@@ -125,19 +125,48 @@
                 <div class="invalid-feedback">@error('tipodesangre') {{ $message }} @enderror</div>
             </div>
 
+            <div class="col-md-3">
+                <label class="form-label fw-bold">Departamento</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
+                    <select id="departamento" name="departamento"
+                            class="form-select @error('departamento') is-invalid @enderror">
+                        <option value="">Seleccione...</option>
+                        @foreach(['Atlántida', 'Choluteca', 'Colón', 'Comayagua', 'Copán',
+                            'Cortés', 'El Paraíso', 'Francisco Morazán', 'Gracias a Dios',
+                            'Intibucá ', 'Islas de la Bahía', 'La Paz', 'Lempira',
+                            'Ocotepeque', 'Olancho', 'Santa Bárbara', 'Valle', 'Yoro'] as $tipo)
+                            <option value="{{ trim($tipo) }}" {{ trim(old('departamento', $empleado->departamento)) == trim($tipo) ? 'selected' : '' }}>{{ $tipo }}</option>
+                        @endforeach
+                    </select>
+                    <div class="invalid-feedback">@error('departamento') {{ $message }} @enderror</div>
+                </div>
+            </div>
+
             <div class="col-md-10">
                 <label class="form-label fw-bold">
                     <i class="bi bi-exclamation-diamond-fill me-2"></i>
                     Seleccione las alergias:
                 </label>
                 @php
-                    $alergiasRaw = old('alergias', $empleado->alergias ?? []);
+                    // Detecta si hay un old('alergias') aunque esté vacío (por ejemplo, desmarcar todos)
+                    $hayAlergiasOld = old() !== [] && array_key_exists('alergias', old());
 
+                    // Si se envió el formulario y old('alergias') está presente (aunque vacío), usamos ese valor
+                    if ($hayAlergiasOld) {
+                        $alergiasRaw = old('alergias', []);
+                    } else {
+                        // Si no se ha enviado el formulario, o no vino 'alergias', usamos lo de la BD
+                        $alergiasRaw = $empleado->alergias ?? [];
+                    }
+
+                    // Inicializar valores
                     $alergiasEmpleado = [];
                     $alergiaOtrosTexto = old('alergiaOtros', '');
                     $alergiaAlimentosTexto = old('alergiaAlimentos', '');
                     $alergiaMedicamentosTexto = old('alergiaMedicamentos', '');
 
+                    // Separar alergias especiales
                     foreach ($alergiasRaw as $a) {
                         if (str_starts_with($a, 'Otros:')) {
                             $alergiasEmpleado[] = 'Otros';
@@ -159,6 +188,7 @@
                         }
                     }
                 @endphp
+
 
 
                 <div id="alergias-container" data-original='@json($alergiasEmpleado)'>
@@ -240,33 +270,17 @@
                 <div class="invalid-feedback d-block">{{ $message }}</div>
                 @enderror
             </div>
-            <div class="col-md-4">
-                <label class="form-label fw-bold">Departamento</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
-                    <select id="departamento" name="departamento"
-                            class="form-select @error('departamento') is-invalid @enderror">
-                        <option value="">Seleccione...</option>
-                        @foreach(['Atlántida', 'Choluteca ', 'Colón', 'Comayagua ', 'Copán',
-                            'Cortés ', 'El Paraíso', 'Francisco Morazán', 'Gracias a Dios',
-                            'Intibucá ', 'Islas de la Bahía', 'La Paz', 'Lempira',
-                            'Ocotepeque', 'Olancho ', 'Santa Bárbara', 'Valle ', 'Yoro'] as $tipo)
-                            <option value="{{ $tipo }}" {{ old('departamento', $empleado->departamento) == $tipo ? 'selected' : '' }}>{{ $tipo }}</option>
-                        @endforeach
-                    </select>
-                    <div class="invalid-feedback">@error('departamento') {{ $message }} @enderror</div>
-                </div>
-            </div>
-            <div class="col-md-6">
+
+            <div class="col-md-8">
                 <label class="form-label fw-bold">Dirección:</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
                     <textarea id="direccion" name="direccion" maxlength="250"
                               class="form-control @error('direccion') is-invalid @enderror"
-                              oninput="validarTexto(this,250)"
+                              oninput="autoAjustarAltura(this); validarTexto(this, 250)"
                               rows="1"
                               data-original="{{ old('direccion', $empleado->direccion) }}"
-                              style="resize: vertical;">{{ old('direccion', $empleado->direccion) }}</textarea>
+                              style="resize: none; overflow: hidden;">{{ old('direccion', $empleado->direccion) }}</textarea>
                     <div class="invalid-feedback">@error('direccion') {{ $message }} @enderror</div>
                 </div>
             </div>
@@ -319,6 +333,18 @@
 </div>
 
 <script>
+
+    function autoAjustarAltura(textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = (textarea.scrollHeight) + 'px';
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+        const textarea = document.getElementById('direccion');
+        if (textarea) {
+            autoAjustarAltura(textarea);
+        }
+    });
+
     document.addEventListener('DOMContentLoaded', () => {
         const form = document.getElementById('empleadoForm');
         const resetBtn = form.querySelector('button[type="reset"]');
@@ -374,7 +400,46 @@
             form.querySelector('#alergiaMedicamentos').value = valoresOriginales.alergiaMedicamentos || '';
             form.querySelector('#alergiaOtros').value = valoresOriginales.alergiaOtros || '';
             toggleCamposAlergiasConValores(valoresOriginales.alergias);
+
         });
+        document.addEventListener('DOMContentLoaded', function () {
+            const formulario = document.getElementById('empleadoForm');
+            const checkboxes = formulario.querySelectorAll('input.alergia-checkbox[type="checkbox"]');
+
+            formulario.addEventListener('submit', function (e) {
+                const algunoSeleccionado = Array.from(checkboxes).some(chk => chk.checked);
+
+                if (!algunoSeleccionado) {
+                    e.preventDefault();
+                    checkboxes.forEach(chk => chk.classList.add('is-invalid'));
+                    let errorDiv = document.getElementById('error-alergias');
+                    if (!errorDiv) {
+                        errorDiv = document.createElement('div');
+                        errorDiv.id = 'error-alergias';
+                        errorDiv.classList.add('invalid-feedback');
+                        checkboxes[0].parentNode.insertBefore(errorDiv, checkboxes[0].nextSibling);
+                    }
+                    errorDiv.textContent = 'Debe seleccionar al menos una alergia.';
+                } else {
+
+                    checkboxes.forEach(chk => chk.classList.remove('is-invalid'));
+                    const errorDiv = document.getElementById('error-alergias');
+                    if (errorDiv) errorDiv.textContent = '';
+                }
+            });
+
+            checkboxes.forEach(chk => {
+                chk.addEventListener('change', () => {
+                    if (chk.checked) {
+                        chk.classList.remove('is-invalid');
+                        const errorDiv = document.getElementById('error-alergias');
+                        if (errorDiv) errorDiv.textContent = '';
+                    }
+                });
+            });
+        });
+
+
 
         function toggleCamposAlergiasConValores(alergias) {
             const campos = {
@@ -573,34 +638,19 @@
         "18": [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11"] // Yoro
     };
 
-
     function formatearIdentidad(i) {
         let v = i.value.replace(/[^0-9]/g, '');
-        if (v.length >= 4) {
-            const pref4 = v.slice(0,4), pref2 = v.slice(0,2);
-            if (!codigosDep.includes(pref2)) {
-                v = '';
-            } else {
-                const departamento = pref2;
-                const municipio = v.slice(2,4);
-                if (!municipiosPorDepartamento[departamento] || !municipiosPorDepartamento[departamento].includes(municipio)) {
-                    v = '';
-                }
-            }
-        } else if (v.length >= 2) {
-            if (!codigosDep.includes(v.slice(0,2))) v = '';
-        }
-        v = v.slice(0,13);
-        if (v.length > 8) i.value = v.slice(0,4) + '-' + v.slice(4,8) + '-' + v.slice(8);
-        else if (v.length > 4) i.value = v.slice(0,4) + '-' + v.slice(4);
-        else i.value = v;
 
-        if (v.length >= 8) {
-            let anio = v.slice(4, 8);
-            let anioNum = parseInt(anio, 10);
-            if (isNaN(anioNum) || anioNum < 1940 || anioNum > 2007) {
+        if (v.length >= 4) {
+            const departamento = v.slice(0, 2);
+            const municipio = v.slice(2, 4);
+
+            if (!codigosDep.includes(departamento)) {
                 i.classList.add('is-invalid');
-                document.getElementById('errorIdentidad').textContent = 'El año debe ser igual o mayor a 1940 y menor o igual a 2007.';
+                document.getElementById('errorIdentidad').textContent = 'Código de departamento inválido.';
+            } else if (!municipiosPorDepartamento[departamento] || !municipiosPorDepartamento[departamento].includes(municipio)) {
+                i.classList.add('is-invalid');
+                document.getElementById('errorIdentidad').textContent = 'Código de municipio inválido para el departamento seleccionado.';
             } else {
                 i.classList.remove('is-invalid');
                 document.getElementById('errorIdentidad').textContent = '';
@@ -610,56 +660,94 @@
             document.getElementById('errorIdentidad').textContent = '';
         }
 
-        v = v.slice(0, 13);
-        if (v.length > 8) {
-            i.value = v.slice(0, 4) + '-' + v.slice(4, 8) + '-' + v.slice(8);
-        } else if (v.length > 4) {
-            i.value = v.slice(0, 4) + '-' + v.slice(4);
-        } else {
-            i.value = v;
+        if (v.length >= 8) {
+            const anio = parseInt(v.slice(4, 8), 10);
+            if (isNaN(anio) || anio < 1940 || anio > 2007) {
+                i.classList.add('is-invalid');
+                document.getElementById('errorIdentidad').textContent = 'El año debe estar entre 1940 y 2007.';
+            } else if (v.length >= 4 && codigosDep.includes(v.slice(0,2)) && municipiosPorDepartamento[v.slice(0,2)] && !municipiosPorDepartamento[v.slice(0,2)].includes(v.slice(2,4))) {
+                i.classList.add('is-invalid');
+                document.getElementById('errorIdentidad').textContent = 'Código de municipio inválido para el departamento seleccionado.';
+            } else {
+                i.classList.remove('is-invalid');
+                document.getElementById('errorIdentidad').textContent = '';
+            }
         }
+        i.value = v.slice(0, 13);
     }
 
-    function configurarValidacionTelefono(id) {
+
+
+        function configurarValidacionTelefono(id) {
         const input = document.getElementById(id);
 
-        input.addEventListener('keydown', function(e) {
-            const teclasPermitidas = [
-                'Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Home', 'End'
-            ];
-            if (teclasPermitidas.includes(e.key)) return;
+        input.addEventListener('keydown', function (e) {
+        const teclasPermitidas = [
+        'Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Home', 'End'
+        ];
+        if (teclasPermitidas.includes(e.key)) return;
 
-            if (!/[0-9]/.test(e.key)) {
-                e.preventDefault();
-                return;
-            }
-            if (this.selectionStart === 0 && !['2', '3', '8', '9'].includes(e.key)) {
-                e.preventDefault();
-            }
-        });
-
-        input.addEventListener('input', function() {
-            let valor = this.value.replace(/[^0-9]/g, '');
-            if (valor.length > 0 && !['2', '3', '8', '9'].includes(valor[0])) {
-                valor = valor.slice(1);
-            }
-
-            if (valor.length > 8) {
-                valor = valor.slice(0, 8);
-            }
-
-            if (/^(\d)\1{7}$/.test(valor)) {
-                valor = '';
-            }
-
-            this.value = valor;
-        });
+        if (!/[0-9]/.test(e.key)) {
+        e.preventDefault();
+        return;
     }
 
-    configurarValidacionTelefono('telefono');
-    configurarValidacionTelefono('telefonodeemergencia');
+        if (this.selectionStart === 0 && !['2', '3', '8', '9'].includes(e.key)) {
+        e.preventDefault();
+    }
+    });
 
-    document.addEventListener('DOMContentLoaded', function () {
+        input.addEventListener('input', function () {
+        let valor = this.value.replace(/[^0-9]/g, '');
+
+        if (valor.length > 8) {
+        valor = valor.slice(0, 8);
+    }
+
+        if (/^(\d)\1{7}$/.test(valor)) {
+        this.classList.add('is-invalid');
+        mostrarError(this, 'No puede tener todos los dígitos iguales.');
+    } else if (valor.length === 8 && !['2', '3', '8', '9'].includes(valor[0])) {
+        this.classList.add('is-invalid');
+        mostrarError(this, 'Debe comenzar con 2, 3, 8 o 9.');
+    } else {
+        this.classList.remove('is-invalid');
+        limpiarError(this);
+    }
+
+        this.value = valor;
+    });
+    }
+
+        function mostrarError(input, mensaje) {
+        const errorId = 'error-' + input.id;
+        let errorEl = document.getElementById(errorId);
+
+        if (!errorEl) {
+        errorEl = document.createElement('div');
+        errorEl.classList.add('invalid-feedback');
+        errorEl.id = errorId;
+        input.parentNode.appendChild(errorEl);
+    }
+
+        errorEl.textContent = mensaje;
+        input.classList.add('is-invalid');
+    }
+
+        function limpiarError(input) {
+        const errorId = 'error-' + input.id;
+        const errorEl = document.getElementById(errorId);
+        if (errorEl) {
+        errorEl.remove();
+    }
+        input.classList.remove('is-invalid');
+    }
+
+        configurarValidacionTelefono('telefono');
+        configurarValidacionTelefono('telefonodeemergencia');
+
+
+document.addEventListener('DOMContentLoaded', function () {
         permitirSoloTelefonosValidos(document.getElementById('telefono'));
         permitirSoloTelefonosValidos(document.getElementById('telefonodeemergencia'));
     });

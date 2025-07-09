@@ -47,27 +47,67 @@ class EmpleadoController extends Controller
 
     public function store(Request $request)
     {
+
+        $codigosDep = [
+            '01', '02', '03', '04', '05', '06', '07', '08', '09',
+            '10', '11', '12', '13', '14', '15', '16', '17', '18'
+        ];
+
+        $municipiosPorDepartamento = [
+            '01'=> [ "01", "02", "03", "04", "05", "06", "07", "08" ], // Atlántida
+            '02' => [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16" ], // Choluteca
+            '03'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10" ], // Colón
+            '04'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20","21" ], // Comayagua
+            '05'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14","15", "16", "17", "18", "19", "20","21", "22", "23" ], // Copán
+            '06'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12" ], // Cortés
+            '07'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19" ], // El Paraíso
+            '08'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18","19","20","21", "22", "23", "24", "25", "26", "27", "28" ], // Francisco Morazán
+            '09'=> [ "01", "02", "03", "04", "05", "06" ], // Gracias a Dios
+            '10'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17" ], // Intibucá
+            '11'=> [ "01", "02", "03", "04" ], // Islas de la Bahía
+            '12'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19" ], // La Paz
+            '13'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26","27","28" ], // Lempira
+            '14'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14","15", "16" ], // Ocotepeque
+            '15'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"], // Olancho
+            '16'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19","20","21", "22", "23", "24", "25", "26", "27", "28" ], // Santa Bárbara
+            '17'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09" ], // Valle
+            '18'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11"] // Yoro
+        ];
+
         $rules = [
             'nombre' => 'required|string|max:50|regex:/^[\p{L}\s]+$/u',
             'apellido' => 'required|string|max:50|regex:/^[\p{L}\s]+$/u',
-            'identidad' => [
-                'required',
-                'string',
-                'size:15',
-                'regex:/^\d{4}-\d{4}-\d{5}$/',
-                'unique:empleados,identidad',
+            'identidad' => ['required', 'string', 'size:13', 'regex:/^\d{13}$/', 'unique:empleados,identidad',
+                function ($attribute, $value, $fail) use ($codigosDep, $municipiosPorDepartamento) {
+                    $departamento = substr($value, 0, 2);
+                    $municipio = substr($value, 2, 2);
+
+                    if (!in_array($departamento, $codigosDep)) {
+                        $fail('Código de departamento inválido en la identidad.');
+                    } elseif (!isset($municipiosPorDepartamento[$departamento]) || !in_array($municipio, $municipiosPorDepartamento[$departamento])) {
+                        $fail('Código de municipio inválido para el departamento seleccionado en la identidad.');
+                    }
+                },
                 function ($attribute, $value, $fail) {
-                    $anio = (int) substr($value, 5, 4);
+                    $anio = (int) substr($value, 4, 4);
                     if ($anio < 1940 || $anio > 2007) {
                         $fail('El año de la identidad debe ser entre 1940 y 2007.');
                     }
                 }
             ],
+
+
             'direccion' => 'required|string|max:150|regex:/^[\p{L}0-9\s.,;#\-]+$/u',
             'email' => 'required|email|max:50|unique:empleados,email',
-            'telefono' => 'required|string|max:8|unique:empleados,telefono',
+            'telefono' => ['required', 'string', 'size:8', 'regex:/^[2389][0-9]{7}$/', 'not_regex:/^(\d)\1{7}$/', 'unique:empleados,telefono',],
             'contactodeemergencia' => 'required|string|max:100|regex:/^[\p{L}\s]+$/u',
-            'telefonodeemergencia' => 'required|string|max:8|unique:empleados,telefonodeemergencia',
+            'telefonodeemergencia' => ['required', 'string', 'regex:/^[2389][0-9]{7}$/', 'unique:empleados,telefonodeemergencia',
+                function ($attribute, $value, $fail) {
+                    if (preg_match('/^(\d)\1{7}$/', $value)) {
+                        $fail('El teléfono de emergencia no puede tener todos los dígitos iguales.');
+                    }
+                },
+            ],
             'tipodesangre' => 'required|string',
             'departamento'=> 'required|string',
             'alergias' => 'required|array|min:1',
@@ -84,6 +124,7 @@ class EmpleadoController extends Controller
             'identidad.unique' => 'Esta identidad ya está registrada',
             'direccion.required' => 'Debe ingresar una dirección',
             'telefono.required' => 'Debe ingresar un número de teléfono',
+            'telefono.regex' => 'El teléfono debe tener 8 dígitos y comenzar con 2, 3, 8 o 9.',
             'telefono.unique' => 'Este número de teléfono ya está registrado',
             'telefono.max' => 'El teléfono no debe tener más de 8 dígitos.',
             'email.required' => 'Debe ingresar un correo electrónico',
@@ -97,6 +138,7 @@ class EmpleadoController extends Controller
             'alergiaMedicamentos.regex' => 'Solo letras y espacios en el campo de medicamentos',
             'contactodeemergencia.required' => 'Debe ingresar un nombre con su apellido',
             'telefonodeemergencia.required' => 'Debe ingresar un número de teléfono',
+            'telefonodeemergencia.regex' => 'El teléfono de emergencia debe tener 8 dígitos y comenzar con 2, 3, 8 o 9.',
             'telefonodeemergencia.unique' => 'Este número de teléfono ya está registrado',
             'telefonodeemergencia.max' => 'El teléfono de emergencia no debe tener más de 8 dígitos.',
         ];
@@ -153,30 +195,74 @@ class EmpleadoController extends Controller
     }
     public function update(Request $request, string $id)
     {
+
+        $codigosDep = [
+            '01', '02', '03', '04', '05', '06', '07', '08', '09',
+            '10', '11', '12', '13', '14', '15', '16', '17', '18'
+        ];
+
+        $municipiosPorDepartamento = [
+        '01'=> [ "01", "02", "03", "04", "05", "06", "07", "08" ], // Atlántida
+        '02' => [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16" ], // Choluteca
+        '03'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10" ], // Colón
+        '04'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20","21" ], // Comayagua
+        '05'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14","15", "16", "17", "18", "19", "20","21", "22", "23" ], // Copán
+        '06'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12" ], // Cortés
+        '07'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19" ], // El Paraíso
+        '08'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18","19","20","21", "22", "23", "24", "25", "26", "27", "28" ], // Francisco Morazán
+        '09'=> [ "01", "02", "03", "04", "05", "06" ], // Gracias a Dios
+        '10'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17" ], // Intibucá
+        '11'=> [ "01", "02", "03", "04" ], // Islas de la Bahía
+        '12'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19" ], // La Paz
+        '13'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26","27","28" ], // Lempira
+        '14'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14","15", "16" ], // Ocotepeque
+        '15'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"], // Olancho
+        '16'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19","20","21", "22", "23", "24", "25", "26", "27", "28" ], // Santa Bárbara
+        '17'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09" ], // Valle
+        '18'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11"] // Yoro
+        ];
         $empleado = Empleado::findOrFail($id);
+        $request->merge(['alergias' => $request->input('alergias', [])]);
 
         $rules = [
             'nombre' => 'required|string|max:50|regex:/^[\p{L}\s]+$/u',
             'apellido' => 'required|string|max:50|regex:/^[\p{L}\s]+$/u',
             'direccion' => 'required|string|max:150|regex:/^[\p{L}0-9\s.,;#\-]+$/u',
             'email' => 'required|email|max:50|unique:empleados,email,' . $empleado->id,
-            'telefono' => 'required|string|max:8|unique:empleados,telefono,' . $empleado->id,
-            'identidad' => [
-                'required',
-                'string',
-                'size:15',
-                'regex:/^\d{4}-\d{4}-\d{5}$/',
+            'telefono' => ['required', 'string', 'size:8', 'regex:/^[2389][0-9]{7}$/', 'not_regex:/^(\d)\1{7}$/', Rule::unique('empleados', 'telefono')->ignore($empleado->id),],
+            'identidad' => ['required', 'string', 'size:13', 'regex:/^\d{13}$/',
                 Rule::unique('empleados', 'identidad')->ignore($empleado->id),
+                function ($attribute, $value, $fail) use ($codigosDep, $municipiosPorDepartamento) {
+                    $departamento = substr($value, 0, 2);
+                    $municipio = substr($value, 2, 2);
+
+                    if (!in_array($departamento, $codigosDep)) {
+                        $fail('Código de departamento inválido en la identidad.');
+                    } elseif (!isset($municipiosPorDepartamento[$departamento]) || !in_array($municipio, $municipiosPorDepartamento[$departamento])) {
+                        $fail('Código de municipio inválido para el departamento seleccionado en la identidad.');
+                    }
+                },
                 function ($attribute, $value, $fail) {
-                    $anio = (int) substr($value, 5, 4);
+                    $anio = (int) substr($value, 4, 4);
                     if ($anio < 1940 || $anio > 2007) {
                         $fail('El año de la identidad debe ser entre 1940 y 2007.');
                     }
-                }
+                },
             ],
 
+
             'contactodeemergencia' => 'required|string|max:100|regex:/^[\p{L}\s]+$/u',
-            'telefonodeemergencia' => 'required|string|max:8',
+            'telefonodeemergencia' => [
+                'required',
+                'string',
+                'regex:/^[2389][0-9]{7}$/',
+                Rule::unique('empleados', 'telefonodeemergencia')->ignore($empleado->id),
+                function ($attribute, $value, $fail) {
+                    if (preg_match('/^(\d)\1{7}$/', $value)) {
+                        $fail('El teléfono de emergencia no puede tener todos los dígitos iguales.');
+                    }
+                },
+            ],
             'tipodesangre' => 'required|string',
             'departamento' => 'required|string',
             'alergias' => 'required|array|min:1',
@@ -193,6 +279,7 @@ class EmpleadoController extends Controller
             'email.email' => 'Debe ingresar un correo electrónico válido',
             'email.unique' => 'Este correo ya está registrado',
             'telefono.required' => 'Debe ingresar un número de teléfono',
+            'telefono.regex' => 'El teléfono debe tener 8 dígitos y comenzar con 2, 3, 8 o 9.',
             'telefono.unique' => 'Este número de teléfono ya está registrado',
             'telefono.max' => 'El teléfono no debe tener más de 8 dígitos.',
             'identidad.required' => 'Debe ingresar una identidad',
@@ -200,6 +287,7 @@ class EmpleadoController extends Controller
             'identidad.unique' => 'Esta identidad ya está registrada',
             'contactodeemergencia.required' => 'Debe ingresar un nombre con su apellido',
             'telefonodeemergencia.required' => 'Debe ingresar un número de teléfono',
+            'telefonodeemergencia.regex' => 'El teléfono de emergencia debe tener 8 dígitos y comenzar con 2, 3, 8 o 9.',
             'telefonodeemergencia.max' => 'El teléfono de emergencia no debe tener más de 8 dígitos.',
             'tipodesangre.required' => 'Debe seleccionar un tipo de sangre',
             'departamento.required' => 'Debe seleccionar un departamento',

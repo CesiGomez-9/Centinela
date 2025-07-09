@@ -202,6 +202,7 @@ class ProductoController extends Controller
                 'required',
                 'string',
                 'max:50',
+
             ],
             // 'cantidad' no se actualiza desde este formulario, solo desde FacturaController
             'es_exento' => 'required|boolean',
