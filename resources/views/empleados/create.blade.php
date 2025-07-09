@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <meta charset="UTF-8"/>
     <title>Registrar empleado</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
@@ -44,16 +44,12 @@
             <div class="alert alert-success">¡Datos guardados correctamente!</div>
         @endif
 
-        @if(session('duplicate_error'))
-            <div class="alert alert-danger">{{ session('duplicate_error') }}</div>
-        @endif
-
-        <form method="POST" action="{{ route('empleados.store') }}" id="empleadoForm">
+        <form method="POST" action="{{ route('empleados.store') }}" id="empleadoForm" novalidate>
             @csrf
             <div class="row g-3">
 
                 <div class="col-md-4">
-                    <label class="form-label">Nombre</label>
+                    <label class="form-label fw-bold">Nombre</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
                         <input type="text" id="nombre" name="nombre" maxlength="50"
@@ -65,7 +61,7 @@
                 </div>
 
                 <div class="col-md-4">
-                    <label class="form-label">Apellido</label>
+                    <label class="form-label fw-bold">Apellido</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
                         <input type="text" id="apellido" name="apellido" maxlength="50"
@@ -77,7 +73,7 @@
                 </div>
 
                 <div class="col-md-4">
-                    <label class="form-label">Identidad</label>
+                    <label class="form-label fw-bold">Identidad</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-credit-card-2-front-fill"></i></span>
                         <input type="text" id="identidad" name="identidad" maxlength="15"
@@ -88,32 +84,8 @@
                         <div id="errorIdentidad" class="invalid-feedback"></div>
                     </div>
                 </div>
-
-                <div class="col-md-6">
-                    <label class="form-label">Dirección</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
-                        <input type="text" id="direccion" name="direccion" maxlength="150"
-                               value="{{ old('direccion') }}"
-                               class="form-control @error('direccion') is-invalid @enderror"
-                               oninput="validarTexto(this,150)" />
-                        <div class="invalid-feedback">@error('direccion') {{ $message }} @enderror</div>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <label class="form-label">Correo electrónico</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
-                        <input type="email" id="email" name="email" maxlength="50"
-                               value="{{ old('email') }}"
-                               class="form-control @error('email') is-invalid @enderror" />
-                        <div class="invalid-feedback">@error('email') {{ $message }} @enderror</div>
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <label class="form-label">Teléfono</label>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Teléfono</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-telephone-fill"></i></span>
                         <input type="text" id="telefono" name="telefono" maxlength="8"
@@ -124,8 +96,20 @@
                     </div>
                 </div>
 
-                <div class="col-md-6">
-                    <label class="form-label">Tipo de sangre</label>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Correo electrónico</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
+                        <input type="email" id="email" name="email" maxlength="50"
+                               value="{{ old('email') }}"
+                               class="form-control @error('email') is-invalid @enderror" />
+                        <div class="invalid-feedback">@error('email') {{ $message }} @enderror</div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Tipo de sangre</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-droplet-fill"></i></span>
                         <select id="tipodesangre" name="tipodesangre"
@@ -139,53 +123,116 @@
                     </div>
                 </div>
 
-                <div class="col-md-10">
-                    <label class="form-label"><i class="bi bi-exclamation-diamond-fill me-2"></i>Alergias (seleccione):</label><br>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Departamento</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
+                        <select id="departamento" name="departamento"
+                                class="form-select @error('departamento') is-invalid @enderror">
+                            <option value="">Seleccione...</option>
+                            @foreach(['Atlántida', 'Choluteca ', 'Colón', 'Comayagua ', 'Copán',
+                                'Cortés ', 'El Paraíso', 'Francisco Morazán', 'Gracias a Dios',
+                                'Intibucá ', 'Islas de la Bahía', 'La Paz', 'Lempira',
+                                'Ocotepeque', 'Olancho ', 'Santa Bárbara', 'Valle ', 'Yoro'] as $tipo)
+                                <option value="{{ $tipo }}" {{ old('departamento')==$tipo?'selected':'' }}>{{ $tipo }}</option>
+                            @endforeach
+                        </select>
+                        <div class="invalid-feedback">@error('departamento') {{ $message }} @enderror</div>
+                    </div>
+                </div>
 
+                <div class="col-md-10">
+                    <label class="form-label fw-bold">
+                        <i class="bi bi-exclamation-diamond-fill me-2"></i>Seleccione las alergias:
+                    </label>
                     @php
-                        $tiposAlergia = ['Polvo','Polen','Medicamentos','Alimentos','Ninguno','Otros'];
+                        $tiposAlergia = ['Polvo', 'Polen', 'Medicamentos', 'Alimentos', 'Ninguno', 'Otros'];
                         $oldA = old('alergias', []);
                     @endphp
-
-                    @foreach($tiposAlergia as $al)
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input alergia-checkbox
-                   @if($errors->has('alergias')) is-invalid @endif"
-                                   type="checkbox" name="alergias[]" value="{{ $al }}"
-                                {{ in_array($al, $oldA) ? 'checked' : '' }} />
-                            <label class="form-check-label">{{ $al }}</label>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-check mb-2">
+                                <input class="form-check-input alergia-checkbox @error('alergias') is-invalid @enderror" type="checkbox" name="alergias[]" value="Polvo" {{ in_array('Polvo', $oldA) ? 'checked' : '' }}>
+                                <label class="form-check-label">Polvo</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input alergia-checkbox @error('alergias') is-invalid @enderror" type="checkbox" name="alergias[]" value="Polen" {{ in_array('Polen', $oldA) ? 'checked' : '' }}>
+                                <label class="form-check-label">Polen</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input alergia-checkbox @error('alergias') is-invalid @enderror" type="checkbox" name="alergias[]" value="Ninguno" {{ in_array('Ninguno', $oldA) ? 'checked' : '' }}>
+                                <label class="form-check-label">Ninguno</label>
+                            </div>
                         </div>
-                    @endforeach
+
+                        <div class="col-md-6">
+                            <div class="form-check mb-2 d-flex align-items-center">
+                                <input class="form-check-input alergia-checkbox me-2 @error('alergias') is-invalid @enderror" type="checkbox" name="alergias[]" value="Alimentos" {{ in_array('Alimentos', $oldA) ? 'checked' : '' }}>
+                                <label class="form-check-label me-3">Alimentos</label>
+                                <input type="text" id="alergiaAlimentos" name="alergiaAlimentos" maxlength="150"
+                                       value="{{ old('alergiaAlimentos') }}"
+                                       class="form-control solo-letras"
+                                       placeholder="Especifique alergia a alimentos"
+                                       style="min-width: 350px; {{ in_array('Alimentos', $oldA) ? 'display:block;' : 'display:none;' }}">
+                            </div>
+
+                            <div class="form-check mb-2 d-flex align-items-center">
+                                <input class="form-check-input alergia-checkbox me-2 @error('alergias') is-invalid @enderror" type="checkbox" name="alergias[]" value="Medicamentos" {{ in_array('Medicamentos', $oldA) ? 'checked' : '' }}>
+                                <label class="form-check-label me-3">Medicamentos</label>
+                                <input type="text" id="alergiaMedicamentos" name="alergiaMedicamentos" maxlength="150"
+                                       value="{{ old('alergiaMedicamentos') }}"
+                                       class="form-control solo-letras"
+                                       placeholder="Especifique alergia a medicamentos"
+                                       style="min-width: 330px; {{ in_array('Medicamentos', $oldA) ? 'display:block;' : 'display:none;' }}">
+                            </div>
+
+                            <div class="form-check mb-2 d-flex align-items-center">
+                                <input class="form-check-input alergia-checkbox me-2 @error('alergias') is-invalid @enderror" type="checkbox" name="alergias[]" value="Otros" {{ in_array('Otros', $oldA) ? 'checked' : '' }}>
+                                <label class="form-check-label me-3">Otros</label>
+                                <input type="text" id="alergiaOtros" name="alergiaOtros" maxlength="150"
+                                       value="{{ old('alergiaOtros') }}"
+                                       class="form-control solo-letras"
+                                       placeholder="Especifique alergia"
+                                       style="min-width: 350px; {{ in_array('Otros', $oldA) ? 'display:block;' : 'display:none;' }}">
+                            </div>
+                        </div>
+                    </div>
+
                     @error('alergias')
                     <div class="invalid-feedback d-block">{{ $message }}</div>
                     @enderror
-                    <input type="text" id="alergiaAlimentos" name="alergiaAlimentos" maxlength="150"
-                           value="{{ old('alergiaAlimentos') }}" class="form-control mt-2 solo-letras" placeholder="Especifique alergia a alimentos"
-                           style="display:none;">
-                    <div class="invalid-feedback">
-                        @error('alergiaAlimentos') {{ $message }} @enderror
-                    </div>
-                    <input type="text" id="alergiaMedicamentos" name="alergiaMedicamentos" maxlength="150"
-                           value="{{ old('alergiaMedicamentos') }}" class="form-control mt-2 solo-letras" placeholder="Especifique alergia a medicamentos"
-                           style="display:none;">
-                    <div class="invalid-feedback">
-                        @error('alergiaMedicamentos') {{ $message }} @enderror
-                    </div>
-                    <input type="text" id="alergiaOtros" name="alergiaOtros" maxlength="150"
-                           value="{{ old('alergiaOtros') }}" class="form-control mt-2 solo-letras"
-                           placeholder="Especifique alergia"
-                           style="{{ in_array('Otros',$oldA)?'display:block;':'display:none;' }}">
-                    <div class="invalid-feedback">
-                        @error('alergiaOtros') {{ $message }} @enderror
+                    @error('alergiaAlimentos')
+                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                    @enderror
+                    @error('alergiaMedicamentos')
+                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                    @enderror
+                    @error('alergiaOtros')
+                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                    @enderror
+                </div>
+
+
+                <div class="col-md-8">
+                    <label class="form-label fw-bold">Dirección</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
+                        <textarea id="direccion" name="direccion" maxlength="250"
+                                  class="form-control @error('direccion') is-invalid @enderror"
+                                  oninput="autoAjustarAltura(this); validarTexto(this, 250)"
+                                  rows="1"
+                                  style="resize: none; overflow: hidden;">{{ old('direccion') }}</textarea>
+                        <div class="invalid-feedback">@error('direccion') {{ $message }} @enderror</div>
                     </div>
                 </div>
+
 
                 <h3 class="text-center mb-4 mt-4" style="color:#09457f;">
                     <i class="bi bi-people-fill me-2"></i>Contacto de emergencia
                 </h3>
 
                 <div class="col-md-4">
-                    <label class="form-label">Nombre completo</label>
+                    <label class="form-label fw-bold">Nombre completo</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-person-lines-fill"></i></span>
                         <input type="text" id="contactoEmergencia" name="contactodeemergencia" maxlength="100"
@@ -197,7 +244,7 @@
                 </div>
 
                 <div class="col-md-4">
-                    <label class="form-label">Teléfono</label>
+                    <label class="form-label fw-bold">Teléfono</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-telephone-fill"></i></span>
                         <input type="text" id="telefonodeemergencia" name="telefonodeemergencia" maxlength="8"
@@ -221,6 +268,12 @@
 </div>
 
 <script>
+
+    function autoAjustarAltura(textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = (textarea.scrollHeight) + 'px';
+    }
+
     const codigosDep = Array.from({length:18}, (_,i) => String(i+1).padStart(2,'0'));
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -306,33 +359,27 @@
 
         formulario.addEventListener('reset', function () {
             setTimeout(() => {
-
-                const campos = formulario.querySelectorAll('.form-control, .form-select');
+                const campos = formulario.querySelectorAll('input, select, textarea');
                 campos.forEach(campo => {
+                    if (campo.type === 'hidden' && campo.name === '_token') {
+                        return;
+                    }
+                    if (campo.type === 'checkbox' || campo.type === 'radio') {
+                        campo.checked = false;
+                    } else {
+                        campo.value = '';
+                    }
                     campo.classList.remove('is-invalid');
                 });
-
                 const mensajes = formulario.querySelectorAll('.invalid-feedback');
                 mensajes.forEach(m => {
                     m.textContent = '';
                 });
-
-                const checks = formulario.querySelectorAll('input[name="alergias[]"]');
-                checks.forEach(check => {
-                    check.checked = false;
-                    check.classList.remove('is-invalid');
-                });
-
                 const campoOtros = document.getElementById('alergiaOtros');
                 if (campoOtros) {
                     campoOtros.value = '';
                     campoOtros.style.display = 'none';
                     campoOtros.classList.remove('is-invalid');
-                }
-
-                const errorAlergias = document.getElementById('error-alergias');
-                if (errorAlergias) {
-                    errorAlergias.textContent = '';
                 }
 
                 const campoAlimentos = document.getElementById('alergiaAlimentos');
@@ -349,6 +396,11 @@
                     campoMedicamentos.classList.remove('is-invalid');
                 }
 
+                const errorAlergias = document.getElementById('error-alergias');
+                if (errorAlergias) {
+                    errorAlergias.textContent = '';
+                }
+
             }, 10);
         });
     });
@@ -356,64 +408,85 @@
 
 
     function validarTexto(input, max) {
-        input.value = input.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '').replace(/\s+/g,' ').slice(0, max);
+        input.value = input.value
+            .replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s.,;#\-]/g, '')
+            .replace(/\s+/g,' ')
+            .slice(0, max);
     }
+    const municipiosPorDepartamento = {
+        "01": [ "01", "02", "03", "04", "05", "06", "07", "08" ], // Atlántida
+        "02": [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16" ], // Choluteca
+        "03": [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10" ], // Colón
+        "04": [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20","21" ], // Comayagua
+        "05": [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14","15", "16", "17", "18", "19", "20","21", "22", "23" ], // Copán
+        "06": [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12" ], // Cortés
+        "07": [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19" ], // El Paraíso
+        "08": [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18","19","20","21", "22", "23", "24", "25", "26", "27", "28" ], // Francisco Morazán
+        "09": [ "01", "02", "03", "04", "05", "06" ], // Gracias a Dios
+        "10": [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17" ], // Intibucá
+        "11": [ "01", "02", "03", "04" ], // Islas de la Bahía
+        "12": [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19" ], // La Paz
+        "13": [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26","27","28" ], // Lempira
+        "14": [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14","15", "16" ], // Ocotepeque
+        "15": [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"], // Olancho
+        "16": [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19","20","21", "22", "23", "24", "25", "26", "27", "28" ], // Santa Bárbara
+        "17": [ "01", "02", "03", "04", "05", "06", "07", "08", "09" ], // Valle
+        "18": [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11"] // Yoro
+    };
 
     function formatearIdentidad(i) {
+
         let v = i.value.replace(/[^0-9]/g, '');
+        if (v.length > 13) {
+            v = v.slice(0, 13);
+        }
+
+
         if (v.length >= 4) {
-            const pref4 = v.slice(0,4), pref2 = v.slice(0,2);
-            if (!codigosDep.includes(pref4) && !codigosDep.includes(pref2)) {
-                v = '';
+            const departamento = v.slice(0, 2);
+            const municipio = v.slice(2, 4);
+
+            if (!codigosDep.includes(departamento)) {
+                i.classList.add('is-invalid');
+                document.getElementById('errorIdentidad').textContent = 'Código de departamento inválido.';
+                i.value = v;
+                return;
+            } else if (!municipiosPorDepartamento[departamento] || !municipiosPorDepartamento[departamento].includes(municipio)) {
+                i.classList.add('is-invalid');
+                document.getElementById('errorIdentidad').textContent = 'Código de municipio inválido para el departamento.';
+                i.value = v;
+                return;
             }
         } else if (v.length >= 2) {
-            if (!codigosDep.includes(v.slice(0,2))) v = '';
+            const departamento = v.slice(0, 2);
+            if (!codigosDep.includes(departamento)) {
+                i.classList.add('is-invalid');
+                document.getElementById('errorIdentidad').textContent = 'Código de departamento inválido.';
+                i.value = v;
+                return;
+            }
         }
-        v = v.slice(0,13);
-        if (v.length > 8) i.value = v.slice(0,4) + '-' + v.slice(4,8) + '-' + v.slice(8);
-        else if (v.length > 4) i.value = v.slice(0,4) + '-' + v.slice(4);
-        else i.value = v;
-
         if (v.length >= 8) {
             let anio = v.slice(4, 8);
             let anioNum = parseInt(anio, 10);
 
-            if (isNaN(anioNum) || anioNum <= 1940) {
-                anioNum = 1940;
-            } else if (anioNum >= 2007) {
-                anioNum = 2007;
-            }
-
-            const anioStr = anioNum.toString().padStart(4, '0');
-            v = v.slice(0, 4) + anioStr + v.slice(8);
-
-            if (anioNum <= 1939 || anioNum >= 2008) {
+            if (isNaN(anioNum) || anioNum < 1940 || anioNum > 2007) {
                 i.classList.add('is-invalid');
-                document.getElementById('errorIdentidad').textContent = 'El año debe ser igual o mayor a 1940 y menor o igual a 2007.';
-            } else {
-                i.classList.remove('is-invalid');
-                document.getElementById('errorIdentidad').textContent = '';
+                document.getElementById('errorIdentidad').textContent = 'El año debe ser entre 1940 y 2007.';
+                i.value = v;
+                return;
             }
-        } else {
-            i.classList.remove('is-invalid');
-            document.getElementById('errorIdentidad').textContent = '';
         }
-
-        v = v.slice(0, 13);
-        if (v.length > 8) {
-            i.value = v.slice(0, 4) + '-' + v.slice(4, 8) + '-' + v.slice(8);
-        } else if (v.length > 4) {
-            i.value = v.slice(0, 4) + '-' + v.slice(4);
-        } else {
-            i.value = v;
-        }
+        i.classList.remove('is-invalid');
+        document.getElementById('errorIdentidad').textContent = '';
+        i.value = v;
     }
 
 
     function configurarValidacionTelefono(id) {
         const input = document.getElementById(id);
 
-        input.addEventListener('keydown', function(e) {
+        input.addEventListener('keydown', function (e) {
             const teclasPermitidas = [
                 'Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Home', 'End'
             ];
@@ -423,27 +496,56 @@
                 e.preventDefault();
                 return;
             }
+
             if (this.selectionStart === 0 && !['2', '3', '8', '9'].includes(e.key)) {
                 e.preventDefault();
             }
         });
 
-        input.addEventListener('input', function() {
+        input.addEventListener('input', function () {
             let valor = this.value.replace(/[^0-9]/g, '');
-            if (valor.length > 0 && !['2', '3', '8', '9'].includes(valor[0])) {
-                valor = valor.slice(1);
-            }
 
             if (valor.length > 8) {
                 valor = valor.slice(0, 8);
             }
 
             if (/^(\d)\1{7}$/.test(valor)) {
-                valor = '';
+                this.classList.add('is-invalid');
+                mostrarError(this, 'No puede tener todos los dígitos iguales.');
+            } else if (valor.length === 8 && !['2', '3', '8', '9'].includes(valor[0])) {
+                this.classList.add('is-invalid');
+                mostrarError(this, 'Debe comenzar con 2, 3, 8 o 9.');
+            } else {
+                this.classList.remove('is-invalid');
+                limpiarError(this);
             }
 
             this.value = valor;
         });
+    }
+
+    function mostrarError(input, mensaje) {
+        const errorId = 'error-' + input.id;
+        let errorEl = document.getElementById(errorId);
+
+        if (!errorEl) {
+            errorEl = document.createElement('div');
+            errorEl.classList.add('invalid-feedback');
+            errorEl.id = errorId;
+            input.parentNode.appendChild(errorEl);
+        }
+
+        errorEl.textContent = mensaje;
+        input.classList.add('is-invalid');
+    }
+
+    function limpiarError(input) {
+        const errorId = 'error-' + input.id;
+        const errorEl = document.getElementById(errorId);
+        if (errorEl) {
+            errorEl.remove();
+        }
+        input.classList.remove('is-invalid');
     }
 
     configurarValidacionTelefono('telefono');
@@ -452,6 +554,53 @@
     document.addEventListener('DOMContentLoaded', function () {
         permitirSoloTelefonosValidos(document.getElementById('telefono'));
         permitirSoloTelefonosValidos(document.getElementById('telefonodeemergencia'));
+
+        const formulario = document.getElementById('formulario'); // Asegúrate de que tu formulario tenga este ID
+        const telefono = document.getElementById('telefono');
+        const telefonoEmergencia = document.getElementById('telefonodeemergencia');
+
+        formulario.addEventListener('submit', function (e) {
+            const regexTelefono = /^[2389]\d{7}$/;
+
+            let errores = false;
+
+            if (!regexTelefono.test(telefono.value)) {
+                mostrarError(telefono, 'Debe tener 8 dígitos y comenzar con 2, 3, 8 o 9');
+                errores = true;
+            } else {
+                limpiarError(telefono);
+            }
+
+            if (!regexTelefono.test(telefonoEmergencia.value)) {
+                mostrarError(telefonoEmergencia, 'Debe tener 8 dígitos y comenzar con 2, 3, 8 o 9');
+                errores = true;
+            } else {
+                limpiarError(telefonoEmergencia);
+            }
+
+            if (errores) {
+                e.preventDefault(); // Evita el envío si hay errores
+            }
+        });
+
+        function mostrarError(input, mensaje) {
+            let feedback = input.nextElementSibling;
+            if (!feedback || !feedback.classList.contains('invalid-feedback')) {
+                feedback = document.createElement('div');
+                feedback.classList.add('invalid-feedback');
+                input.parentNode.appendChild(feedback);
+            }
+            input.classList.add('is-invalid');
+            feedback.textContent = mensaje;
+        }
+
+        function limpiarError(input) {
+            let feedback = input.nextElementSibling;
+            if (feedback && feedback.classList.contains('invalid-feedback')) {
+                feedback.textContent = '';
+            }
+            input.classList.remove('is-invalid');
+        }
     });
     document.querySelectorAll('.alergia-checkbox').forEach(chk => {
         chk.addEventListener('change', () => {

@@ -30,7 +30,11 @@
                         id="searchInput"
                         class="form-control"
                         maxlength="30"
+<<<<<<< HEAD
                         placeholder="Buscar por serie"
+=======
+                        placeholder="Buscar por nombre, serie o código"
+>>>>>>> 29a2ebc08363c3b5d1eb7e542b68549ef1e1a141
                         onkeydown="bloquearEspacioAlInicio(event, this)"
                         oninput="eliminarEspaciosIniciales(this)"
                     >
@@ -82,7 +86,8 @@
                     <td>{{ $producto->categoria }}</td>
                     <td>{{ $producto->cantidad }}</td>
                     <td>
-                        <a href="{{ route('productos.show', $producto->id) }}" class="btn btn-outline-info btn-sm">Ver</a>
+                        <a href="{{ route('productos.show', $producto->id) }}" class="btn btn-outline-info btn-sm">
+                            <i class="bi bi-eye"></i>Ver</a>
                     </td>
                 </tr>
             @empty
@@ -108,6 +113,7 @@
             const filtro = this.value.toLowerCase().trim();
             let resultadosVisibles = 0;
 
+<<<<<<< HEAD
             filas.forEach(fila => {
             // Obtener todas las celdas de la fila
             const celdas = fila.querySelectorAll('td');
@@ -136,6 +142,50 @@
         } else {
             fila.style.display = 'none';
         }
+=======
+                filas.forEach(fila => {
+                    // Obtener todas las celdas de la fila
+                    const celdas = fila.querySelectorAll('td');
+                    const serie = celdas[1].textContent.toLowerCase(); // segunda celda
+                    const codigo = celdas[2].textContent.toLowerCase(); // tercera celda
+                    const nombre = celdas[3].textContent.toLowerCase(); // cuarta celda
+
+                    if (
+                        filtro === '' ||
+                        serie.includes(filtro) ||
+                        codigo.includes(filtro) ||
+                        nombre.includes(filtro)
+                    ) {
+                        fila.style.display = '';
+                        resultadosVisibles++;
+
+                        if (filtro !== '') {
+                            resaltarTexto(celdas[1], filtro); // Resaltar serie
+                            resaltarTexto(celdas[2], filtro); // Resaltar código
+                            resaltarTexto(celdas[3], filtro); // Resaltar nombre
+                        } else {
+                            quitarResaltado(celdas[1]);
+                            quitarResaltado(celdas[2]);
+                            quitarResaltado(celdas[3]);
+                        }
+                    } else {
+                        fila.style.display = 'none';
+                    }
+                });
+
+                // Mostrar mensaje de resultados
+                mostrarResultados(filtro, resultadosVisibles);
+
+                // Mostrar/ocultar fila "no hay productos"
+                if (noProductsRow) {
+                    if (filtro === '') {
+                        noProductsRow.style.display = filas.length === 0 ? '' : 'none';
+                    } else {
+                        noProductsRow.style.display = resultadosVisibles === 0 ? '' : 'none';
+                    }
+                }
+            });
+>>>>>>> 29a2ebc08363c3b5d1eb7e542b68549ef1e1a141
         });
 
             // Mostrar mensaje de resultados

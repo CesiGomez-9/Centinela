@@ -130,6 +130,7 @@
                                 <p><i class="bi bi-person-vcard me-2"></i><strong>Nombre del representante:</strong> {{ $proveedor->nombrerepresentante }}</p>
                                 <p><i class="bi bi-telephone me-2"></i><strong>Teléfono del representante:</strong> {{ $proveedor->telefonoderepresentante }}</p>
                                 <p><i class="bi bi-briefcase me-2"></i><strong>Categoría o rubro:</strong> {{ $proveedor->categoriarubro }}</p>
+                                <p><i class="bi bi-geo-alt me-2"></i><strong>Departamento:</strong> {{ $proveedor->departamento }}</p>
                             </div>
                         </div>
                     </div>

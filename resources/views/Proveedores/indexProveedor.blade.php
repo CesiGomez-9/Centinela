@@ -40,7 +40,9 @@
                             <input
                                 type="text"
                                 id="searchInput"
-                                class="form-control form-control-sm"
+                                name="search"
+                                value="{{request('search')}}"
+                                class="form-control"
                                 placeholder="Buscar por nombre"
                             >
                             <span class="input-group-text"><i class="bi bi-search"></i></span>
@@ -67,7 +69,7 @@
                 <tr>
                     <th>N°</th>
                     <th>Nombre de la empresa</th>
-                    <th>Dirección</th>
+                    <th>Departamento</th>
                     <th>Teléfono de la empresa</th>
                     <th>Correo de la empresa</th>
                     <th>Acciones</th>
@@ -78,7 +80,7 @@
                     <tr>
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ $proveedor->nombreEmpresa }}</td>
-                        <td>{{ $proveedor->direccion }}</td>
+                        <td>{{ $proveedor->departamento }}</td>
                         <td>{{ $proveedor->telefonodeempresa }}</td>
                         <td>{{ $proveedor->correoempresa}}</td>
                         <td class="text-center">
@@ -86,7 +88,7 @@
                                 <i class="bi bi-eye"></i> Ver
                             </a>
                             <a href="{{ route('Proveedores.edit', $proveedor->id) }}" class="btn btn-sm btn-outline-warning" title="Editar">
-                                <i class="bi bi-pencil-square"></i>
+                                <i class="bi bi-pencil-square"></i>Editar
                             </a>
                         </td>
 
@@ -113,25 +115,30 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const searchInput = document.getElementById('searchInput');
-            const filas = document.querySelectorAll('tbody tr');
+
+            if (searchInput.value !== '') {
+                searchInput.focus();
+                const val = searchInput.value;
+                searchInput.value = '';
+                searchInput.value = val;
+            }
+
+            let timeout = null;
 
             searchInput.addEventListener('input', function () {
-                const filtro = this.value.toLowerCase().trim();
+                clearTimeout(timeout);
 
-                filas.forEach(fila => {
-                    const nombre = fila.querySelector('td:nth-child(2)').textContent.toLowerCase();
-                    if (nombre.includes(filtro)) {
-                        fila.style.display = '';
-                    } else {
-                        fila.style.display = 'none';
-                    }
-                });
+                timeout = setTimeout(() => {
+                    const search = this.value;
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('search', search);
+                    window.location.href = url.toString();
+                }, 0.5);
             });
         });
 
-
     </script>
-    
+
 
 
 

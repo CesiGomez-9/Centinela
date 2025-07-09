@@ -44,7 +44,7 @@
                             name="search"
                             value="{{ request('search') }}"
                             class="form-control"
-                            placeholder="Buscar por nombre"
+                            placeholder="Buscar por nombre, departamento o identidad"
                         />
 
                         <span class="input-group-text"><i class="bi bi-search"></i></span>
@@ -57,6 +57,7 @@
                 </a>
             </div>
         </div>
+
 
 
     @if(session('success'))
@@ -72,7 +73,7 @@
             <tr>
                 <th>#</th>
                 <th>Nombre</th>
-                <th>Dirección</th>
+                <th>Departamento</th>
                 <th>Teléfono</th>
                 <th>Acciones</th>
             </tr>
@@ -80,16 +81,18 @@
             <tbody>
             @forelse ($empleados as $empleado)
                 <tr>
-                    <td>{{ $loop->iteration }}</td>
-                    <td>{{ $empleado->nombre }} {{ $empleado->apellido }}</td>
-                    <td>{{ $empleado->direccion }}</td>
+                    <td>{{ $empleados->firstItem() + $loop->index }}</td>
+                    <td style="max-width: 200px; word-wrap: break-word; white-space: normal;">
+                        {{ $empleado->nombre }} {{ $empleado->apellido }}</td>
+                    <td style="max-width: 200px; word-wrap: break-word; white-space: normal;">
+                        {{ $empleado->departamento }}</td>
                     <td>{{ $empleado->telefono }}</td>
                     <td class="text-center">
                         <a href="{{ route('empleados.show', $empleado->id) }}" class="btn btn-sm btn-outline-info">
                             <i class="bi bi-eye"></i> Ver
                         </a>
                         <a href="{{ route('empleados.edit', $empleado->id) }}" class="btn btn-sm btn-outline-warning" title="Editar">
-                            <i class="bi bi-pencil-square"></i>
+                            <i class="bi bi-pencil-square"></i>Editar
                         </a>
                     </td>
                 </tr>
@@ -100,6 +103,17 @@
             @endforelse
             </tbody>
         </table>
+
+        @if(request('search') && $empleados->total() > 0)
+            <div class="mb-3 text-muted">
+                Mostrando {{ $empleados->count() }} de {{ $empleados->total() }} empleados encontrados para
+                "<strong>{{ request('search') }}</strong>".
+            </div>
+        @elseif(request('search') && $empleados->total() === 0)
+            <div class="mb-3 text-danger">
+                No se encontraron resultados para "<strong>{{ request('search') }}</strong>".
+            </div>
+        @endif
 
         <div class="d-flex justify-content-center mt-4">
             {{ $empleados->links('pagination::bootstrap-5') }}
@@ -127,7 +141,7 @@
                 const url = new URL(window.location.href);
                 url.searchParams.set('search', search);
                 window.location.href = url.toString();
-            }, 0.5);
+            }, 700);
         });
     });
 </script>

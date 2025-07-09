@@ -42,7 +42,7 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Producto</a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{{route('productos.index')}}">Listado de inventario</a></li>
+                        <li><a class="dropdown-item" href="{{route('productos.index')}}">Inventario de productos</a></li>
                         <li><a class="dropdown-item" href="{{route('productos.create')}}">Registrar un nuevo producto</a></li>
                         <li><hr class="dropdown-divider"></li> {{-- Separador opcional --}}
                         <li><a class="dropdown-item" href="{{route('facturas.index')}}">Listado de facturas</a></li>
