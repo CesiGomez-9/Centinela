@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <meta charset="UTF-8"/>
     <title>Registrar empleado</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
@@ -15,7 +15,7 @@
 <nav class="navbar navbar-expand-lg" style="background-color: #0A1F44; padding:1.2rem; font-family:'Courier New', monospace;">
     <div class="container" style="max-width:1600px;">
         <a class="navbar-brand text-white fw-bold" href="#">
-            <img src="{{ asset('centinela.jpg) }}" style="height:80px; margin-right:10px;"/>
+            <img src="{{ asset('centinela.jpg') }}" style="height:80px; margin-right:10px;"/>
             Grupo Centinela
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -44,223 +44,223 @@
             <div class="alert alert-success">¡Datos guardados correctamente!</div>
         @endif
 
-        <form method="POST" action="{{ route('empleados.store') }}" id="empleadoForm" novalidate>
-            @csrf
-            <div class="row g-3">
+<form method="POST" action="{{ route('empleados.store') }}" id="empleadoForm" novalidate>
+    @csrf
+    <div class="row g-3">
 
-                <div class="col-md-4">
-                    <label class="form-label fw-bold">Nombre</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                        <input type="text" id="nombre" name="nombre" maxlength="50"
-                               value="{{ old('nombre') }}"
-                               class="form-control @error('nombre') is-invalid @enderror"
-                               oninput="validarTexto(this,50)" />
-                        <div class="invalid-feedback">@error('nombre') {{ $message }} @enderror</div>
+        <div class="col-md-4">
+            <label class="form-label fw-bold">Nombre</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                <input type="text" id="nombre" name="nombre" maxlength="50"
+                       value="{{ old('nombre') }}"
+                       class="form-control @error('nombre') is-invalid @enderror"
+                       oninput="validarTexto(this,50)" />
+                <div class="invalid-feedback">@error('nombre') {{ $message }} @enderror</div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label fw-bold">Apellido</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                <input type="text" id="apellido" name="apellido" maxlength="50"
+                       value="{{ old('apellido') }}"
+                       class="form-control @error('apellido') is-invalid @enderror"
+                       oninput="validarTexto(this,50)" />
+                <div class="invalid-feedback">@error('apellido') {{ $message }} @enderror</div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label fw-bold">Identidad</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-credit-card-2-front-fill"></i></span>
+                <input type="text" id="identidad" name="identidad" maxlength="15"
+                       value="{{ old('identidad') }}"
+                       class="form-control @error('identidad') is-invalid @enderror"
+                       oninput="formatearIdentidad(this)" />
+                <div class="invalid-feedback">@error('identidad') {{ $message }} @enderror</div>
+                <div id="errorIdentidad" class="invalid-feedback"></div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label fw-bold">Teléfono</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-telephone-fill"></i></span>
+                <input type="text" id="telefono" name="telefono" maxlength="8"
+                       value="{{ old('telefono') }}"
+                       class="form-control @error('telefono') is-invalid @enderror"
+                       oninput="formatearTelefono(this)" />
+                <div class="invalid-feedback">@error('telefono') {{ $message }} @enderror</div>
+            </div>
+        </div>
+
+
+        <div class="col-md-4">
+            <label class="form-label fw-bold">Correo electrónico</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
+                <input type="email" id="email" name="email" maxlength="50"
+                       value="{{ old('email') }}"
+                       class="form-control @error('email') is-invalid @enderror" />
+                <div class="invalid-feedback">@error('email') {{ $message }} @enderror</div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label fw-bold">Tipo de sangre</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-droplet-fill"></i></span>
+                <select id="tipodesangre" name="tipodesangre"
+                        class="form-select @error('tipodesangre') is-invalid @enderror">
+                    <option value="">Seleccione...</option>
+                    @foreach(['A+','A-','B+','B-','AB+','AB-','O+','O-'] as $tipo)
+                        <option value="{{ $tipo }}" {{ old('tipodesangre')==$tipo?'selected':'' }}>{{ $tipo }}</option>
+                    @endforeach
+                </select>
+                <div class="invalid-feedback">@error('tipodesangre') {{ $message }} @enderror</div>
+            </div>
+        </div>
+
+        <div class="col-md-10">
+            <label class="form-label fw-bold">
+                <i class="bi bi-exclamation-diamond-fill me-2"></i>Seleccione las alergias:
+            </label>
+            @php
+                $tiposAlergia = ['Polvo', 'Polen', 'Medicamentos', 'Alimentos', 'Ninguno', 'Otros'];
+                $oldA = old('alergias', []);
+            @endphp
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-check mb-2">
+                        <input class="form-check-input alergia-checkbox @error('alergias') is-invalid @enderror" type="checkbox" name="alergias[]" value="Polvo" {{ in_array('Polvo', $oldA) ? 'checked' : '' }}>
+                        <label class="form-check-label">Polvo</label>
                     </div>
-                </div>
-
-                <div class="col-md-4">
-                    <label class="form-label fw-bold">Apellido</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                        <input type="text" id="apellido" name="apellido" maxlength="50"
-                               value="{{ old('apellido') }}"
-                               class="form-control @error('apellido') is-invalid @enderror"
-                               oninput="validarTexto(this,50)" />
-                        <div class="invalid-feedback">@error('apellido') {{ $message }} @enderror</div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input alergia-checkbox @error('alergias') is-invalid @enderror" type="checkbox" name="alergias[]" value="Polen" {{ in_array('Polen', $oldA) ? 'checked' : '' }}>
+                        <label class="form-check-label">Polen</label>
                     </div>
-                </div>
-
-                <div class="col-md-4">
-                    <label class="form-label fw-bold">Identidad</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-credit-card-2-front-fill"></i></span>
-                        <input type="text" id="identidad" name="identidad" maxlength="15"
-                               value="{{ old('identidad') }}"
-                               class="form-control @error('identidad') is-invalid @enderror"
-                               oninput="formatearIdentidad(this)" />
-                        <div class="invalid-feedback">@error('identidad') {{ $message }} @enderror</div>
-                        <div id="errorIdentidad" class="invalid-feedback"></div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label fw-bold">Teléfono</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-telephone-fill"></i></span>
-                        <input type="text" id="telefono" name="telefono" maxlength="8"
-                               value="{{ old('telefono') }}"
-                               class="form-control @error('telefono') is-invalid @enderror"
-                               oninput="formatearTelefono(this)" />
-                        <div class="invalid-feedback">@error('telefono') {{ $message }} @enderror</div>
-                    </div>
-                </div>
-
-
-                <div class="col-md-4">
-                    <label class="form-label fw-bold">Correo electrónico</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
-                        <input type="email" id="email" name="email" maxlength="50"
-                               value="{{ old('email') }}"
-                               class="form-control @error('email') is-invalid @enderror" />
-                        <div class="invalid-feedback">@error('email') {{ $message }} @enderror</div>
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <label class="form-label fw-bold">Tipo de sangre</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-droplet-fill"></i></span>
-                        <select id="tipodesangre" name="tipodesangre"
-                                class="form-select @error('tipodesangre') is-invalid @enderror">
-                            <option value="">Seleccione...</option>
-                            @foreach(['A+','A-','B+','B-','AB+','AB-','O+','O-'] as $tipo)
-                                <option value="{{ $tipo }}" {{ old('tipodesangre')==$tipo?'selected':'' }}>{{ $tipo }}</option>
-                            @endforeach
-                        </select>
-                        <div class="invalid-feedback">@error('tipodesangre') {{ $message }} @enderror</div>
-                    </div>
-                </div>
-
-                <div class="col-md-10">
-                    <label class="form-label fw-bold">
-                        <i class="bi bi-exclamation-diamond-fill me-2"></i>Seleccione las alergias:
-                    </label>
-                    @php
-                        $tiposAlergia = ['Polvo', 'Polen', 'Medicamentos', 'Alimentos', 'Ninguno', 'Otros'];
-                        $oldA = old('alergias', []);
-                    @endphp
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-check mb-2">
-                                <input class="form-check-input alergia-checkbox @error('alergias') is-invalid @enderror" type="checkbox" name="alergias[]" value="Polvo" {{ in_array('Polvo', $oldA) ? 'checked' : '' }}>
-                                <label class="form-check-label">Polvo</label>
-                            </div>
-                            <div class="form-check mb-2">
-                                <input class="form-check-input alergia-checkbox @error('alergias') is-invalid @enderror" type="checkbox" name="alergias[]" value="Polen" {{ in_array('Polen', $oldA) ? 'checked' : '' }}>
-                                <label class="form-check-label">Polen</label>
-                            </div>
-                            <div class="form-check mb-2">
-                                <input class="form-check-input alergia-checkbox @error('alergias') is-invalid @enderror" type="checkbox" name="alergias[]" value="Ninguno" {{ in_array('Ninguno', $oldA) ? 'checked' : '' }}>
-                                <label class="form-check-label">Ninguno</label>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="form-check mb-2 d-flex align-items-center">
-                                <input class="form-check-input alergia-checkbox me-2 @error('alergias') is-invalid @enderror" type="checkbox" name="alergias[]" value="Alimentos" {{ in_array('Alimentos', $oldA) ? 'checked' : '' }}>
-                                <label class="form-check-label me-3">Alimentos</label>
-                                <input type="text" id="alergiaAlimentos" name="alergiaAlimentos" maxlength="150"
-                                       value="{{ old('alergiaAlimentos') }}"
-                                       class="form-control solo-letras"
-                                       placeholder="Especifique alergia a alimentos"
-                                       style="min-width: 350px; {{ in_array('Alimentos', $oldA) ? 'display:block;' : 'display:none;' }}">
-                            </div>
-
-                            <div class="form-check mb-2 d-flex align-items-center">
-                                <input class="form-check-input alergia-checkbox me-2 @error('alergias') is-invalid @enderror" type="checkbox" name="alergias[]" value="Medicamentos" {{ in_array('Medicamentos', $oldA) ? 'checked' : '' }}>
-                                <label class="form-check-label me-3">Medicamentos</label>
-                                <input type="text" id="alergiaMedicamentos" name="alergiaMedicamentos" maxlength="150"
-                                       value="{{ old('alergiaMedicamentos') }}"
-                                       class="form-control solo-letras"
-                                       placeholder="Especifique alergia a medicamentos"
-                                       style="min-width: 330px; {{ in_array('Medicamentos', $oldA) ? 'display:block;' : 'display:none;' }}">
-                            </div>
-
-                            <div class="form-check mb-2 d-flex align-items-center">
-                                <input class="form-check-input alergia-checkbox me-2 @error('alergias') is-invalid @enderror" type="checkbox" name="alergias[]" value="Otros" {{ in_array('Otros', $oldA) ? 'checked' : '' }}>
-                                <label class="form-check-label me-3">Otros</label>
-                                <input type="text" id="alergiaOtros" name="alergiaOtros" maxlength="150"
-                                       value="{{ old('alergiaOtros') }}"
-                                       class="form-control solo-letras"
-                                       placeholder="Especifique alergia"
-                                       style="min-width: 350px; {{ in_array('Otros', $oldA) ? 'display:block;' : 'display:none;' }}">
-                            </div>
-                        </div>
-                    </div>
-
-                    @error('alergias')
-                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                    @enderror
-                    @error('alergiaAlimentos')
-                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                    @enderror
-                    @error('alergiaMedicamentos')
-                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                    @enderror
-                    @error('alergiaOtros')
-                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                    @enderror
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label fw-bold">Departamento</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
-                        <select id="departamento" name="departamento"
-                                class="form-select @error('departamento') is-invalid @enderror">
-                            <option value="">Seleccione...</option>
-                            @foreach(['Atlántida', 'Choluteca ', 'Colón', 'Comayagua ', 'Copán',
-                                'Cortés ', 'El Paraíso', 'Francisco Morazán', 'Gracias a Dios',
-                                'Intibucá ', 'Islas de la Bahía', 'La Paz', 'Lempira',
-                                'Ocotepeque', 'Olancho ', 'Santa Bárbara', 'Valle ', 'Yoro'] as $tipo)
-                                <option value="{{ $tipo }}" {{ old('departamento')==$tipo?'selected':'' }}>{{ $tipo }}</option>
-                            @endforeach
-                        </select>
-                        <div class="invalid-feedback">@error('departamento') {{ $message }} @enderror</div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input alergia-checkbox @error('alergias') is-invalid @enderror" type="checkbox" name="alergias[]" value="Ninguno" {{ in_array('Ninguno', $oldA) ? 'checked' : '' }}>
+                        <label class="form-check-label">Ninguno</label>
                     </div>
                 </div>
 
                 <div class="col-md-6">
-                    <label class="form-label fw-bold">Dirección</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
-                        <textarea id="direccion" name="direccion" maxlength="250"
-                                  class="form-control @error('direccion') is-invalid @enderror"
-                                  oninput="validarTexto(this,250)" rows="1"
-                                  style="resize: vertical;">{{ old('direccion') }}</textarea>
-                        <div class="invalid-feedback">@error('direccion') {{ $message }} @enderror</div>
+                    <div class="form-check mb-2 d-flex align-items-center">
+                        <input class="form-check-input alergia-checkbox me-2 @error('alergias') is-invalid @enderror" type="checkbox" name="alergias[]" value="Alimentos" {{ in_array('Alimentos', $oldA) ? 'checked' : '' }}>
+                        <label class="form-check-label me-3">Alimentos</label>
+                        <input type="text" id="alergiaAlimentos" name="alergiaAlimentos" maxlength="150"
+                               value="{{ old('alergiaAlimentos') }}"
+                               class="form-control solo-letras"
+                               placeholder="Especifique alergia a alimentos"
+                               style="min-width: 350px; {{ in_array('Alimentos', $oldA) ? 'display:block;' : 'display:none;' }}">
                     </div>
-                </div>
 
-
-                <h3 class="text-center mb-4 mt-4" style="color:#09457f;">
-                    <i class="bi bi-people-fill me-2"></i>Contacto de emergencia
-                </h3>
-
-                <div class="col-md-4">
-                    <label class="form-label fw-bold">Nombre completo</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-person-lines-fill"></i></span>
-                        <input type="text" id="contactoEmergencia" name="contactodeemergencia" maxlength="100"
-                               value="{{ old('contactodeemergencia') }}"
-                               class="form-control @error('contactodeemergencia') is-invalid @enderror"
-                               oninput="validarTexto(this,100)" />
-                        <div class="invalid-feedback">@error('contactodeemergencia') {{ $message }} @enderror</div>
+                    <div class="form-check mb-2 d-flex align-items-center">
+                        <input class="form-check-input alergia-checkbox me-2 @error('alergias') is-invalid @enderror" type="checkbox" name="alergias[]" value="Medicamentos" {{ in_array('Medicamentos', $oldA) ? 'checked' : '' }}>
+                        <label class="form-check-label me-3">Medicamentos</label>
+                        <input type="text" id="alergiaMedicamentos" name="alergiaMedicamentos" maxlength="150"
+                               value="{{ old('alergiaMedicamentos') }}"
+                               class="form-control solo-letras"
+                               placeholder="Especifique alergia a medicamentos"
+                               style="min-width: 330px; {{ in_array('Medicamentos', $oldA) ? 'display:block;' : 'display:none;' }}">
                     </div>
-                </div>
 
-                <div class="col-md-4">
-                    <label class="form-label fw-bold">Teléfono</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-telephone-fill"></i></span>
-                        <input type="text" id="telefonodeemergencia" name="telefonodeemergencia" maxlength="8"
-                               value="{{ old('telefonodeemergencia') }}"
-                               class="form-control @error('telefonodeemergencia') is-invalid @enderror"
-                               oninput="formatearTelefono(this)" />
-                        <div class="invalid-feedback">@error('telefonodeemergencia') {{ $message }} @enderror</div>
+                    <div class="form-check mb-2 d-flex align-items-center">
+                        <input class="form-check-input alergia-checkbox me-2 @error('alergias') is-invalid @enderror" type="checkbox" name="alergias[]" value="Otros" {{ in_array('Otros', $oldA) ? 'checked' : '' }}>
+                        <label class="form-check-label me-3">Otros</label>
+                        <input type="text" id="alergiaOtros" name="alergiaOtros" maxlength="150"
+                               value="{{ old('alergiaOtros') }}"
+                               class="form-control solo-letras"
+                               placeholder="Especifique alergia"
+                               style="min-width: 350px; {{ in_array('Otros', $oldA) ? 'display:block;' : 'display:none;' }}">
                     </div>
-                </div>
-
-                <div class="text-center mt-5 col-12">
-                    <a href="{{ route('empleados.index') }}" class="btn btn-danger me-2">
-                        <i class="bi bi-x-circle me-2"></i>Cancelar
-                    </a>
-                    <button type="reset" class="btn btn-warning me-2"><i class="bi bi-eraser-fill me-2"></i>Limpiar</button>
-                    <button type="submit" class="btn btn-primary"><i class="bi bi-save-fill me-2"></i>Guardar</button>
                 </div>
             </div>
-        </form>
+
+            @error('alergias')
+            <div class="invalid-feedback d-block">{{ $message }}</div>
+            @enderror
+            @error('alergiaAlimentos')
+            <div class="invalid-feedback d-block">{{ $message }}</div>
+            @enderror
+            @error('alergiaMedicamentos')
+            <div class="invalid-feedback d-block">{{ $message }}</div>
+            @enderror
+            @error('alergiaOtros')
+            <div class="invalid-feedback d-block">{{ $message }}</div>
+            @enderror
+        </div>
+        <div class="col-md-4">
+            <label class="form-label fw-bold">Departamento</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
+                <select id="departamento" name="departamento"
+                        class="form-select @error('departamento') is-invalid @enderror">
+                    <option value="">Seleccione...</option>
+                    @foreach(['Atlántida', 'Choluteca ', 'Colón', 'Comayagua ', 'Copán',
+                        'Cortés ', 'El Paraíso', 'Francisco Morazán', 'Gracias a Dios',
+                        'Intibucá ', 'Islas de la Bahía', 'La Paz', 'Lempira',
+                        'Ocotepeque', 'Olancho ', 'Santa Bárbara', 'Valle ', 'Yoro'] as $tipo)
+                        <option value="{{ $tipo }}" {{ old('departamento')==$tipo?'selected':'' }}>{{ $tipo }}</option>
+                    @endforeach
+                </select>
+                <div class="invalid-feedback">@error('departamento') {{ $message }} @enderror</div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label fw-bold">Dirección</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
+                <textarea id="direccion" name="direccion" maxlength="250"
+                          class="form-control @error('direccion') is-invalid @enderror"
+                          oninput="validarTexto(this,250)" rows="1"
+                          style="resize: vertical;">{{ old('direccion') }}</textarea>
+                <div class="invalid-feedback">@error('direccion') {{ $message }} @enderror</div>
+            </div>
+        </div>
+
+
+        <h3 class="text-center mb-4 mt-4" style="color:#09457f;">
+            <i class="bi bi-people-fill me-2"></i>Contacto de emergencia
+        </h3>
+
+        <div class="col-md-4">
+            <label class="form-label fw-bold">Nombre completo</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-person-lines-fill"></i></span>
+                <input type="text" id="contactoEmergencia" name="contactodeemergencia" maxlength="100"
+                       value="{{ old('contactodeemergencia') }}"
+                       class="form-control @error('contactodeemergencia') is-invalid @enderror"
+                       oninput="validarTexto(this,100)" />
+                <div class="invalid-feedback">@error('contactodeemergencia') {{ $message }} @enderror</div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label fw-bold">Teléfono</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-telephone-fill"></i></span>
+                <input type="text" id="telefonodeemergencia" name="telefonodeemergencia" maxlength="8"
+                       value="{{ old('telefonodeemergencia') }}"
+                       class="form-control @error('telefonodeemergencia') is-invalid @enderror"
+                       oninput="formatearTelefono(this)" />
+                <div class="invalid-feedback">@error('telefonodeemergencia') {{ $message }} @enderror</div>
+            </div>
+        </div>
+
+        <div class="text-center mt-5 col-12">
+            <a href="{{ route('empleados.index') }}" class="btn btn-danger me-2">
+                <i class="bi bi-x-circle me-2"></i>Cancelar
+            </a>
+            <button type="reset" class="btn btn-warning me-2"><i class="bi bi-eraser-fill me-2"></i>Limpiar</button>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-save-fill me-2"></i>Guardar</button>
+        </div>
+    </div>
+</form>
     </div>
 </div>
 
@@ -550,7 +550,7 @@
             if (errores.length > 0) {
                 e.preventDefault()
             }
-             });
+        });
 
         campoOtros.addEventListener('input', function () {
             if (campoOtros.value.trim() !== '') {

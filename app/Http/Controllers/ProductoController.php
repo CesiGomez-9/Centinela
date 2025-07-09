@@ -89,7 +89,7 @@ class ProductoController extends Controller
                 'required',
                 'string',
                 'max:50',
-                'regex:/^[\pL0-9\s\-.,#()]*$/u',
+
             ],
             // 'cantidad' no se valida aquí porque se inicializa en 0 al crear
             'es_exento' => 'required|boolean', // 0 para no exento (15%), 1 para exento (0%)
@@ -202,7 +202,6 @@ class ProductoController extends Controller
                 'required',
                 'string',
                 'max:50',
-                'regex:/^[\pL0-9\s\-.,#()]*$/u',
             ],
             // 'cantidad' no se actualiza desde este formulario, solo desde FacturaController
             'es_exento' => 'required|boolean',

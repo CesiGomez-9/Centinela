@@ -86,20 +86,24 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label for="direccion" class="form-label">Dirección</label>
+                            <label for="nombrerepresentante" class="form-label">Nombre del representante</label>
                             <div class="input-group has-validation">
-                                <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
-                                <textarea name="direccion"
-                                          class="form-control @error('direccion') is-invalid @enderror"
-                                          maxlength="250"
-                                          style="resize: none; height: 38px;"
-                                          onkeydown="bloquearEspacioAlInicio(event, this)"
-                                          oninput="eliminarEspaciosIniciales(this)">{{ old('direccion') }}</textarea>
-                                @error('direccion')
+                                <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                                <input type="text" name="nombrerepresentante"
+                                       class="form-control @error('nombrerepresentante') is-invalid @enderror"
+                                       value="{{ old('nombrerepresentante') }}"
+                                       maxlength="50"
+                                       onkeypress="soloLetras(event)"
+                                       onkeydown="bloquearEspacioAlInicio(event, this)"
+                                       oninput="eliminarEspaciosIniciales(this)"
+                                       oninput="this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '')"
+                                       required>
+                                @error('nombrerepresentante')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>
+
 
                         <div class="col-md-6">
                             <label for="telefonodeempresa" class="form-label">Teléfono de la empresa</label>
@@ -137,24 +141,6 @@
                             </div>
                         </div>
 
-                        <div class="col-md-6">
-                            <label for="nombrerepresentante" class="form-label">Nombre del representante</label>
-                            <div class="input-group has-validation">
-                                <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                                <input type="text" name="nombrerepresentante"
-                                       class="form-control @error('nombrerepresentante') is-invalid @enderror"
-                                       value="{{ old('nombrerepresentante') }}"
-                                       maxlength="50"
-                                       onkeypress="soloLetras(event)"
-                                       onkeydown="bloquearEspacioAlInicio(event, this)"
-                                       oninput="eliminarEspaciosIniciales(this)"
-                                       oninput="this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '')"
-                                       required>
-                                @error('nombrerepresentante')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
 
                         <div class="col-md-6">
                             <label for="telefonoderepresentante" class="form-label">Teléfono del representante</label>
@@ -174,6 +160,7 @@
                                 @enderror
                             </div>
                         </div>
+
 
                         <div class="col-md-6">
                             <label for="categoriarubro" class="form-label">Categoría o rubro</label>
@@ -195,6 +182,28 @@
                                 @enderror
                             </div>
                         </div>
+
+                        <div class="col-md-6">
+                            <label for="direccion" class="form-label">Dirección</label>
+                            <div class="input-group has-validation">
+                                <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
+
+                                <textarea
+                                    name="direccion"
+                                    id="direccion"
+                                    class="form-control @error('direccion') is-invalid @enderror"
+                                    maxlength="250"
+                                    style="height: 100px; resize: none; overflow: hidden;"  {{-- altura fija sin scroll --}}
+                                    onkeydown="bloquearEspacioAlInicio(event, this)"
+                                    oninput="eliminarEspaciosIniciales(this)">{{ old('direccion') }}</textarea>
+
+                                @error('direccion')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+
 
                         <div class="col-md-6">
                             <label for="departamento" class="form-label">Departamento</label>
@@ -226,6 +235,8 @@
                                 @enderror
                             </div>
                         </div>
+
+
 
 
                     </div>

@@ -35,7 +35,7 @@
 
             <div class="row mb-4">
                 <div class="col d-flex justify-content-start">
-                    <div class="w-100" style="max-width: 300px;">
+                    <div class="w-100" style="max-width: 400px;">
                         <div class="input-group">
                             <input
                                 type="text"
@@ -43,7 +43,7 @@
                                 name="search"
                                 value="{{request('search')}}"
                                 class="form-control"
-                                placeholder="Buscar por nombre"
+                                placeholder="Buscar por nombre, departamento o categoría"
                             >
                             <span class="input-group-text"><i class="bi bi-search"></i></span>
                         </div>
@@ -71,7 +71,7 @@
                     <th>Nombre de la empresa</th>
                     <th>Departamento</th>
                     <th>Teléfono de la empresa</th>
-                    <th>Correo de la empresa</th>
+                    <th>Categoría o rubro</th>
                     <th>Acciones</th>
                 </tr>
                 </thead>
@@ -82,7 +82,7 @@
                         <td>{{ $proveedor->nombreEmpresa }}</td>
                         <td>{{ $proveedor->departamento }}</td>
                         <td>{{ $proveedor->telefonodeempresa }}</td>
-                        <td>{{ $proveedor->correoempresa}}</td>
+                        <td>{{ $proveedor->categoriarubro}}</td>
                         <td class="text-center">
                             <a href="{{ route('Proveedores.detalle', $proveedor->id) }}" class="btn btn-sm btn-outline-info">
                                 <i class="bi bi-eye"></i> Ver
@@ -101,6 +101,17 @@
                 @endforelse
                 </tbody>
             </table>
+
+            @if(request('search') && $proveedores->total() > 0)
+                <div class="mb-3 text-muted">
+                    Mostrando {{ $proveedores->count() }} de {{ $proveedores->total() }} resultados encontrados para
+                    "<strong>{{ request('search') }}</strong>".
+                </div>
+            @elseif(request('search') && $proveedores->total() === 0)
+                <div class="mb-3 text-danger">
+                    No se encontraron resultados para "<strong>{{ request('search') }}</strong>".
+                </div>
+            @endif
 
             <div class="d-flex justify-content-center mt-4">
                 {{ $proveedores->links('pagination::bootstrap-5') }}
