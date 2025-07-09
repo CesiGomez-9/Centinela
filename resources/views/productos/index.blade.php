@@ -30,7 +30,7 @@
                         id="searchInput"
                         class="form-control"
                         maxlength="30"
-                        placeholder="Buscar por nombre"
+                        placeholder="Buscar por nombre, serie o código"
                         onkeydown="bloquearEspacioAlInicio(event, this)"
                         oninput="eliminarEspaciosIniciales(this)"
                     >
@@ -83,7 +83,8 @@
                     <td>{{ $producto->categoria }}</td>
                     <td>{{ $producto->cantidad }}</td>
                     <td>
-                        <a href="{{ route('productos.show', $producto->id) }}" class="btn btn-outline-info btn-sm">Ver</a>
+                        <a href="{{ route('productos.show', $producto->id) }}" class="btn btn-outline-info btn-sm">
+                            <i class="bi bi-eye"></i>Ver</a>
                     </td>
                 </tr>
             @empty
@@ -108,13 +109,12 @@
                 let resultadosVisibles = 0;
 
                 filas.forEach(fila => {
-                    // Obtener texto de serie (primera celda), código (segunda celda) y nombre (.producto-nombre)
+                    // Obtener todas las celdas de la fila
                     const celdas = fila.querySelectorAll('td');
-                    const serie = celdas[0].textContent.toLowerCase();
-                    const codigo = celdas[1].textContent.toLowerCase();
-                    const nombre = fila.querySelector('.producto-nombre').textContent.toLowerCase();
+                    const serie = celdas[1].textContent.toLowerCase(); // segunda celda
+                    const codigo = celdas[2].textContent.toLowerCase(); // tercera celda
+                    const nombre = celdas[3].textContent.toLowerCase(); // cuarta celda
 
-                    // Comprobar si filtro está en alguna de las 3 columnas
                     if (
                         filtro === '' ||
                         serie.includes(filtro) ||
@@ -125,10 +125,13 @@
                         resultadosVisibles++;
 
                         if (filtro !== '') {
-                            // Resaltar texto solo en el nombre (puedes adaptar si quieres en serie o código también)
-                            resaltarTexto(fila.querySelector('.producto-nombre'), filtro);
+                            resaltarTexto(celdas[1], filtro); // Resaltar serie
+                            resaltarTexto(celdas[2], filtro); // Resaltar código
+                            resaltarTexto(celdas[3], filtro); // Resaltar nombre
                         } else {
-                            quitarResaltado(fila.querySelector('.producto-nombre'));
+                            quitarResaltado(celdas[1]);
+                            quitarResaltado(celdas[2]);
+                            quitarResaltado(celdas[3]);
                         }
                     } else {
                         fila.style.display = 'none';
@@ -143,7 +146,7 @@
                     if (filtro === '') {
                         noProductsRow.style.display = filas.length === 0 ? '' : 'none';
                     } else {
-                        noProductsRow.style.display = 'none';
+                        noProductsRow.style.display = resultadosVisibles === 0 ? '' : 'none';
                     }
                 }
             });
