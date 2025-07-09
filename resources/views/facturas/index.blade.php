@@ -33,7 +33,7 @@
                         id="searchInput"
                         class="form-control"
                         maxlength="30"
-                        placeholder="Buscar por nombre"
+                        placeholder="Buscar por numero de factura "
                         onkeydown="bloquearEspacioAlInicio(event, this)"
                         oninput="eliminarEspaciosIniciales(this)">
                     <span class="input-group-text"><i class="bi bi-search"></i></span>
@@ -57,7 +57,6 @@
     @endif
 
     <!-- Mensaje de resultados -->
-    <div id="searchResults" class="mb-3"></div>
     <table class="table table-bordered table-hover align-middle">
         <thead class="table-dark text-center">
         <tr>
@@ -106,8 +105,7 @@
         @endforelse
         </tbody>
     </table>
-
-
+    <div id="searchResults" class="mb-3"></div>
 
 
     <script>
@@ -121,37 +119,35 @@
                 let resultadosVisibles = 0;
 
                 filas.forEach(fila => {
-                    // Obtener número de factura y categorías
                     const numeroFactura = fila.querySelector('.factura-numeroFactura').textContent.toLowerCase();
-                    const categoria = fila.querySelector('.factura-categoria').textContent.toLowerCase();
+                    const fecha = fila.querySelector('.factura-fecha').textContent.toLowerCase();
+                    const total = fila.querySelector('.factura-totalF').textContent.toLowerCase();
 
-                    // Comprobar si el filtro está en número de factura o en categoría
-                    if (filtro === '' || numeroFactura.includes(filtro) || categoria.includes(filtro)) {
+                    if (filtro === '' || numeroFactura.includes(filtro) || fecha.includes(filtro) || total.includes(filtro)) {
                         fila.style.display = '';
                         resultadosVisibles++;
 
-                        // Resaltar texto en número de factura
                         if (filtro !== '') {
                             resaltarTexto(fila.querySelector('.factura-numeroFactura'), filtro);
-                            resaltarTexto(fila.querySelector('.factura-categoria'), filtro);
+                            resaltarTexto(fila.querySelector('.factura-fecha'), filtro);
+                            resaltarTexto(fila.querySelector('.factura-totalF'), filtro);
                         } else {
                             quitarResaltado(fila.querySelector('.factura-numeroFactura'));
-                            quitarResaltado(fila.querySelector('.factura-categoria'));
+                            quitarResaltado(fila.querySelector('.factura-fecha'));
+                            quitarResaltado(fila.querySelector('.factura-totalF'));
                         }
                     } else {
                         fila.style.display = 'none';
                     }
                 });
 
-                // Mostrar mensaje de resultados
                 mostrarResultados(filtro, resultadosVisibles);
 
-                // Mostrar/ocultar fila "no hay productos"
                 if (noProductsRow) {
                     if (filtro === '') {
                         noProductsRow.style.display = filas.length === 0 ? '' : 'none';
                     } else {
-                        noProductsRow.style.display = 'none';
+                        noProductsRow.style.display = resultadosVisibles === 0 ? '' : 'none';
                     }
                 }
             });
@@ -173,15 +169,16 @@
             const textoOriginal = elemento.getAttribute('data-original');
             if (textoOriginal) {
                 elemento.textContent = textoOriginal;
+                elemento.removeAttribute('data-original');
             }
         }
 
         function escapeRegex(string) {
             return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         }
-
         function mostrarResultados(termino, cantidad) {
             const searchResults = document.getElementById('searchResults');
+            const totalFilas = document.querySelectorAll('.factura-row').length;
 
             if (termino === '') {
                 searchResults.innerHTML = '';
@@ -190,17 +187,21 @@
 
             if (cantidad === 0) {
                 searchResults.innerHTML = `
-                <div class="alert alert-warning" role="alert">
-                    <i class="bi bi-exclamation-triangle me-2"></i>
-                    No se encontraron facturas con el término "<strong>${termino}</strong>"
-                </div>
-            `;
+            <div class="alert alert-warning" role="alert">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                No se encontraron facturas con el término "<strong>${termino}</strong>"
+            </div>
+        `;
             } else {
                 searchResults.innerHTML = `
-
-            `;
+            <div>
+                Mostrando <strong>${cantidad}</strong> de <strong>${totalFilas}</strong> facturas encontradas para "<strong>${termino}</strong>"
+            </div>
+        `;
             }
         }
+
+
 
         function bloquearEspacioAlInicio(e, input) {
             if (e.key === ' ' && input.selectionStart === 0) {
@@ -211,12 +212,12 @@
         function eliminarEspaciosIniciales(input) {
             input.value = input.value.replace(/^\s+/, '');
 
-            // Si pega un texto largo, lo limita a 30 caracteres
             if (input.value.length > 30) {
                 input.value = input.value.substring(0, 30);
             }
         }
     </script>
+
 
 
     <div class="d-flex justify-content mt-5">
