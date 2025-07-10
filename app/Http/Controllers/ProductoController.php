@@ -12,26 +12,32 @@ class ProductoController extends Controller
     /**
      * Muestra una lista de los recursos.
      */
+
     public function index(Request $request)
     {
         // Cargar la relación 'impuesto' para mostrar el nombre del impuesto en la vista si es necesario
         $query = Producto::with('impuesto');
 
-        // Si hay un término de búsqueda, aplicarlo a la consulta
-        if ($request->has('search') && !empty($request->search)) {
-            $searchTerm = $request->search;
-            $query->where(function ($q) use ($searchTerm) {
-                $q->where('serie', 'LIKE', '%' . $searchTerm . '%')
-                    ->orWhere('codigo', 'LIKE', '%' . $searchTerm . '%')
-                    ->orWhere('nombre', 'LIKE', '%' . $searchTerm . '%')
-                    ->orWhere('categoria', 'LIKE', '%' . $searchTerm . '%');
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('nombre', 'like', "%{$search}%")
+                    ->orWhere('serie', 'like', "%{$search}%")
+                    ->orWhere('codigo', 'like', "%{$search}%");
             });
         }
 
-        $productos = $query->paginate(10);
+        if ($request->filled('categoria')) {
+            $query->where('categoria', $request->input('categoria'));
+        }
 
-        return view('productos.index', compact('productos'));
+        $productos = $query->orderBy('nombre')->paginate(10)->withQueryString();
+
+        $categorias = Producto::select('categoria')->distinct()->pluck('categoria');
+
+        return view('productos.index', compact('productos', 'categorias'));
     }
+
 
     /**
      * Muestra el formulario para crear un nuevo recurso.
