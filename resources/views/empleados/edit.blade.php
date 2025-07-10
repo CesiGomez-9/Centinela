@@ -16,7 +16,7 @@
 <nav class="navbar navbar-expand-lg" style="background-color: #0A1F44; padding-top: 1.2rem; padding-bottom: 1.2rem; font-family: 'Courier New', sans-serif;">
     <div class="container" style="max-width: 1600px;">
         <a class="navbar-brand text-white fw-bold" href="#">
-            <img src="{{ asset('centinela.jpg') }}" style="height:80px; margin-right: 10px;" alt="Logo Grupo Centinela">
+            <img src="{{ asset('seguridad/logo.jpg') }}" style="height:80px; margin-right: 10px;" alt="Logo Grupo Centinela">
             Grupo Centinela
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -34,11 +34,11 @@
 </nav>
 
 <div class="container bg-white p-5 rounded shadow mt-5 mb-5" style="max-width: 950px;">
-        <div class="d-flex justify-content-center mb-4">
-            <h3 class="mb-0 text-center" style="color: #09457f;">
-                <i class="bi bi-person-badge-fill me-2"></i>Editar datos del empleado
-            </h3>
-        </div>
+    <div class="d-flex justify-content-center mb-4">
+        <h3 class="mb-0 text-center" style="color: #09457f;">
+            <i class="bi bi-person-badge-fill me-2"></i>Editar datos del empleado
+        </h3>
+    </div>
 
 
     <form  id="empleadoForm" action="{{ route('empleados.update', $empleado->id) }}" method="POST" onsubmit="return validarFormulario()" novalidate>
@@ -678,76 +678,76 @@
 
 
 
-        function configurarValidacionTelefono(id) {
+    function configurarValidacionTelefono(id) {
         const input = document.getElementById(id);
 
         input.addEventListener('keydown', function (e) {
-        const teclasPermitidas = [
-        'Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Home', 'End'
-        ];
-        if (teclasPermitidas.includes(e.key)) return;
+            const teclasPermitidas = [
+                'Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Home', 'End'
+            ];
+            if (teclasPermitidas.includes(e.key)) return;
 
-        if (!/[0-9]/.test(e.key)) {
-        e.preventDefault();
-        return;
-    }
+            if (!/[0-9]/.test(e.key)) {
+                e.preventDefault();
+                return;
+            }
 
-        if (this.selectionStart === 0 && !['2', '3', '8', '9'].includes(e.key)) {
-        e.preventDefault();
-    }
-    });
+            if (this.selectionStart === 0 && !['2', '3', '8', '9'].includes(e.key)) {
+                e.preventDefault();
+            }
+        });
 
         input.addEventListener('input', function () {
-        let valor = this.value.replace(/[^0-9]/g, '');
+            let valor = this.value.replace(/[^0-9]/g, '');
 
-        if (valor.length > 8) {
-        valor = valor.slice(0, 8);
+            if (valor.length > 8) {
+                valor = valor.slice(0, 8);
+            }
+
+            if (/^(\d)\1{7}$/.test(valor)) {
+                this.classList.add('is-invalid');
+                mostrarError(this, 'No puede tener todos los dígitos iguales.');
+            } else if (valor.length === 8 && !['2', '3', '8', '9'].includes(valor[0])) {
+                this.classList.add('is-invalid');
+                mostrarError(this, 'Debe comenzar con 2, 3, 8 o 9.');
+            } else {
+                this.classList.remove('is-invalid');
+                limpiarError(this);
+            }
+
+            this.value = valor;
+        });
     }
 
-        if (/^(\d)\1{7}$/.test(valor)) {
-        this.classList.add('is-invalid');
-        mostrarError(this, 'No puede tener todos los dígitos iguales.');
-    } else if (valor.length === 8 && !['2', '3', '8', '9'].includes(valor[0])) {
-        this.classList.add('is-invalid');
-        mostrarError(this, 'Debe comenzar con 2, 3, 8 o 9.');
-    } else {
-        this.classList.remove('is-invalid');
-        limpiarError(this);
-    }
-
-        this.value = valor;
-    });
-    }
-
-        function mostrarError(input, mensaje) {
+    function mostrarError(input, mensaje) {
         const errorId = 'error-' + input.id;
         let errorEl = document.getElementById(errorId);
 
         if (!errorEl) {
-        errorEl = document.createElement('div');
-        errorEl.classList.add('invalid-feedback');
-        errorEl.id = errorId;
-        input.parentNode.appendChild(errorEl);
-    }
+            errorEl = document.createElement('div');
+            errorEl.classList.add('invalid-feedback');
+            errorEl.id = errorId;
+            input.parentNode.appendChild(errorEl);
+        }
 
         errorEl.textContent = mensaje;
         input.classList.add('is-invalid');
     }
 
-        function limpiarError(input) {
+    function limpiarError(input) {
         const errorId = 'error-' + input.id;
         const errorEl = document.getElementById(errorId);
         if (errorEl) {
-        errorEl.remove();
-    }
+            errorEl.remove();
+        }
         input.classList.remove('is-invalid');
     }
 
-        configurarValidacionTelefono('telefono');
-        configurarValidacionTelefono('telefonodeemergencia');
+    configurarValidacionTelefono('telefono');
+    configurarValidacionTelefono('telefonodeemergencia');
 
 
-document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function () {
         permitirSoloTelefonosValidos(document.getElementById('telefono'));
         permitirSoloTelefonosValidos(document.getElementById('telefonodeemergencia'));
     });
@@ -816,4 +816,3 @@ document.addEventListener('DOMContentLoaded', function () {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-
