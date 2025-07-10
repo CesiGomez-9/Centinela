@@ -17,7 +17,7 @@ class ProductoApiController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Producto::query();
+        $query = Producto::with('impuesto');
 
         // Si hay un término de búsqueda, filtrar por nombre o categoría
         if ($request->has('search') && !empty($request->search)) {

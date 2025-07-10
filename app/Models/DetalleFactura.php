@@ -13,9 +13,9 @@ class DetalleFactura extends Model
 
     protected $fillable = [
         'factura_id',
-        'product_id', // Nuevo campo: ID del producto del inventario
-        'producto',    // Nombre del producto como string (redundante pero mantenido por compatibilidad)
-        'categoria',   // Categoría del producto como string (redundante pero mantenido por compatibilidad)
+        'product_id',
+        'producto',    // Nombre del producto como string (mantenido por compatibilidad)
+        'categoria',   // Categoría del producto como string (mantenido por compatibilidad)
         'precio_compra',
         'precio_venta',
         'cantidad',
@@ -49,8 +49,7 @@ class DetalleFactura extends Model
     {
         return $this->belongsTo(Producto::class, 'product_id');
     }
-    public function producto()
-    {
-        return $this->belongsTo(Producto::class);
-    }
+
+    // Eliminamos la relación 'public function producto()' para evitar ambigüedad
+    // ya que 'productoInventario()' ya maneja la relación con el modelo Producto.
 }

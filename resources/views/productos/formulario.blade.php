@@ -135,23 +135,22 @@
                                 </div>
                             </div>
 
-                            {{-- Campo IVA (ahora es_exento) --}}
+                            {{-- Campo de selección de Impuesto --}}
                             <div class="col-md-6">
-                                <label for="es_exento" class="form-label">IVA del producto</label>
+                                <label for="impuesto_id" class="form-label">Tipo de Impuesto</label>
                                 <div class="input-group has-validation">
                                     <span class="input-group-text"><i class="bi bi-percent"></i></span>
-                                    <select name="es_exento" id="es_exento" class="form-select @error('es_exento') is-invalid @enderror" required>
+                                    <select name="impuesto_id" id="impuesto_id" class="form-select @error('impuesto_id') is-invalid @enderror" required>
                                         <option value="">Seleccione una opción</option>
-                                        {{-- old('es_exento') puede ser '0' o '1' (string) si hay error de validación --}}
-                                        {{-- $producto->es_exento es un booleano (true/false) --}}
-                                        <option value="1" {{ (old('es_exento', isset($producto) ? ($producto->es_exento ? '1' : '0') : '') == '1') ? 'selected' : '' }}>
-                                            Exento (0%)
-                                        </option>
-                                        <option value="0" {{ (old('es_exento', isset($producto) ? ($producto->es_exento ? '1' : '0') : '') == '0') ? 'selected' : '' }}>
-                                            No exento (15%)
-                                        </option>
+                                        {{-- $impuestos viene del controlador --}}
+                                        @foreach($impuestos as $impuesto)
+                                            <option value="{{ $impuesto->id }}"
+                                                {{ old('impuesto_id', $producto->impuesto_id ?? '') == $impuesto->id ? 'selected' : '' }}>
+                                                {{ $impuesto->nombre }} ({{ $impuesto->porcentaje }}%) {{-- ¡Cambiado aquí! --}}
+                                            </option>
+                                        @endforeach
                                     </select>
-                                    @error('es_exento')
+                                    @error('impuesto_id')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>

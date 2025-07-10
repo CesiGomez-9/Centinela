@@ -12,7 +12,8 @@
             color: #dc3545;
             font-size: 0.875em;
             margin-top: 0.25rem;
-            display: none;
+            display: none; /* Controlado por JS para mostrar/ocultar */
+            width: 100%; /* Asegura que ocupe todo el ancho disponible de su contenedor */
         }
         .field-error {
             border-color: #dc3545;
@@ -44,6 +45,67 @@
         .modal-backdrop:not(.show) {
             display: none !important;
             opacity: 0 !important;
+        }
+
+        /* Estilos específicos para la sección de resumen */
+        .summary-value-box {
+            background-color: #e9ecef;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            padding: 0.375rem 0.75rem;
+            text-align: end;
+            font-weight: normal !important; /* Asegura que no haya negrita */
+            box-sizing: border-box; /* Incluye padding y border en el ancho */
+            width: 100%; /* Asegura que tome el 100% del ancho de su columna col-4 */
+        }
+
+        /* Estilos para el modal */
+        #productosModal .modal-body {
+            font-size: 0.95rem; /* Tamaño de fuente para el cuerpo del modal */
+        }
+        #productosModal .table th,
+        #productosModal .table td {
+            font-size: 0.9rem; /* Tamaño de fuente para las celdas de la tabla del modal */
+        }
+        #productosModal .form-label {
+            font-size: 0.95rem; /* Tamaño de fuente para las etiquetas de los formularios en el modal */
+        }
+        #productosModal .form-control {
+            font-size: 0.95rem; /* Tamaño de fuente para los inputs en el modal */
+        }
+
+        /* Estilos para el formulario principal (ajustados para coincidir con el modal) */
+        .form-label {
+            font-size: 0.95rem; /* Tamaño de fuente para las etiquetas del formulario principal */
+        }
+        .form-control, .form-select {
+            font-size: 0.95rem; /* Tamaño de fuente para los inputs y selects del formulario principal */
+        }
+        #tablaFacturaProductos th,
+        #tablaFacturaProductos td {
+            font-size: 0.9rem; /* Tamaño de fuente para la tabla principal */
+        }
+        .summary-value-box {
+            font-size: 0.95rem; /* Ajustar el tamaño de la letra en las cajas de resumen */
+        }
+
+        /* Hacer más pequeños los textfields de precio compra, precio venta y cantidad en el modal */
+        #productosModal .form-edicion-producto input[type="number"] {
+            max-width: 100px; /* Ajusta este valor según sea necesario */
+            display: inline-block; /* Asegura que no rompa el diseño de la línea */
+        }
+
+        /* Reducir el espacio entre los campos de precio y cantidad en el modal */
+        #productosModal .modal-product-inputs-row > [class*="col-"] {
+            padding-left: 0 !important; /* Elimina el padding izquierdo de las columnas */
+            padding-right: 0 !important; /* Elimina el padding derecho de las columnas */
+        }
+        /* Añadir un pequeño margen entre los inputs para que no estén completamente pegados si se desea */
+        #productosModal .modal-product-inputs-row input[type="number"] {
+            margin-right: 0.2rem; /* Un pequeño margen a la derecha de cada input */
+        }
+        #productosModal .modal-product-inputs-row input[type="number"]:last-of-type {
+            margin-right: 0; /* Elimina el margen del último input en la fila */
         }
     </style>
 
@@ -184,22 +246,70 @@
                                 </div>
                             </div>
 
-                            <div class="row mt-4">
-                                <div class="col-md-4 offset-md-8">
-                                    <div class="mb-3">
-                                        <label class="form-label">Subtotal (Lps)</label>
-                                        <label class="form-control text-end" id="subtotalGeneralLabel" style="background-color: #e9ecef; border: 1px solid #ced4da; border-radius: 0.25rem; padding: 0.375rem 0.75rem;">0.00</label>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Impuestos (Lps)</label>
-                                        <label class="form-control text-end" id="impuestosGeneralLabel" style="background-color: #e9ecef; border: 1px solid #ced4da; border-radius: 0.25rem; padding: 0.375rem 0.75rem;">0.00</label>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Total final (Lps)</label>
-                                        <label class="form-control text-end" id="totalGeneralLabel" style="background-color: #e9ecef; border: 1px solid #ced4da; border-radius: 0.25rem; padding: 0.375rem 0.75rem;">0.00</label>
+                            {{-- Sección de Resumen de Factura --}}
+                            <div class="row mt-4 justify-content-end">
+                                <div class="col-md-6 col-lg-4"> {{-- Este div es el contenedor de toda la sección de resumen --}}
+                                    <div class="row g-1"> <!-- Usar un row con un pequeño gap para los items del resumen -->
+
+                                        {{-- Importe Gravado --}}
+                                        <div class="col-8 text-start">
+                                            <label class="form-label mb-0" style="white-space: nowrap; font-weight: normal;">Importe Gravado (Lps)</label>
+                                        </div>
+                                        <div class="col-4 text-end">
+                                            <label class="form-control summary-value-box" id="importeGravadoLabel">0.00</label>
+                                        </div>
+
+                                        {{-- Importe Exento --}}
+                                        <div class="col-8 text-start">
+                                            <label class="form-label mb-0" style="white-space: nowrap; font-weight: normal;">Importe Exento (Lps)</label>
+                                        </div>
+                                        <div class="col-4 text-end">
+                                            <label class="form-control summary-value-box" id="importeExentoLabel">0.00</label>
+                                        </div>
+
+                                        {{-- Importe Exonerado --}}
+                                        <div class="col-8 text-start">
+                                            <label class="form-label mb-0" style="white-space: nowrap; font-weight: normal;">Importe Exonerado (Lps)</label>
+                                        </div>
+                                        <div class="col-4 text-end">
+                                            <label class="form-control summary-value-box" id="importeExoneradoLabel">0.00</label>
+                                        </div>
+
+                                        {{-- ISV 15% --}}
+                                        <div class="col-8 text-start">
+                                            <label class="form-label mb-0" style="white-space: nowrap; font-weight: normal;">ISV 15% (Lps)</label>
+                                        </div>
+                                        <div class="col-4 text-end">
+                                            <label class="form-control summary-value-box" id="isv15Label">0.00</label>
+                                        </div>
+
+                                        {{-- ISV 18% --}}
+                                        <div class="col-8 text-start">
+                                            <label class="form-label mb-0" style="white-space: nowrap; font-weight: normal;">ISV 18% (Lps)</label>
+                                        </div>
+                                        <div class="col-4 text-end">
+                                            <label class="form-control summary-value-box" id="isv18Label">0.00</label>
+                                        </div>
+
+                                        {{-- Subtotal (Lps) --}}
+                                        <div class="col-8 text-start"> <!-- Columna para la etiqueta -->
+                                            <label class="form-label mb-0" style="white-space: nowrap; font-weight: normal;">Subtotal (Lps)</label>
+                                        </div>
+                                        <div class="col-4 text-end"> <!-- Columna para el valor -->
+                                            <label class="form-control summary-value-box" id="subtotalGeneralLabel">0.00</label>
+                                        </div>
+
+                                        {{-- Total Final --}}
+                                        <div class="col-8 text-start">
+                                            <label class="form-label mb-0" style="white-space: nowrap; font-weight: normal;">Total Final (Lps)</label>
+                                        </div>
+                                        <div class="col-4 text-end">
+                                            <label class="form-control summary-value-box" id="totalGeneralLabel">0.00</label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+
 
                             {{-- Responsable (Ahora un select que usa ID) --}}
                             <div class="col-md-6">
@@ -348,8 +458,15 @@
                 actualizarFilaVacia();
             }
 
+            // Limpiar los nuevos campos de resumen
+            document.getElementById('importeGravadoLabel').textContent = '0.00';
+            document.getElementById('importeExentoLabel').textContent = '0.00';
+            document.getElementById('importeExoneradoLabel').textContent = '0.00';
+            document.getElementById('isv15Label').textContent = '0.00';
+            document.getElementById('isv18Label').textContent = '0.00';
+
+            // Subtotal y Total Final
             document.getElementById('subtotalGeneralLabel').textContent = '0.00';
-            document.getElementById('impuestosGeneralLabel').textContent = '0.00';
             document.getElementById('totalGeneralLabel').textContent = '0.00';
 
             // Limpiar los mensajes de error de Laravel y JS
@@ -504,7 +621,7 @@
                     errorDiv.className = 'error-message';
                     precioCompraInput.parentNode.appendChild(errorDiv);
                 }
-                errorDiv.textContent = 'Precio de compra debe ser mayor que cero.';
+                errorDiv.textContent = 'Precio de compra debe ser un número entero mayor que cero.';
                 errorDiv.style.display = 'block';
                 esValido = false;
             }
@@ -518,10 +635,10 @@
                     errorDiv.className = 'error-message';
                     precioVentaInput.parentNode.appendChild(errorDiv);
                 }
-                errorDiv.textContent = 'Precio de venta debe ser mayor que cero.';
+                errorDiv.textContent = 'Precio de venta debe ser un número entero mayor que cero.';
                 errorDiv.style.display = 'block';
                 esValido = false;
-            } else if (precioVenta < precioCompra) {
+            } else if (precioVenta <= precioCompra) {
                 precioVentaInput.classList.add('field-error');
                 let errorDiv = precioVentaInput.parentNode.querySelector('.error-message');
                 if (!errorDiv) {
@@ -529,7 +646,7 @@
                     errorDiv.className = 'error-message';
                     precioVentaInput.parentNode.appendChild(errorDiv);
                 }
-                errorDiv.textContent = 'Precio de venta no puede ser menor que el precio de compra.';
+                errorDiv.textContent = 'Precio de venta debe ser mayor que el precio de compra.';
                 errorDiv.style.display = 'block';
                 esValido = false;
             }
@@ -541,7 +658,7 @@
                 if (!errorDiv) {
                     errorDiv = document.createElement('div');
                     errorDiv.className = 'error-message';
-                    precioVentaInput.parentNode.appendChild(errorDiv);
+                    cantidadInput.parentNode.appendChild(errorDiv);
                 }
                 errorDiv.textContent = 'Cantidad debe ser un número entero mayor que cero.';
                 errorDiv.style.display = 'block';
@@ -682,16 +799,27 @@
                     fila.setAttribute('data-id', producto.id);
                     fila.setAttribute('data-nombre', producto.nombre);
                     fila.setAttribute('data-categoria', producto.categoria);
-                    fila.setAttribute('data-cantidad-disponible', producto.cantidad);
-                    fila.setAttribute('data-es-exento', producto.es_exento ? 'true' : 'false');
+                    // Asegúrate de que 'cantidad' sea un entero al guardarlo en el data-attribute
+                    fila.setAttribute('data-cantidad-disponible', Math.floor(producto.cantidad));
+                    // Asegúrate de que 'impuesto' esté cargado y el porcentaje sea accesible
+                    fila.setAttribute('data-iva-porcentaje', producto.impuesto ? producto.impuesto.porcentaje : 0);
 
-                    const ivaDisplay = producto.es_exento ? '0% (Exento)' : '15% (No Exento)';
+                    // Determinar el texto a mostrar para el IVA
+                    let ivaDisplay;
+                    const ivaPorcentaje = producto.impuesto ? parseFloat(producto.impuesto.porcentaje) : 0; // Asegurarse de que sea número
+                    if (ivaPorcentaje === 0) {
+                        ivaDisplay = '0% (Exento)';
+                    } else if (ivaPorcentaje === 15 || ivaPorcentaje === 18) {
+                        ivaDisplay = `${ivaPorcentaje}% (No exento)`;
+                    } else {
+                        ivaDisplay = `${ivaPorcentaje}%`; // Para otros porcentajes no especificados
+                    }
 
                     fila.innerHTML = `
                         <td>${producto.nombre}</td>
                         <td>${producto.categoria}</td>
-                        <td><span class="badge bg-secondary">${producto.cantidad}</span></td>
-                        <td>${ivaDisplay}</td>
+                        <td><span class="badge bg-secondary">${Math.floor(producto.cantidad)}</span></td> {{-- Asegurar que se muestre como entero --}}
+                    <td>${ivaDisplay}</td>
                         <td>
                             <button type="button" class="btn btn-sm btn-info seleccionar-producto">
                                 <i class="bi bi-check-circle"></i> Seleccionar
@@ -704,29 +832,31 @@
                     filaEdicion.style.display = 'none';
                     filaEdicion.innerHTML = `
                         <td colspan="4">
-                            <form class="d-flex align-items-end gap-2 form-edicion-producto p-2" novalidate >
-                                <div style="width: 25%;">
-                                    <label class="form-label">Precio Compra (Lps)</label>
-                                    <input type="number" step="0.01" min="0.01" max="9999" class="form-control precioCompra" required>
-                                    <div class="error-message"></div>
-                                </div>
-                                <div style="width: 25%;">
-                                    <label class="form-label">Precio Venta (Lps)</label>
-                                    <input type="number" step="0.01" min="0.01" max="9999" class="form-control precioVenta" required>
-                                    <div class="error-message"></div>
-                                </div>
-                                <div style="width: 20%;">
-                                    <label class="form-label">Cantidad</label>
-                                    <input type="number" min="1" max="999" class="form-control cantidad" required>
-                                    <div class="error-message"></div>
-                                </div>
-                                <div class="d-flex gap-1">
-                                    <button type="submit" class="btn btn-primary btn-sm">
-                                        <i class="bi bi-plus-circle"></i> Agregar
-                                    </button>
-                                    <button type="button" class="btn btn-warning btn-sm limpiar-campos">
-                                         <i class="bi bi-eraser-fill"></i> Limpiar
-                                    </button>
+                            <form class="p-2 form-edicion-producto" novalidate >
+                                <div class="row modal-product-inputs-row align-items-end"> <!-- Añadida la clase modal-product-inputs-row y eliminada g-1 -->
+                                    <div class="col-md-3">
+                                        <label class="form-label">Precio Compra (Lps)</label>
+                                        <input type="number" step="1" max="9999" class="form-control precioCompra" required>
+                                        <div class="error-message"></div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Precio Venta (Lps)</label>
+                                        <input type="number" step="1" max="9999" class="form-control precioVenta" required>
+                                        <div class="error-message"></div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Cantidad</label>
+                                        <input type="number" step="1" max="999" class="form-control cantidad" required>
+                                        <div class="error-message"></div>
+                                    </div>
+                                    <div class="col-md-2 d-flex flex-column justify-content-end gap-2">
+                                        <button type="submit" class="btn btn-primary btn-sm">
+                                            <i class="bi bi-plus-circle"></i> Agregar
+                                        </button>
+                                        <button type="button" class="btn btn-warning btn-sm limpiar-campos">
+                                             <i class="bi bi-eraser-fill"></i> Limpiar
+                                        </button>
+                                    </div>
                                 </div>
                             </form>
                         </td>
@@ -808,29 +938,25 @@
 
             input.addEventListener('blur', function(e) {
                 let value = e.target.value;
-                if (value === '') {
-                    return;
-                }
-
                 let numValue = parseFloat(value);
-                let min = parseFloat(e.target.getAttribute('min'));
-                let max = parseFloat(e.target.getAttribute('max'));
+                // No usar min/max de atributos HTML para la lógica de blur, solo para validación al final
+                // let min = parseFloat(e.target.getAttribute('min'));
+                // let max = parseFloat(e.target.getAttribute('max'));
+
+                if (value === '') {
+                    return; // Permite dejar el campo vacío, la validación de formulario lo manejará
+                }
 
                 if (isNaN(numValue)) {
-                    e.target.value = '';
+                    e.target.value = ''; // Si no es un número válido, limpiar el campo
                     return;
                 }
 
-                // Ajusta el valor si está fuera de los límites min/max del atributo HTML
-                if (!isNaN(min) && numValue < min) {
-                    e.target.value = min.toFixed(isDecimal ? 2 : 0);
-                } else if (!isNaN(max) && numValue > max) {
-                    e.target.value = max.toFixed(isDecimal ? 2 : 0);
-                }
-
-                // Formatear a 2 decimales solo si es un campo decimal y tiene un valor
-                if (isDecimal && e.target.value !== '') {
-                    e.target.value = parseFloat(e.target.value).toFixed(2);
+                // Si es un número válido, formatear según si es decimal o entero
+                if (isDecimal) {
+                    e.target.value = numValue.toFixed(2);
+                } else {
+                    e.target.value = Math.floor(numValue); // Para enteros, asegurar que no haya decimales
                 }
             });
         }
@@ -861,7 +987,8 @@
 
                         const form = filaEdicion.querySelector('.form-edicion-producto');
                         form.reset();
-                        form.querySelector('.cantidad').value = '';
+                        // No pre-llenar cantidad con 1, dejarla vacía o con el valor por defecto del HTML
+                        // form.querySelector('.cantidad').value = '';
 
                         form.querySelector('.precioCompra').focus();
                     } else {
@@ -883,7 +1010,8 @@
                     });
                     form.classList.remove('was-validated');
                     form.querySelectorAll('.invalid-feedback, .valid-feedback, .error-message, .text-danger, .text-success').forEach(mensaje => {
-                        if (mensaje.parentNode) {
+                        // Solo remover si el mensaje es un div de error dinámico
+                        if (mensaje.classList.contains('error-message')) {
                             mensaje.remove();
                         }
                     });
@@ -910,8 +1038,7 @@
                     const precioCompra = parseFloat(this.querySelector('.precioCompra').value);
                     const precioVenta = parseFloat(this.querySelector('.precioVenta').value);
                     const cantidad = parseInt(this.querySelector('.cantidad').value);
-                    const iva = filaProducto.dataset.esExento === 'true' ? 0 : 15;
-
+                    const ivaPorcentaje = parseFloat(filaProducto.dataset.ivaPorcentaje); // Obtener el porcentaje de IVA real
 
                     const tablaFactura = document.getElementById('tablaFacturaBody');
                     const productosExistentes = Array.from(tablaFactura.querySelectorAll('tr')).map(tr => {
@@ -935,39 +1062,42 @@
                     }
 
                     const base = precioCompra * cantidad;
-                    const impuesto = (iva / 100) * base;
-                    const subtotal = base + impuesto;
+                    const impuestoCalculado = (ivaPorcentaje / 100) * base;
+                    const subtotalLinea = base + impuestoCalculado;
 
                     const nuevaFila = document.createElement('tr');
 
-                    const currentIndex = productoIndexCounter++;
+                    // No usamos productoIndexCounter para el `name` del input,
+                    // sino para el `data-index` y la numeración visible.
+                    // El `name` se manejará con un enfoque más robusto para Laravel (índices numéricos).
+                    const newRowIndex = tablaFactura.children.length; // Usar la longitud actual para el nuevo índice
 
-                    nuevaFila.dataset.index = currentIndex;
+                    nuevaFila.dataset.index = newRowIndex; // Asignar un índice al data-attribute de la fila
                     nuevaFila.innerHTML = `
-                        <td>${currentIndex + 1}</td>
+                        <td>${newRowIndex + 1}</td>
                         <td>
-                            <input type="hidden" name="productos[${currentIndex}][product_id]" value="${product_id}" class="hidden-product-id">
-                            <input type="hidden" name="productos[${currentIndex}][nombre]" value="${nombre}" class="hidden-nombre">
+                            <input type="hidden" name="productos[${newRowIndex}][product_id]" value="${product_id}" class="hidden-product-id">
+                            <input type="hidden" name="productos[${newRowIndex}][nombre]" value="${nombre}" class="hidden-nombre">
                             ${nombre}
                         </td>
                         <td>
-                            <input type="hidden" name="productos[${currentIndex}][categoria]" value="${categoria}" class="hidden-categoria">
+                            <input type="hidden" name="productos[${newRowIndex}][categoria]" value="${categoria}" class="hidden-categoria">
                             ${categoria}
                         </td>
                         <td>
-                            <input type="hidden" name="productos[${currentIndex}][precioCompra]" value="${precioCompra.toFixed(2)}" class="hidden-precio-compra">
-                            ${precioCompra.toFixed(2)}
+                            <input type="hidden" name="productos[${newRowIndex}][precioCompra]" value="${precioCompra.toFixed(0)}" class="hidden-precio-compra">
+                            ${precioCompra.toFixed(0)}
                         </td>
                         <td>
-                            <input type="hidden" name="productos[${currentIndex}][cantidad]" value="${cantidad}" class="hidden-cantidad">
-                            <input type="hidden" name="productos[${currentIndex}][precioVenta]" value="${precioVenta.toFixed(2)}" class="hidden-precio-venta">
+                            <input type="hidden" name="productos[${newRowIndex}][cantidad]" value="${cantidad}" class="hidden-cantidad">
+                            <input type="hidden" name="productos[${newRowIndex}][precioVenta]" value="${precioVenta.toFixed(0)}" class="hidden-precio-venta">
                             ${cantidad}
                         </td>
                         <td>
-                            <input type="hidden" name="productos[${currentIndex}][iva]" value="${iva}" class="hidden-iva">
-                            ${iva}%
+                            <input type="hidden" name="productos[${newRowIndex}][iva]" value="${ivaPorcentaje}" class="hidden-iva">
+                            ${ivaPorcentaje}%
                         </td>
-                        <td class="subtotal-producto">${subtotal.toFixed(2)}</td>
+                        <td class="subtotal-producto">${subtotalLinea.toFixed(2)}</td>
                         <td>
                             <button type="button" class="btn btn-danger btn-sm btn-eliminar-producto" title="Eliminar producto">
                                 <i class="bi bi-trash"></i>
@@ -983,11 +1113,11 @@
                     if (modalInstance) {
                         modalInstance.hide();
                     }
-                    // La llamada a limpiarFormulariosModal() está en el evento hidden.bs.modal, no aquí.
                     console.log('DEBUG: Producto agregado y totales recalculados.');
 
                     calcularTotalesGenerales();
                     document.getElementById('errorProductos').style.display = 'none';
+                    actualizarNumeracionFilas(); // Llama a la función para re-numerar
                 });
             });
         }
@@ -1075,15 +1205,15 @@
 
         function actualizarFilaVacia() {
             const tablaFactura = document.getElementById('tablaFacturaBody');
-            const filaVacia = document.getElementById('filaVacia');
+            let filaVacia = document.getElementById('filaVacia');
             const productosReales = tablaFactura.querySelectorAll('tr:not(#filaVacia)');
 
             if (productosReales.length === 0) {
                 if (!filaVacia) {
-                    const nuevaFilaVacia = document.createElement('tr');
-                    nuevaFilaVacia.id = 'filaVacia';
-                    nuevaFilaVacia.className = 'fila-vacia';
-                    nuevaFilaVacia.innerHTML = `
+                    filaVacia = document.createElement('tr');
+                    filaVacia.id = 'filaVacia';
+                    filaVacia.className = 'fila-vacia';
+                    filaVacia.innerHTML = `
                     <td colspan="8" class="text-center text-muted py-4" style="border: 1px dashed #dee2e6; background-color: #f8f9fa;">
                         <i class="bi bi-inbox" style="font-size: 2rem; opacity: 0.5;"></i>
                         <br>
@@ -1092,7 +1222,7 @@
                         <small style="font-size: 0.8rem; opacity: 0.7;">Haga clic en "Buscar Productos" para agregar productos a la factura</small>
                     </td>
                 `;
-                    tablaFactura.appendChild(nuevaFilaVacia);
+                    tablaFactura.appendChild(filaVacia);
                 } else {
                     filaVacia.style.display = 'table-row';
                 }
@@ -1103,29 +1233,72 @@
             }
         }
 
+        function actualizarNumeracionFilas() {
+            const tablaFacturaBody = document.getElementById('tablaFacturaBody');
+            const filasProductos = tablaFacturaBody.querySelectorAll('tr:not(#filaVacia)');
+            filasProductos.forEach((fila, index) => {
+                fila.querySelector('td:first-child').textContent = index + 1;
+                // También actualiza los índices en los atributos `name` de los inputs ocultos
+                fila.querySelectorAll('input[type="hidden"]').forEach(input => {
+                    const originalName = input.name;
+                    // Extrae la parte final del nombre (ej. '[product_id]', '[nombre]')
+                    const nameSuffix = originalName.match(/\[[^\]]+\]$/)[0];
+                    input.name = `productos[${index}]${nameSuffix}`;
+                });
+            });
+        }
+
+
         function calcularTotalesGenerales() {
             const tablaFacturaBody = document.getElementById('tablaFacturaBody');
             const filasProductos = tablaFacturaBody.querySelectorAll('tr:not(#filaVacia)');
-            let subtotalGeneral = 0;
-            let impuestosGeneral = 0;
+            let importeGravado = 0;
+            let importeExento = 0;
+            let importeExonerado = 0; // Por ahora, se mantiene en 0 a menos que haya una lógica específica
+            let isv15 = 0;
+            let isv18 = 0;
+            let subtotalCalculado = 0; // Suma de bases imponibles (gravado + exento + exonerado)
+            let totalFinal = 0;
 
             filasProductos.forEach(fila => {
                 const precioCompra = parseFloat(fila.querySelector('.hidden-precio-compra').value);
                 const cantidad = parseInt(fila.querySelector('.hidden-cantidad').value);
-                const iva = parseInt(fila.querySelector('.hidden-iva').value);
+                const ivaPorcentaje = parseInt(fila.querySelector('.hidden-iva').value);
 
-                const base = precioCompra * cantidad;
-                const impuesto = (iva / 100) * base;
+                const baseProducto = precioCompra * cantidad;
+                const impuestoCalculadoLinea = (ivaPorcentaje / 100) * baseProducto;
 
-                subtotalGeneral += base;
-                impuestosGeneral += impuesto;
+                // Acumular Importe Gravado / Exento
+                if (ivaPorcentaje > 0) {
+                    importeGravado += baseProducto;
+                } else {
+                    importeExento += baseProducto;
+                }
+
+                // Acumular ISV por porcentaje
+                if (ivaPorcentaje === 15) {
+                    isv15 += impuestoCalculadoLinea;
+                } else if (ivaPorcentaje === 18) {
+                    isv18 += impuestoCalculadoLinea;
+                }
+                // Si hay otros porcentajes de IVA, se añadirían aquí
+
+                // Sumar al subtotal general (suma de bases imponibles)
+                subtotalCalculado += baseProducto;
             });
 
-            const totalGeneral = subtotalGeneral + impuestosGeneral;
+            // Calcular el total final (subtotal + ISV15 + ISV18)
+            totalFinal = subtotalCalculado + isv15 + isv18;
 
-            document.getElementById('subtotalGeneralLabel').textContent = subtotalGeneral.toFixed(2); // Subtotal (base imponible)
-            document.getElementById('impuestosGeneralLabel').textContent = impuestosGeneral.toFixed(2); // Impuestos
-            document.getElementById('totalGeneralLabel').textContent = totalGeneral.toFixed(2); // Total final
+            document.getElementById('importeGravadoLabel').textContent = importeGravado.toFixed(2);
+            document.getElementById('importeExentoLabel').textContent = importeExento.toFixed(2);
+            document.getElementById('importeExoneradoLabel').textContent = importeExonerado.toFixed(2);
+            document.getElementById('isv15Label').textContent = isv15.toFixed(2);
+            document.getElementById('isv18Label').textContent = isv18.toFixed(2);
+
+            // Actualizar el Subtotal y Total Final
+            document.getElementById('subtotalGeneralLabel').textContent = subtotalCalculado.toFixed(2);
+            document.getElementById('totalGeneralLabel').textContent = totalFinal.toFixed(2);
         }
 
         // --- DOMContentLoaded Listener ---
@@ -1138,20 +1311,22 @@
                 });
             }
 
+            // Aplicar handleNumericInput a los campos de precio y cantidad en el modal
+            // Usamos setTimeout para asegurar que los elementos estén en el DOM después de la carga inicial
             setTimeout(() => {
                 document.querySelectorAll('.form-edicion-producto .precioCompra').forEach(input => {
-                    handleNumericInput(input, 4, true);
+                    handleNumericInput(input, 4, false); // 4 dígitos enteros, SIN decimales
                 });
                 document.querySelectorAll('.form-edicion-producto .precioVenta').forEach(input => {
-                    handleNumericInput(input, 4, true);
+                    handleNumericInput(input, 4, false); // 4 dígitos enteros, SIN decimales
                 });
                 document.querySelectorAll('.form-edicion-producto .cantidad').forEach(input => {
-                    handleNumericInput(input, 3, false);
+                    handleNumericInput(input, 3, false); // 3 dígitos enteros, sin decimales
                 });
-            }, 500);
+            }, 500); // Pequeño retraso para asegurar que los elementos del modal estén disponibles
 
             configurarValidacionFormulario();
-            cargarProductosEnModal();
+            cargarProductosEnModal(); // Carga inicial de productos en el modal
             configurarBuscador();
 
             const tablaFacturaBody = document.getElementById('tablaFacturaBody');
@@ -1173,11 +1348,14 @@
                             product_id: String(prodData.product_id || ''),
                             nombre: String(prodData.nombre || ''),
                             categoria: String(prodData.categoria || ''),
-                            precioCompra: parseFloat(prodData.precioCompra || 0),
-                            precioVenta: parseFloat(prodData.precioVenta || 0),
+                            // Asegurarse de que los valores cargados de old() sean enteros para precioCompra y precioVenta
+                            precioCompra: parseInt(prodData.precioCompra || 0),
+                            precioVenta: parseInt(prodData.precioVenta || 0),
                             cantidad: parseInt(prodData.cantidad || 0),
                             iva: parseFloat(prodData.iva || 0),
-                            total: parseFloat(prodData.total || 0) // Si el total ya viene en old, úsalo
+                            // El 'total' de old() podría no ser preciso si los cálculos cambian,
+                            // así que lo recalcularemos al añadir.
+                            // total: parseFloat(prodData.total || 0)
                         });
                     }
                 }
@@ -1191,27 +1369,29 @@
                         product_id: String(detail.product_id || ''),
                         nombre: String(detail.producto || ''),
                         categoria: String(detail.categoria || ''),
-                        precioCompra: parseFloat(detail.precio_compra || 0),
-                        precioVenta: parseFloat(detail.precio_venta || 0),
+                        // Asegurarse de que los valores cargados de la DB sean enteros para precioCompra y precioVenta
+                        precioCompra: parseInt(detail.precio_compra || 0),
+                        precioVenta: parseInt(detail.precio_venta || 0),
                         cantidad: parseInt(detail.cantidad || 0),
-                        iva: parseFloat(detail.iva || 0),
-                        total: parseFloat(detail.total || 0)
+                        iva: parseFloat(detail.iva || 0), // Aquí ya viene el IVA guardado en el detalle
+                        total: parseFloat(detail.total || 0) // Aquí ya viene el total guardado en el detalle
                     }));
                     console.log('DEBUG: Cargando productos desde detalles de factura existentes:', productsToLoad);
                 }
             }
 
             // Asegurarse de que el contador de índice de productos sea el correcto
+            // No es necesario para la numeración visible, pero puede ayudar si se usa para algo más
             productoIndexCounter = productsToLoad.length;
 
             if (productsToLoad.length > 0) {
                 tablaFacturaBody.innerHTML = ''; // Limpiar la fila vacía si hay productos
                 productsToLoad.forEach((producto, index) => {
-                    // Recalcular subtotal aquí para asegurar consistencia
-                    // Esto es útil si `old()` no siempre guarda el 'total' calculado
+                    // Recalcular subtotal aquí para asegurar consistencia con la lógica JS actual
+                    // (aunque el total del detalle ya viene de la DB, lo recalculamos para la visualización)
                     const baseProductoRepoblado = producto.precioCompra * producto.cantidad;
                     const impuestoProductoRepoblado = (producto.iva / 100) * baseProductoRepoblado;
-                    const subtotalDisplay = (baseProductoRepoblado + impuestoProductoRepoblado).toFixed(2);
+                    const subtotalDisplay = (baseProductoRepoblado + impuestoProductoRepoblado).toFixed(2); // Mantener 2 decimales para el subtotal de la línea
 
                     const nuevaFila = document.createElement('tr');
                     nuevaFila.dataset.index = index; // Usar el índice del array
@@ -1220,20 +1400,20 @@
                         <td>
                             <input type="hidden" name="productos[${index}][product_id]" value="${producto.product_id}" class="hidden-product-id">
                             <input type="hidden" name="productos[${index}][nombre]" value="${producto.nombre}" class="hidden-nombre">
-                            ${producto.nombre}
+                            ${nombre}
                         </td>
                         <td>
                             <input type="hidden" name="productos[${index}][categoria]" value="${producto.categoria}" class="hidden-categoria">
-                            ${producto.categoria}
+                            ${categoria}
                         </td>
                         <td>
-                            <input type="hidden" name="productos[${index}][precioCompra]" value="${producto.precioCompra.toFixed(2)}" class="hidden-precio-compra">
-                            ${producto.precioCompra.toFixed(2)}
+                            <input type="hidden" name="productos[${index}][precioCompra]" value="${producto.precioCompra.toFixed(0)}" class="hidden-precio-compra">
+                            ${producto.precioCompra.toFixed(0)}
                         </td>
                         <td>
                             <input type="hidden" name="productos[${index}][cantidad]" value="${producto.cantidad}" class="hidden-cantidad">
-                            <input type="hidden" name="productos[${index}][precioVenta]" value="${producto.precioVenta.toFixed(2)}" class="hidden-precio-venta">
-                            ${producto.cantidad}
+                            <input type="hidden" name="productos[${index}][precioVenta]" value="${producto.precioVenta.toFixed(0)}" class="hidden-precio-venta">
+                            ${cantidad}
                         </td>
                         <td>
                             <input type="hidden" name="productos[${index}][iva]" value="${producto.iva}" class="hidden-iva">
@@ -1250,6 +1430,7 @@
                 });
                 actualizarFilaVacia(); // Ocultará la fila vacía si hay productos
                 calcularTotalesGenerales();
+                actualizarNumeracionFilas(); // Asegurar que la numeración sea correcta al cargar
             } else {
                 actualizarFilaVacia(); // Asegurará que la fila vacía se muestre si no hay productos
                 calcularTotalesGenerales();
@@ -1263,6 +1444,7 @@
                 fila.remove();
                 calcularTotalesGenerales();
                 actualizarFilaVacia();
+                actualizarNumeracionFilas(); // Llama a la función para re-numerar
             }
         });
 

@@ -15,19 +15,30 @@ class Producto extends Model
         'nombre',
         'marca',
         'modelo',
-        'cantidad',    // Asegúrate de que esté aquí
-        'es_exento',   // Asegúrate de que esté aquí
+        'cantidad',
+        'impuesto_id',
         'categoria',
         'descripcion',
     ];
 
     protected $casts = [
         'cantidad' => 'integer',
-        'es_exento' => 'boolean', // Asegúrate de que esté aquí
     ];
+
+    /**
+     * Define la relación uno a muchos con Detalle.
+     */
     public function detalles()
     {
         return $this->hasMany(Detalle::class);
     }
-}
 
+    /**
+     * Define la relación muchos a uno con Impuesto.
+     * Un producto pertenece a un tipo de impuesto.
+     */
+    public function impuesto()
+    {
+        return $this->belongsTo(Impuesto::class);
+    }
+}
