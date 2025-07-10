@@ -6,6 +6,7 @@ use App\Models\Factura;
 use App\Models\Proveedor;
 use App\Models\Empleado;
 use App\Models\Producto;
+use App\Models\Impuesto; // Importar el modelo Impuesto
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -18,25 +19,26 @@ class FacturaController extends Controller
      */
     public function index(Request $request)
     {
-        // Tu lógica actual de index parece tener una duplicidad.
-        // Me quedo con la primera parte que es más directa. Si necesitas la búsqueda,
-        // la segunda parte debería ser la única activa.
-        $facturas = Factura::with(['detalles', 'empleado'])->orderBy('numero_factura')->paginate(10);
-        return view('facturas.index', compact('facturas'));
-
-
-        // Si quisieras la búsqueda, este sería el bloque activo:
-        /*
+        // Cargar las relaciones necesarias para la vista
         $query = Factura::with(['detalles', 'proveedor', 'empleado']);
 
+        // Si hay un término de búsqueda, aplicarlo a la consulta
         if ($request->has('search') && !empty($request->search)) {
             $searchTerm = $request->search;
-            $query->where('numero_factura', 'LIKE', '%' . $searchTerm . '%');
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('numero_factura', 'LIKE', '%' . $searchTerm . '%')
+                    ->orWhereHas('proveedor', function ($q) use ($searchTerm) {
+                        $q->where('nombreEmpresa', 'LIKE', '%' . $searchTerm . '%');
+                    })
+                    ->orWhereHas('empleado', function ($q) use ($searchTerm) {
+                        $q->where('nombre', 'LIKE', '%' . $searchTerm . '%');
+                    });
+            });
         }
 
-        $facturas = $query->paginate(10);
+        $facturas = $query->orderBy('fecha', 'desc')->paginate(10); // Ordenar por fecha descendente
+
         return view('facturas.index', compact('facturas'));
-        */
     }
 
     /**
@@ -77,9 +79,21 @@ class FacturaController extends Controller
             'productos.*.nombre' => ['required', 'string', 'max:255'],
             'productos.*.categoria' => ['required', 'string', 'max:255'],
             'productos.*.precioCompra' => ['required', 'numeric', 'min:0'],
-            'productos.*.precioVenta' => ['required', 'numeric', 'min:0'],
+            'productos.*.precioVenta' => [
+                'required',
+                'numeric',
+                'min:0',
+                // Validación: precioVenta no debe ser menor o igual al precioCompra
+                function ($attribute, $value, $fail) use ($request) {
+                    $index = explode('.', $attribute)[1]; // Obtiene el índice del producto
+                    $precioCompra = $request->input("productos.{$index}.precioCompra");
+                    if ($value <= $precioCompra) {
+                        $fail("El precio de venta ({$value}) no puede ser menor o igual al precio de compra ({$precioCompra}).");
+                    }
+                },
+            ],
             'productos.*.cantidad' => ['required', 'integer', 'min:1'],
-            'productos.*.iva' => ['required', 'numeric', 'min:0', 'max:100'],
+            // 'productos.*.iva' ya no se valida directamente, se obtiene del producto
         ], [
             'numero_factura.unique' => 'El número de factura ingresado ya existe. Por favor, ingrese uno diferente.',
             'fecha.required' => 'La fecha es obligatoria.',
@@ -94,12 +108,21 @@ class FacturaController extends Controller
             'productos.min' => 'Debe agregar al menos un producto a la factura.',
             'productos.*.product_id.required' => 'El ID del producto es obligatorio para cada producto.',
             'productos.*.product_id.exists' => 'Uno o más productos seleccionados no son válidos.',
+            'productos.*.precioCompra.min' => 'El precio de compra no puede ser negativo.',
+            'productos.*.precioVenta.min' => 'El precio de venta no puede ser negativo.',
+            'productos.*.cantidad.min' => 'La cantidad debe ser al menos 1.',
         ]);
 
         try {
             DB::transaction(function () use ($request) {
-                $subtotalGeneral = 0;
-                $impuestosGeneral = 0;
+                $importeGravado = 0;
+                $importeExento = 0;
+                $importeExonerado = 0; // Se mantiene, pero su lógica específica dependerá de un flag en Producto/Impuesto
+                $isv15 = 0;
+                $isv18 = 0;
+                $subtotalGeneral = 0; // Suma de importeGravado + importeExento + importeExonerado
+                $impuestosGeneral = 0; // Suma de isv15 + isv18
+                $totalFinal = 0;
 
                 $factura = Factura::create([
                     'numero_factura' => $request->numero_factura,
@@ -107,25 +130,45 @@ class FacturaController extends Controller
                     'proveedor_id' => $request->proveedor_id,
                     'forma_pago' => $request->forma_pago,
                     'responsable_id' => $request->responsable_id,
-                    'subtotal' => 0,
-                    'impuestos' => 0,
-                    'totalF' => 0,
+                    'importe_gravado' => 0,
+                    'importe_exento' => 0,
+                    'importe_exonerado' => 0,
+                    'isv_15' => 0,
+                    'isv_18' => 0,
+                    'subtotal' => 0, // Se actualizará al final
+                    'impuestos' => 0, // Se actualizará al final
+                    'totalF' => 0,   // Se actualizará al final
                 ]);
 
                 // Itera sobre los productos enviados en la solicitud
                 foreach ($request->productos as $productoData) {
-                    // Busca el producto en la base de datos para actualizar su cantidad
-                    $producto = Producto::find($productoData['product_id']);
+                    // Busca el producto en la base de datos para obtener su impuesto y actualizar cantidad
+                    $producto = Producto::with('impuesto')->find($productoData['product_id']);
 
-                    if ($producto) {
-                        // Calcula la base imponible del producto
+                    if ($producto && $producto->impuesto) {
                         $baseProducto = $productoData['precioCompra'] * $productoData['cantidad'];
-                        // Calcula el IVA del producto
-                        $ivaProducto = ($productoData['iva'] / 100) * $baseProducto;
-                        // Calcula el total del producto
+                        $porcentajeIVA = $producto->impuesto->porcentaje; // Usar el porcentaje del impuesto del producto
+
+                        // Calcular importes gravados/exentos
+                        if ($porcentajeIVA > 0) {
+                            $importeGravado += $baseProducto;
+                        } else {
+                            // Asumimos que 0% es exento. Si 'Exonerado' es distinto, necesita un flag.
+                            $importeExento += $baseProducto;
+                        }
+
+                        // Calcular IVA específico
+                        $ivaProducto = ($porcentajeIVA / 100) * $baseProducto;
+                        if ($porcentajeIVA == 15) {
+                            $isv15 += $ivaProducto;
+                        } elseif ($porcentajeIVA == 18) {
+                            $isv18 += $ivaProducto;
+                        }
+                        // Si hubiera otros porcentajes, se añadirían aquí
+
                         $totalProducto = $baseProducto + $ivaProducto;
 
-                        // Acumula los subtotales e impuestos generales
+                        // Acumula los subtotales e impuestos generales para los campos antiguos (subtotal, impuestos)
                         $subtotalGeneral += $baseProducto;
                         $impuestosGeneral += $ivaProducto;
 
@@ -137,7 +180,7 @@ class FacturaController extends Controller
                             'precio_compra' => $productoData['precioCompra'],
                             'precio_venta' => $productoData['precioVenta'],
                             'cantidad' => $productoData['cantidad'],
-                            'iva' => $productoData['iva'],
+                            'iva' => $porcentajeIVA, // Guardar el porcentaje de IVA real
                             'total' => $totalProducto,
                         ]);
 
@@ -145,17 +188,24 @@ class FacturaController extends Controller
                         $producto->cantidad += $productoData['cantidad'];
                         $producto->save();
                     } else {
-                        \Log::warning("Producto con ID {$productoData['product_id']} no encontrado al crear factura.");
+                        // Esto debería ser capturado por la validación 'exists', pero es un buen fallback
+                        \Log::warning("Producto o Impuesto asociado no encontrado para ID {$productoData['product_id']} al crear factura.");
+                        // Podrías lanzar una excepción aquí o manejarlo de otra forma si es un error crítico
                     }
                 }
 
-                // Calcula el total final de la factura
-                $totalFinal = $subtotalGeneral + $impuestosGeneral;
+                // Calcular el total final de la factura
+                $totalFinal = $importeGravado + $importeExento + $importeExonerado + $isv15 + $isv18;
 
-                // Actualiza los campos de subtotal, impuestos y totalF en la factura
+                // Actualiza los campos de resumen y los campos antiguos en la factura
                 $factura->update([
-                    'subtotal' => $subtotalGeneral,
-                    'impuestos' => $impuestosGeneral,
+                    'importe_gravado' => $importeGravado,
+                    'importe_exento' => $importeExento,
+                    'importe_exonerado' => $importeExonerado,
+                    'isv_15' => $isv15,
+                    'isv_18' => $isv18,
+                    'subtotal' => $subtotalGeneral, // Mantengo por compatibilidad, es la suma de bases
+                    'impuestos' => $impuestosGeneral, // Mantengo por compatibilidad, es la suma de ISVs
                     'totalF' => $totalFinal,
                 ]);
             });
@@ -164,14 +214,9 @@ class FacturaController extends Controller
             return redirect()->route('facturas.index')->with('status', 'Factura registrada correctamente');
 
         } catch (\Throwable $e) {
-            // Manejo de errores para depuración
-            echo "<h1>Error Fatal en el Servidor</h1>";
-            echo "<p>Mensaje: " . $e->getMessage() . "</p>";
-            echo "<p>Archivo: " . $e->getFile() . "</p>";
-            echo "<p>Línea: " . $e->getLine() . "</p>";
-            echo "<h2>Rastreo de la Pila:</h2>";
-            echo "<pre>" . $e->getTraceAsString() . "</pre>";
-            exit;
+            // Manejo de errores para depuración. En producción, esto debería ser un log y un mensaje amigable.
+            \Log::error("Error al guardar factura: " . $e->getMessage() . " en " . $e->getFile() . " línea " . $e->getLine());
+            return back()->withInput()->with('error', 'Error al guardar la factura: ' . $e->getMessage());
         }
     }
 
@@ -180,7 +225,8 @@ class FacturaController extends Controller
      */
     public function show(string $id)
     {
-        $factura = Factura::with(['detalles', 'proveedor', 'empleado'])->findOrFail($id);
+        // Cargar las relaciones necesarias para mostrar los detalles completos
+        $factura = Factura::with(['detalles.productoInventario.impuesto', 'proveedor', 'empleado'])->findOrFail($id);
         return view('facturas.show', compact('factura'));
     }
 
@@ -189,7 +235,8 @@ class FacturaController extends Controller
      */
     public function edit(string $id)
     {
-        $factura = Factura::with(['detalles', 'proveedor', 'empleado'])->findOrFail($id);
+        // Cargar la factura con sus detalles y las relaciones de productos e impuestos
+        $factura = Factura::with(['detalles.productoInventario.impuesto', 'proveedor', 'empleado'])->findOrFail($id);
         $proveedores = Proveedor::orderBy('nombreEmpresa')->get();
         $empleados = Empleado::orderBy('nombre')->get();
         $formasPago = ['Efectivo', 'Cheque', 'Transferencia'];
@@ -223,9 +270,21 @@ class FacturaController extends Controller
             'productos.*.nombre' => ['required', 'string', 'max:255'],
             'productos.*.categoria' => ['required', 'string', 'max:255'],
             'productos.*.precioCompra' => ['required', 'numeric', 'min:0'],
-            'productos.*.precioVenta' => ['required', 'numeric', 'min:0'],
+            'productos.*.precioVenta' => [
+                'required',
+                'numeric',
+                'min:0',
+                // Validación: precioVenta no debe ser menor o igual al precioCompra
+                function ($attribute, $value, $fail) use ($request) {
+                    $index = explode('.', $attribute)[1]; // Obtiene el índice del producto
+                    $precioCompra = $request->input("productos.{$index}.precioCompra");
+                    if ($value <= $precioCompra) {
+                        $fail("El precio de venta ({$value}) no puede ser menor o igual al precio de compra ({$precioCompra}).");
+                    }
+                },
+            ],
             'productos.*.cantidad' => ['required', 'integer', 'min:1'],
-            'productos.*.iva' => ['required', 'numeric', 'min:0', 'max:100'],
+            // 'productos.*.iva' ya no se valida directamente, se obtiene del producto
         ], [
             'numero_factura.unique' => 'El número de factura ingresado ya existe. Por favor, ingrese uno diferente.',
             'fecha.required' => 'La fecha es obligatoria.',
@@ -240,16 +299,18 @@ class FacturaController extends Controller
             'productos.min' => 'Debe agregar al menos un producto a la factura.',
             'productos.*.product_id.required' => 'El ID del producto es obligatorio para cada producto.',
             'productos.*.product_id.exists' => 'Uno o más productos seleccionados no son válidos.',
+            'productos.*.precioCompra.min' => 'El precio de compra no puede ser negativo.',
+            'productos.*.precioVenta.min' => 'El precio de venta no puede ser negativo.',
+            'productos.*.cantidad.min' => 'La cantidad debe ser al menos 1.',
         ]);
 
         try {
             DB::transaction(function () use ($request, $factura) {
                 // 1. Revertir las cantidades de los productos de la factura ORIGINAL al inventario
-                // Esto se hace ANTES de procesar los nuevos detalles.
                 foreach ($factura->detalles as $originalDetail) {
-                    $productoOriginal = Producto::find($originalDetail->product_id); // Usar product_id
+                    $productoOriginal = Producto::find($originalDetail->product_id);
                     if ($productoOriginal) {
-                        $productoOriginal->cantidad -= $originalDetail->cantidad; // Restar la cantidad original
+                        $productoOriginal->cantidad -= $originalDetail->cantidad;
                         $productoOriginal->save();
                     }
                 }
@@ -257,16 +318,36 @@ class FacturaController extends Controller
                 // 2. Eliminar todos los detalles de la factura existente (para reemplazarlos por los nuevos)
                 $factura->detalles()->delete();
 
+                $importeGravado = 0;
+                $importeExento = 0;
+                $importeExonerado = 0;
+                $isv15 = 0;
+                $isv18 = 0;
                 $subtotalGeneral = 0;
                 $impuestosGeneral = 0;
+                $totalFinal = 0;
 
                 // 3. Itera sobre los productos enviados en la solicitud (los nuevos detalles)
                 foreach ($request->productos as $productoData) {
-                    $producto = Producto::find($productoData['product_id']);
+                    $producto = Producto::with('impuesto')->find($productoData['product_id']);
 
-                    if ($producto) {
+                    if ($producto && $producto->impuesto) {
                         $baseProducto = $productoData['precioCompra'] * $productoData['cantidad'];
-                        $ivaProducto = ($productoData['iva'] / 100) * $baseProducto;
+                        $porcentajeIVA = $producto->impuesto->porcentaje;
+
+                        if ($porcentajeIVA > 0) {
+                            $importeGravado += $baseProducto;
+                        } else {
+                            $importeExento += $baseProducto;
+                        }
+
+                        $ivaProducto = ($porcentajeIVA / 100) * $baseProducto;
+                        if ($porcentajeIVA == 15) {
+                            $isv15 += $ivaProducto;
+                        } elseif ($porcentajeIVA == 18) {
+                            $isv18 += $ivaProducto;
+                        }
+
                         $totalProducto = $baseProducto + $ivaProducto;
 
                         $subtotalGeneral += $baseProducto;
@@ -279,7 +360,7 @@ class FacturaController extends Controller
                             'precio_compra' => $productoData['precioCompra'],
                             'precio_venta' => $productoData['precioVenta'],
                             'cantidad' => $productoData['cantidad'],
-                            'iva' => $productoData['iva'],
+                            'iva' => $porcentajeIVA,
                             'total' => $totalProducto,
                         ]);
 
@@ -287,13 +368,18 @@ class FacturaController extends Controller
                         $producto->cantidad += $productoData['cantidad'];
                         $producto->save();
                     } else {
-                        \Log::warning("Producto con ID {$productoData['product_id']} no encontrado al actualizar factura.");
+                        \Log::warning("Producto o Impuesto asociado no encontrado para ID {$productoData['product_id']} al actualizar factura.");
                     }
                 }
 
-                $totalFinal = $subtotalGeneral + $impuestosGeneral;
+                $totalFinal = $importeGravado + $importeExento + $importeExonerado + $isv15 + $isv18;
 
                 $factura->update([
+                    'importe_gravado' => $importeGravado,
+                    'importe_exento' => $importeExento,
+                    'importe_exonerado' => $importeExonerado,
+                    'isv_15' => $isv15,
+                    'isv_18' => $isv18,
                     'subtotal' => $subtotalGeneral,
                     'impuestos' => $impuestosGeneral,
                     'totalF' => $totalFinal,
@@ -303,14 +389,10 @@ class FacturaController extends Controller
             return redirect()->route('facturas.index')->with('status', 'Factura actualizada correctamente!');
 
         } catch (\Throwable $e) {
-            echo "<h1>Error Fatal en el Servidor (Actualización)</h1>";
-            echo "<p>Mensaje: " . $e->getMessage() . "</p>";
-            echo "<p>Archivo: " . $e->getFile() . "</p>";
-            echo "<p>Línea: " . $e->getLine() . "</p>";
-            echo "<h2>Rastreo de la Pila:</h2>";
-            echo "<pre>" . $e->getTraceAsString() . "</pre>";
-            exit;
+            \Log::error("Error al actualizar factura: " . $e->getMessage() . " en " . $e->getFile() . " línea " . $e->getLine());
+            return back()->withInput()->with('error', 'Error al actualizar la factura: ' . $e->getMessage());
         }
     }
 
 }
+

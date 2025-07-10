@@ -3,17 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Producto;
+use App\Models\Impuesto;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class ProductoController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Muestra una lista de los recursos.
      */
     public function index(Request $request)
     {
-        $query = Producto::query();
+        // Cargar la relación 'impuesto' para mostrar el nombre del impuesto en la vista si es necesario
+        $query = Producto::with('impuesto');
 
         // Si hay un término de búsqueda, aplicarlo a la consulta
         if ($request->has('search') && !empty($request->search)) {
@@ -32,15 +34,17 @@ class ProductoController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Muestra el formulario para crear un nuevo recurso.
      */
     public function create()
     {
-        return view('productos.formulario');
+        // Obtener todos los impuestos para el selector en el formulario
+        $impuestos = Impuesto::all();
+        return view('productos.formulario', compact('impuestos'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Almacena un recurso recién creado en el almacenamiento.
      */
     public function store(Request $request)
     {
@@ -92,7 +96,8 @@ class ProductoController extends Controller
 
             ],
             // 'cantidad' no se valida aquí porque se inicializa en 0 al crear
-            'es_exento' => 'required|boolean', // 0 para no exento (15%), 1 para exento (0%)
+            // 'es_exento' se reemplaza por 'impuesto_id'
+            'impuesto_id' => 'required|exists:impuestos,id', // Validar que el ID del impuesto exista en la tabla 'impuestos'
             'descripcion' => [
                 'required',
                 'min:1',
@@ -107,8 +112,9 @@ class ProductoController extends Controller
             'codigo.unique' => 'El código ingresado ya está registrado.',
             'marca.required' => 'La marca del producto es obligatoria.',
             'modelo.required' => 'El modelo del producto es obligatoria.',
-            'es_exento.required' => 'Debe especificar si el producto es exento de IVA.',
-            'es_exento.boolean' => 'El valor de exento de IVA no es válido.',
+            // Mensajes para el nuevo campo impuesto_id
+            'impuesto_id.required' => 'Debe seleccionar un tipo de impuesto para el producto.',
+            'impuesto_id.exists' => 'El tipo de impuesto seleccionado no es válido.',
             'nombre.required' => 'El nombre del producto es obligatorio.',
             'nombre.min' => 'El nombre debe tener al menos :min caracteres.',
             'nombre.max' => 'El nombre no debe exceder los :max caracteres.',
@@ -133,25 +139,28 @@ class ProductoController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Muestra el recurso especificado.
      */
     public function show(string $id)
     {
-        $producto = Producto::findOrFail($id);
+        // Cargar la relación 'impuesto' para mostrar los detalles del impuesto
+        $producto = Producto::with('impuesto')->findOrFail($id);
         return view('productos.show', compact('producto'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Muestra el formulario para editar el recurso especificado.
      */
     public function edit(string $id)
     {
         $producto = Producto::findOrFail($id);
-        return view('productos.formulario', compact('producto'));
+        // Obtener todos los impuestos para el selector en el formulario
+        $impuestos = Impuesto::all();
+        return view('productos.formulario', compact('producto', 'impuestos'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualiza el recurso especificado en el almacenamiento.
      */
     public function update(Request $request, string $id)
     {
@@ -205,7 +214,8 @@ class ProductoController extends Controller
 
             ],
             // 'cantidad' no se actualiza desde este formulario, solo desde FacturaController
-            'es_exento' => 'required|boolean',
+            // 'es_exento' se reemplaza por 'impuesto_id'
+            'impuesto_id' => 'required|exists:impuestos,id', // Validar que el ID del impuesto exista
             'descripcion' => [
                 'required',
                 'min:1',
@@ -220,8 +230,9 @@ class ProductoController extends Controller
             'codigo.unique' => 'El código ingresado ya está registrado.',
             'marca.required' => 'La marca del producto es obligatoria.',
             'modelo.required' => 'El modelo del producto es obligatoria.',
-            'es_exento.required' => 'Debe especificar si el producto es exento de IVA.',
-            'es_exento.boolean' => 'El valor de exento de IVA no es válido.',
+            // Mensajes para el nuevo campo impuesto_id
+            'impuesto_id.required' => 'Debe seleccionar un tipo de impuesto para el producto.',
+            'impuesto_id.exists' => 'El tipo de impuesto seleccionado no es válido.',
             'nombre.required' => 'El nombre del producto es obligatorio.',
             'nombre.min' => 'El nombre debe tener al menos :min caracteres.',
             'nombre.max' => 'El nombre no debe exceder los :max caracteres.',
@@ -241,15 +252,7 @@ class ProductoController extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        $producto = Producto::findOrFail($id);
-        $producto->delete();
-        return redirect()->route('productos.index')->with('status', 'Producto eliminado correctamente');
-    }
 }
+
 
 

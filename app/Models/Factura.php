@@ -12,12 +12,18 @@ class Factura extends Model
     protected $fillable = [
         'numero_factura',
         'fecha',
-        'proveedor_id', // Ahora usamos el ID del proveedor
+        'proveedor_id',
         'forma_pago',
-        'responsable_id', // Ahora usamos el ID del empleado responsable
+        'responsable_id',
         'subtotal',
         'impuestos',
         'totalF',
+        // Nuevos campos para el desglose de la factura
+        'importe_gravado',
+        'importe_exento',
+        'importe_exonerado',
+        'isv_15',
+        'isv_18',
     ];
 
     /**
@@ -35,7 +41,7 @@ class Factura extends Model
      */
     public function proveedor()
     {
-        return $this->belongsTo(Proveedor::class, 'proveedor_id'); // este es el nombre correcto de tu columna
+        return $this->belongsTo(Proveedor::class, 'proveedor_id');
     }
 
     /**
@@ -47,4 +53,3 @@ class Factura extends Model
         return $this->belongsTo(Empleado::class, 'responsable_id');
     }
 }
-

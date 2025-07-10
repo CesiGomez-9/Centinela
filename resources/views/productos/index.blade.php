@@ -30,11 +30,9 @@
                         id="searchInput"
                         class="form-control"
                         maxlength="30"
-<<<<<<< HEAD
+
                         placeholder="Buscar por serie"
-=======
-                        placeholder="Buscar por nombre, serie o código"
->>>>>>> 29a2ebc08363c3b5d1eb7e542b68549ef1e1a141
+
                         onkeydown="bloquearEspacioAlInicio(event, this)"
                         oninput="eliminarEspaciosIniciales(this)"
                     >

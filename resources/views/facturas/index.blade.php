@@ -33,11 +33,7 @@
                         id="searchInput"
                         class="form-control"
                         maxlength="30"
-<<<<<<< HEAD
-                        placeholder="Buscar por numero de factura "
-=======
                         placeholder="Buscar por número o fecha"
->>>>>>> 29a2ebc08363c3b5d1eb7e542b68549ef1e1a141
                         onkeydown="bloquearEspacioAlInicio(event, this)"
                         oninput="eliminarEspaciosIniciales(this)">
                     <span class="input-group-text"><i class="bi bi-search"></i></span>
@@ -61,11 +57,9 @@
     @endif
 
     <!-- Mensaje de resultados -->
-<<<<<<< HEAD
-=======
     <div id="searchResults" class="mb-3"></div>
 
->>>>>>> 29a2ebc08363c3b5d1eb7e542b68549ef1e1a141
+
     <table class="table table-bordered table-hover align-middle">
         <thead class="table-dark text-center">
         <tr>
