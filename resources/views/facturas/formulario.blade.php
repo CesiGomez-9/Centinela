@@ -101,11 +101,8 @@
             padding-right: 0 !important; /* Elimina el padding derecho de las columnas */
         }
         /* Añadir un pequeño margen entre los inputs para que no estén completamente pegados si se desea */
-        #productosModal .modal-product-inputs-row input[type="number"] {
-            margin-right: 0.2rem; /* Un pequeño margen a la derecha de cada input */
-        }
-        #productosModal .modal-product-inputs-row input[type="number"]:last-of-type {
-            margin-right: 0; /* Elimina el margen del último input en la fila */
+        #productosModal .modal-product-inputs-row .cantidad {
+            margin-right: 0.5rem; /* Margen a la derecha del campo cantidad */
         }
     </style>
 
@@ -298,7 +295,6 @@
                                         <div class="col-4 text-end">
                                             <label class="form-control summary-value-box" id="isv18Label">0.00</label>
                                         </div>
-
 
                                         {{-- Total Final --}}
                                         <div class="col-8 text-start">
@@ -835,17 +831,17 @@
                         <td colspan="4">
                             <form class="p-2 form-edicion-producto" novalidate >
                                 <div class="row modal-product-inputs-row align-items-end"> <!-- Añadida la clase modal-product-inputs-row y eliminada g-1 -->
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <label class="form-label">Precio Compra (Lps)</label>
                                         <input type="number" step="1" max="9999" class="form-control precioCompra" required>
                                         <div class="error-message"></div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <label class="form-label">Precio Venta (Lps)</label>
                                         <input type="number" step="1" max="9999" class="form-control precioVenta" required>
                                         <div class="error-message"></div>
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-3">
                                         <label class="form-label">Cantidad</label>
                                         <input type="number" step="1" max="999" class="form-control cantidad" required>
                                         <div class="error-message"></div>
