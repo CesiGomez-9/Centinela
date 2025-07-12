@@ -275,6 +275,14 @@
                                             <label class="form-control summary-value-box" id="importeExoneradoLabel">0.00</label>
                                         </div>
 
+                                        {{-- Subtotal (Lps) --}}
+                                        <div class="col-8 text-start"> <!-- Columna para la etiqueta -->
+                                            <label class="form-label mb-0" style="white-space: nowrap; font-weight: normal;">Subtotal (Lps)</label>
+                                        </div>
+                                        <div class="col-4 text-end"> <!-- Columna para el valor -->
+                                            <label class="form-control summary-value-box" id="subtotalGeneralLabel">0.00</label>
+                                        </div>
+
                                         {{-- ISV 15% --}}
                                         <div class="col-8 text-start">
                                             <label class="form-label mb-0" style="white-space: nowrap; font-weight: normal;">ISV 15% (Lps)</label>
@@ -291,13 +299,6 @@
                                             <label class="form-control summary-value-box" id="isv18Label">0.00</label>
                                         </div>
 
-                                        {{-- Subtotal (Lps) --}}
-                                        <div class="col-8 text-start"> <!-- Columna para la etiqueta -->
-                                            <label class="form-label mb-0" style="white-space: nowrap; font-weight: normal;">Subtotal (Lps)</label>
-                                        </div>
-                                        <div class="col-4 text-end"> <!-- Columna para el valor -->
-                                            <label class="form-control summary-value-box" id="subtotalGeneralLabel">0.00</label>
-                                        </div>
 
                                         {{-- Total Final --}}
                                         <div class="col-8 text-start">
@@ -834,22 +835,22 @@
                         <td colspan="4">
                             <form class="p-2 form-edicion-producto" novalidate >
                                 <div class="row modal-product-inputs-row align-items-end"> <!-- Añadida la clase modal-product-inputs-row y eliminada g-1 -->
-                                    <div class="col-md-3">
+                                    <div class="col-md-4">
                                         <label class="form-label">Precio Compra (Lps)</label>
                                         <input type="number" step="1" max="9999" class="form-control precioCompra" required>
                                         <div class="error-message"></div>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-4">
                                         <label class="form-label">Precio Venta (Lps)</label>
                                         <input type="number" step="1" max="9999" class="form-control precioVenta" required>
                                         <div class="error-message"></div>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
                                         <label class="form-label">Cantidad</label>
                                         <input type="number" step="1" max="999" class="form-control cantidad" required>
                                         <div class="error-message"></div>
                                     </div>
-                                    <div class="col-md-2 d-flex flex-column justify-content-end gap-2">
+                                    <div class="col-md-2 d-flex flex-column justify-content-end gap-1">
                                         <button type="submit" class="btn btn-primary btn-sm">
                                             <i class="bi bi-plus-circle"></i> Agregar
                                         </button>
@@ -1367,8 +1368,8 @@
                 if (existingFacturaDetalles && existingFacturaDetalles.length > 0) {
                     productsToLoad = existingFacturaDetalles.map(detail => ({
                         product_id: String(detail.product_id || ''),
-                        nombre: String(detail.producto || ''),
-                        categoria: String(detail.categoria || ''),
+                        nombre: String(detail.producto.nombre || ''), // Acceder a producto.nombre
+                        categoria: String(detail.producto.categoria.nombre || ''), // Acceder a producto.categoria.nombre
                         // Asegurarse de que los valores cargados de la DB sean enteros para precioCompra y precioVenta
                         precioCompra: parseInt(detail.precio_compra || 0),
                         precioVenta: parseInt(detail.precio_venta || 0),
@@ -1400,11 +1401,11 @@
                         <td>
                             <input type="hidden" name="productos[${index}][product_id]" value="${producto.product_id}" class="hidden-product-id">
                             <input type="hidden" name="productos[${index}][nombre]" value="${producto.nombre}" class="hidden-nombre">
-                            ${nombre}
+                            ${producto.nombre} <!-- CORREGIDO: Usar producto.nombre -->
                         </td>
                         <td>
                             <input type="hidden" name="productos[${index}][categoria]" value="${producto.categoria}" class="hidden-categoria">
-                            ${categoria}
+                            ${producto.categoria} <!-- CORREGIDO: Usar producto.categoria -->
                         </td>
                         <td>
                             <input type="hidden" name="productos[${index}][precioCompra]" value="${producto.precioCompra.toFixed(0)}" class="hidden-precio-compra">
@@ -1413,7 +1414,7 @@
                         <td>
                             <input type="hidden" name="productos[${index}][cantidad]" value="${producto.cantidad}" class="hidden-cantidad">
                             <input type="hidden" name="productos[${index}][precioVenta]" value="${producto.precioVenta.toFixed(0)}" class="hidden-precio-venta">
-                            ${cantidad}
+                            ${producto.cantidad}
                         </td>
                         <td>
                             <input type="hidden" name="productos[${index}][iva]" value="${producto.iva}" class="hidden-iva">

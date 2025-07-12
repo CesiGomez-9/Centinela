@@ -45,8 +45,8 @@
                         <li><a class="dropdown-item" href="{{route('productos.index')}}">Inventario de productos</a></li>
                         <li><a class="dropdown-item" href="{{route('productos.create')}}">Registrar un nuevo producto</a></li>
                         <li><hr class="dropdown-divider"></li> {{-- Separador opcional --}}
-                        <li><a class="dropdown-item" href="{{route('facturas.index')}}">Listado de facturas</a></li>
-                        <li><a class="dropdown-item" href="{{route('facturas.create')}}">Registrar una nueva factura</a></li>
+                        <li><a class="dropdown-item" href="{{route('facturas.index')}}">Listado de facturas de compra</a></li>
+                        <li><a class="dropdown-item" href="{{route('facturas.create')}}">Registrar una factura de compra</a></li>
                     </ul>
                 </li>
                 <li class="nav-item"><a class="nav-link text-white" href="#">Registrate</a></li>
