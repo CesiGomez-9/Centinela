@@ -36,7 +36,7 @@
 
         <div class="row mb-4 align-items-center">
             <div class="col-md-6 d-flex justify-content-start">
-                <div class="w-100" style="max-width: 300px;">
+                <div class="w-100" style="max-width: 400px;">
                     <div class="input-group">
                         <input
                             type="text"
