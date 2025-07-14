@@ -3,24 +3,23 @@
 @section('content')
 
     <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
 
+
+        body{
+            background-color: #e6f0ff;
+            height: 100vh;
+            margin: 0;
         }
 
-        th, td {
-            padding: 12px 15px;
-            border: 1px solid #090909;
-            text-align: center;
-        }
+
 
     </style>
-
-    <h1 class="text-center mb-4" style="color: #09457f;">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <div class="container mt-5" style="max-width: 1100px;">
+        <div class="card shadow p-4" style="background-color: #ffffff;">
+            <h3 class="text-center mb-4" style="color: #09457f;">
         <i class="bi bi-file-text"></i>Listado de facturas de compra
-    </h1>
+            </h3>
+
 
 
     <!-- Botón de volver y buscador -->
@@ -33,7 +32,11 @@
                         id="searchInput"
                         class="form-control"
                         maxlength="30"
+
+                        placeholder="Buscar por numero de factura "
+
                         placeholder="Buscar por número o fecha"
+
                         onkeydown="bloquearEspacioAlInicio(event, this)"
                         oninput="eliminarEspaciosIniciales(this)">
                     <span class="input-group-text"><i class="bi bi-search"></i></span>
@@ -41,7 +44,7 @@
             </div>
         </div>
         <div class="col-md-6 d-flex justify-content-end">
-            <a href="{{ route('facturas.create') }}" class="btn btn-md btn-outline-dark btn-md">
+            <a href="{{ route('facturas.create') }}" class="btn btn-sm btn-outline-primary mb-2">
                 <i class="bi bi-pencil-square me-2"></i>Registrar una nueva factura de compra
             </a>
         </div>
@@ -56,14 +59,13 @@
         </div>
     @endif
 
-    <!-- Mensaje de resultados -->
-    <div id="searchResults" class="mb-3"></div>
 
 
-    <table class="table table-bordered table-hover align-middle">
-        <thead class="table-dark text-center">
+
+            <table class="table table-bordered table-striped">
+                <thead class="table-dark">
         <tr>
-            <th>#</th>
+            <th>N°</th>
             <th>Número Factura</th>
             <th>Fecha de la factura</th>
             <th>Total de la factura</th>
@@ -108,7 +110,15 @@
         @endforelse
         </tbody>
     </table>
-    <div id="searchResults" class="mb-3"></div>
+            <div id="searchResults" class="mb-3"></div>
+
+            <div class="d-flex justify-content mt-5">
+                <a href="/" class="btn btn-outline-dark">
+                    <i class="bi bi-arrow-left me-2"></i> Volver al Inicio
+                </a>
+            </div>
+
+        </div>
 
 
     <script>
@@ -223,11 +233,6 @@
 
 
 
-    <div class="d-flex justify-content mt-5">
-        <a href="/" class="btn btn-outline-dark">
-            <i class="bi bi-arrow-left me-2"></i> Volver al Inicio
-        </a>
-    </div>
 
     {{ $facturas->links() }}
 

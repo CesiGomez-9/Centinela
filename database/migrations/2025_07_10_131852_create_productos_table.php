@@ -27,6 +27,7 @@ return new class extends Migration
             $table->text('descripcion')->nullable();
             $table->timestamps();
         });
+
     }
 
     /**
@@ -37,4 +38,3 @@ return new class extends Migration
         Schema::dropIfExists('productos');
     }
 };
-
