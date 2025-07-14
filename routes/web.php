@@ -23,6 +23,18 @@ Route::post('/empleados', [EmpleadoController::class, 'store'])->name('empleados
 Route::get('/empleados/create', [EmpleadoController::class, 'create'])->name('empleados.create');
 Route::resource('empleados', EmpleadoController::class);
 
+
+Route::get('/facturas_ventas', [\App\Http\Controllers\FacturaVentaController::class, 'index'])->name('facturas_ventas.index');
+Route::get('/facturas_ventas/create', [\App\Http\Controllers\FacturaVentaController::class, 'create'])->name('facturas_ventas.create');
+Route::post('/facturas_ventas', [\App\Http\Controllers\FacturaVentaController::class, 'store'])->name('facturas_ventas.store');
+Route::get('/facturas_ventas/{factura_venta}', [\App\Http\Controllers\FacturaVentaController::class, 'show'])->name('facturas_ventas.show');
+Route::get('/facturas_ventas/{factura_venta}/edit', [\App\Http\Controllers\FacturaVentaController::class, 'edit'])->name('facturas_ventas.edit');
+Route::put('/facturas_ventas/{factura_venta}', [\App\Http\Controllers\FacturaVentaController::class, 'update'])->name('facturas_ventas.update');
+
+
+
+
+
 Route::get('/Proveedores/crear', [ProveedorController::class, 'create'])->name('Proveedores.create');
 Route::post('/Proveedores/crear', [ProveedorController::class, 'store'])->name('Proveedores.store');
 Route::get('/Proveedores', [ProveedorController::class, 'index'])->name('Proveedores.indexProveedor');
