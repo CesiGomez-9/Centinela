@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Producto;
 use App\Models\Impuesto;
+use App\Models\PrecioCompra;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Carbon\Carbon; // Importa Carbon para mejor manejo de fechas
 
 class ProductoController extends Controller
 {
@@ -96,7 +98,6 @@ class ProductoController extends Controller
 
             ],
             // 'cantidad' no se valida aquí porque se inicializa en 0 al crear
-            // 'es_exento' se reemplaza por 'impuesto_id'
             'impuesto_id' => 'required|exists:impuestos,id', // Validar que el ID del impuesto exista en la tabla 'impuestos'
             'descripcion' => [
                 'required',
@@ -106,13 +107,13 @@ class ProductoController extends Controller
                 'regex:/.*\S.*/', // Asegura que no sea solo espacios
                 'not_regex:/^0+$/' // No puede ser solo ceros
             ],
+            // 'precio_compra' y 'precio_venta' no se validan aquí, ya que se gestionan desde el formulario de factura.
         ], [
             // Mensajes de error personalizados
             'serie.unique' => 'La serie ingresada ya está registrada.',
-            'codigo.unique' => 'El código ingresado ya está registrado.',
+            'codigo.unique' => 'El código ingresado ya está registrada.',
             'marca.required' => 'La marca del producto es obligatoria.',
             'modelo.required' => 'El modelo del producto es obligatoria.',
-            // Mensajes para el nuevo campo impuesto_id
             'impuesto_id.required' => 'Debe seleccionar un tipo de impuesto para el producto.',
             'impuesto_id.exists' => 'El tipo de impuesto seleccionado no es válido.',
             'nombre.required' => 'El nombre del producto es obligatorio.',
@@ -129,7 +130,9 @@ class ProductoController extends Controller
         $producto = new Producto($validated);
         // Asegurar que la cantidad se inicialice en 0 al crear un nuevo producto
         $producto->cantidad = 0;
-
+        // El precio_compra y precio_venta se inicializan en 0.00 por defecto y se actualizarán desde el formulario de factura.
+        $producto->precio_compra = 0.00;
+        $producto->precio_venta = 0.00;
 
         if ($producto->save()) {
             return redirect()->route('productos.index')->with('status', 'Producto registrado correctamente');
@@ -143,8 +146,8 @@ class ProductoController extends Controller
      */
     public function show(string $id)
     {
-        // Cargar la relación 'impuesto' para mostrar los detalles del impuesto
-        $producto = Producto::with('impuesto')->findOrFail($id);
+        // Cargar las relaciones 'impuesto' y 'precioCompras' para mostrar los detalles y el historial de precios.
+        $producto = Producto::with(['impuesto', 'precioCompras'])->findOrFail($id);
         return view('productos.show', compact('producto'));
     }
 
@@ -213,8 +216,6 @@ class ProductoController extends Controller
                 'max:50',
 
             ],
-            // 'cantidad' no se actualiza desde este formulario, solo desde FacturaController
-            // 'es_exento' se reemplaza por 'impuesto_id'
             'impuesto_id' => 'required|exists:impuestos,id', // Validar que el ID del impuesto exista
             'descripcion' => [
                 'required',
@@ -224,13 +225,13 @@ class ProductoController extends Controller
                 'regex:/.*\S.*/',
                 'not_regex:/^0+$/'
             ],
+            // 'precio_compra' y 'precio_venta' no se validan ni se actualizan aquí, ya que se gestionan desde el formulario de factura.
         ], [
             // Mensajes de error personalizados para la actualización
             'serie.unique' => 'La serie ingresada ya está registrada.',
-            'codigo.unique' => 'El código ingresado ya está registrado.',
+            'codigo.unique' => 'El código ingresado ya está registrada.',
             'marca.required' => 'La marca del producto es obligatoria.',
             'modelo.required' => 'El modelo del producto es obligatoria.',
-            // Mensajes para el nuevo campo impuesto_id
             'impuesto_id.required' => 'Debe seleccionar un tipo de impuesto para el producto.',
             'impuesto_id.exists' => 'El tipo de impuesto seleccionado no es válido.',
             'nombre.required' => 'El nombre del producto es obligatorio.',
@@ -244,15 +245,11 @@ class ProductoController extends Controller
         ]);
 
         // Actualizar el producto con los datos validados
-        // No se incluye 'cantidad' en el update para que no sea modificada por este formulario
+        // La lógica de precio_compra, precio_venta y su historial se manejará en el controlador de factura.
         if ($producto->update($validated)) {
             return redirect()->route('productos.index')->with('status', 'Producto actualizado correctamente');
         } else {
             return back()->withInput()->with('error', 'Error al actualizar el producto');
         }
     }
-
 }
-
-
-

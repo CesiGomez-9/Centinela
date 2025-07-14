@@ -2,6 +2,8 @@
 @section('titulo','Registrar una factura')
 @section('content')
 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
     <style>
         body {
             background-color: #e6f0ff;
@@ -605,8 +607,8 @@
                 field.classList.remove('field-error');
             });
 
-            const precioCompra = parseFloat(precioCompraInput.value);
-            const precioVenta = parseFloat(precioVentaInput.value);
+            const precioCompra = parseInt(precioCompraInput.value); // Parsear como entero
+            const precioVenta = parseInt(precioVentaInput.value);   // Parsear como entero
             const cantidad = parseInt(cantidadInput.value);
 
             // Validar Precio Compra
@@ -665,89 +667,6 @@
             return esValido;
         }
 
-        function validarFormularioPrincipal() {
-            let esValido = true;
-            let primerCampoConError = null;
-
-            // Ocultar errores previos manejados por JS
-            // Asegúrate de incluir 'fecha' aquí para que su error-mensaje-js se limpie
-            ['numeroFactura', 'fecha', 'proveedor_id', 'formaPago', 'responsable_id'].forEach(campo => {
-                ocultarError(campo);
-            });
-
-            const errorProductos = document.getElementById('errorProductos');
-            if (errorProductos) {
-                errorProductos.style.display = 'none';
-            }
-
-            // Validar Número de Factura
-            const numeroFacturaInput = document.getElementById('numeroFactura');
-            const numeroFactura = numeroFacturaInput.value.trim();
-            if (!numeroFactura) {
-                mostrarError('numeroFactura', 'Número de factura es obligatorio');
-                if (!primerCampoConError) primerCampoConError = numeroFacturaInput;
-                esValido = false;
-            }
-
-            // Validar Fecha
-            const fechaInput = document.getElementById('fecha');
-            const fecha = fechaInput.value.trim();
-            if (!fecha) { // Si el campo de fecha está vacío
-                mostrarError('fecha', 'La fecha es obligatoria'); // Llama a mostrarError para la fecha
-                if (!primerCampoConError) primerCampoConError = fechaInput;
-                esValido = false;
-            }
-            // Puedes añadir aquí más validaciones de JS para la fecha si las necesitas (ej. rango)
-            // Pero recuerda que Laravel también valida el rango, así que no dupliques innecesariamente.
-
-
-            // Validar Proveedor
-            const proveedorSelect = document.getElementById('proveedor_id');
-            const proveedorId = proveedorSelect.value;
-            if (!proveedorId) {
-                mostrarError('proveedor_id', 'Proveedor es obligatorio');
-                if (!primerCampoConError) primerCampoConError = proveedorSelect;
-                esValido = false;
-            }
-
-            // Validar Forma de Pago
-            const formaPagoSelect = document.getElementById('formaPago');
-            const formaPago = formaPagoSelect.value;
-            if (!formaPago) {
-                mostrarError('formaPago', 'Forma de pago es obligatorio');
-                if (!primerCampoConError) primerCampoConError = formaPagoSelect;
-                esValido = false;
-            }
-
-            // Validar Responsable
-            const responsableSelect = document.getElementById('responsable_id');
-            const responsableId = responsableSelect.value;
-            if (!responsableId) {
-                mostrarError('responsable_id', 'Responsable es obligatorio');
-                if (!primerCampoConError) primerCampoConError = responsableSelect;
-                esValido = false;
-            }
-
-            // Validar Productos en la tabla
-            const productos = document.querySelectorAll('#tablaFacturaBody tr:not(#filaVacia)');
-            if (productos.length === 0) {
-                const errorProductos = document.getElementById('errorProductos');
-                if (errorProductos) {
-                    errorProductos.style.display = 'block';
-                    errorProductos.textContent = 'Debe agregar al menos un producto a la factura';
-                }
-                esValido = false;
-            }
-
-            // Enfocar el primer campo con error si existe
-            if (!esValido && primerCampoConError) {
-                primerCampoConError.focus();
-                primerCampoConError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-
-            return esValido;
-        }
-
         function configurarValidacionFormulario() {
             const form = document.getElementById('facturaForm');
             if (form) {
@@ -774,6 +693,7 @@
             tbody.innerHTML = '<tr><td colspan="5" class="text-center py-3">Cargando productos...</td></tr>';
 
             try {
+                // Asegúrate de que tu ruta API devuelva el impuesto asociado al producto
                 const apiUrl = `/api/productos?search=${encodeURIComponent(searchTerm)}`;
                 const response = await fetch(apiUrl);
 
@@ -860,6 +780,12 @@
                     `;
                     tbody.appendChild(fila);
                     tbody.appendChild(filaEdicion);
+
+                    // APLICAR handleNumericInput A LOS NUEVOS CAMPOS CREADOS
+                    const form = filaEdicion.querySelector('.form-edicion-producto');
+                    handleNumericInput(form.querySelector('.precioCompra'), 4, false);
+                    handleNumericInput(form.querySelector('.precioVenta'), 4, false);
+                    handleNumericInput(form.querySelector('.cantidad'), 3, false);
                 });
                 configurarEventosProductos();
                 mostrarResultados(searchTerm, productos.length);
@@ -1032,8 +958,8 @@
                     const product_id = filaProducto.dataset.id;
                     const nombre = filaProducto.dataset.nombre;
                     const categoria = filaProducto.dataset.categoria;
-                    const precioCompra = parseFloat(this.querySelector('.precioCompra').value);
-                    const precioVenta = parseFloat(this.querySelector('.precioVenta').value);
+                    const precioCompra = parseInt(this.querySelector('.precioCompra').value); // Parsear como entero
+                    const precioVenta = parseInt(this.querySelector('.precioVenta').value);   // Parsear como entero
                     const cantidad = parseInt(this.querySelector('.cantidad').value);
                     const ivaPorcentaje = parseFloat(filaProducto.dataset.ivaPorcentaje); // Obtener el porcentaje de IVA real
 
@@ -1064,9 +990,6 @@
 
                     const nuevaFila = document.createElement('tr');
 
-                    // No usamos productoIndexCounter para el `name` del input,
-                    // sino para el `data-index` y la numeración visible.
-                    // El `name` se manejará con un enfoque más robusto para Laravel (índices numéricos).
                     const newRowIndex = tablaFactura.children.length; // Usar la longitud actual para el nuevo índice
 
                     nuevaFila.dataset.index = newRowIndex; // Asignar un índice al data-attribute de la fila
@@ -1082,12 +1005,12 @@
                             ${categoria}
                         </td>
                         <td>
-                            <input type="hidden" name="productos[${newRowIndex}][precioCompra]" value="${precioCompra.toFixed(0)}" class="hidden-precio-compra">
-                            ${precioCompra.toFixed(0)}
+                            <input type="hidden" name="productos[${newRowIndex}][precioCompra]" value="${precioCompra}" class="hidden-precio-compra">
+                            ${precioCompra}
                         </td>
                         <td>
                             <input type="hidden" name="productos[${newRowIndex}][cantidad]" value="${cantidad}" class="hidden-cantidad">
-                            <input type="hidden" name="productos[${newRowIndex}][precioVenta]" value="${precioVenta.toFixed(0)}" class="hidden-precio-venta">
+                            <input type="hidden" name="productos[${newRowIndex}][precioVenta]" value="${precioVenta}" class="hidden-precio-venta">
                             ${cantidad}
                         </td>
                         <td>
@@ -1258,7 +1181,7 @@
             let totalFinal = 0;
 
             filasProductos.forEach(fila => {
-                const precioCompra = parseFloat(fila.querySelector('.hidden-precio-compra').value);
+                const precioCompra = parseInt(fila.querySelector('.hidden-precio-compra').value); // Parsear como entero
                 const cantidad = parseInt(fila.querySelector('.hidden-cantidad').value);
                 const ivaPorcentaje = parseInt(fila.querySelector('.hidden-iva').value);
 
@@ -1287,6 +1210,7 @@
             // Calcular el total final (subtotal + ISV15 + ISV18)
             totalFinal = subtotalCalculado + isv15 + isv18;
 
+            // Mostrar con dos decimales para precisión en los totales
             document.getElementById('importeGravadoLabel').textContent = importeGravado.toFixed(2);
             document.getElementById('importeExentoLabel').textContent = importeExento.toFixed(2);
             document.getElementById('importeExoneradoLabel').textContent = importeExonerado.toFixed(2);
@@ -1308,20 +1232,6 @@
                 });
             }
 
-            // Aplicar handleNumericInput a los campos de precio y cantidad en el modal
-            // Usamos setTimeout para asegurar que los elementos estén en el DOM después de la carga inicial
-            setTimeout(() => {
-                document.querySelectorAll('.form-edicion-producto .precioCompra').forEach(input => {
-                    handleNumericInput(input, 4, false); // 4 dígitos enteros, SIN decimales
-                });
-                document.querySelectorAll('.form-edicion-producto .precioVenta').forEach(input => {
-                    handleNumericInput(input, 4, false); // 4 dígitos enteros, SIN decimales
-                });
-                document.querySelectorAll('.form-edicion-producto .cantidad').forEach(input => {
-                    handleNumericInput(input, 3, false); // 3 dígitos enteros, sin decimales
-                });
-            }, 500); // Pequeño retraso para asegurar que los elementos del modal estén disponibles
-
             configurarValidacionFormulario();
             cargarProductosEnModal(); // Carga inicial de productos en el modal
             configurarBuscador();
@@ -1336,8 +1246,6 @@
             const oldProductsFromSession = @json(session()->getOldInput('productos'));
 
             if (oldProductsFromSession && Object.keys(oldProductsFromSession).length > 0) {
-                // `oldProductsFromSession` es un objeto como {0: {product_id: 'x', nombre: 'y'}, 1: {...}}
-                // Convertirlo a un array de objetos más fácil de manejar
                 for (const key in oldProductsFromSession) {
                     if (Object.hasOwnProperty.call(oldProductsFromSession, key)) {
                         const prodData = oldProductsFromSession[key];
@@ -1345,14 +1253,10 @@
                             product_id: String(prodData.product_id || ''),
                             nombre: String(prodData.nombre || ''),
                             categoria: String(prodData.categoria || ''),
-                            // Asegurarse de que los valores cargados de old() sean enteros para precioCompra y precioVenta
-                            precioCompra: parseInt(prodData.precioCompra || 0),
-                            precioVenta: parseInt(prodData.precioVenta || 0),
+                            precioCompra: parseInt(prodData.precioCompra || 0), // Parsear como entero
+                            precioVenta: parseInt(prodData.precioVenta || 0),   // Parsear como entero
                             cantidad: parseInt(prodData.cantidad || 0),
                             iva: parseFloat(prodData.iva || 0),
-                            // El 'total' de old() podría no ser preciso si los cálculos cambian,
-                            // así que lo recalcularemos al añadir.
-                            // total: parseFloat(prodData.total || 0)
                         });
                     }
                 }
@@ -1364,52 +1268,47 @@
                 if (existingFacturaDetalles && existingFacturaDetalles.length > 0) {
                     productsToLoad = existingFacturaDetalles.map(detail => ({
                         product_id: String(detail.product_id || ''),
-                        nombre: String(detail.producto.nombre || ''), // Acceder a producto.nombre
-                        categoria: String(detail.producto.categoria.nombre || ''), // Acceder a producto.categoria.nombre
-                        // Asegurarse de que los valores cargados de la DB sean enteros para precioCompra y precioVenta
-                        precioCompra: parseInt(detail.precio_compra || 0),
-                        precioVenta: parseInt(detail.precio_venta || 0),
+                        nombre: String(detail.producto_inventario.nombre || ''), // Acceder a producto_inventario.nombre
+                        categoria: String(detail.producto_inventario.categoria || ''), // Acceder a producto_inventario.categoria
+                        precioCompra: parseInt(detail.precio_compra || 0), // Parsear como entero
+                        precioVenta: parseInt(detail.precio_venta || 0),   // Parsear como entero
                         cantidad: parseInt(detail.cantidad || 0),
-                        iva: parseFloat(detail.iva || 0), // Aquí ya viene el IVA guardado en el detalle
-                        total: parseFloat(detail.total || 0) // Aquí ya viene el total guardado en el detalle
+                        iva: parseFloat(detail.iva || 0),
+                        total: parseFloat(detail.total || 0)
                     }));
                     console.log('DEBUG: Cargando productos desde detalles de factura existentes:', productsToLoad);
                 }
             }
 
-            // Asegurarse de que el contador de índice de productos sea el correcto
-            // No es necesario para la numeración visible, pero puede ayudar si se usa para algo más
             productoIndexCounter = productsToLoad.length;
 
             if (productsToLoad.length > 0) {
                 tablaFacturaBody.innerHTML = ''; // Limpiar la fila vacía si hay productos
                 productsToLoad.forEach((producto, index) => {
-                    // Recalcular subtotal aquí para asegurar consistencia con la lógica JS actual
-                    // (aunque el total del detalle ya viene de la DB, lo recalculamos para la visualización)
                     const baseProductoRepoblado = producto.precioCompra * producto.cantidad;
                     const impuestoProductoRepoblado = (producto.iva / 100) * baseProductoRepoblado;
-                    const subtotalDisplay = (baseProductoRepoblado + impuestoProductoRepoblado).toFixed(2); // Mantener 2 decimales para el subtotal de la línea
+                    const subtotalDisplay = (baseProductoRepoblado + impuestoProductoRepoblado).toFixed(2); // Mostrar con dos decimales
 
                     const nuevaFila = document.createElement('tr');
-                    nuevaFila.dataset.index = index; // Usar el índice del array
+                    nuevaFila.dataset.index = index;
                     nuevaFila.innerHTML = `
                         <td>${index + 1}</td>
                         <td>
                             <input type="hidden" name="productos[${index}][product_id]" value="${producto.product_id}" class="hidden-product-id">
                             <input type="hidden" name="productos[${index}][nombre]" value="${producto.nombre}" class="hidden-nombre">
-                            ${producto.nombre} <!-- CORREGIDO: Usar producto.nombre -->
+                            ${producto.nombre}
                         </td>
                         <td>
                             <input type="hidden" name="productos[${index}][categoria]" value="${producto.categoria}" class="hidden-categoria">
-                            ${producto.categoria} <!-- CORREGIDO: Usar producto.categoria -->
+                            ${producto.categoria}
                         </td>
                         <td>
-                            <input type="hidden" name="productos[${index}][precioCompra]" value="${producto.precioCompra.toFixed(0)}" class="hidden-precio-compra">
-                            ${producto.precioCompra.toFixed(0)}
+                            <input type="hidden" name="productos[${index}][precioCompra]" value="${producto.precioCompra}" class="hidden-precio-compra">
+                            ${producto.precioCompra}
                         </td>
                         <td>
                             <input type="hidden" name="productos[${index}][cantidad]" value="${producto.cantidad}" class="hidden-cantidad">
-                            <input type="hidden" name="productos[${index}][precioVenta]" value="${producto.precioVenta.toFixed(0)}" class="hidden-precio-venta">
+                            <input type="hidden" name="productos[${index}][precioVenta]" value="${producto.precioVenta}" class="hidden-precio-venta">
                             ${producto.cantidad}
                         </td>
                         <td>
@@ -1425,11 +1324,11 @@
                     `;
                     tablaFacturaBody.appendChild(nuevaFila);
                 });
-                actualizarFilaVacia(); // Ocultará la fila vacía si hay productos
+                actualizarFilaVacia();
                 calcularTotalesGenerales();
-                actualizarNumeracionFilas(); // Asegurar que la numeración sea correcta al cargar
+                actualizarNumeracionFilas();
             } else {
-                actualizarFilaVacia(); // Asegurará que la fila vacía se muestre si no hay productos
+                actualizarFilaVacia();
                 calcularTotalesGenerales();
             }
             // --- FIN DE LA LÓGICA DE REPOBLACIÓN CORREGIDA ---
@@ -1441,7 +1340,7 @@
                 fila.remove();
                 calcularTotalesGenerales();
                 actualizarFilaVacia();
-                actualizarNumeracionFilas(); // Llama a la función para re-numerar
+                actualizarNumeracionFilas();
             }
         });
 
@@ -1458,10 +1357,9 @@
                 document.documentElement.style.overflow = '';
                 console.log('DEBUG: Body overflow/padding-right restored.');
 
-                limpiarFormulariosModal(); // Llama a la función para limpiar
+                limpiarFormulariosModal();
                 console.log('DEBUG: Formularios del modal limpiados al cerrar.');
             });
         }
     </script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 @endsection
