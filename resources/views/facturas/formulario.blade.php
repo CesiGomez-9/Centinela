@@ -275,6 +275,14 @@
                                             <label class="form-control summary-value-box" id="importeExoneradoLabel">0.00</label>
                                         </div>
 
+                                        {{-- Subtotal (Lps) --}}
+                                        <div class="col-8 text-start"> <!-- Columna para la etiqueta -->
+                                            <label class="form-label mb-0" style="white-space: nowrap; font-weight: normal;">Subtotal (Lps)</label>
+                                        </div>
+                                        <div class="col-4 text-end"> <!-- Columna para el valor -->
+                                            <label class="form-control summary-value-box" id="subtotalGeneralLabel">0.00</label>
+                                        </div>
+
                                         {{-- ISV 15% --}}
                                         <div class="col-8 text-start">
                                             <label class="form-label mb-0" style="white-space: nowrap; font-weight: normal;">ISV 15% (Lps)</label>
@@ -291,13 +299,6 @@
                                             <label class="form-control summary-value-box" id="isv18Label">0.00</label>
                                         </div>
 
-                                        {{-- Subtotal (Lps) --}}
-                                        <div class="col-8 text-start"> <!-- Columna para la etiqueta -->
-                                            <label class="form-label mb-0" style="white-space: nowrap; font-weight: normal;">Subtotal (Lps)</label>
-                                        </div>
-                                        <div class="col-4 text-end"> <!-- Columna para el valor -->
-                                            <label class="form-control summary-value-box" id="subtotalGeneralLabel">0.00</label>
-                                        </div>
 
                                         {{-- Total Final --}}
                                         <div class="col-8 text-start">

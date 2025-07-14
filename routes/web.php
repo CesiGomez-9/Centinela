@@ -72,4 +72,10 @@ Route::controller(FacturaController::class)->group(function () {
     Route::put('/facturas/{id}/editar', 'update')->name('facturas.update')->whereNumber('id');
 });
 
+Route::get('/Clientes/crear', [\App\Http\Controllers\ClienteController::class, 'create'])->name('Clientes.create');
+Route::post('/Clientes/crear', [\App\Http\Controllers\ClienteController::class, 'store'])->name('Clientes.store');
+Route::get('/Clientes/crear', [\App\Http\Controllers\ClienteController::class, 'create'])->name('Clientes.formulariocliente');
+Route::get('/Clientes', [\App\Http\Controllers\ClienteController::class, 'index'])->name('Clientes.indexCliente');
+
+
 

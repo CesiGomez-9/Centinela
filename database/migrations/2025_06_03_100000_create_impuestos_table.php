@@ -25,7 +25,7 @@ class CreateImpuestosTable extends Migration
         \DB::table('impuestos')->insert([
             ['nombre' => 'Exento', 'porcentaje' => 0, 'created_at' => now(), 'updated_at' => now()],
             ['nombre' => 'No exento', 'porcentaje' => 15, 'created_at' => now(), 'updated_at' => now()],
-            ['nombre' => 'No exento', 'porcentaje' => 18, 'created_at' => now(), 'updated_at' => now()],
+            ['nombre' => 'iva 18', 'porcentaje' => 18, 'created_at' => now(), 'updated_at' => now()],
         ]);
     }
 
