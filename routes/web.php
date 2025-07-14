@@ -36,6 +36,8 @@ Route::put('/facturas_ventas/{factura_venta}', [\App\Http\Controllers\FacturaVen
 
 
 Route::get('/Proveedores/crear', [ProveedorController::class, 'create'])->name('Proveedores.create');
+
+
 Route::post('/Proveedores/crear', [ProveedorController::class, 'store'])->name('Proveedores.store');
 Route::get('/Proveedores', [ProveedorController::class, 'index'])->name('Proveedores.indexProveedor');
 Route::get('/Proveedores/crear', [ProveedorController::class, 'create'])->name('Proveedores.nuevo');
