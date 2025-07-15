@@ -1,5 +1,5 @@
 @extends('plantilla')
-@section('titulo', 'Detalles de la factura')
+@section('titulo', 'Factura de Compra')
 @section('content')
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
@@ -30,17 +30,28 @@
             background-color: #0d1b2a;
             padding: 1.75rem 1.75rem;
             border-bottom: 4px solid #cda34f;
+            display: flex; /* Para alinear el título y la pequeña nota */
+            align-items: center;
+            justify-content: center; /* Centrar el contenido del header */
+            position: relative; /* Para posicionar la nota de "Creado" */
         }
 
         .card-header h5 {
             color: #ffffff;
             font-weight: 700;
             font-size: 1.4rem;
+            text-align: center; /* Asegurar que el texto esté centrado */
+            flex-grow: 0; /* No permitir que el título ocupe todo el espacio */
+            margin-left: 0; /* Eliminar margen izquierdo */
         }
 
         .card-header small {
             color: #f0e6d2;
             font-size: 0.85rem;
+            position: absolute;
+            top: 50%;
+            right: 1.75rem;
+            transform: translateY(-50%);
         }
 
         .card-body {
@@ -50,9 +61,8 @@
         }
 
         .card-body p {
-            margin-bottom: 1.3rem;
-            border-left: 4px solid #cda34f;
-            padding-left: 0.75rem;
+            margin-bottom: 0.3rem; /* Reducir el margen inferior para los párrafos */
+            font-size: 0.9rem; /* Hacer la fuente un poco más pequeña */
         }
 
         .card-body i {
@@ -109,6 +119,26 @@
                 width: 100%;
                 margin: 0.5rem 0;
             }
+
+            .card-header .logo-container {
+                position: static;
+                transform: none;
+                margin-bottom: 10px;
+                justify-content: center;
+            }
+
+            .card-header h5 {
+                margin-left: 0;
+                text-align: center;
+            }
+
+            .card-header small {
+                position: static;
+                transform: none;
+                text-align: center;
+                display: block;
+                margin-top: 5px;
+            }
         }
 
         .section-header {
@@ -121,6 +151,162 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            justify-content: center; /* Centrar el espacio si no hay texto ni icono */
+        }
+
+        .invoice-header-info {
+            display: flex;
+            justify-content: space-between; /* Distribuye el espacio entre las columnas */
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            align-items: stretch; /* Hace que las columnas tengan la misma altura */
+            gap: 20px; /* Espacio entre las columnas */
+        }
+
+        @media (max-width: 767.98px) {
+            .invoice-header-info {
+                flex-direction: column; /* Se apilan en pantallas pequeñas */
+            }
+        }
+
+        .invoice-header-info .company-details,
+        .invoice-header-info .invoice-details {
+            flex: 1; /* Permite que ambas columnas crezcan y ocupen el espacio */
+            min-width: 280px; /* Asegura que no se colapsen demasiado en pantallas pequeñas */
+            padding: 15px 20px; /* Más padding para los detalles */
+            border-radius: 8px;
+            background-color: #fdfdfd;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* Sombra sutil */
+        }
+
+        .company-details {
+            display: flex; /* Para organizar el logo y el resto del contenido */
+            flex-direction: column; /* Apila el logo-and-name y la info de contacto */
+            align-items: flex-start; /* Alinea todo el contenido a la izquierda */
+            text-align: left; /* Asegura que el texto esté alineado a la izquierda */
+            gap: 10px; /* Espacio entre el bloque de logo/nombre y la info de contacto */
+        }
+
+        .logo-and-name {
+            display: flex; /* Para que el logo y el nombre estén a la par */
+            align-items: center; /* Centra verticalmente el logo y el nombre */
+            gap: 15px; /* Espacio entre el logo y el nombre */
+            margin-bottom: 5px; /* Espacio entre el nombre y la info de contacto */
+        }
+
+        .company-details img {
+            max-width: 120px; /* Tamaño del logo */
+            height: auto;
+            border-radius: 5px;
+            flex-shrink: 0; /* Evita que el logo se encoja */
+        }
+
+        .company-details strong {
+            font-size: 1.1rem; /* Un poco más grande para el nombre de la empresa */
+            display: block; /* Asegura que el strong ocupe su propia línea */
+            margin-bottom: 0; /* Eliminar margen inferior extra */
+        }
+
+        .company-address-contact p {
+            margin-bottom: 0.3rem; /* Ajustar margen para los párrafos dentro de esta sección */
+            font-size: 0.9rem; /* Hacer la fuente un poco más pequeña */
+        }
+
+        .invoice-details {
+            display: flex;
+            flex-direction: column; /* Apila los elementos verticalmente */
+            justify-content: center; /* Centra verticalmente el contenido dentro de la columna */
+            align-items: flex-start; /* Alinea el contenido a la izquierda */
+            text-align: left; /* Alinea el texto dentro de este contenedor */
+        }
+
+        .invoice-details .invoice-details-grid {
+            display: block;
+            width: 100%;
+        }
+
+        .invoice-details .invoice-details-grid > div {
+            font-size: 0.9rem; /* Tamaño de fuente para los detalles */
+            margin-bottom: 0.5rem; /* Espacio entre cada línea de información */
+        }
+        .invoice-details .invoice-details-grid strong {
+            display: inline; /* Asegura que el strong no rompa la línea */
+            margin-right: 5px; /* Espacio entre la etiqueta y el valor */
+        }
+
+        .product-table-container {
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden; /* Para que los bordes redondeados se apliquen a la tabla */
+        }
+
+        .product-table-container table {
+            margin-bottom: 0; /* Elimina el margen inferior predeterminado de la tabla */
+        }
+
+        .product-table-container th,
+        .product-table-container td {
+            font-size: 0.9rem;
+            padding: 0.75rem;
+            vertical-align: middle;
+        }
+
+        .product-table-container thead th {
+            background-color: #f2f2f2;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #cda34f;
+        }
+
+        .product-table-container tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .product-table-container tbody tr:hover {
+            background-color: #e6f0ff;
+        }
+
+        .invoice-summary-totals {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .invoice-summary-totals .summary-box {
+            width: 100%;
+            max-width: 350px; /* Ancho máximo para la caja de resumen */
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            background-color: #fdfdfd;
+        }
+
+        .invoice-summary-totals .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.875rem; /* Tamaño de fuente unificado y más pequeño */
+        }
+
+        .invoice-summary-totals .summary-item strong {
+            color: #0d1b2a;
+            font-weight: 600; /* Mantener negrita para las etiquetas */
+        }
+
+        .invoice-summary-totals .summary-item span {
+            font-weight: 500;
+            color: #333;
+            font-size: 0.875rem; /* Asegurar que el valor tenga el mismo tamaño */
+        }
+
+        .invoice-summary-totals .summary-item.total {
+            font-size: 1rem; /* Mantener el total un poco más grande para destacarlo */
+            font-weight: 700;
+            border-top: 2px solid #cda34f;
+            padding-top: 10px;
+            margin-top: 15px;
         }
     </style>
 
@@ -129,43 +315,107 @@
             <div class="col-xl-8 col-lg-9">
                 <div class="card">
                     <div class="card-header position-relative">
-                        <h5 class="mb-0" style="font-size: 0.9rem;">
-                            <i class="bi bi-receipt-cutoff me-2"></i>Detalles de la factura
+                        <h5 class="mb-0">
+                            <i class="bi bi-receipt-cutoff me-2"></i>Factura de Compra
                         </h5>
                         <small class="position-absolute top-50 end-0 translate-middle-y me-3">
                             Creado {{ $factura->created_at->diffForHumans() }}
                         </small>
                     </div>
                     <div class="card-body">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <p><i class="bi bi-hash me-2"></i><strong>Número de Factura:</strong> {{ $factura->numero_factura }}</p>
-                                <p><i class="bi bi-calendar-event me-2"></i><strong>Fecha:</strong> {{ \Carbon\Carbon::parse($factura->fecha)->format('d/m/Y') }}</p>
-                                <p><i class="bi bi-building me-2"></i><strong>Proveedor:</strong> {{ $factura->proveedor->nombre }}</p>
-                                <p><i class="bi bi-wallet-fill me-2"></i><strong>Forma de Pago:</strong> {{ $factura->forma_pago }}</p>
+                        <div class="invoice-header-info">
+                            <div class="company-details">
+                                <div class="logo-and-name">
+                                    <img src="{{ asset('centinela.jpg') }}" alt="Logo de la Empresa Centinela">
+                                    <strong>GRUPO CENTINELA</strong>
+                                </div>
+                                <div class="company-address-contact">
+                                    <p>RTN: 06021999123456.</p>
+                                    <p>Dirección: Barrio Oriental, cuatro cuadras al sur del parque central, Danlí, El Paraíso, Honduras.</p>
+                                    <p>Teléfono fijo: +504 2763-3585.</p>
+                                    <p>Teléfono celular: +504 9322-5352.</p>
+                                    <p>Email: grupocentinela.hn@gmail.com.</p>
+                                </div>
                             </div>
-                            <div class="col-md-6">
-                                <p><i class="bi bi-person-check-fill me-2"></i><strong>Responsable:</strong> {{ $factura->empleado->nombre }} {{ $factura->empleado->apellido }}</p>
-                                <p><i class="bi bi-cash-stack me-2"></i><strong>Subtotal (Lps):</strong> {{ number_format($factura->subtotal, 2) }}</p>
-                                <p><i class="bi bi-currency-dollar me-2"></i><strong>Impuestos (Lps):</strong> {{ number_format($factura->impuestos, 2) }}</p>
-                                <p><i class="bi bi-basket me-2"></i><strong>Total Final (Lps):</strong> {{ number_format($factura->totalF, 2) }}</p>
+                            <div class="invoice-details">
+                                <div class="invoice-details-grid">
+                                    <div><strong>Factura de compra N°:</strong> {{ $factura->numero_factura }}.</div>
+                                    <div><strong>Fecha comprobante:</strong> {{ \Carbon\Carbon::parse($factura->fecha)->format('d/m/Y') }}.</div>
+                                    <div><strong>Proveedor:</strong> {{ $factura->proveedor->nombreEmpresa }}.</div>
+                                    <div><strong>Forma de pago:</strong> {{ $factura->forma_pago }}.</div>
+                                    <div><strong>Responsable:</strong> {{ $factura->empleado->nombre }} {{ $factura->empleado->apellido }}.</div>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="row mt-3">
-                            @forelse ($factura->detalles as $detalle)
-                                <div class="col-md-6 mb-3">
-                                    <p><i class="bi bi-box me-2"></i><strong>Producto:</strong> {{ $detalle->producto }}</p>
-                                    <p><i class="bi bi-tags me-2"></i><strong>Categoría:</strong> {{ $detalle->categoria }}</p>
-                                    <p><i class="bi bi-currency-dollar me-2"></i><strong>Precio Compra:</strong> Lps {{ number_format($detalle->precio_compra, 2) }}</p>
-                                    <p><i class="bi bi-stack me-2"></i><strong>Cantidad:</strong> {{ $detalle->cantidad }}</p>
-                                    <p><i class="bi bi-percent me-2"></i><strong>IVA:</strong> {{ $detalle->iva }}%</p>
-                                       </div>
-                            @empty
-                                <div class="col-12">
-                                    <p class="text-muted fst-italic">No hay productos agregados a esta factura.</p>
+                        <h6 class="section-header">
+                            {{-- Solo el icono, sin texto --}}
+                        </h6>
+
+                        <div class="table-responsive product-table-container">
+                            <table class="table table-bordered table-striped text-center">
+                                <thead>
+                                <tr>
+                                    <th>N°</th>
+                                    <th>Descripción</th>
+                                    <th>Categoría</th>
+                                    <th>Precio compra (Lps)</th>
+                                    <th>Cantidad</th>
+                                    <th>IVA%</th>
+                                    <th>Subtotal(Lps)</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @forelse ($factura->detalles as $index => $detalle)
+                                    <tr>
+                                        <td>{{ $index + 1 }}</td>
+                                        <td>{{ $detalle->producto }}</td>
+                                        <td>{{ $detalle->categoria }}</td>
+                                        <td>{{ number_format($detalle->precio_compra, 2) }}</td>
+                                        <td>{{ $detalle->cantidad }}</td>
+                                        <td>{{ $detalle->iva }}%</td>
+                                        <td>{{ number_format($detalle->total, 2) }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="7" class="text-muted fst-italic py-3">No hay productos agregados a esta factura.</td>
+                                    </tr>
+                                @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="invoice-summary-totals">
+                            <div class="summary-box">
+                                <div class="summary-item">
+                                    <strong>Importe Gravado (Lps):</strong>
+                                    <span>{{ number_format($factura->importe_gravado, 2) }}</span>
                                 </div>
-                            @endforelse
+                                <div class="summary-item">
+                                    <strong>Importe Exento (Lps):</strong>
+                                    <span>{{ number_format($factura->importe_exento, 2) }}</span>
+                                </div>
+                                <div class="summary-item">
+                                    <strong>Importe Exonerado (Lps):</strong>
+                                    <span>{{ number_format($factura->importe_exonerado, 2) }}</span>
+                                </div>
+                                <div class="summary-item">
+                                    <strong>Subtotal (Lps):</strong>
+                                    <span>{{ number_format($factura->subtotal, 2) }}</span>
+                                </div>
+                                <div class="summary-item">
+                                    <strong>ISV 15% (Lps):</strong>
+                                    <span>{{ number_format($factura->isv_15, 2) }}</span>
+                                </div>
+                                <div class="summary-item">
+                                    <strong>ISV 18% (Lps):</strong>
+                                    <span>{{ number_format($factura->isv_18, 2) }}</span>
+                                </div>
+                                <div class="summary-item total">
+                                    <strong>Total Final (Lps):</strong>
+                                    <span>{{ number_format($factura->totalF, 2) }}</span>
+                                </div>
+                            </div>
                         </div>
 
                     </div>
@@ -183,4 +433,3 @@
         </div>
     </div>
 @endsection
-

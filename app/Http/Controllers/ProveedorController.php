@@ -84,7 +84,7 @@ class ProveedorController extends Controller
             'telefonoderepresentante.unique' => 'Este número de teléfono ya está registrado.',
 
             'categoriarubro.required' => 'Debe seleccionar una categoría o rubro.',
-            'departamento.required' => 'Debe seleccionar una categoría o rubro.'
+            'departamento.required' => 'Debe seleccionar un departamento.'
         ], [
             'nombreEmpresa' => 'nombre de la empresa',
             'direccion' => 'dirección',

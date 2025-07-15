@@ -11,6 +11,9 @@ return [
     'max' => [
         'string' => ':attribute debe tener al menos :max caracteres.',
     ],
+    'size' => [
+        'string' => 'El campo :attribute debe tener exactamente :size dígitos.',
+    ],
 
     'attributes' => [
         'serie' => 'Serie',

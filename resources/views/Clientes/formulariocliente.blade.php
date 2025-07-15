@@ -2,12 +2,12 @@
 @section('content')
 
 
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="es">
 <head>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <meta charset="UTF-8">
-    <title>Proveedor</title>
+    <title>Cliente</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         body {
@@ -43,7 +43,7 @@
                 </div>
 
                 <h3 class="text-center mb-4" style="color: #09457f;">
-                    <i class="bi bi-person-plus-fill me-2"></i> Registrar un proveedor
+                    <i class="bi bi-person-plus-fill me-2"></i> Registrar un cliente
                 </h3>
 
                 <style>
@@ -61,149 +61,99 @@
                     }
                 </style>
 
-                <form action="{{ route('Proveedores.store') }}" method="POST" id="form-proveedor" novalidate>
+                <form action="{{ route('Clientes.store') }}" method="POST" id="form-cliente" novalidate>
                     @csrf
 
                     <div class="row g-4">
-
                         <div class="col-md-6">
-                            <label for="nombreEmpresa" class="form-label">Nombre de la empresa </label>
+                            <label for="nombre" class="form-label">Nombre </label>
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                                <input type="text" name="nombreEmpresa"
-                                       class="form-control @error('nombreEmpresa') is-invalid @enderror"
-                                       value="{{ old('nombreEmpresa') }}"
+                                <input type="text" name="nombre"
+                                       class="form-control @error('nombre') is-invalid @enderror"
+                                       value="{{ old('nombre') }}"
                                        maxlength="50"
                                        onkeypress="soloLetras(event)"
                                        onkeydown="bloquearEspacioAlInicio(event, this)"
                                        oninput="eliminarEspaciosIniciales(this)"
                                        oninput="this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '')"
                                        required>
-                                @error('nombreEmpresa')
+                                @error('nombre')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>
 
                         <div class="col-md-6">
-                            <label for="nombrerepresentante" class="form-label">Nombre del representante</label>
+                            <label for="apellido" class="form-label">Apellido </label>
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                                <input type="text" name="nombrerepresentante"
-                                       class="form-control @error('nombrerepresentante') is-invalid @enderror"
-                                       value="{{ old('nombrerepresentante') }}"
+                                <input type="text" name="apellido"
+                                       class="form-control @error('apellido') is-invalid @enderror"
+                                       value="{{ old('apellido') }}"
                                        maxlength="50"
                                        onkeypress="soloLetras(event)"
                                        onkeydown="bloquearEspacioAlInicio(event, this)"
                                        oninput="eliminarEspaciosIniciales(this)"
                                        oninput="this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '')"
                                        required>
-                                @error('nombrerepresentante')
+                                @error('apellido')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>
 
-
                         <div class="col-md-6">
-                            <label for="telefonodeempresa" class="form-label">Teléfono de la empresa</label>
+                            <label for="identidad" class="form-label">Identidad</label>
                             <div class="input-group has-validation">
-                                <span class="input-group-text"><i class="bi bi-telephone-fill"></i></span>
-                                <input type="text" name="telefonodeempresa"
-                                       class="form-control @error('telefonodeempresa') is-invalid @enderror"
-                                       value="{{ old('telefonodeempresa') }}"
-                                       maxlength="8"
-                                       onkeypress="soloNumeros(event)"
-                                       onkeydown="bloquearEspacioAlInicio(event, this)"
-                                       oninput="eliminarEspaciosIniciales(this)"
-                                       oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                                       required>
-                                @error('telefonodeempresa')
+                                <span class="input-group-text"><i class="bi bi-credit-card-2-front-fill"></i></span>
+                                <input type="text" id="identidad" name="identidad" maxlength="13"
+                                       value="{{ old('identidad') }}"
+                                       class="form-control @error('identidad') is-invalid @enderror"
+                                       oninput="formatearIdentidad(this)" />
+                                @error('identidad')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
+                                <div id="errorIdentidad" class="invalid-feedback"></div>
                             </div>
                         </div>
 
+
                         <div class="col-md-6">
-                            <label for="correoempresa" class="form-label">Correo Electrónico</label>
+                            <label for="correo" class="form-label">Correo Electrónico</label>
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
-                                <input type="email" name="correoempresa"
-                                       class="form-control @error('correoempresa') is-invalid @enderror"
-                                       value="{{ old('correoempresa') }}"
+                                <input type="email" name="correo"
+                                       class="form-control @error('correo') is-invalid @enderror"
+                                       value="{{ old('correo') }}"
                                        maxlength="50"
                                        onkeydown="bloquearEspacioAlInicio(event, this)"
                                        oninput="eliminarEspaciosIniciales(this)"
                                        required>
-                                @error('correoempresa')
+                                @error('correo')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>
 
-
                         <div class="col-md-6">
-                            <label for="telefonoderepresentante" class="form-label">Teléfono del representante</label>
+                            <label for="telefono" class="form-label">Teléfono</label>
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-telephone-fill"></i></span>
-                                <input type="text" name="telefonoderepresentante"
-                                       class="form-control @error('telefonoderepresentante') is-invalid @enderror"
-                                       value="{{ old('telefonoderepresentante') }}"
+                                <input type="text" name="telefono"
+                                       class="form-control @error('telefono') is-invalid @enderror"
+                                       value="{{ old('telefono') }}"
                                        maxlength="8"
                                        onkeypress="soloNumeros(event)"
                                        onkeydown="bloquearEspacioAlInicio(event, this)"
                                        oninput="eliminarEspaciosIniciales(this)"
                                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                        required>
-                                @error('telefonoderepresentante')
+                                @error('telefono')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>
-
-
-                        <div class="col-md-6">
-                            <label for="categoriarubro" class="form-label">Categoría o rubro</label>
-                            <div class="input-group has-validation">
-                                <span class="input-group-text"><i class="bi bi-briefcase-fill"></i></span>
-                                <select name="categoriarubro" class="form-select @error('categoriarubro') is-invalid @enderror" required>
-                                    <option value="">Seleccione una opción</option>
-                                    <option value="Cámaras de seguridad" {{ old('categoriarubro') == 'Cámaras de seguridad' ? 'selected' : '' }}>Cámaras de seguridad</option>
-                                    <option value="Alarmas antirrobo" {{ old('categoriarubro') == 'Alarmas antirrobo' ? 'selected' : '' }}>Alarmas antirrobo</option>
-                                    <option value="Cerraduras inteligentes" {{ old('categoriarubro') == 'Cerraduras inteligentes' ? 'selected' : '' }}>Cerraduras inteligentes</option>
-                                    <option value="Sensores de movimiento" {{ old('categoriarubro') == 'Sensores de movimiento' ? 'selected' : '' }}>Sensores de movimiento</option>
-                                    <option value="Luces con sensor de movimiento" {{ old('categoriarubro') == 'Luces con sensor de movimiento' ? 'selected' : '' }}>Luces con sensor de movimiento</option>
-                                    <option value="Rejas o puertas de seguridad" {{ old('categoriarubro') == 'Rejas o puertas de seguridad' ? 'selected' : '' }}>Rejas o puertas de seguridad</option>
-                                    <option value="Sistema de monitoreo 24/7" {{ old('categoriarubro') == 'Sistema de monitoreo 24/7' ? 'selected' : '' }}>Sistema de monitoreo 24/7</option>
-                                    <option value="Otros" {{ old('categoriarubro') == 'Otros' ? 'selected' : '' }}>Otros</option>
-                                </select>
-                                @error('categoriarubro')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label for="direccion" class="form-label">Dirección</label>
-                            <div class="input-group has-validation">
-                                <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
-
-                                <textarea
-                                    name="direccion"
-                                    id="direccion"
-                                    class="form-control @error('direccion') is-invalid @enderror"
-                                    maxlength="250"
-                                    style="height: 100px; resize: none; overflow: hidden;"  {{-- altura fija sin scroll --}}
-                                    onkeydown="bloquearEspacioAlInicio(event, this)"
-                                    oninput="eliminarEspaciosIniciales(this)">{{ old('direccion') }}</textarea>
-
-                                @error('direccion')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-
 
                         <div class="col-md-6">
                             <label for="departamento" class="form-label">Departamento</label>
@@ -236,17 +186,32 @@
                             </div>
                         </div>
 
+                        <div class="col-md-6">
+                            <label for="direccion" class="form-label">Dirección</label>
+                            <div class="input-group has-validation">
+                                <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
+                                <textarea
+                                    name="direccion"
+                                    id="direccion"
+                                    class="form-control @error('direccion') is-invalid @enderror"
+                                    maxlength="250"
+                                    style="resize: none; overflow: hidden;"
+                                    onkeydown="bloquearEspacioAlInicio(event, this)"
+                                    oninput="eliminarEspaciosIniciales(this); autoExpand(this);"
+                                >{{ old('direccion') }}</textarea>
+                                @error('direccion')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
 
 
-
-                    </div>
 
                     <div class="text-center mt-5 d-flex justify-content-center gap-3">
                         <!-- Botón Cancelar -->
-                        <a href="{{ route('Proveedores.indexProveedor') }}" class="btn btn-danger">
+                        <a href="{{ route('Clientes.indexCliente') }}" class="btn btn-danger">
                             <i class="bi bi-x-circle me-2"></i> Cancelar
                         </a>
-
                         <!-- Botón Limpiar -->
                         <button type="button" class="btn btn-warning" onclick="limpiarFormulario()">
                             <i class="bi bi-eraser-fill me-2"></i> Limpiar
@@ -256,9 +221,14 @@
                         <button type="submit" class="btn btn-primary">
                             <i class="bi bi-save-fill me-2"></i> Guardar
                         </button>
+
                     </div>
 
+
+                    </div>
                 </form>
+
+
 
 
             </div>
@@ -300,6 +270,8 @@
         }
     });
 </script>
+
+
 
 <script>
     function validarSoloLetras(input) {
@@ -382,12 +354,60 @@
         }
     }
 
+    function formatearIdentidad(i) {
+
+        let v = i.value.replace(/[^0-9]/g, '');
+        if (v.length > 13) {
+            v = v.slice(0, 13);
+        }
+
+
+        if (v.length >= 4) {
+            const departamento = v.slice(0, 2);
+            const municipio = v.slice(2, 4);
+
+            if (!codigosDep.includes(departamento)) {
+                i.classList.add('is-invalid');
+                document.getElementById('errorIdentidad').textContent = 'Código de departamento inválido.';
+                i.value = v;
+                return;
+            } else if (!municipiosPorDepartamento[departamento] || !municipiosPorDepartamento[departamento].includes(municipio)) {
+                i.classList.add('is-invalid');
+                document.getElementById('errorIdentidad').textContent = 'Código de municipio inválido para el departamento.';
+                i.value = v;
+                return;
+            }
+        } else if (v.length >= 2) {
+            const departamento = v.slice(0, 2);
+            if (!codigosDep.includes(departamento)) {
+                i.classList.add('is-invalid');
+                document.getElementById('errorIdentidad').textContent = 'Código de departamento inválido.';
+                i.value = v;
+                return;
+            }
+        }
+        if (v.length >= 8) {
+            let anio = v.slice(4, 8);
+            let anioNum = parseInt(anio, 10);
+
+            if (isNaN(anioNum) || anioNum < 1940 || anioNum > 2007) {
+                i.classList.add('is-invalid');
+                document.getElementById('errorIdentidad').textContent = 'El año debe ser entre 1940 y 2007.';
+                i.value = v;
+                return;
+            }
+        }
+        i.classList.remove('is-invalid');
+        document.getElementById('errorIdentidad').textContent = '';
+        i.value = v;
+    }
+
     function eliminarEspaciosIniciales(input) {
         input.value = input.value.replace(/^\s+/, '');
     }
 
     function limpiarFormulario() {
-        const formulario = document.getElementById("form-proveedor");
+        const formulario = document.getElementById("form-cliente");
 
         // Limpiar campos manualmente
         const elementos = formulario.querySelectorAll("input, textarea, select");
@@ -420,16 +440,27 @@
 
 </script>
 
+{{-- Script para que el textarea crezca dinámicamente --}}
+<script>
+    function autoExpand(textarea) {
+        textarea.style.height = 'auto'; // Reinicia altura
+        textarea.style.height = (textarea.scrollHeight) + 'px'; // Ajusta a contenido
+    }
 
-
-
-
-
-
+    // Para ajustar si ya viene con texto viejo (old)
+    window.addEventListener('DOMContentLoaded', () => {
+        const direccion = document.getElementById('direccion');
+        if (direccion) autoExpand(direccion);
+    });
+</script>
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 </body>
 </html>
 
 @endsection
+
+
+
+
 
