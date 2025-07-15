@@ -7,7 +7,7 @@
         body {
             font-family: 'Inter', sans-serif;
             background: url('https://www.transparenttextures.com/patterns/beige-paper.png') repeat fixed #f8f4ec;
-            font-size: 0.9rem; /* Unificado: Establece un tamaño de fuente base más pequeño */
+            font-size: 0.9rem;
         }
 
         .card {
@@ -19,7 +19,7 @@
             min-height: 400px;
             max-width: 1000px;
             transition: transform 0.2s ease-in-out;
-            margin-bottom: 2rem; /* Espacio entre tarjetas */
+            margin-bottom: 2rem;
         }
 
         .card:hover {
@@ -28,32 +28,43 @@
 
         .card-header {
             background-color: #0d1b2a;
-            padding: 1rem 1rem; /* Ajustado para consistencia */
+            padding: 1rem 1rem;
             border-bottom: 3px solid #cda34f;
-            display: flex; /* Asegura que los elementos del header estén en línea */
-            justify-content: space-between; /* Espacia el título y la fecha de creación */
+            display: flex;
+            justify-content: center; /* Centra el contenido principal (header-title) */
             align-items: center; /* Centra verticalmente los elementos */
+            position: relative; /* Necesario para posicionar 'small' absolutamente */
         }
 
         .card-header .header-title {
             color: #ffffff;
             font-weight: 700;
-            font-size: 1.1rem; /* Tamaño de fuente para el título principal del header, ajustado */
-            margin-bottom: 0; /* Elimina el margen inferior predeterminado de h4 */
+            font-size: 1.1rem;
+            margin-bottom: 0;
+            display: flex; /* Para alinear el icono y el texto dentro del título */
+            align-items: center; /* Alinea verticalmente el icono y el texto */
+            /* Eliminado flex-grow y margin-left/right auto aquí, el padre lo centra */
+        }
+
+        .card-header .header-title i {
+            margin-right: 0.5rem;
         }
 
         .card-header small {
-            color: #ffffff; /* Color para el texto de "Creado hace..." */
+            color: #ffffff;
             font-weight: 700;
-            font-size: 0.8rem; /* HECHO MÁS PEQUEÑO */
-            position: static; /* Elimina el posicionamiento absoluto para que fluya con flexbox */
-            transform: none; /* Elimina la transformación */
-            margin-left: auto; /* Empuja a la derecha en flexbox */
+            font-size: 0.8rem;
+            /* Posiciona absolutamente para sacarlo del flujo y colocarlo a la derecha */
+            position: absolute;
+            right: 1rem; /* Alinea a la derecha, ajusta según el padding del card-header */
+            top: 50%; /* Centra verticalmente */
+            transform: translateY(-50%); /* Ajuste fino para el centrado vertical */
+            flex-shrink: 0; /* Mantenido, aunque absolute lo saca del flujo flex */
         }
 
         .card-body {
             padding: 2.25rem 1.75rem;
-            font-size: 0.9rem; /* Unificado: Ahora hereda o es 0.9rem */
+            font-size: 0.9rem;
             box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
         }
 
@@ -61,12 +72,12 @@
             margin-bottom: 1.3rem;
             border-left: 4px solid #cda34f;
             padding-left: 0.75rem;
-            font-size: 0.9rem; /* Unificado: Ahora hereda o es 0.9rem */
+            font-size: 0.9rem;
         }
 
         .card-body i {
             color: #1b263b;
-            font-size: 1rem; /* Iconos ligeramente más grandes para visibilidad */
+            font-size: 1rem;
         }
 
         .card-body strong {
@@ -82,7 +93,7 @@
 
         .card-footer small {
             color: #f5f5f5;
-            font-size: 0.8rem; /* HECHO MÁS PEQUEÑO */
+            font-size: 0.8rem;
         }
 
         .btn-return, .btn-edit {
@@ -94,7 +105,7 @@
             font-weight: 600;
             transition: all 0.3s ease-in-out;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            font-size: 0.9rem; /* Unificado: Ahora hereda o es 0.9rem */
+            font-size: 0.9rem;
             margin: 0 0.5rem;
         }
 
@@ -107,7 +118,7 @@
         @media (max-width: 767.98px) {
             .card-body {
                 padding: 1.75rem 1rem;
-                font-size: 0.9rem; /* Unificado: Ahora hereda o es 0.9rem */
+                font-size: 0.9rem;
             }
 
             .btn-return, .btn-edit {
@@ -116,46 +127,71 @@
                 margin: 0.5rem 0;
             }
         }
-        /* Estilos para la tabla de historial de precios */
         .price-history-card .card-header {
-            background-color: #1b263b; /* Un color ligeramente diferente para la segunda tarjeta */
+            background-color: #1b263b;
             border-bottom: 4px solid #cda34f;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
         }
 
         .price-history-card .card-header .header-title {
             color: #ffffff;
-            font-size: 1.1rem; /* Mantiene el mismo tamaño que el título de la primera tarjeta, ajustado */
+            font-size: 1.1rem;
         }
 
+        .price-history-card .card-header .header-title i {
+            margin-right: 0.5rem;
+        }
+
+        /* Estilos mejorados para la tabla de historial de precios */
         .table-price-history {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate; /* Usar separate para border-spacing */
+            border-spacing: 0; /* Eliminar espacio entre celdas */
             margin-top: 1rem;
-            font-size: 0.9rem; /* Unificado: Ahora hereda o es 0.9rem */
+            font-size: 0.9rem;
+            border: 1px solid #dee2e6; /* Borde exterior de la tabla */
+            border-radius: 0.5rem; /* Bordes redondeados para la tabla */
+            overflow: hidden; /* Asegura que los bordes redondeados se apliquen */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); /* Sombra sutil para la tabla */
         }
 
         .table-price-history th,
         .table-price-history td {
-            padding: 0.75rem;
+            padding: 0.9rem 1.2rem; /* Aumentar padding para más espacio */
             text-align: left;
-            border-bottom: 1px solid #e0e0e0;
-            font-size: 0.9rem; /* Unificado: Ahora hereda o es 0.9rem */
+            border-bottom: 1px solid #e9ecef; /* Líneas de separación suaves */
+            border-right: 1px solid #e9ecef; /* Líneas verticales */
+            font-size: 0.9rem;
         }
 
-        .table-price-history th {
-            background-color: #f2f2f2;
+        .table-price-history th:last-child,
+        .table-price-history td:last-child {
+            border-right: none; /* Eliminar borde derecho de la última columna */
+        }
+
+        .table-price-history thead th {
+            background-color: #f8f9fa; /* Fondo claro para el encabezado */
             font-weight: 600;
-            color: #333;
+            color: #343a40; /* Color de texto más oscuro */
+            border-bottom: 2px solid #dee2e6; /* Borde inferior más pronunciado para el thead */
         }
 
         .table-price-history tbody tr:nth-child(even) {
-            background-color: #f9f9f9;
+            background-color: #fdfdfd; /* Color de fila par */
+        }
+
+        .table-price-history tbody tr:nth-child(odd) {
+            background-color: #ffffff; /* Color de fila impar */
         }
 
         .table-price-history tbody tr:hover {
-            background-color: #e6f0ff;
+            background-color: #eef5ff; /* Color al pasar el ratón */
         }
 
+        /* Estilos para los indicadores de cambio de precio */
         .price-change-up {
             color: #28a745; /* Verde para subida de precio */
             font-weight: bold;
@@ -167,8 +203,29 @@
         }
 
         .price-change-neutral {
-            color: #6c757d; /* Gris para sin cambio */
+            color: #6c757d; /* Gris para sin cambio / precio inicial */
             font-weight: normal;
+        }
+        .pagination {
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+        .pagination .page-item .page-link {
+            color: #0d1b2a;
+            border: 1px solid #cda34f;
+            border-radius: 0.25rem;
+            margin: 0 0.25rem;
+            transition: all 0.3s ease-in-out;
+        }
+        .pagination .page-item.active .page-link {
+            background-color: #cda34f;
+            border-color: #cda34f;
+            color: white;
+        }
+        .pagination .page-item .page-link:hover {
+            background-color: #0d1b2a;
+            border-color: #0d1b2a;
+            color: white;
         }
     </style>
 
@@ -179,7 +236,7 @@
                     <div class="card-header">
                         <div class="header-title"><i class="bi bi-boxes me-2"></i>Detalles del producto.</div>
                         @isset($producto)
-                            <small>Creado {{ $producto->created_at->diffForHumans() }}.</small>
+                            <small>Creado {{ $producto->created_at ? $producto->created_at->diffForHumans() : 'Fecha no disponible' }}.</small>
                         @endisset
                     </div>
                     <div class="card-body">
@@ -193,7 +250,7 @@
                                 <p><i class="bi bi-briefcase-fill me-2"></i><strong>Categoría:</strong> {{ $producto->categoria }}.</p>
                             </div>
                             <div class="col-md-6">
-                                <p><i class="bi bi-box-fill me-2"></i><strong>Cantidad actual:</strong> {{ floor($producto->cantidad) }}.</p> {{-- Cantidad movida aquí --}}
+                                <p><i class="bi bi-box-fill me-2"></i><strong>Cantidad actual:</strong> {{ floor($producto->cantidad) }}.</p>
                                 <p><i class="bi bi-percent me-2"></i><strong>Impuesto:</strong> {{ $producto->impuesto->nombre ?? 'N/A' }} ({{ $producto->impuesto->porcentaje ?? '0' }}%).</p>
                                 <p><i class="bi bi-currency-dollar me-2"></i><strong>Precio de compra actual:</strong> Lps. {{ number_format($producto->precio_compra, 2) }}.</p>
                                 <p><i class="bi bi-cash-stack me-2"></i><strong>Precio de venta actual:</strong> Lps. {{ number_format($producto->precio_venta, 2) }}.</p>
@@ -202,17 +259,16 @@
                         </div>
                     </div>
                     <div class="card-footer text-end">
-                        <small>Última actualización: {{ $producto->updated_at->diffForHumans() }}.</small>
+                        <small>Última actualización: {{ $producto->updated_at ? $producto->updated_at->diffForHumans() : 'Fecha no disponible' }}.</small>
                     </div>
                 </div>
 
-                {{-- Nueva tarjeta para el historial de precios de compra --}}
                 <div class="card price-history-card">
                     <div class="card-header">
                         <div class="header-title"><i class="bi bi-graph-up-arrow me-2"></i>Variación de precios de compra.</div>
                     </div>
                     <div class="card-body">
-                        @if ($producto->precioCompras->isNotEmpty())
+                        @if ($precioComprasPaginadas->isNotEmpty())
                             <div class="table-responsive">
                                 <table class="table table-price-history">
                                     <thead>
@@ -223,20 +279,16 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    @foreach ($producto->precioCompras as $index => $precioHistorial)
-                                        @php
-                                            // Obtener el precio del elemento cronológicamente anterior (que es el siguiente en la colección ordenada DESC)
-                                            $olderPrice = $producto->precioCompras->get($index + 1)->precio_compra ?? null;
-                                        @endphp
+                                    @foreach ($precioComprasPaginadas as $precioHistorial)
                                         <tr>
                                             <td>{{ $precioHistorial->created_at->format('d/m/Y H:i') }}</td>
                                             <td>Lps. {{ number_format($precioHistorial->precio_compra, 2) }}</td>
                                             <td>
-                                                @if ($olderPrice !== null)
-                                                    @if ($precioHistorial->precio_compra > $olderPrice)
-                                                        <span class="price-change-up"><i class="bi bi-arrow-up-circle-fill me-1"></i> Subió (Lps. {{ number_format($precioHistorial->precio_compra - $olderPrice, 2) }})</span>
-                                                    @elseif ($precioHistorial->precio_compra < $olderPrice)
-                                                        <span class="price-change-down"><i class="bi bi-arrow-down-circle-fill me-1"></i> Bajó (Lps. {{ number_format($olderPrice - $precioHistorial->precio_compra, 2) }})</span>
+                                                @if ($precioHistorial->previous_price !== null)
+                                                    @if ($precioHistorial->precio_compra > $precioHistorial->previous_price)
+                                                        <span class="price-change-up"><i class="bi bi-arrow-up-circle-fill me-1"></i> Subió (Lps. {{ number_format($precioHistorial->precio_compra - $precioHistorial->previous_price, 2) }})</span>
+                                                    @elseif ($precioHistorial->precio_compra < $precioHistorial->previous_price)
+                                                        <span class="price-change-down"><i class="bi bi-arrow-down-circle-fill me-1"></i> Bajó (Lps. {{ number_format($precioHistorial->previous_price - $precioHistorial->precio_compra, 2) }})</span>
                                                     @else
                                                         <span class="price-change-neutral"><i class="bi bi-dash-circle-fill me-1"></i> Sin cambio</span>
                                                     @endif
@@ -249,6 +301,7 @@
                                     </tbody>
                                 </table>
                             </div>
+                            {{ $precioComprasPaginadas->links() }}
                         @else
                             <p class="text-center text-muted">No hay historial de precios de compra para este producto.</p>
                         @endif
