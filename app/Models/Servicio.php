@@ -8,12 +8,18 @@ use Illuminate\Database\Eloquent\Model;
 class Servicio extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'nombre',
         'descripcion',
-        'tipo',
+        'categoria',
+        'costo',
         'duracion_estimada',
-        'requiere_productos',
-        'productos_especificos'
+        'productos',
+    ];
+
+    protected $casts = [
+        'productos' => 'array',
     ];
 }
+

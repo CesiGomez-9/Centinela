@@ -51,6 +51,12 @@ Route::get('/servicios/index', [ServicioController::class, 'index'])->name('serv
 Route::post('/servicios', [ServicioController::class, 'store'])->name('servicios.store');
 Route::delete('/servicios/{id}', [ServicioController::class, 'destroy'])->name('servicios.destroy');
 Route::get('/catalogo', [ServicioController::class, 'catalogo'])->name('servicios.catalogo');
+Route::get('/servicios/{servicio}', [ServicioController::class, 'show'])->name('servicios.show');
+Route::get('/servicios/{servicio}/edit', [ServicioController::class, 'edit'])->name('servicios.edit');
+Route::put('/servicios/{id}', [ServicioController::class, 'update'])->name('servicios.update');
+
+
+
 
 
 
