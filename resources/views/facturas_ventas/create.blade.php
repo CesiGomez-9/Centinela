@@ -261,24 +261,28 @@
                         </thead>
                         <tbody id="tablaProductosBody">
                         @foreach ($productos as $producto)
-                            <tr>
-                                <td>{{ $producto->nombre }}</td>
-                                <td>{{ $producto->categoria->nombre }}</td>
-                                <td>{{ number_format($producto->precioVenta, 2) }}</td> <!-- ✅ Mostrar precio -->
-                                <td>{{ $producto->cantidad ?? 'N/A' }}</td>
-                                <td>{{ $producto->iva }}</td>
-                                <td>
-                                    <button type="button" class="btn btn-sm btn-primary btnSeleccionarProducto"
-                                            data-id="{{ $producto->id }}"
-                                            data-nombre="{{ $producto->nombre }}"
-                                            data-categoria="{{ $producto->categoria->nombre }}"
-                                            data-precioventa="{{ $producto->precioVenta }}"
-                                            data-iva="{{ $producto->iva }}">
-                                        Seleccionar
-                                    </button>
-                                </td>
-                            </tr>
+                            @foreach ($producto->detallesFactura as $detalle)
+
+                                <tr>
+                                    <td>{{ $producto->nombre }}</td>
+                                    <td>{{ $producto->categoria }}</td>
+                                    <td>{{ number_format($detalle->precio_venta, 2) }}</td>
+                                    <td>{{ $detalle->cantidad ?? 'N/A' }}</td>
+                                    <td>{{ $detalle->iva }}</td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-primary btnSeleccionarProducto"
+                                                data-id="{{ $producto->id }}"
+                                                data-nombre="{{ $producto->nombre }}"
+                                                data-categoria="{{ $producto->categoria }}"
+                                                data-precioventa="{{ $detalle->precio_venta }}"
+                                                data-iva="{{ $detalle->iva }}">
+                                            Seleccionar
+                                        </button>
+                                    </td>
+                                </tr>
+                            @endforeach
                         @endforeach
+
                         </tbody>
                     </table>
                 </div>
@@ -850,10 +854,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             input.classList.remove('is-invalid');
         }
-
-
 </script>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

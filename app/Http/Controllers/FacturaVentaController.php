@@ -1,9 +1,11 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\DetalleFactura;
 use App\Models\FacturaVenta;
 use App\Models\DetalleFacturaVenta;
 use App\Models\Cliente;
+use App\Models\Producto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -20,46 +22,26 @@ class FacturaVentaController extends Controller
 
     public function create()
     {
-        $clientes = [
-            (object)['id' => 1, 'nombre' => 'Cliente Prueba 1'],
-            (object)['id' => 2, 'nombre' => 'Cliente Prueba 2'],
-        ];
-        $productos = collect([
-            (object)[
-                'id' => 1,
-                'nombre' => 'Producto Demo 1',
-                'categoria' => (object)['nombre' => 'Categoría A'],
-                'precioVenta' => 150.00,
-                'iva' => 15,
-            ],
-            (object)[
-                'id' => 2,
-                'nombre' => 'Producto Demo 2',
-                'categoria' => (object)['nombre' => 'Categoría B'],
-                'precioVenta' => 250.00,
-                'iva' => 18,
-            ],
-        ]);
+        // Obtener productos con sus detalles relacionados
+        $productos = Producto::with('detallesFactura')->get();
 
-        // Simular clientes
-        $clientes = collect([
-            (object)[
-                'id' => 1,
-                'nombre' => 'Cliente Demo 1',
-            ],
-            (object)[
-                'id' => 2,
-                'nombre' => 'Cliente Demo 2',
-            ],
-        ]);
+        // Obtener clientes reales desde la base de datos
+        $clientes = Cliente::orderBy('nombre')->get();
 
+        // Obtener empleados ordenados
         $empleados = Empleado::orderBy('nombre')->get();
 
         // Lista de formas de pago (siempre fija)
         $formasPago = ['Efectivo', 'Cheque', 'Transferencia'];
 
-        return view('facturas_ventas.create', compact('productos' ,'clientes', 'empleados', 'formasPago'));
+        return view('facturas_ventas.create', compact(
+            'productos',
+            'clientes',
+            'empleados',
+            'formasPago'
+        ));
     }
+
 
     public function store(Request $request)
     {
@@ -96,8 +78,6 @@ class FacturaVentaController extends Controller
                 DetalleFacturaVenta::create([
                     'factura_venta_id' => $factura->id,
                     'producto_id' => $producto['product_id'],
-                    'responsable_id.required' => 'El responsable es obligatorio.',
-                    'responsable_id.exists' => 'El empleado responsable seleccionado no es válido.',
                     'nombre' => $producto['nombre'],
                     'categoria' => $producto['categoria'] ?? null,
                     'precio_venta' => $producto['precioVenta'],

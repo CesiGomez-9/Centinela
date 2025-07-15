@@ -24,7 +24,8 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('factura_venta_id')->references('id')->on('facturas_ventas')->onDelete('cascade');
-           $table->foreign('producto_id')->references('id')->on('productos')->onDelete('cascade');
+            $table->foreign('producto_id')->references('id')->on('productos')->onDelete('cascade');
+            //$table->foreign('detalle_factura_id')->references('id')->on('detalles')->onDelete('cascade');
         });
     }
 
