@@ -273,14 +273,16 @@
                                 <table class="table table-price-history">
                                     <thead>
                                     <tr>
+                                        <th>N°</th> {{-- Nueva columna de numeración --}}
                                         <th>Fecha</th>
                                         <th>Precio</th>
                                         <th>Cambio</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    @foreach ($precioComprasPaginadas as $precioHistorial)
+                                    @foreach ($precioComprasPaginadas as $index => $precioHistorial)
                                         <tr>
+                                            <td>{{ ($precioComprasPaginadas->currentPage() - 1) * $precioComprasPaginadas->perPage() + $loop->iteration }}</td> {{-- Numeración dinámica --}}
                                             <td>{{ $precioHistorial->created_at->format('d/m/Y H:i') }}</td>
                                             <td>Lps. {{ number_format($precioHistorial->precio_compra, 2) }}</td>
                                             <td>
