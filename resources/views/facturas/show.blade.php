@@ -236,7 +236,7 @@
 
         .product-table-container {
             margin-top: 2rem;
-            margin-bottom: 2rem;
+            margin-bottom: 0.5rem; /* Reducido de 2rem a 0.5rem */
             border: 1px solid #e0e0e0;
             border-radius: 8px;
             overflow: hidden;
@@ -269,17 +269,15 @@
         }
 
         .invoice-summary-totals {
-            margin-top: 2rem;
-            display: flex;
-            justify-content: flex-end;
+            margin-top: 0.5rem; /* Reducido de 1rem a 0.5rem */
         }
 
         .invoice-summary-totals .summary-box {
-            width: 100%;/* Ancho máximo para la caja de resumen */
             border: 1px solid #e0e0e0;
             border-radius: 8px;
             padding: 15px;
             background-color: #fdfdfd;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
         .invoice-summary-totals .summary-item {
@@ -382,35 +380,40 @@
                             </table>
                         </div>
 
-                        <div class="invoice-summary-totals">
-                            <div class="summary-box">
-                                <div class="summary-item">
-                                    <strong>Importe Gravado (Lps):</strong>
-                                    <span>{{ number_format($factura->importe_gravado, 2) }}</span>
-                                </div>
-                                <div class="summary-item">
-                                    <strong>Importe Exento (Lps):</strong>
-                                    <span>{{ number_format($factura->importe_exento, 2) }}</span>
-                                </div>
-                                <div class="summary-item">
-                                    <strong>Importe Exonerado (Lps):</strong>
-                                    <span>{{ number_format($factura->importe_exonerado, 2) }}</span>
-                                </div>
-                                <div class="summary-item">
-                                    <strong>Subtotal (Lps):</strong>
-                                    <span>{{ number_format($factura->subtotal, 2) }}</span>
-                                </div>
-                                <div class="summary-item">
-                                    <strong>ISV 15% (Lps):</strong>
-                                    <span>{{ number_format($factura->isv_15, 2) }}</span>
-                                </div>
-                                <div class="summary-item">
-                                    <strong>ISV 18% (Lps):</strong>
-                                    <span>{{ number_format($factura->isv_18, 2) }}</span>
-                                </div>
-                                <div class="summary-item total">
-                                    <strong>Total Final (Lps):</strong>
-                                    <span>{{ number_format($factura->totalF, 2) }}</span>
+                        {{-- Contenedor para los totales: ajustado para que sea más pequeño y a la derecha --}}
+                        <div class="row justify-content-end">
+                            <div class="col-md-6 col-lg-5"> {{-- Columna para limitar el ancho y alinear a la derecha --}}
+                                <div class="invoice-summary-totals">
+                                    <div class="summary-box">
+                                        <div class="summary-item">
+                                            <strong>Importe Gravado (Lps):</strong>
+                                            <span>{{ number_format($factura->importe_gravado, 2) }}</span>
+                                        </div>
+                                        <div class="summary-item">
+                                            <strong>Importe Exento (Lps):</strong>
+                                            <span>{{ number_format($factura->importe_exento, 2) }}</span>
+                                        </div>
+                                        <div class="summary-item">
+                                            <strong>Importe Exonerado (Lps):</strong>
+                                            <span>{{ number_format($factura->importe_exonerado, 2) }}</span>
+                                        </div>
+                                        <div class="summary-item">
+                                            <strong>Subtotal (Lps):</strong>
+                                            <span>{{ number_format($factura->subtotal, 2) }}</span>
+                                        </div>
+                                        <div class="summary-item">
+                                            <strong>ISV 15% (Lps):</strong>
+                                            <span>{{ number_format($factura->isv_15, 2) }}</span>
+                                        </div>
+                                        <div class="summary-item">
+                                            <strong>ISV 18% (Lps):</strong>
+                                            <span>{{ number_format($factura->isv_18, 2) }}</span>
+                                        </div>
+                                        <div class="summary-item total">
+                                            <strong>Total Final (Lps):</strong>
+                                            <span>{{ number_format($factura->totalF, 2) }}</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
