@@ -158,6 +158,13 @@
                     <a href="{{ route('productos.index') }}" class="btn btn-return">
                         <i class="bi bi-arrow-left me-2"></i>Volver a la lista
                     </a>
+                    <a href="{{ route('facturas_ventas.create', ['abrir_modal' => 'productos']) }}" class="btn btn-return">
+                        <i class="bi bi-arrow-left me-2"></i>Volver a la factura
+                    </a>
+
+
+
+
 
                 </div>
             </div>

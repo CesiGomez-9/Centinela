@@ -31,7 +31,7 @@ Route::get('/facturas_ventas/{factura_venta}', [\App\Http\Controllers\FacturaVen
 Route::get('/facturas_ventas/{factura_venta}/edit', [\App\Http\Controllers\FacturaVentaController::class, 'edit'])->name('facturas_ventas.edit');
 Route::put('/facturas_ventas/{factura_venta}', [\App\Http\Controllers\FacturaVentaController::class, 'update'])->name('facturas_ventas.update');
 
-Route::get('/clientes/search', [\App\Http\Controllers\ClienteController::class, 'search'])->name('clientes.search');
+Route::get('/clientes/buscar', [App\Http\Controllers\ClienteController::class, 'buscar'])->name('clientes.buscar');
 
 
 

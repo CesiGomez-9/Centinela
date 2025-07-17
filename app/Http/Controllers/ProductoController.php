@@ -14,6 +14,8 @@ class ProductoController extends Controller
      */
     public function index(Request $request)
     {
+
+
         // Cargar la relación 'impuesto' para mostrar el nombre del impuesto en la vista si es necesario
         $query = Producto::with('impuesto');
 
@@ -29,6 +31,7 @@ class ProductoController extends Controller
         }
 
         $productos = $query->paginate(10);
+        $productos = Producto::buscar($request->input('search'))->paginate(10);
 
         return view('productos.index', compact('productos'));
     }
@@ -48,6 +51,9 @@ class ProductoController extends Controller
      */
     public function store(Request $request)
     {
+
+
+
         // Validar los datos de entrada
         $validated = $request->validate([
             'serie' => [
@@ -136,6 +142,8 @@ class ProductoController extends Controller
         } else {
             return back()->withInput()->with('error', 'Error al guardar el producto');
         }
+
+
     }
 
     /**

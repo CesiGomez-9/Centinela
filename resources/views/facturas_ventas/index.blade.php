@@ -40,9 +40,10 @@
 </style>
 
 <div class="container my-5">
-    <h1 class="text-center mb-4" style="color: #09457f;">
+    <div class="card shadow p-4" style="background-color: #ffffff;">
+    <h3 class="text-center mb-4" style="color: #09457f;">
         <i class="bi bi-file-text"></i> Listado de facturas de venta
-    </h1>
+    </h3>
 
     <!-- Botón de volver y buscador -->
     <div class="row mb-4 align-items-center">
@@ -118,13 +119,8 @@
 
         {{ $facturas->links() }}
 
-        <div id="searchResults" class="mb-3"></div>
-        <div class="d-flex justify-content mt-5">
-            <a href="/" class="btn btn-outline-dark">
-                <i class="bi bi-arrow-left me-2"></i> Volver al Inicio
-            </a>
-        </div>
     </div>
+</div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

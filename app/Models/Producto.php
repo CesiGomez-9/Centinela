@@ -41,4 +41,32 @@ class Producto extends Model
     {
         return $this->belongsTo(Impuesto::class);
     }
+
+
+
+    public function detallefactura()
+    {
+        return $this->hasMany(DetalleFactura::class, 'product_id');
+    }
+
+    public function detallesFacturas()
+    {
+        return $this->hasMany(DetalleFacturaVenta::class);
+    }
+
+    // En App\Models\Producto.php
+
+    public function scopeBuscar($query, $termino)
+    {
+        if ($termino) {
+            return $query->where('nombre', 'LIKE', "%$termino%")
+                ->orWhere('codigo', 'LIKE', "%$termino%")
+                ->orWhere('categoria', 'LIKE', "%$termino%");
+        }
+        return $query;
+    }
+
+
+
+
 }

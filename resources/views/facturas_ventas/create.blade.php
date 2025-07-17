@@ -8,6 +8,7 @@
     <!-- CSS de Select2 -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
+
 </head>
 <body style="background-color: #e6f0ff;">
 <nav class="navbar navbar-expand-lg" style="background-color: #0A1F44; padding-top: 1.2rem; padding-bottom: 1.2rem; font-family: 'Courier New', sans-serif;">
@@ -72,22 +73,19 @@
                             @enderror
                         </div>
 
-                        {{-- Fecha --}}
+                        {{-- Fecha (solo texto, no editable) --}}
                         <div class="col-md-6">
-                            <label for="fecha" class="form-label">Fecha</label>
+                            <label class="form-label">Fecha</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-calendar-check"></i></span>
-                                <input type="date" name="fecha" id="fecha"
-                                       class="form-control @error('fecha') is-invalid @enderror"
-                                       value="{{ old('fecha', date('Y-m-d')) }}" required />
+                                <span class="form-control">{{ date('Y-m-d') }}</span>
+                                <input type="hidden" name="fecha" value="{{ date('Y-m-d') }}">
                             </div>
-                            @error('fecha')
-                            <div class="text-danger small mt-1">{{ $message }}</div>
-                            @enderror
                         </div>
 
+
                         <div class="col-md-6">
-                            <label for="cliente_id" class="form-label">Cliente</label>
+                            <label for="searchInput" class="form-label">Cliente</label>
                             <div class="input-group mb-2">
                                 <input
                                     type="text"
@@ -191,6 +189,10 @@
                             </div>
                         </div>
                     </div>
+                    <input type="hidden" name="subtotal" id="inputSubtotalGeneral">
+                    <input type="hidden" name="impuestos" id="inputImpuestosGeneral">
+                    <input type="hidden" name="total" id="inputTotalGeneral">
+
 
                     {{-- Responsable --}}
                     <div class="col-md-6">
@@ -225,6 +227,8 @@
                         </button>
                     </div>
                 </form>
+
+
             </div>
         </div>
     </div>
@@ -246,7 +250,9 @@
                             <input type="text" id="searchInput" class="form-control" placeholder="Buscar producto por nombre...">
                             <span class="input-group-text"><i class="bi bi-search"></i></span>
                         </div>
+                        <!-- Aquí va el mensaje -->
                     </div>
+
 
                     <!-- Filtro por categoría -->
                     <div class="col-md-5">
@@ -260,45 +266,9 @@
                             </select>
                         </div>
                     </div>
-
-
-
-        </div>
-
-                <!-- Modal Detalles del Producto -->
-                <div class="modal fade" id="modalDetallesProducto" tabindex="-1" aria-labelledby="modalDetallesProductoLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered modal-lg">
-                        <div class="modal-content">
-                            <div class="modal-header bg-info text-white">
-                                <h5 class="modal-title" id="modalDetallesProductoLabel">Detalles del Producto</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="row mb-2">
-                                    <div class="col-md-6"><strong>Nombre:</strong> <span id="detalleNombre"></span></div>
-                                    <div class="col-md-6"><strong>Categoría:</strong> <span id="detalleCategoria"></span></div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-md-6"><strong>Serie:</strong> <span id="detalleSerie"></span></div>
-                                    <div class="col-md-6"><strong>Código:</strong> <span id="detalleCodigo"></span></div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-md-6"><strong>Marca:</strong> <span id="detalleMarca"></span></div>
-                                    <div class="col-md-6"><strong>Modelo:</strong> <span id="detalleModelo"></span></div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-md-6"><strong>Cantidad Disponible:</strong> <span id="detalleCantidad"></span></div>
-                                    <div class="col-md-6"><strong>IVA:</strong> <span id="detalleIVA"></span>%</div>
-                                </div>
-                                <div class="mb-2">
-                                    <strong>Descripción:</strong>
-                                    <p id="detalleDescripcion" class="mb-0"></p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
+                <div id="mensajeCoincidencias" class="text-muted mt-2" style="font-size: 14px;"></div>
 
                 <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
                     <table class="table table-bordered table-hover text-center" id="tablaProductos">
@@ -314,142 +284,159 @@
                         </thead>
                         <tbody id="tablaProductosBody">
                         @foreach ($productos as $producto)
-                            @foreach ($producto->detallesFactura as $detalle)
-
-                                <tr>
-                                    <td>{{ $producto->nombre }}</td>
-                                    <td>{{ $producto->categoria }}</td>
-                                    <td>{{ number_format($detalle->precio_venta, 2) }}</td>
-                                    <td>{{ $detalle->cantidad ?? 'N/A' }}</td>
-                                    <td>{{ $detalle->iva }}</td>
-                                    <td>
-                                        <button type="button" class="btn btn-sm btn-primary btnSeleccionarProducto"
-                                                data-id="{{ $producto->id }}"
-                                                data-nombre="{{ $producto->nombre }}"
-                                                data-categoria="{{ $producto->categoria }}"
-                                                data-precioventa="{{ $detalle->precio_venta }}"
-                                                data-iva="{{ $detalle->iva }}">
-                                            Seleccionar
-                                        </button>
-
-                                        <button type="button" class="btn btn-sm btn-info btnVerDetalles"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#modalDetallesProducto"
-                                                data-nombre="{{ $producto->nombre }}"
-                                                data-serie="{{ $producto->serie }}"
-                                                data-codigo="{{ $producto->codigo }}"
-                                                data-marca="{{ $producto->marca ?? 'N/A' }}"
-                                                data-modelo="{{ $producto->modelo ?? 'N/A' }}"
-                                                data-categoria="{{ $producto->categoria }}"
-                                                data-descripcion="{{ $producto->descripcion ?? 'Sin descripción' }}"
-                                                data-cantidad="{{ $detalle->cantidad ?? $producto->cantidad }}"
-                                                data-iva="{{ $detalle->iva }}">
-                                            <i class="bi bi-eye"></i> Detalles
-                                        </button>
-                                    </td>
-                                </tr>
+                            @foreach ($producto->detalleFactura as $detalle)
+                                @if($detalle)
+                                    <tr>
+                                        <td>{{ $producto->nombre }}</td>
+                                        <td>{{ $producto->categoria }}</td>
+                                        <td>{{ number_format($detalle->precio_venta, 2) }}</td>
+                                        <td>{{ $detalle->cantidad ?? 'N/A' }}</td>
+                                        <td>{{ $detalle->iva }}</td>
+                                        <td>
+                                            <div class="d-flex justify-content-center gap-2">
+                                                <button class="btn btn-sm btn-primary btnSeleccionarProducto"
+                                                        data-id="{{ $producto->id }}"
+                                                        data-nombre="{{ $producto->nombre }}"
+                                                        data-categoria="{{ $producto->categoria }}"
+                                                        data-precioventa="{{ number_format($detalle->precio_venta, 2, '.', '') }}"
+                                                        data-iva="{{ $detalle->iva }}">
+                                                    Seleccionar
+                                                </button>
+                                                <a href="{{ route('productos.show', $producto->id) }}" class="btn btn-sm btn-info">
+                                                    Detalle
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endif
                             @endforeach
                         @endforeach
-
                         </tbody>
                     </table>
                 </div>
+            </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="cerrarModalProductos">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                     <i class="bi bi-x-circle"></i> Cerrar
                 </button>
-            </div>
-            </div>
 
+            </div>
         </div>
     </div>
 </div>
-
 
 
 <!-- JS de Select2 -->
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
-    $(document).ready(function() {
-        // --- BUSCADOR CLIENTES ---
-        $('#clienteSearchInput').on('input', function() {
-            let query = $(this).val();
+    document.addEventListener("DOMContentLoaded", function () {
+        // --- Buscador de clientes ---
+        const inputCliente = document.getElementById('searchInput');
+        const resultsContainer = document.getElementById('searchResults');
+        const clienteIdInput = document.getElementById('cliente_id');
 
-            if (query.length < 2) {
-                $('#clienteSearchResults').empty();
-                $('#cliente_id').val('');
-                return;
-            }
+        // Verificar si se debe abrir el modal de productos automáticamente
+        const urlParams = new URLSearchParams(window.location.search);
+        const abrirModal = urlParams.get('abrir_modal');
 
-            $.ajax({
-                url: "{{ route('clientes.search') }}", // Ruta Laravel para buscar clientes
-                type: 'GET',
-                data: { q: query },
-                success: function(data) {
-                    let results = data;
-                    let html = '';
+        if (abrirModal === 'productos') {
+            const modalElement = document.getElementById('productosModal');
+            const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
+            modalInstance.show();
+        }
 
-                    if (results.length > 0) {
-                        results.forEach(cliente => {
-                            html += `<button type="button" class="list-group-item list-group-item-action" data-id="${cliente.id}" data-nombre="${cliente.nombre}">
-    ${cliente.nombre} - ${cliente.identidad || ''}
-</button>`;
+        // Buscador de clientes
+        inputCliente.addEventListener('input', function () {
+            const query = inputCliente.value;
+
+            if (query.length >= 1) {
+                fetch(`/clientes/buscar?q=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(clientes => {
+                        resultsContainer.innerHTML = '';
+                        if (clientes.length === 0) {
+                            resultsContainer.innerHTML = '<div class="list-group-item text-muted">Sin resultados</div>';
+                            return;
+                        }
+
+                        clientes.forEach(cliente => {
+                            const item = document.createElement('button');
+                            item.type = 'button';
+                            item.classList.add('list-group-item', 'list-group-item-action');
+                            item.textContent = `${cliente.nombre} ${cliente.apellido} - ${cliente.identidad}`;
+                            item.dataset.id = cliente.id;
+
+                            item.addEventListener('click', () => {
+                                inputCliente.value = `${cliente.nombre} ${cliente.apellido}`;
+                                clienteIdInput.value = cliente.id;
+                                resultsContainer.innerHTML = '';
+                            });
+
+                            resultsContainer.appendChild(item);
                         });
-                    } else {
-                        html = '<div class="list-group-item disabled">No se encontraron clientes</div>';
-                    }
-
-                    $('#clienteSearchResults').html(html);
-                },
-                error: function() {
-                    $('#clienteSearchResults').html('<div class="list-group-item disabled">Error en la búsqueda</div>');
-                }
-            });
-        });
-
-        // Selección cliente
-        $('#clienteSearchResults').on('click', 'button', function() {
-            let id = $(this).data('id');
-            let nombre = $(this).data('nombre');
-            $('#cliente_id').val(id);
-            $('#clienteSearchInput').val(nombre);
-            $('#clienteSearchResults').empty();
-        });
-
-        // Limpiar cliente_id si texto se borra
-        $('#clienteSearchInput').on('change keyup', function() {
-            if ($(this).val().length === 0) {
-                $('#cliente_id').val('');
+                    });
+            } else {
+                resultsContainer.innerHTML = '';
             }
         });
 
+        // Cerrar modal desde botón cerrar y al seleccionar producto
+        const productosModalEl = document.getElementById('productosModal');
+        const productosModal = bootstrap.Modal.getOrCreateInstance(productosModalEl);
 
-        // --- BUSCADOR PRODUCTOS EN MODAL ---
-        const productoSearchInput = document.getElementById('productoSearchInput');
-        if (productoSearchInput) {
-            productoSearchInput.addEventListener('input', function() {
-                const termino = this.value.toLowerCase().trim();
-                cargarProductosEnModal(termino); // Implementa esta función para filtrar o buscar productos
+        // Evento para botón cerrar manual (por si deseas manipularlo adicionalmente)
+        const btnCerrar = document.querySelector('[data-bs-dismiss="modal"]');
+        if (btnCerrar) {
+            btnCerrar.addEventListener('click', () => {
+                productosModal.hide();
             });
         }
 
-        // --- AGREGAR PRODUCTO A LA FACTURA (DESDE MODAL) ---
+        // Evento para seleccionar producto y cerrar modal automáticamente
+        const tablaProductosBody = document.getElementById('tablaProductosBody');
+        if (tablaProductosBody) {
+            tablaProductosBody.addEventListener('click', function (e) {
+                const btn = e.target.closest('.btnSeleccionarProducto');
+                if (btn) {
+                    const producto = {
+                        id: btn.dataset.id,
+                        nombre: btn.dataset.nombre,
+                        categoria: btn.dataset.categoria,
+                        precioVenta: btn.dataset.precioventa,
+                        iva: btn.dataset.iva
+                    };
+
+                    // Función para agregar a la factura (ya deberías tenerla)
+                    if (typeof agregarProductoAFactura === 'function') {
+                        agregarProductoAFactura(producto);
+                    }
+
+                    productosModal.hide(); // ✅ Cierra el modal al seleccionar producto
+                }
+            });
+        }
+    });
+
+
+    // --- Agregar producto a la factura ---
         function agregarProductoAFactura(producto) {
             const tablaFactura = document.getElementById('tablaFacturaBody');
             const productosExistentes = Array.from(tablaFactura.querySelectorAll('tr')).map(tr => {
                 const idInput = tr.querySelector('input[name^="productos["][name$="][product_id]"]');
                 return idInput ? idInput.value : null;
-            });
+            }).filter(id => id !== null);
 
             if (productosExistentes.includes(producto.id)) {
-                // Mostrar alerta en DOM en lugar de alert()
                 mostrarAlertaProductoDuplicado('El producto ya está agregado a la factura.');
                 return;
             }
 
-            const newRowIndex = tablaFactura.children.length;
-            const base = parseFloat(producto.precioVenta) * 1; // cantidad 1 por defecto
+            const filaVacia = document.getElementById('filaVacia');
+            if (filaVacia) filaVacia.remove();
+
+            const newRowIndex = tablaFactura.querySelectorAll('tr').length;
+            const base = parseFloat(producto.precioVenta);
             const ivaPorcentaje = parseFloat(producto.iva);
             const impuestoCalculado = (ivaPorcentaje / 100) * base;
             const subtotalLinea = base + impuestoCalculado;
@@ -459,24 +446,24 @@
             nuevaFila.innerHTML = `
             <td>${newRowIndex + 1}</td>
             <td>
-                <input type="hidden" name="productos[${newRowIndex}][product_id]" value="${producto.id}" class="hidden-product-id">
-                <input type="hidden" name="productos[${newRowIndex}][nombre]" value="${producto.nombre}" class="hidden-nombre">
+                <input type="hidden" name="productos[${newRowIndex}][product_id]" value="${producto.id}">
+                <input type="hidden" name="productos[${newRowIndex}][nombre]" value="${producto.nombre}">
                 ${producto.nombre}
             </td>
             <td>
-                <input type="hidden" name="productos[${newRowIndex}][categoria]" value="${producto.categoria}" class="hidden-categoria">
+                <input type="hidden" name="productos[${newRowIndex}][categoria]" value="${producto.categoria}">
                 ${producto.categoria}
             </td>
             <td>
-                <input type="hidden" name="productos[${newRowIndex}][precioVenta]" value="${parseFloat(producto.precioVenta).toFixed(2)}" class="hidden-precio-venta">
-                ${parseFloat(producto.precioVenta).toFixed(2)}
+                <input type="hidden" name="productos[${newRowIndex}][precioVenta]" value="${base.toFixed(2)}">
+                ${base.toFixed(2)}
             </td>
             <td>
-                <input type="hidden" name="productos[${newRowIndex}][cantidad]" value="1" class="hidden-cantidad">
+                <input type="hidden" name="productos[${newRowIndex}][cantidad]" value="1">
                 1
             </td>
             <td>
-                <input type="hidden" name="productos[${newRowIndex}][iva]" value="${ivaPorcentaje}" class="hidden-iva">
+                <input type="hidden" name="productos[${newRowIndex}][iva]" value="${ivaPorcentaje}">
                 ${ivaPorcentaje}%
             </td>
             <td class="subtotal-producto">${subtotalLinea.toFixed(2)}</td>
@@ -486,10 +473,10 @@
                 </button>
             </td>
         `;
+
             tablaFactura.appendChild(nuevaFila);
 
-            // Evento eliminar producto
-            nuevaFila.querySelector('.btn-eliminar-producto').addEventListener('click', function() {
+            nuevaFila.querySelector('.btn-eliminar-producto').addEventListener('click', function () {
                 this.closest('tr').remove();
                 actualizarNumeracionFilas();
                 calcularTotalesGenerales();
@@ -502,7 +489,6 @@
             ocultarAlertaProductoDuplicado();
         }
 
-        // --- ALERTAS PRODUCTO DUPLICADO ---
         function mostrarAlertaProductoDuplicado(mensaje) {
             let contenedorAlerta = document.getElementById('alertaProductoDuplicado');
             if (!contenedorAlerta) {
@@ -523,29 +509,33 @@
             }
         }
 
+        // --- Limpiar formulario ---
+        const btnLimpiar = document.querySelector('button[type="reset"]');
+        if (btnLimpiar) {
+            btnLimpiar.addEventListener('click', function(e) {
+                e.preventDefault();
 
-        // --- BOTÓN LIMPIAR FORMULARIO ---
-        document.querySelectorAll('.limpiar-campos').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const form = this.closest('form');
-                if (!form) return;
+                const formulario = document.getElementById('formFacturaVenta');
 
-                form.reset();
-
-                form.querySelectorAll('.form-control, .form-select, textarea').forEach(input => {
-                    input.classList.remove('is-valid', 'is-invalid', 'field-error');
-                    input.setCustomValidity('');
-                });
-
-                form.classList.remove('was-validated');
-
-                form.querySelectorAll('.invalid-feedback, .valid-feedback, .error-message, .text-danger, .text-success').forEach(mensaje => {
-                    if (mensaje.classList.contains('error-message')) {
-                        mensaje.remove();
-                    } else {
-                        mensaje.style.display = 'none';
+                // Limpiar campos (excepto hidden y botones)
+                formulario.querySelectorAll('input:not([type="hidden"]), select, textarea').forEach(el => {
+                    if (el.type !== 'submit' && el.type !== 'button') {
+                        el.value = '';
                     }
                 });
+
+                // Limpiar Select2 si usas
+                $('#responsable_id').val('').trigger('change');
+                $('#formaPago').val('').trigger('change');
+
+                // Vaciar cliente buscado y resultados
+                const inputCliente = document.getElementById('searchInput');
+                const clienteIdInput = document.getElementById('cliente_id');
+                const resultsContainer = document.getElementById('searchResults');
+
+                if (inputCliente) inputCliente.value = '';
+                if (clienteIdInput) clienteIdInput.value = '';
+                if (resultsContainer) resultsContainer.innerHTML = '';
 
                 // Limpiar tabla productos
                 const tablaFacturaBody = document.getElementById('tablaFacturaBody');
@@ -554,70 +544,121 @@
                     actualizarFilaVacia();
                 }
 
-                // Limpiar cliente seleccionado
-                const clienteInput = document.getElementById('clienteSearchInput');
-                const clienteId = document.getElementById('cliente_id');
-                if (clienteInput) clienteInput.value = '';
-                if (clienteId) clienteId.value = '';
-
-                // Limpiar totales
-                ['importeGravadoLabel','importeExentoLabel','isv15Label','isv18Label','subtotalGeneralLabel','totalGeneralLabel'].forEach(id => {
+                // Reiniciar totales a cero
+                const idsTotales = [
+                    'importeGravadoLabel',
+                    'importeExentoLabel',
+                    'isv15Label',
+                    'isv18Label',
+                    'subtotalGeneralLabel',
+                    'totalGeneralLabel',
+                    'inputSubtotalGeneral',
+                    'inputImpuestosGeneral',
+                    'inputTotalGeneral'
+                ];
+                idsTotales.forEach(id => {
                     const el = document.getElementById(id);
-                    if(el) el.textContent = '0.00';
+                    if (el) {
+                        if (el.tagName === 'INPUT') el.value = '0.00';
+                        else el.textContent = '0.00';
+                    }
                 });
 
-                ocultarAlertaProductoDuplicado();
+                // Quitar clases de error/validación visual
+                formulario.querySelectorAll('.is-invalid, .is-valid').forEach(el => {
+                    el.classList.remove('is-invalid', 'is-valid');
+                });
+
+// Quitar los mensajes de error que están en texto debajo de inputs
+                formulario.querySelectorAll('.invalid-feedback, .text-danger, .error-mensaje-js').forEach(el => {
+                    el.textContent = '';
+                    el.style.display = 'none';
+                });
+
+
+                // Eliminar todas las alertas del DOM, para borrar errores de Laravel y JS
+                document.querySelectorAll('.alert').forEach(alerta => alerta.remove());
+
+                // Quitar clase que indica que el formulario fue validado
+                formulario.classList.remove('was-validated');
             });
-        });
+        }
 
 
-        // --- FUNCIONES DE UTILERÍA ---
 
-        function calcularTotalesGenerales() {
-            let importeGravado = 0;
-            let importeExento = 0;
-            let isv15 = 0;
-            let isv18 = 0;
-            let subtotal = 0;
-            let total = 0;
+        // --- Filtrar productos en modal ---
+        const inputBuscar = document.getElementById('searchInput');
+        const selectCategoria = document.getElementById('categoriaFiltro');
+        const mensaje = document.getElementById('mensajeCoincidencias');
 
-            const filas = document.querySelectorAll('#tablaFacturaBody tr');
+        function filtrarProductos() {
+            const texto = inputBuscar.value.toLowerCase().trim();
+            const categoria = selectCategoria.value.toLowerCase();
+            const filas = document.querySelectorAll('#tablaProductosBody tr');
+
+            let coincidencias = 0;
 
             filas.forEach(fila => {
-                const subtotalCell = fila.querySelector('.subtotal-producto');
-                if (!subtotalCell) return;
+                const nombre = fila.cells[0].textContent.toLowerCase();
+                const cat = fila.cells[1].textContent.toLowerCase();
 
-                const precio = parseFloat(fila.querySelector('input[name$="[precioVenta]"]').value) || 0;
-                const cantidad = parseFloat(fila.querySelector('input[name$="[cantidad]"]').value) || 0;
-                const iva = parseFloat(fila.querySelector('input[name$="[iva]"]').value) || 0;
+                const coincideTexto = nombre.includes(texto);
+                const coincideCategoria = categoria === '' || cat === categoria;
 
-                const base = precio * cantidad;
-                const impuesto = (iva / 100) * base;
-                const totalLinea = base + impuesto;
-
-                if (iva === 0) {
-                    importeExento += base;
+                if (coincideTexto && coincideCategoria) {
+                    fila.style.display = '';
+                    coincidencias++;
                 } else {
-                    importeGravado += base;
-                    if (iva === 15) {
-                        isv15 += impuesto;
-                    } else if (iva === 18) {
-                        isv18 += impuesto;
-                    }
+                    fila.style.display = 'none';
                 }
-
-                subtotal += base;
-                total += totalLinea;
-
-                subtotalCell.textContent = totalLinea.toFixed(2);
             });
 
-            document.getElementById('importeGravadoLabel').textContent = importeGravado.toFixed(2);
-            document.getElementById('importeExentoLabel').textContent = importeExento.toFixed(2);
-            document.getElementById('isv15Label').textContent = isv15.toFixed(2);
-            document.getElementById('isv18Label').textContent = isv18.toFixed(2);
-            document.getElementById('subtotalGeneralLabel').textContent = subtotal.toFixed(2);
-            document.getElementById('totalGeneralLabel').textContent = total.toFixed(2);
+            if (mensaje) {
+                mensaje.textContent = coincidencias === 0
+                    ? 'No se encontraron productos.'
+                    : `Se encontraron ${coincidencias} producto(s).`;
+            }
+        }
+
+        if (inputBuscar && selectCategoria) {
+            inputBuscar.addEventListener('input', filtrarProductos);
+            selectCategoria.addEventListener('change', filtrarProductos);
+        }
+
+        const tablaProductosBody = document.getElementById('tablaProductosBody');
+        const modalProductos = new bootstrap.Modal(document.getElementById('productosModal'));
+
+        tablaProductosBody.addEventListener('click', function (e) {
+            const btn = e.target.closest('.btnSeleccionarProducto');
+            if (btn) {
+                const producto = {
+                    id: btn.dataset.id,
+                    nombre: btn.dataset.nombre,
+                    categoria: btn.dataset.categoria,
+                    precioVenta: btn.dataset.precioventa,
+                    iva: btn.dataset.iva
+                };
+
+                agregarProductoAFactura(producto);
+                modalProductos.hide();
+            }
+        });
+
+        function actualizarNumeracionFilas() {
+            const tablaFactura = document.getElementById('tablaFacturaBody');
+            if (!tablaFactura) return;
+            const filas = tablaFactura.querySelectorAll('tr:not(#filaVacia)');
+
+            filas.forEach((fila, index) => {
+                fila.dataset.index = index;
+                fila.cells[0].textContent = index + 1;
+
+                fila.querySelectorAll('input').forEach(input => {
+                    if (input.name) {
+                        input.name = input.name.replace(/productos\[\d+\]/, `productos[${index}]`);
+                    }
+                });
+            });
         }
 
         function actualizarFilaVacia() {
@@ -649,158 +690,75 @@
             }
         }
 
-        function actualizarNumeracionFilas() {
-            const tablaFactura = document.getElementById('tablaFacturaBody');
-            if (!tablaFactura) return;
-            const filas = tablaFactura.querySelectorAll('tr:not(#filaVacia)');
+        function calcularTotalesGenerales() {
+            let importeGravado = 0, importeExento = 0, isv15 = 0, isv18 = 0, subtotal = 0, total = 0;
 
-            filas.forEach((fila, index) => {
-                fila.dataset.index = index;
-                fila.cells[0].textContent = index + 1;
+            const filas = document.querySelectorAll('#tablaFacturaBody tr');
 
-                fila.querySelectorAll('input').forEach(input => {
-                    if (input.name) {
-                        input.name = input.name.replace(/productos\[\d+\]/, `productos[${index}]`);
-                    }
-                });
+            filas.forEach(fila => {
+                const subtotalCell = fila.querySelector('.subtotal-producto');
+                if (!subtotalCell) return;
+
+                const precio = parseFloat(fila.querySelector('input[name$="[precioVenta]"]').value) || 0;
+                const cantidad = parseFloat(fila.querySelector('input[name$="[cantidad]"]').value) || 0;
+                const iva = parseFloat(fila.querySelector('input[name$="[iva]"]').value) || 0;
+
+                const base = precio * cantidad;
+                const impuesto = (iva / 100) * base;
+                const totalLinea = base + impuesto;
+
+                if (iva === 0) {
+                    importeExento += base;
+                } else {
+                    importeGravado += base;
+                    if (iva === 15) isv15 += impuesto;
+                    if (iva === 18) isv18 += impuesto;
+                }
+
+                subtotal += base;
+                total += totalLinea;
+
+                subtotalCell.textContent = totalLinea.toFixed(2);
+
+                document.getElementById('inputSubtotalGeneral').value = subtotal.toFixed(2);
+                document.getElementById('inputImpuestosGeneral').value = (isv15 + isv18).toFixed(2);
+                document.getElementById('inputTotalGeneral').value = total.toFixed(2);
             });
+
+            document.getElementById('importeGravadoLabel').textContent = importeGravado.toFixed(2);
+            document.getElementById('importeExentoLabel').textContent = importeExento.toFixed(2);
+            document.getElementById('isv15Label').textContent = isv15.toFixed(2);
+            document.getElementById('isv18Label').textContent = isv18.toFixed(2);
+            document.getElementById('subtotalGeneralLabel').textContent = subtotal.toFixed(2);
+            document.getElementById('totalGeneralLabel').textContent = total.toFixed(2);
         }
 
-    });
+        // --- Validación final antes de enviar el formulario ---
+        const form = document.getElementById('formFacturaVenta');
+        const btnGuardar = form.querySelector('button[type="submit"]');
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const formulario = document.getElementById('formFacturaVenta');
-        const btnLimpiar = document.querySelector('.limpiar-campos');
-
-        if (!formulario || !btnLimpiar) {
-            console.warn('Formulario o botón Limpiar no encontrados');
-            return;
-        }
-
-        btnLimpiar.addEventListener('click', (e) => {
-            e.preventDefault(); // evitar comportamiento por defecto
-
-            // Limpiar formulario nativo (inputs, selects, textarea)
-            formulario.reset();
-
-            // Limpiar manual campos que puedan tener valores "pegados" por Laravel old()
-            // Ejemplo campos específicos que no se limpian bien con reset()
-            const clienteInput = document.getElementById('clienteSearchInput');
-            const clienteIdInput = document.getElementById('cliente_id');
-            if(clienteInput) clienteInput.value = '';
-            if(clienteIdInput) clienteIdInput.value = '';
-
-            // Limpiar tabla de productos si existe
-            const tablaFacturaBody = document.getElementById('tablaFacturaBody');
-            if (tablaFacturaBody) {
-                tablaFacturaBody.innerHTML = '';
-                // Aquí podrías llamar función para poner fila vacía si tienes
-                if(typeof actualizarFilaVacia === 'function') actualizarFilaVacia();
+        form.addEventListener('submit', function (e) {
+            const productos = document.querySelectorAll('#tablaFacturaBody tr:not(#filaVacia)');
+            if (productos.length === 0) {
+                e.preventDefault();
+                const errorProductos = document.getElementById('errorProductos');
+                if (errorProductos) {
+                    errorProductos.style.display = 'block';
+                    errorProductos.textContent = 'Debe agregar al menos un producto antes de guardar.';
+                }
+                return false;
             }
 
-            // Limpiar totales
-            ['importeGravadoLabel','importeExentoLabel','isv15Label','isv18Label','subtotalGeneralLabel','totalGeneralLabel'].forEach(id => {
-                const el = document.getElementById(id);
-                if(el) el.textContent = '0.00';
-            });
+            if (btnGuardar) {
+                btnGuardar.disabled = true;
+                btnGuardar.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Guardando...`;
+            }
 
-            // Quitar clases de validación bootstrap
-            formulario.querySelectorAll('.is-invalid, .is-valid').forEach(el => {
-                el.classList.remove('is-invalid', 'is-valid');
-            });
 
-            // Quitar mensajes de error visibles
-            formulario.querySelectorAll('.invalid-feedback, .text-danger, .error-mensaje-js').forEach(el => {
-                el.textContent = '';
-                el.style.display = 'none';
-            });
-
-            // Quitar clase que Bootstrap añade para validación visual
-            formulario.classList.remove('was-validated');
-
-            // Quitar alertas globales si tienes
-            document.querySelectorAll('.alert, .alert-danger, .alert-warning').forEach(alerta => {
-                alerta.textContent = '';
-                alerta.style.display = 'none';
-            });
-
-            console.log('Formulario y alertas limpiadas correctamente');
-        });
     });
-
-    document.getElementById('searchInput').addEventListener('input', function() {
-        const query = this.value.toLowerCase();
-        const resultsContainer = document.getElementById('searchResults');
-        resultsContainer.innerHTML = '';
-
-        // Supongamos que tienes los clientes disponibles en JS o haces llamada AJAX
-        const clientes = @json($clientes); // desde blade
-
-        const filtered = clientes.filter(cliente => cliente.nombre.toLowerCase().includes(query));
-
-        filtered.forEach(cliente => {
-            const item = document.createElement('a');
-            item.href = "#";
-            item.classList.add('list-group-item', 'list-group-item-action');
-            item.textContent = cliente.nombre;
-            item.addEventListener('click', () => {
-                document.getElementById('searchInput').value = cliente.nombre;
-                document.getElementById('cliente_id').value = cliente.id;
-                resultsContainer.innerHTML = '';
-            });
-            resultsContainer.appendChild(item);
-        });
-    });
-
-    document.addEventListener('DOMContentLoaded', function () {
-        const botonesVerDetalles = document.querySelectorAll('.btnVerDetalles');
-
-        botonesVerDetalles.forEach(boton => {
-            boton.addEventListener('click', function () {
-                document.getElementById('detalleNombre').textContent = this.dataset.nombre;
-                document.getElementById('detalleCategoria').textContent = this.dataset.categoria;
-                document.getElementById('detalleSerie').textContent = this.dataset.serie;
-                document.getElementById('detalleCodigo').textContent = this.dataset.codigo;
-                document.getElementById('detalleMarca').textContent = this.dataset.marca;
-                document.getElementById('detalleModelo').textContent = this.dataset.modelo;
-                document.getElementById('detalleCantidad').textContent = this.dataset.cantidad;
-                document.getElementById('detalleIVA').textContent = this.dataset.iva;
-                document.getElementById('detalleDescripcion').textContent = this.dataset.descripcion;
-            });
-        });
-    });
-
-
-        document.addEventListener('DOMContentLoaded', function () {
-        const inputBuscar = document.getElementById('buscarProducto');
-        const selectCategoria = document.getElementById('categoriaFiltro');
-        const filas = document.querySelectorAll('#tablaProductosBody tr');
-
-        function filtrarProductos() {
-        const texto = inputBuscar.value.toLowerCase();
-        const categoria = selectCategoria.value;
-
-        filas.forEach(fila => {
-        const nombre = fila.querySelector('td:nth-child(1)').textContent.toLowerCase();
-        const categoriaFila = fila.querySelector('td:nth-child(2)').textContent;
-
-        const coincideNombre = nombre.includes(texto);
-        const coincideCategoria = !categoria || categoriaFila === categoria;
-
-        fila.style.display = (coincideNombre && coincideCategoria) ? '' : 'none';
-    });
-    }
-
-        inputBuscar.addEventListener('input', filtrarProductos);
-        selectCategoria.addEventListener('change', filtrarProductos);
-    });
-
-
-
-
-
-
 </script>
+
+
 <script src="{{ asset('js/tu-script.js') }}"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
