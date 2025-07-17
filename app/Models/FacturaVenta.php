@@ -22,14 +22,20 @@ class FacturaVenta extends Model
 
     public function cliente()
     {
-        return $this->belongsTo(Cliente::class, 'cliente_id');
+        return $this->belongsTo(Cliente::class);
     }
+
+
 
     public function responsable()
     {
         return $this->belongsTo(Empleado::class, 'responsable_id');
     }
 
+    public function empleado()
+    {
+        return $this->belongsTo(Empleado::class, 'responsable_id');
+    }
 
 }
 

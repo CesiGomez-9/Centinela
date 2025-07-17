@@ -40,91 +40,130 @@
 </style>
 
 <div class="container my-5">
-    <h1 class="text-center mb-4" style="color: #09457f;">
-        <i class="bi bi-file-text"></i> Listado de facturas de venta
-    </h1>
+    <div class="card shadow p-4" style="background-color: #ffffff;">
+        <h3 class="text-center mb-4" style="color: #09457f;">
+            <i class="bi bi-file-text"></i> Listado de facturas de venta
+        </h3>
 
-    <!-- Botón de volver y buscador -->
-    <div class="row mb-4 align-items-center">
-        <div class="col-md-6 d-flex justify-content-start">
-            <div class="w-100" style="max-width: 300px;">
-                <div class="input-group">
-                    <input
-                        type="text"
-                        id="searchInput"
-                        class="form-control"
-                        maxlength="30"
-                        placeholder="Buscar por número o fecha"
-                        onkeydown="bloquearEspacioAlInicio(event, this)"
-                        oninput="eliminarEspaciosIniciales(this)">
-                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+        <!-- Buscador y botón -->
+        <div class="row mb-4 align-items-center">
+            <div class="col-md-6 d-flex justify-content-start">
+                <div class="w-100" style="max-width: 300px;">
+                    <div class="input-group">
+                        <input
+                            type="text"
+                            id="searchInput"
+                            class="form-control"
+                            name="search"
+                            value="{{ request('search') }}"
+                            placeholder="Buscar por número, fecha, cliente o responsable"
+                            onkeydown="bloquearEspacioAlInicio(event, this)"
+                            oninput="eliminarEspaciosIniciales(this)">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    </div>
                 </div>
             </div>
+            <div class="col-md-6 d-flex justify-content-end">
+                <a href="{{ route('facturas_ventas.create') }}" class="btn btn-md btn-outline-dark">
+                    <i class="bi bi-pencil-square me-2"></i>Registrar una nueva factura de venta
+                </a>
+            </div>
         </div>
-        <div class="col-md-6 d-flex justify-content-end">
-            <a href="{{ route('facturas_ventas.create') }}" class="btn btn-md btn-outline-dark">
-                <i class="bi bi-pencil-square me-2"></i>Registrar una nueva factura de venta
-            </a>
+
+        @if(session()->has('status'))
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                {{ session('status') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            </div>
+        @endif
+
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-dark text-center">
+            <tr>
+                <th>#</th>
+                <th>Número Factura</th>
+                <th>Fecha</th>
+                <th>Subtotal</th>
+                <th>Impuestos</th>
+                <th>Total</th>
+                <th>Cliente</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody id="facturasVentasTableBody">
+            @forelse ($facturas as $index => $factura)
+                <tr class="factura-venta-row">
+                    <td>{{ $index + 1 }}</td>
+                    <td class="factura-numeroFactura">{{ $factura->numero }}</td>
+                    <td class="factura-fecha">{{ \Carbon\Carbon::parse($factura->fecha)->format('d/m/Y') }}</td>
+                    <td class="factura-subtotal">L. {{ number_format($factura->subtotal, 2) }}</td>
+                    <td class="factura-impuestos">L. {{ number_format($factura->impuestos, 2) }}</td>
+                    <td class="factura-total">L. {{ number_format($factura->total, 2) }}</td>
+                    <td>{{ $factura->cliente->nombre ?? 'No asignado' }}</td>
+                    <td>
+                        <a href="{{ route('facturas_ventas.show', $factura->id) }}" class="btn btn-sm btn-outline-info">
+                            <i class="bi bi-eye"></i> Ver
+                        </a>
+                        <a href="{{ route('facturas_ventas.edit', $factura->id) }}" class="btn btn-sm btn-outline-warning">
+                            <i class="bi bi-pencil"></i> Editar
+                        </a>
+                    </td>
+                </tr>
+            @empty
+                <tr id="noFacturasRow">
+                    <td colspan="8" class="text-center">No hay facturas de venta registradas.</td>
+                </tr>
+            @endforelse
+            </tbody>
+        </table>
+
+        {{-- Mensajes de búsqueda --}}
+        @if(request('search') && $facturas->total() > 0)
+            <div class="mb-3 text-muted">
+                Mostrando {{ $facturas->count() }} de {{ $facturas->total() }} resultados para:
+                "<strong>{{ request('search') }}</strong>".
+            </div>
+        @elseif(request('search') && $facturas->total() === 0)
+            <div class="mb-3 text-danger">
+                No se encontraron resultados para "<strong>{{ request('search') }}</strong>".
+            </div>
+        @endif
+
+        {{-- Paginación --}}
+        <div class="d-flex justify-content-center mt-4">
+            {{ $facturas->links('pagination::bootstrap-5') }}
         </div>
     </div>
+</div>
 
-    @if(session()->has('status'))
-        <div class="alert alert-warning alert-dismissible fade show" role="alert">
-            <i class="bi bi-check-circle-fill me-2"></i>
-            {{ session('status') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-        </div>
-    @endif
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.getElementById('searchInput');
 
-    <table class="table table-bordered table-hover align-middle">
-        <thead class="table-dark text-center">
-        <tr>
-            <th>#</th>
-            <th>Número Factura</th>
-            <th>Fecha</th>
-            <th>Subtotal</th>
-            <th>Impuestos</th>
-            <th>Total</th>
-            <th>Cliente</th>
-            <th>Acciones</th>
-        </tr>
-        </thead>
-        <tbody id="facturasVentasTableBody">
-        @forelse ($facturas as $index => $factura)
-            <tr class="factura-venta-row">
-                <td>{{ $index + 1 }}</td>
-                <td class="factura-numeroFactura">{{ $factura->numero }}</td>
-                <td class="factura-fecha">{{ \Carbon\Carbon::parse($factura->fecha)->format('d/m/Y') }}</td>
-                <td class="factura-subtotal">L. {{ number_format($factura->subtotal, 2) }}</td>
-                <td class="factura-impuestos">L. {{ number_format($factura->impuestos, 2) }}</td>
-                <td class="factura-total">L. {{ number_format($factura->total, 2) }}</td>
-                <td>{{ $factura->cliente->nombre ?? 'No asignado' }}</td>
-                <td>
-                    <a href="{{ route('facturas_ventas.show', $factura->id) }}" class="btn btn-sm btn-outline-info">
-                        <i class="bi bi-eye"></i> Ver
-                    </a>
-                    <a href="{{ route('facturas_ventas.edit', $factura->id) }}" class="btn btn-sm btn-outline-warning">
-                        <i class="bi bi-pencil"></i> Editar
-                    </a>
-                </td>
-            </tr>
-        @empty
-            <tr id="noFacturasRow">
-                <td colspan="8" class="text-center">No hay facturas de venta registradas.</td>
-            </tr>
-        @endforelse
-        </tbody>
-    </table>
+        if (searchInput.value !== '') {
+            searchInput.focus();
+            const val = searchInput.value;
+            searchInput.value = '';
+            searchInput.value = val;
+        }
 
-        {{ $facturas->links() }}
+        let timeout = null;
 
-        <div id="searchResults" class="mb-3"></div>
-        <div class="d-flex justify-content mt-5">
-            <a href="/" class="btn btn-outline-dark">
-                <i class="bi bi-arrow-left me-2"></i> Volver al Inicio
-            </a>
-        </div>
-    </div>
+        searchInput.addEventListener('input', function () {
+            clearTimeout(timeout);
+
+            timeout = setTimeout(() => {
+                const search = this.value;
+                const url = new URL(window.location.href);
+                url.searchParams.set('search', search);
+                window.location.href = url.toString();
+            }, 700);
+        });
+    });
+</script>
+
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

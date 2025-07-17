@@ -120,6 +120,8 @@
         </div>
     </div>
 </div>
+@if ($errors->any())
+
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const searchInput = document.getElementById('searchInput');
@@ -144,7 +146,24 @@
             }, 700);
         });
     });
+
+    window.onload = function() {
+        history.replaceState({}, document.title, location.pathname); // limpia errores de sesión
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('formFacturaVenta');
+        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+        if (form && token) {
+            const tokenInput = form.querySelector('input[name="_token"]');
+            if (tokenInput) {
+                tokenInput.value = token;
+            }
+        }
+    });
 </script>
+
+@endif
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

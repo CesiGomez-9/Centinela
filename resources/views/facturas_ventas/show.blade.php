@@ -149,70 +149,53 @@
 </style>
 
 <!-- Contenido -->
-<div class="container py-1">
-    <div class="row justify-content-center">
-        <div class="col-xl-8 col-lg-9">
-            <div class="card">
-                <div class="card-header position-relative">
-                    <h5 class="mb-0">
-                        <i class="bi bi-receipt-cutoff me-2"></i>Detalles de la Factura de Venta
-                    </h5>
-                    <small class="position-absolute top-50 end-0 translate-middle-y me-3">
-                        Creado {{ $factura->created_at->diffForHumans() }}
-                    </small>
-                </div>
-                <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <p><i class="bi bi-hash me-2"></i><strong>Número de Factura:</strong> {{ $factura->numero }}</p>
-                            <p><i class="bi bi-calendar-event me-2"></i><strong>Fecha:</strong> {{ \Carbon\Carbon::parse($factura->fecha)->format('d/m/Y') }}</p>
-                            <p><i class="bi bi-person-lines-fill me-2"></i><strong>Cliente:</strong> {{ $factura->cliente->nombre }}</p>
-                            <p><i class="bi bi-wallet-fill me-2"></i><strong>Forma de Pago:</strong> {{ $factura->forma_pago }}</p>
-                        </div>
-                        <div class="col-md-6">
-                            <p><i class="bi bi-person-check-fill me-2"></i><strong>Responsable:</strong> {{ $factura->empleado->nombre }} {{ $factura->empleado->apellido }}</p>
-                            <p><i class="bi bi-cash-stack me-2"></i><strong>Subtotal (Lps):</strong> {{ number_format($factura->subtotal, 2) }}</p>
-                            <p><i class="bi bi-currency-dollar me-2"></i><strong>Impuestos (Lps):</strong> {{ number_format($factura->impuestos, 2) }}</p>
-                            <p><i class="bi bi-basket me-2"></i><strong>Total Final (Lps):</strong> {{ number_format($factura->total, 2) }}</p>
-                        </div>
-                    </div>
+<div class="container py-4">
+    <h2>Factura #{{ $factura->numero }}</h2>
+    <p><strong>Cliente:</strong> {{ $factura->cliente->nombre ?? 'N/A' }}</p>
+    <p><strong>Fecha:</strong> {{ $factura->fecha->format('d-m-Y') }}</p>
+    <p><strong>Responsable:</strong> {{ $factura->empleado->nombre ?? 'N/A' }}</p>
 
-                    <div class="section-header mt-4">
-                        <i class="bi bi-box-seam"></i> Productos en esta factura
-                    </div>
-
-                    <div class="row mt-2">
-                        @forelse ($factura->detalles as $detalle)
-                            <div class="col-md-6 mb-3">
-                                <p><i class="bi bi-box me-2"></i><strong>Producto:</strong> {{ $detalle->producto }}</p>
-                                <p><i class="bi bi-tags me-2"></i><strong>Categoría:</strong> {{ $detalle->categoria }}</p>
-                                <p><i class="bi bi-cash-coin me-2"></i><strong>Precio Venta:</strong> Lps {{ number_format($detalle->precio_venta, 2) }}</p>
-                                <p><i class="bi bi-stack me-2"></i><strong>Cantidad:</strong> {{ $detalle->cantidad }}</p>
-                                <p><i class="bi bi-percent me-2"></i><strong>IVA:</strong> {{ $detalle->iva }}%</p>
-                            </div>
-                        @empty
-                            <div class="col-12">
-                                <p class="text-muted fst-italic">No hay productos registrados en esta factura.</p>
-                            </div>
-                        @endforelse
-                    </div>
-                </div>
-                <div class="card-footer text-end">
-                    <small>Última actualización: {{ $factura->updated_at->diffForHumans() }}</small>
-                </div>
-            </div>
-
-            <div class="d-flex justify-content-center align-items-center gap-3 mt-4 flex-wrap">
-                <a href="{{ route('facturas_ventas.index') }}" class="btn-return">
-                    <i class="bi bi-arrow-left me-2"></i>Volver a la lista
-                </a>
-            </div>
-        </div>
+    <h4>Productos en la Factura</h4>
+    <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+        <table class="table table-bordered table-hover text-center">
+            <thead class="table-light sticky-top">
+            <tr>
+                <th>Nombre</th>
+                <th>Categoría</th>
+                <th>Precio (Lps)</th>
+                <th>Cantidad</th>
+                <th>IVA %</th>
+                <th>Subtotal</th>
+                <th>Acción</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach ($factura->detalles as $detalle)
+                <tr>
+                    <td>{{ $detalle->nombre }}</td>
+                    <td>{{ $detalle->categoria }}</td>
+                    <td>{{ number_format($detalle->precio_venta, 2) }}</td>
+                    <td>{{ $detalle->cantidad }}</td>
+                    <td>{{ $detalle->iva }}</td>
+                    <td>{{ number_format($detalle->subtotal, 2) }}</td>
+                    <td>
+                        <a href="{{ route('productos.show', $detalle->producto_id) }}" class="btn btn-sm btn-info">
+                            Ver Detalle Producto
+                        </a>
+                    </td>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
     </div>
+
+    <p><strong>Subtotal:</strong> Lps. {{ number_format($factura->subtotal, 2) }}</p>
+    <p><strong>Impuestos:</strong> Lps. {{ number_format($factura->impuestos, 2) }}</p>
+    <p><strong>Total:</strong> Lps. {{ number_format($factura->total, 2) }}</p>
+
+    <button type="button" class="btn btn-secondary mt-3" data-bs-dismiss="modal">Volver a Factura</button>
+
 </div>
-
-
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

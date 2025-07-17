@@ -31,5 +31,6 @@ class DetalleFacturaVenta extends Model
         return $this->belongsTo(Empleado::class, 'responsable_id');
     }
 
+
 }
 

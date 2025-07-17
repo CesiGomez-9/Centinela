@@ -19,47 +19,54 @@ class Producto extends Model
         'impuesto_id',
         'categoria',
         'descripcion',
-        'precio_compra', // New field added
-        'precio_venta',  // New field added
     ];
 
     protected $casts = [
         'cantidad' => 'integer',
-        'precio_compra' => 'decimal:2', // Ensures it's handled as a decimal with 2 places.
-        'precio_venta' => 'decimal:2',  // Ensures it's handled as a decimal with 2 places.
     ];
 
     /**
-     * Defines the one-to-many relationship with Detalle.
+     * Define la relación uno a muchos con Detalle.
      */
     public function detalles()
     {
         return $this->hasMany(Detalle::class);
     }
 
-    public function detallesFactura()
-    {
-        return $this->hasMany(DetalleFactura::class, 'product_id');
-    }
-
-
     /**
-     * Defines the many-to-one relationship with Impuesto.
-     * A product belongs to one tax type.
+     * Define la relación muchos a uno con Impuesto.
+     * Un producto pertenece a un tipo de impuesto.
      */
     public function impuesto()
     {
         return $this->belongsTo(Impuesto::class);
     }
 
-    /**
-     * Defines the one-to-many relationship with PrecioCompra.
-     * A product can have many historical purchase price records.
-     */
-    public function precioCompras()
+
+
+    public function detallefactura()
     {
-        // Orders by creation date in descending order to show the most recent first.
-        return $this->hasMany(PrecioCompra::class)->orderBy('created_at', 'desc');
+        return $this->hasMany(DetalleFactura::class, 'product_id');
     }
+
+    public function detallesFacturas()
+    {
+        return $this->hasMany(DetalleFacturaVenta::class);
+    }
+
+    // En App\Models\Producto.php
+
+    public function scopeBuscar($query, $termino)
+    {
+        if ($termino) {
+            return $query->where('nombre', 'LIKE', "%$termino%")
+                ->orWhere('codigo', 'LIKE', "%$termino%")
+                ->orWhere('categoria', 'LIKE', "%$termino%");
+        }
+        return $query;
+    }
+
+
+
 
 }
