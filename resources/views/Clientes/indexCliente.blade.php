@@ -43,7 +43,7 @@
                                 name="search"
                                 value="{{request('search')}}"
                                 class="form-control"
-                                placeholder="Buscar por nombre"
+                                placeholder="Buscar por nombre,identidad,departamento"
                             >
                             <span class="input-group-text"><i class="bi bi-search"></i></span>
                         </div>
@@ -70,6 +70,7 @@
                     <th>N°</th>
                     <th>Nombre</th>
                     <th>Apellido</th>
+                    <th>Sexo</th>
                     <th>Identidad</th>
                     <th>Correo</th>
                     <th>Teléfono</th>
@@ -83,6 +84,7 @@
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ $cliente->nombre }}</td>
                         <td>{{ $cliente->apellido }}</td>
+                        <td>{{ $cliente->sexo }}</td>
                         <td>{{ $cliente->identidad}}</td>
                         <td>{{ $cliente->correo }}</td>
                         <td>{{ $cliente->telefono }}</td>
@@ -145,8 +147,6 @@
         });
 
     </script>
-
-
 
 
 

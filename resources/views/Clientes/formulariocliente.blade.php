@@ -205,9 +205,29 @@
                             </div>
                         </div>
 
+                        <div class="col-md-6">
+                            <label for="sexo" class="form-label">Sexo</label>
+                            <div class="input-group has-validation">
+                                <span class="input-group-text"><i class="bi bi-gender-ambiguous"></i></span>
+                                <select name="sexo"
+                                        id="sexo"
+                                        class="form-select @error('sexo') is-invalid @enderror"
+                                        required>
+                                    <option value="">Seleccione su sexo</option>
+                                    <option value="Hombre" {{ old('sexo') == 'Hombre' ? 'selected' : '' }}>Hombre</option>
+                                    <option value="Mujer" {{ old('sexo') == 'Mujer' ? 'selected' : '' }}>Mujer</option>
+                                    <option value="Otros" {{ old('sexo') == 'Otros' ? 'selected' : '' }}>Otros</option>
+                                </select>
+                                @error('sexo')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
 
 
-                    <div class="text-center mt-5 d-flex justify-content-center gap-3">
+
+
+                        <div class="text-center mt-5 d-flex justify-content-center gap-3">
                         <!-- Botón Cancelar -->
                         <a href="{{ route('Clientes.indexCliente') }}" class="btn btn-danger">
                             <i class="bi bi-x-circle me-2"></i> Cancelar
@@ -255,12 +275,19 @@
 
                 form.querySelectorAll('select').forEach(el => {
                     el.selectedIndex = 0;
+                    el.classList.remove('is-invalid', 'is-valid');
+                });
+
+                form.querySelectorAll('select').forEach(el => {
+                    el.selectedIndex = 0;
                 });
 
                 // Remover clases de validación
                 form.querySelectorAll('.is-valid, .is-invalid').forEach(el => {
                     el.classList.remove('is-valid', 'is-invalid');
                 });
+
+                form.classList.remove('was-validated');
 
                 // Limpiar mensajes de error si hay
                 form.querySelectorAll('.text-danger').forEach(el => {

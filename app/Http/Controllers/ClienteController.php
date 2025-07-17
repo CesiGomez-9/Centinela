@@ -11,12 +11,25 @@ class ClienteController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         //
 
-        $clientes = Cliente::paginate(10);
-        return view('Clientes.indexCliente', compact('clientes'));
+        $search = $request->input('search');
+
+        $clientes = Cliente::query();
+
+        if ($search) {
+            $clientes = $clientes->where(function ($q) use ($search) {
+                $q->where('nombre',  'like', "%{$search}%")
+                    ->orWhere('identidad', 'like', "%{$search}%")
+                    ->orWhere('departamento',   'like', "%{$search}%");
+            });
+        }
+
+
+        $clientes = $clientes->paginate(10); // APLICA LA PAGINACIÓN AQUÍ, al final
+        return view('Clientes.indexCliente', compact('clientes', 'search'));
     }
 
     /**
@@ -86,6 +99,7 @@ class ClienteController extends Controller
             'telefono' => ['required', 'regex:/^[2389][0-9]{7}$/', 'size:8', 'unique:clientes,telefono'],
             'direccion' => ['required', 'string','max:250'],
             'departamento' => ['required', 'string'],
+            'sexo' => ['required', 'string'],
         ], [
             'nombre.required' => 'Debe ingresar el nombre.',
             'nombre.regex' => 'El nombre solo debe contener letras, espacios y tildes.',
@@ -103,9 +117,11 @@ class ClienteController extends Controller
             'departamento.required' => 'Debe seleccionar un departamento.',
             'apellido.required' => 'Debe ingresar el apellido.',
             'apellido.regex' => 'El apellido solo debe contener letras, espacios y tildes.',
-            'identidad.required' => 'Debe ingresar la identidad',
-            'identidad.size' => 'La identidad debe tener exactamente 13 digitos',
-            'identidad.unique' => 'Esta identidad ya está registrada',
+            'identidad.required' => 'Debe ingresar la identidad.',
+            'identidad.size' => 'La identidad debe tener exactamente 13 digitos.',
+            'identidad.unique' => 'Esta identidad ya está registrada.',
+            'sexo.required' => 'Debe seleccionar un sexo.',
+
 
 
 
@@ -116,6 +132,7 @@ class ClienteController extends Controller
         $cliente= new Cliente();
         $cliente->nombre = $request->input('nombre');
         $cliente->apellido = $request->input('apellido');
+        $cliente->sexo = $request->input('sexo');
         $cliente->identidad = $request->input('identidad');
         $cliente->correo = $request->input('correo');
         $cliente->telefono = $request->input('telefono');
