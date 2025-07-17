@@ -30,6 +30,11 @@
             color: red;
             margin-top: 0.5rem;
         }
+        .pagination .page-item.active .page-link {
+            background-color: #000 !important;
+            border-color: #000 !important;
+            color: #fff !important;
+        }
     </style>
 </head>
 <body class="bg-light p-4">
@@ -65,7 +70,7 @@
         </h2>
     </div>
 
- <!-- Botón de volver a la derecha y buscador a la izquierda -->
+    <!-- Botón de volver a la derecha y buscador a la izquierda -->
     <div class="d-flex justify-content-between align-items-center mb-4 flex-row-reverse">
         <!-- Botón Volver a la derecha -->
         <a href="{{ route('servicios.index') }}" class="btn btn-outline-primary btn-md">
@@ -100,27 +105,39 @@
         <table class="table table-bordered table-hover align-middle">
             <thead class="table-dark text-center">
             <tr>
+                <th>#</th>
                 <th>Nombre</th>
                 <th>Descripción</th>
-                <th>Categoria</th>
+                <th>Categoría</th>
+                <th>Acciones</th>
             </tr>
             </thead>
             <tbody>
-            @forelse($servicios as $servicio)
+            @forelse($servicios as $index => $servicio)
                 <tr>
+                    <td class="text-center">{{ $loop->iteration }}</td>
                     <td class="text-start">{{ $servicio->nombre }}</td>
                     <td class="text-start">{{ Str::limit($servicio->descripcion, 80) }}</td>
-                    <td class="text-start">{{ $servicio->categoria }}</td>
+                    <td class="text-start">{{ ucfirst($servicio->categoria) }}</td>
+                    <td class="text-center">
+                        <a href="{{ route('servicios.show', $servicio->id) }}" class="btn btn-sm btn-outline-info">
+                            <i class="bi bi-eye"></i> Ver
+                        </a>
+                        <a href="{{ route('servicios.edit', $servicio->id) }}" class="btn btn-sm btn-outline-warning">
+                            <i class="bi bi-pencil-square"></i> Editar
+                        </a>
 
+                        </form>
                     </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="4" class="text-center text-muted">No hay servicios registrados.</td>
+                    <td colspan="5" class="text-center text-muted">No hay servicios registrados.</td>
                 </tr>
             @endforelse
             </tbody>
         </table>
+
     </div>
 
     <!-- Paginación -->

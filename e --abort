@@ -1,0 +1,2135 @@
+[1mdiff --git a/app/Http/Controllers/FacturaController.php b/app/Http/Controllers/FacturaController.php[m
+[1mindex 72cb34f..59d6b7c 100644[m
+[1m--- a/app/Http/Controllers/FacturaController.php[m
+[1m+++ b/app/Http/Controllers/FacturaController.php[m
+[36m@@ -6,6 +6,7 @@[m
+ use Illuminate\Http\Request;[m
+ use Illuminate\Support\Facades\DB;[m
+ use Illuminate\Validation\Rule;[m
+[32m+[m[32muse App\Models\DetalleFactura; // Make sure this model is imported[m
+ [m
+ class FacturaController extends Controller[m
+ {[m
+[36m@@ -24,7 +25,6 @@[m [mpublic function index(Request $request)[m
+ [m
+         $facturas = $query->paginate(10);[m
+ [m
+[31m-[m
+         return view('facturas.index', compact('facturas'));[m
+     }[m
+ [m
+[36m@@ -33,110 +33,41 @@[m [mpublic function index(Request $request)[m
+      */[m
+     public function create()[m
+     {[m
+[31m-        $empleados = \App\Models\Empleado::all();[m
+[31m-        return view('facturas.formulario', compact('empleados'));[m
+[31m-[m
+[31m-        $nombresPorCategoria = [[m
+[31m-            'Cámaras de seguridad' => [[m
+[31m-                'Cámara IP Full HD', 'Cámara Bullet 4K', 'Cámara domo PTZ',[m
+[31m-                'Cámara térmica portátil', 'Cámara con visión nocturna'[m
+[31m-            ],[m
+[31m-            'Alarmas antirrobo' => [[m
+[31m-                'Alarma inalámbrica', 'Alarma con sirena', 'Alarma de puerta y ventana',[m
+[31m-                'Sistema de alarma GSM', 'Alarma con detector de humo'[m
+[31m-            ],[m
+[31m-            'Cerraduras inteligentes' => [[m
+[31m-                'Cerradura biométrica', 'Cerradura con teclado', 'Cerradura Bluetooth',[m
+[31m-                'Cerradura con control remoto', 'Cerradura electrónica para puertas'[m
+[31m-            ],[m
+[31m-            'Sensores de movimiento' => [[m
+[31m-                'Sensor PIR inalámbrico', 'Sensor de movimiento con cámara',[m
+[31m-                'Sensor de movimiento para interiores', 'Sensor de movimiento con alarma',[m
+[31m-                'Sensor doble tecnología'[m
+[31m-            ],[m
+[31m-            'Luces con sensor de movimiento' => [[m
+[31m-                'Luz LED con sensor', 'Luz solar con sensor', 'Foco exterior con sensor',[m
+[31m-                'Luz para jardín con sensor', 'Lámpara de seguridad con sensor'[m
+[31m-            ],[m
+[31m-            'Rejas o puertas de seguridad' => [[m
+[31m-                'Reja metálica reforzada', 'Puerta de seguridad con cerradura',[m
+[31m-                'Reja plegable de acero', 'Puerta blindada residencial', 'Reja corrediza automática'[m
+[31m-            ],[m
+[31m-            'Sistema de monitoreo 24/7' => [[m
+[31m-                'Sistema CCTV avanzado', 'Monitoreo remoto por app',[m
+[31m-                'Servicio de vigilancia en tiempo real', 'Sistema con alertas SMS',[m
+[31m-                'Monitoreo con sensores integrados'[m
+[31m-            ],[m
+[31m-            'Implementos de seguridad' => [[m
+[31m-                'Chaleco antibalas', 'Casco de seguridad', 'Guantes tácticos',[m
+[31m-                'Botas reforzadas', 'Radio comunicador portátil'[m
+[31m-            ],[m
+[31m-        ];[m
+[31m-[m
+[31m-        return view('facturas.formulario', compact('nombresPorCategoria'));[m
+[32m+[m[32m        return view('facturas.formulario');[m
+     }[m
+ [m
+     /**[m
+      * Store a newly created resource in storage.[m
+[32m+[m[32m     * @throws \Throwable[m
+      */[m
+     public function store(Request $request)[m
+     {[m
+[31m-        // Validar datos...[m
+[31m-[m
+[31m-        $factura = new Factura($request->all());[m
+[31m-[m
+[31m-        // Asignar responsable automático (ejemplo: usuario logueado)[m
+[31m-        $factura->responsable_id = auth()->user()->empleado->id ?? null;[m
+[31m-[m
+[31m-        $factura->save();[m
+[31m-[m
+[31m-        // Redireccionar o mostrar mensaje...[m
+[32m+[m[32m        // Validation of data[m
+         $validated = $request->validate([[m
+[31m-[m
+             'numero_factura' => [[m
+[31m-                'required',[m
+[31m-                'min:3',[m
+[31m-                'max:15',[m
+[32m+[m[32m                'required', 'min:3', 'max:15',[m
+                 'regex:/^[A-Za-z0-9\-]+$/',[m
+                 'regex:/.*\S.*/',[m
+[31m-                'responsable_id' => 'required|exists:empleados,id',[m
+                 Rule::unique('facturas', 'numero_factura')[m
+[31m-[m
+             ],[m
+[31m-            'fecha' => ['required', 'date', 'after_or_equal:2000-01-01', 'before_or_equal:2099-12-31' ],[m
+[32m+[m[32m            'fecha' => ['required', 'date', 'after_or_equal:2000-01-01', 'before_or_equal:2099-12-31'],[m
+             'proveedor' => ['required', 'min:3', 'max:30', 'regex:/^[\pL0-9\s\-.,#]+$/u', 'regex:/.*\S.*/'],[m
+             'forma_pago' => ['required', 'in:Efectivo,Cheque,Transferencia'],[m
+             'responsable' => ['required', 'string', 'min:3', 'max:30', 'regex:/^[\pL0-9\s\-.,#]+$/u', 'regex:/.*\S.*/'],[m
+[31m-            'responsable_id' => $request->responsable_id,[m
+ [m
+             'productos' => ['required', 'array', 'min:1'],[m
+             'productos.*.nombre' => ['required', 'string', 'max:100'],[m
+             'productos.*.categoria' => ['nullable', 'string', 'max:50'],[m
+[31m-            'productos.*.precioCompra' => [[m
+[31m-                'required',[m
+[31m-                'numeric',[m
+[31m-                'min:0',[m
+[31m-                'max:9999'[m
+[31m-            ],[m
+[31m-            'productos.*.precioVenta' => [[m
+[31m-                'required',[m
+[31m-                'numeric',[m
+[31m-                'min:0',[m
+[31m-                'max:9999'[m
+[31m-            ],[m
+[31m-            'productos.*.cantidad' => [[m
+[31m-                'required',[m
+[31m-                'integer',[m
+[31m-                'min:1',[m
+[31m-                'max:999' // Hasta 3 dígitos[m
+[31m-            ],[m
+[31m-[m
+[32m+[m[32m            'productos.*.precioCompra' => ['required', 'numeric', 'min:0', 'max:9999'],[m
+[32m+[m[32m            'productos.*.precioVenta' => ['required', 'numeric', 'min:0', 'max:9999'],[m
+[32m+[m[32m            'productos.*.cantidad' => ['required', 'integer', 'min:1', 'max:999'],[m
+             'productos.*.iva' => ['nullable', 'numeric', 'min:0'],[m
+         ]);[m
+ [m
+[32m+[m[32m        // Secure Transaction[m
+         DB::transaction(function () use ($request) {[m
+[31m-            $subtotal = 0;[m
+[31m-            $impuestos = 0;[m
+[32m+[m[32m            $subtotalGeneral = 0; // For the sum of the taxable bases[m
+[32m+[m[32m            $impuestosGeneral = 0; // For the sum of calculated taxes[m
+ [m
+             $factura = Factura::create([[m
+                 'numero_factura' => $request->numero_factura,[m
+[36m@@ -144,62 +75,76 @@[m [mpublic function store(Request $request)[m
+                 'proveedor' => $request->proveedor,[m
+                 'forma_pago' => $request->forma_pago,[m
+                 'responsable' => $request->responsable,[m
+[31m-                'subtotal' => 0,[m
+[31m-                'impuestos' => 0,[m
+[31m-                'totalF' => 0,[m
+[32m+[m[32m                'subtotal' => 0, // Will be updated at the end[m
+[32m+[m[32m                'impuestos' => 0, // Will be updated at the end[m
+[32m+[m[32m                'totalF' => 0, // Will be updated at the end[m
+             ]);[m
+ [m
+             foreach ($request->productos as $producto) {[m
+[31m-                $precioCompra = $producto['precioCompra'];[m
+[31m-                $cantidad = $producto['cantidad'];[m
+[31m-                $iva = $producto['iva'] ?? 0;[m
+[31m-[m
+[31m-                $base = $precioCompra * $cantidad;[m
+[31m-                $ivaCalculado = ($iva / 100) * $base;[m
+[31m-                $totalProducto = $base + $ivaCalculado;[m
+[32m+[m[32m                $baseProducto = $producto['precioCompra'] * $producto['cantidad'];[m
+[32m+[m[32m                $ivaProducto = ($producto['iva'] / 100) * $baseProducto;[m
+[32m+[m[32m                $totalProducto = $baseProducto + $ivaProducto; // Total of this product including its VAT[m
+ [m
+[31m-                $subtotal += $base;[m
+[31m-                $impuestos += $ivaCalculado;[m
+[32m+[m[32m                $subtotalGeneral += $baseProducto; // Sums the taxable base to the general subtotal[m
+[32m+[m[32m                $impuestosGeneral += $ivaProducto; // Sums the tax of this product to the total taxes[m
+ [m
+                 $factura->detalles()->create([[m
+                     'producto' => $producto['nombre'],[m
+[31m-                    'categoria' => $producto['categoria'] ?? '',[m
+[31m-                    'precioCompra' => $precioCompra,[m
+[31m-                    'precioVenta' => $producto['precioCompra'],[m
+[31m-                    'cantidad' => $cantidad,[m
+[31m-                    'iva' => $iva,[m
+[31m-                    'total' => $totalProducto,[m
+[32m+[m[32m                    'categoria' => $producto['categoria'],[m
+[32m+[m[32m                    'precioCompra' => $producto['precioCompra'],[m
+[32m+[m[32m                    'precioVenta' => $producto['precioVenta'],[m
+[32m+[m[32m                    'cantidad' => $producto['cantidad'],[m
+[32m+[m[32m                    'iva' => $producto['iva'],[m
+[32m+[m[32m                    'total' => $totalProducto, // Save the product total with its VAT[m
+                 ]);[m
+             }[m
+ [m
+[31m-            $totalFinal = $subtotal + $impuestos;[m
+[32m+[m[32m            $totalFinal = $subtotalGeneral + $impuestosGeneral;[m
+ [m
+             $factura->update([[m
+[31m-                'subtotal' => $subtotal,[m
+[31m-                'impuestos' => $impuestos,[m
+[32m+[m[32m                'subtotal' => $subtotalGeneral,[m
+[32m+[m[32m                'impuestos' => $impuestosGeneral,[m
+                 'totalF' => $totalFinal,[m
+[31m-[m
+             ]);[m
+         });[m
+[31m-        $validated['responsable_id'] = $request->responsable_id;[m
+[31m-[m
+[31m-        Factura::create($validated);[m
+ [m
+         return redirect()->route('facturas.index')->with('status', 'Factura registrada correctamente');[m
+[31m-[m
+     }[m
+ [m
+[32m+[m[32m    public function obtenerProductosProveedor($nombre)[m
+[32m+[m[32m    {[m
+[32m+[m[32m        // Busca facturas con ese proveedor[m
+[32m+[m[32m        $factura = Factura::where('proveedor', $nombre)[m
+[32m+[m[32m            ->with('detalles')[m
+[32m+[m[32m            ->latest()[m
+[32m+[m[32m            ->first();[m
+[32m+[m
+[32m+[m[32m        if (!$factura) {[m
+[32m+[m[32m            return response()->json([[m
+[32m+[m[32m                'error' => 'No se encontraron facturas para este proveedor.'[m
+[32m+[m[32m            ], 404);[m
+[32m+[m[32m        }[m
+ [m
+[32m+[m[32m        // Retorna los productos relacionados[m
+[32m+[m[32m        return response()->json([[m
+[32m+[m[32m            'productos' => $factura->detalles->map(function ($detalle) {[m
+[32m+[m[32m                return [[m
+[32m+[m[32m                    'producto' => $detalle->producto,[m
+[32m+[m[32m                    'precio' => $detalle->precio, // This 'precio' might refer to precioCompra or precioVenta depending on frontend[m
+[32m+[m[32m                    'cantidad' => $detalle->cantidad,[m
+[32m+[m[32m                    'total' => $detalle->total,[m
+[32m+[m[32m                    'categoria' => $detalle->categoria ?? 'Desconocida',[m
+[32m+[m[32m                ];[m
+[32m+[m[32m            }),[m
+[32m+[m[32m        ]);[m
+[32m+[m[32m    }[m
+ [m
+     /**[m
+      * Display the specified resource.[m
+      */[m
+     public function show(string $id)[m
+     {[m
+[31m-        // Busca la factura por id, si no la encuentra lanza error 404[m
+[31m-        $factura = Factura::with(['empleado', 'productos'])->findOrFail($id);[m
+[31m-[m
+[31m-        // Retorna la vista y pasa la variable $factura[m
+[32m+[m[32m        $factura = Factura::with('detalles')->findOrFail($id);[m
+         return view('facturas.show', compact('factura'));[m
+     }[m
+ [m
+[36m@@ -208,7 +153,8 @@[m [mpublic function show(string $id)[m
+      */[m
+     public function edit(string $id)[m
+     {[m
+[31m-        //[m
+[32m+[m[32m        $factura = Factura::with('detalles')->findOrFail($id);[m
+[32m+[m[32m        return view('facturas.formulario', compact('factura'));[m
+     }[m
+ [m
+     /**[m
+[36m@@ -216,15 +162,75 @@[m [mpublic function edit(string $id)[m
+      */[m
+     public function update(Request $request, string $id)[m
+     {[m
+[31m-        //[m
+[31m-    }[m
+[32m+[m[32m        $factura = Factura::findOrFail($id);[m
+ [m
+[31m-    /**[m
+[31m-     * Remove the specified resource from storage.[m
+[31m-     */[m
+[31m-    public function destroy(string $id)[m
+[31m-    {[m
+[31m-        //[m
+[31m-    }[m
+[32m+[m[32m        $validated = $request->validate([[m
+[32m+[m[32m            'numero_factura' => [[m
+[32m+[m[32m                'required', 'min:3', 'max:15',[m
+[32m+[m[32m                'regex:/^[A-Za-z0-9\-]+$/',[m
+[32m+[m[32m                'regex:/.*\S.*/',[m
+[32m+[m[32m                Rule::unique('facturas', 'numero_factura')->ignore($factura->id)[m
+[32m+[m[32m            ],[m
+[32m+[m[32m            'fecha' => ['required', 'date', 'after_or_equal:2000-01-01', 'before_or_equal:2099-12-31'],[m
+[32m+[m[32m            'proveedor' => ['required', 'min:3', 'max:30', 'regex:/^[\pL0-9\s\-.,#]+$/u', 'regex:/.*\S.*/'],[m
+[32m+[m[32m            'forma_pago' => ['required', 'in:Efectivo,Cheque,Transferencia'],[m
+[32m+[m[32m            'responsable' => ['required', 'string', 'min:3', 'max:30', 'regex:/^[\pL0-9\s\-.,#]+$/u', 'regex:/.*\S.*/'],[m
+[32m+[m
+[32m+[m[32m            'productos' => ['required', 'array', 'min:1'],[m
+[32m+[m[32m            'productos.*.nombre' => ['required', 'string', 'max:100'],[m
+[32m+[m[32m            'productos.*.categoria' => ['nullable', 'string', 'max:50'],[m
+[32m+[m[32m            'productos.*.precioCompra' => ['required', 'numeric', 'min:0', 'max:9999'],[m
+[32m+[m[32m            'productos.*.precioVenta' => ['required', 'numeric', 'min:0', 'max:9999'],[m
+[32m+[m[32m            'productos.*.cantidad' => ['required', 'integer', 'min:1', 'max:999'],[m
+[32m+[m[32m            'productos.*.iva' => ['nullable', 'numeric', 'min:0'],[m
+[32m+[m[32m        ]);[m
+[32m+[m
+[32m+[m[32m        DB::transaction(function () use ($request, $factura) {[m
+[32m+[m[32m            // Update main invoice fields[m
+[32m+[m[32m            $factura->update([[m
+[32m+[m[32m                'numero_factura' => $request->numero_factura,[m
+[32m+[m[32m                'fecha' => $request->fecha,[m
+[32m+[m[32m                'proveedor' => $request->proveedor,[m
+[32m+[m[32m                'forma_pago' => $request->forma_pago,[m
+[32m+[m[32m                'responsable' => $request->responsable,[m
+[32m+[m[32m            ]);[m
+[32m+[m
+[32m+[m[32m            // Sync invoice details[m
+[32m+[m[32m            // 1. Delete existing details for this invoice[m
+[32m+[m[32m            $factura->detalles()->delete();[m
+[32m+[m
+[32m+[m[32m            $subtotalGeneral = 0;[m
+[32m+[m[32m            $impuestosGeneral = 0;[m
+[32m+[m
+[32m+[m[32m            // 2. Recreate details with new data[m
+[32m+[m[32m            foreach ($request->productos as $producto) {[m
+[32m+[m[32m                $baseProducto = $producto['precioCompra'] * $producto['cantidad'];[m
+[32m+[m[32m                $ivaProducto = ($producto['iva'] / 100) * $baseProducto;[m
+[32m+[m[32m                $totalProducto = $baseProducto + $ivaProducto;[m
+ [m
+[32m+[m[32m                $subtotalGeneral += $baseProducto;[m
+[32m+[m[32m                $impuestosGeneral += $ivaProducto;[m
+[32m+[m
+[32m+[m[32m                $factura->detalles()->create([[m
+[32m+[m[32m                    'producto' => $producto['nombre'],[m
+[32m+[m[32m                    'categoria' => $producto['categoria'],[m
+[32m+[m[32m                    'precioCompra' => $producto['precioCompra'],[m
+[32m+[m[32m                    'precioVenta' => $producto['precioVenta'],[m
+[32m+[m[32m                    'cantidad' => $producto['cantidad'],[m
+[32m+[m[32m                    'iva' => $producto['iva'],[m
+[32m+[m[32m                    'total' => $totalProducto,[m
+[32m+[m[32m                ]);[m
+[32m+[m[32m            }[m
+[32m+[m
+[32m+[m[32m            $totalFinal = $subtotalGeneral + $impuestosGeneral;[m
+[32m+[m
+[32m+[m[32m            $factura->update([[m
+[32m+[m[32m                'subtotal' => $subtotalGeneral,[m
+[32m+[m[32m                'impuestos' => $impuestosGeneral,[m
+[32m+[m[32m                'totalF' => $totalFinal,[m
+[32m+[m[32m            ]);[m
+[32m+[m[32m        });[m
+[32m+[m
+[32m+[m[32m        return redirect()->route('facturas.index')->with('status', 'Factura actualizada correctamente!');[m
+[32m+[m[32m    }[m
+ }[m
+[1mdiff --git a/app/Models/DetalleFactura.php b/app/Models/DetalleFactura.php[m
+[1mindex ca7fec2..b9d4ba3 100644[m
+[1m--- a/app/Models/DetalleFactura.php[m
+[1m+++ b/app/Models/DetalleFactura.php[m
+[36m@@ -3,10 +3,13 @@[m
+ namespace App\Models;[m
+ [m
+ use Illuminate\Database\Eloquent\Model;[m
+[32m+[m[32muse Illuminate\Database\Eloquent\Factories\HasFactory;[m
+ [m
+ class DetalleFactura extends Model[m
+ {[m
+[31m-    protected $table = 'detalle_factura';[m
+[32m+[m[32m    protected $table = 'detalles';[m
+[32m+[m
+[32m+[m[32m    use HasFactory;[m
+ [m
+     protected $fillable = [[m
+         'factura_id',[m
+[36m@@ -19,6 +22,8 @@[m [mclass DetalleFactura extends Model[m
+         'total',[m
+     ];[m
+ [m
+[31m-    // Relación inversa[m
+[31m-[m
+[32m+[m[32m    public function factura()[m
+[32m+[m[32m    {[m
+[32m+[m[32m        return $this->belongsTo(Factura::class);[m
+[32m+[m[32m    }[m
+ }[m
+[1mdiff --git a/app/Models/Factura.php b/app/Models/Factura.php[m
+[1mindex 653e83d..7a8c645 100644[m
+[1m--- a/app/Models/Factura.php[m
+[1m+++ b/app/Models/Factura.php[m
+[36m@@ -2,22 +2,22 @@[m
+ [m
+ namespace App\Models;[m
+ [m
+[31m-use Illuminate\Database\Eloquent\Factories\HasFactory;[m
+ use Illuminate\Database\Eloquent\Model;[m
+[32m+[m[32muse Illuminate\Database\Eloquent\Factories\HasFactory;[m
+ [m
+ class Factura extends Model[m
+ {[m
+     use HasFactory;[m
+[32m+[m
+     protected $fillable = [[m
+         'numero_factura',[m
+         'fecha',[m
+         'proveedor',[m
+         'forma_pago',[m
+[32m+[m[32m        'responsable',[m
+         'subtotal',[m
+         'impuestos',[m
+         'totalF',[m
+[31m-        'responsable_id',[m
+[31m-[m
+     ];[m
+ [m
+     // Relación uno a muchos con DetalleFactura[m
+[36m@@ -25,9 +25,4 @@[m [mpublic function detalles()[m
+     {[m
+         return $this->hasMany(DetalleFactura::class);[m
+     }[m
+[31m-    public function empleado()[m
+[31m-    {[m
+[31m-        return $this->belongsTo(Empleado::class, 'responsable_id');[m
+[31m-    }[m
+[31m-[m
+ }[m
+[1mdiff --git a/database/factories/FacturaFactory.php b/database/factories/FacturaFactory.php[m
+[1mindex 733d8e6..0e3e158 100644[m
+[1m--- a/database/factories/FacturaFactory.php[m
+[1m+++ b/database/factories/FacturaFactory.php[m
+[36m@@ -122,17 +122,22 @@[m [mpublic function configure(): static[m
+                 $producto = $this->faker->randomElement($nombresPorCategoria[$categoria]);[m
+                 $precio = $this->faker->randomFloat(2, 10, 200);[m
+                 $cantidad = $this->faker->numberBetween(1, 3);[m
+[31m-                $total = $precio * $cantidad;[m
+[31m-                $subtotal += $total;[m
+[32m+[m[32m                $subtotal = $precio * $cantidad;[m
+[32m+[m[32m                $iva = 15;[m
+[32m+[m[32m                $ivaCalculado = ($iva / 100) * $subtotal;[m
+[32m+[m[32m                $total = $subtotal + $ivaCalculado;[m
+ [m
+                 DetalleFactura::create([[m
+                     'factura_id' => $factura->id,[m
+                     'producto' => $producto,[m
+                     'categoria' => $categoria,[m
+[31m-                    'precio' => $precio,[m
+[32m+[m[32m                    'precioCompra' => $precio,[m
+[32m+[m[32m                    'precioVenta' => $precio,[m
+                     'cantidad' => $cantidad,[m
+[32m+[m[32m                    'iva' => $iva, // O genera un iva aleatorio si deseas[m
+                     'total' => $total,[m
+                 ]);[m
+[32m+[m
+             }[m
+ [m
+             $impuestos = $subtotal * 0.15;[m
+[1mdiff --git a/database/migrations/2025_06_24_015256_create_detalle_factura_table.php b/database/migrations/2025_06_24_015256_create_detalle_factura_table.php[m
+[1mindex d42c3e1..d821adb 100644[m
+[1m--- a/database/migrations/2025_06_24_015256_create_detalle_factura_table.php[m
+[1m+++ b/database/migrations/2025_06_24_015256_create_detalle_factura_table.php[m
+[36m@@ -11,7 +11,7 @@[m
+      */[m
+     public function up(): void[m
+     {[m
+[31m-        Schema::create('detalle_factura', function (Blueprint $table) {[m
+[32m+[m[32m        Schema::create('detalles', function (Blueprint $table) {[m
+             $table->id();[m
+             $table->foreignId('factura_id')->constrained('facturas')->onDelete('cascade');[m
+             $table->string('producto');[m
+[36m@@ -30,6 +30,6 @@[m [mpublic function up(): void[m
+      */[m
+     public function down(): void[m
+     {[m
+[31m-        Schema::dropIfExists('detalle_factura');[m
+[32m+[m[32m        Schema::dropIfExists('detalles');[m
+     }[m
+ };[m
+[1mdiff --git a/resources/views/facturas/formulario.blade.php b/resources/views/facturas/formulario.blade.php[m
+[1mindex 81e0926..3280394 100644[m
+[1m--- a/resources/views/facturas/formulario.blade.php[m
+[1m+++ b/resources/views/facturas/formulario.blade.php[m
+[36m@@ -1,26 +1,12 @@[m
+ @extends('layouts.plantilla')[m
+[31m-@section('titulo','Registrar nueva factura')[m
+[32m+[m[32m@section('titulo','Registrar una factura')[m
+ @section('content')[m
+ [m
+     <style>[m
+         body {[m
+[31m-            background-color: #f2f7ff;[m
+[32m+[m[32m            background-color: #e6f0ff;[m
+[32m+[m[32m            margin: 0;[m
+         }[m
+[31m-[m
+[31m-        .error-message {[m
+[31m-            color: #dc3545;[m
+[31m-            font-size: 0.875em;[m
+[31m-            margin-top: 0.25rem;[m
+[31m-            display: none;[m
+[31m-        }[m
+[31m-        .field-error {[m
+[31m-            border-color: #dc3545;[m
+[31m-        }[m
+[31m-[m
+[31m-        .form-control.invalid {[m
+[31m-            border-color: #dc3545;[m
+[31m-        }[m
+[31m-[m
+     </style>[m
+ [m
+     <div class="container my-5">[m
+[36m@@ -33,55 +19,94 @@[m
+ [m
+                     <h3 class="text-center mb-4" style="color: #09457f;">[m
+                         <i class="bi bi-file-text"></i>[m
+[31m-                        @isset($producto)[m
+[32m+[m[32m                        @isset($factura)[m
+                             Editar una factura de compra[m
+                         @else[m
+                             Registrar una nueva factura de compra[m
+                         @endisset[m
+                     </h3>[m
+ [m
+[31m-[m
+[31m-                    <form method="POST" id="facturaForm" novalidate>[m
+[32m+[m[32m                    <form method="POST" id="facturaForm" action="{{ isset($factura) ? route('facturas.update', $factura->id) : route('facturas.store') }}" novalidate>[m
+[32m+[m[32m                        @csrf[m
+[32m+[m[32m                        @isset($factura)[m
+[32m+[m[32m                            @method('PUT')[m
+[32m+[m[32m                        @endisset[m
+                         <div class="row g-4">[m
+[32m+[m[32m                        {{-- Número de Factura --}}[m
+                             <div class="col-md-6">[m
+[31m-                                <label class="form-label">Número de factura</label>[m
+[31m-                                <input type="text" name="numero_factura" id="numeroFactura" class="form-control" required maxlength="15">[m
+[31m-                                <div class="error-message" id="error-numeroFactura">Número de factura es obligatorio</div>[m
+[32m+[m[32m                                <label for="numeroFactura" class="form-label">Número de Factura</label>[m
+[32m+[m[32m                                <div class="input-group">[m
+[32m+[m[32m                                    <span class="input-group-text"><i class="bi bi-hash"></i></span>[m
+[32m+[m[32m                                    <input type="text" name="numero_factura" id="numeroFactura"[m
+[32m+[m[32m                                           class="form-control @error('numero_factura') is-invalid @enderror"[m
+[32m+[m[32m                                           maxlength="20" value="{{ old('numero_factura') }}"[m
+[32m+[m[32m                                           onkeypress="validarTexto(event)" required>[m
+[32m+[m[32m                                </div>[m
+[32m+[m[32m                                @error('numero_factura')[m
+[32m+[m[32m                                <div class="text-danger mt-1 small">{{ $message }}</div>[m
+[32m+[m[32m                                @enderror[m
+                             </div>[m
+ [m
+[32m+[m[32m                            {{-- Fecha --}}[m
+                             <div class="col-md-6">[m
+[31m-                                <label class="form-label">Fecha</label>[m
+[31m-                                <input type="date" name="fecha" id="fecha" class="form-control" min="2000-01-01" max="2099-12-31"  required>[m
+[31m-                                <div class="error-message" id="errorFecha">Fecha es obligatoria.</div>[m
+[32m+[m[32m                                <label for="fecha" class="form-label">Fecha</label>[m
+[32m+[m[32m                                <div class="input-group">[m
+[32m+[m[32m                                    <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>[m
+[32m+[m[32m                                    <input type="date" name="fecha" id="fecha" min="2000-01-01" max="2099-12-31"[m
+[32m+[m[32m                                           class="form-control @error('fecha') is-invalid @enderror"[m
+[32m+[m[32m                                           value="{{ old('fecha') }}" required>[m
+[32m+[m[32m                                </div>[m
+[32m+[m[32m                                @error('fecha')[m
+[32m+[m[32m                                <div class="text-danger mt-1 small">{{ $message }}</div>[m
+[32m+[m[32m                                @enderror[m
+                             </div>[m
+ [m
+[32m+[m[32m                            {{-- Proveedor (Select) --}}[m
+                             <div class="col-md-6">[m
+[31m-                                <label class="form-label">Proveedor</label>[m
+[31m-                                <select name="proveedor" class="form-select" required>[m
+[31m-                                    <option value="">Seleccione un proveedor</option>[m
+[31m-                                    <option value="TE seguridad">TE seguridad</option>[m
+[31m-                                    <option value="TecnoSeguridad SA">TecnoSeguridad SA</option>[m
+[31m-                                    <option value="Alarmas Prosegur">Alarmas Prosegur</option>[m
+[31m-                                    <option value="Seguridad Total">Seguridad Total</option>[m
+[31m-                                    <option value="LockPro Cerraduras">LockPro Cerraduras</option>[m
+[31m-                                    <option value="VigiTech Honduras">VigiTech Honduras</option>[m
+[31m-                                    <option value="Securitas HN">Securitas HN</option>[m
+[31m-                                    <option value="AlertaHN">AlertaHN</option>[m
+[31m-                                    <option value="MoniSegur">MoniSegur</option>[m
+[31m-                                    <option value="RejaMax">RejaMax</option>[m
+[31m-                                </select>[m
+[31m-                                <div class="error-message" id="errorProveedor">Proveedor es obligatorio.</div>[m
+[32m+[m[32m                                <label for="proveedor" class="form-label">Proveedor</label>[m
+[32m+[m[32m                                <div class="input-group">[m
+[32m+[m[32m                                    <span class="input-group-text"><i class="bi bi-building"></i></span>[m
+[32m+[m[32m                                    <select id="proveedor" name="proveedor" class="form-select" required>[m
+[32m+[m[32m                                        <option value="">Seleccione un proveedor</option>[m
+[32m+[m[32m                                        <option value="TE seguridad">TE seguridad</option>[m
+[32m+[m[32m                                        <option value="TecnoSeguridad SA">TecnoSeguridad SA</option>[m
+[32m+[m[32m                                        <option value="Alarmas Prosegur">Alarmas Prosegur</option>[m
+[32m+[m[32m                                        <option value="Seguridad Total">Seguridad Total</option>[m
+[32m+[m[32m                                        <option value="LockPro Cerraduras">LockPro Cerraduras</option>[m
+[32m+[m[32m                                        <option value="VigiTech Honduras">VigiTech Honduras</option>[m
+[32m+[m[32m                                        <option value="Securitas HN">Securitas HN</option>[m
+[32m+[m[32m                                        <option value="AlertaHN">AlertaHN</option>[m
+[32m+[m[32m                                        <option value="MoniSegur">MoniSegur</option>[m
+[32m+[m[32m                                        <option value="RejaMax">RejaMax</option>[m
+[32m+[m[32m                                    </select>[m
+[32m+[m[32m                                </div>[m
+[32m+[m[32m                                @error('proveedor')[m
+[32m+[m[32m                                <div class="text-danger mt-1 small">{{ $message }}</div>[m
+[32m+[m[32m                                @enderror[m
+                             </div>[m
+ [m
+[32m+[m
+[32m+[m[32m                            {{-- Forma de Pago (Select) --}}[m
+                             <div class="col-md-6">[m
+[31m-                                <label class="form-label">Forma de pago</label>[m
+[31m-                                <select name="forma_pago" class="form-select" required>[m
+[31m-                                    <option value="">Seleccione una forma de pago</option>[m
+[31m-                                    <option value="Efectivo">Efectivo</option>[m
+[31m-                                    <option value="Cheque">Cheque</option>[m
+[31m-                                    <option value="Transferencia">Transferencia</option>[m
+[31m-                                </select>[m
+[31m-                                <div class="error-message" id="errorFormaPago">Forma de pago es obligatorio.</div>[m
+[32m+[m[32m                                <label for="formaPago" class="form-label">Forma de Pago</label>[m
+[32m+[m[32m                                <div class="input-group">[m
+[32m+[m[32m                                    <span class="input-group-text"><i class="bi bi-wallet-fill"></i></span>[m
+[32m+[m[32m                                    <select name="forma_pago" id="formaPago"[m
+[32m+[m[32m                                            class="form-select @error('forma_pago') is-invalid @enderror" required>[m
+[32m+[m[32m                                        <option value="">Seleccione una opción</option>[m
+[32m+[m[32m                                        @php[m
+[32m+[m[32m                                            $formasPago = ['Efectivo', 'Cheque', 'Transferencia'];[m
+[32m+[m[32m                                        @endphp[m
+[32m+[m[32m                                        @foreach ($formasPago as $forma)[m
+[32m+[m[32m                                            <option value="{{ $forma }}" {{ old('forma_pago') === $forma ? 'selected' : '' }}>[m
+[32m+[m[32m                                                {{ $forma }}[m
+[32m+[m[32m                                            </option>[m
+[32m+[m[32m                                        @endforeach[m
+[32m+[m[32m                                    </select>[m
+[32m+[m[32m                                </div>[m
+[32m+[m[32m                                @error('forma_pago')[m
+[32m+[m[32m                                <div class="text-danger mt-1 small">{{ $message }}</div>[m
+[32m+[m[32m                                @enderror[m
+                             </div>[m
+ [m
+                             <!-- Botón para abrir modal -->[m
+[36m@@ -142,33 +167,34 @@[m
+                                 </div>[m
+                             </div>[m
+ [m
+[31m-                            <form action="{{ route('facturas.store') }}" method="POST">[m
+[31m-                                @csrf[m
+[31m-                                <!-- Otros campos -->[m
+[31m-[m
+[31m-                                <p><strong>Responsable:</strong>[m
+[31m-                                    @if (isset($empleado))[m
+[31m-                                        {{ $empleado->nombre }} {{ $empleado->apellido }}[m
+[31m-                                    @else[m
+[31m-                                        No asignado[m
+[31m-                                    @endif[m
+[31m-                                </p>[m
+[31m-                                <input type="hidden" name="responsable_id" value="{{ $empleado->id ?? '' }}">[m
+[31m-[m
+[31m-[m
+[32m+[m[32m                            {{-- Responsable --}}[m
+[32m+[m[32m                            <div class="col-md-6">[m
+[32m+[m[32m                                <label for="responsable" class="form-label">Responsable</label>[m
+[32m+[m[32m                                <div class="input-group">[m
+[32m+[m[32m                                    <span class="input-group-text"><i class="bi bi-person-check-fill"></i></span>[m
+[32m+[m[32m                                    <input type="text" name="responsable" id="responsable"[m
+[32m+[m[32m                                           class="form-control @error('responsable') is-invalid @enderror"[m
+[32m+[m[32m                                           maxlength="50" value="{{ old('responsable') }}"[m
+[32m+[m[32m                                           required>[m
+[32m+[m[32m                                </div>[m
+[32m+[m[32m                                @error('responsable')[m
+[32m+[m[32m                                <div class="text-danger mt-1 small">{{ $message }}</div>[m
+[32m+[m[32m                                @enderror[m
+[32m+[m[32m                            </div>[m
+ [m
+[31m-                            </form>[m
+                             <!-- Botones -->[m
+                             <div class="text-center mt-5">[m
+[31m-                                <a href="{{ route('facturas.index') }}" class="btn btn-danger me-2">[m
+[31m-                                    <i class="bi bi-x-circle me-2"></i> Cancelar[m
+[31m-                                </a>[m
+[31m-                                <button type="reset" class="btn btn-warning me-2" id="btnLimpiar">[m
+[31m-                                    <i class="bi bi-eraser-fill me-2"></i> Limpiar[m
+[31m-                                </button>[m
+[31m-                                <button type="submit" class="btn btn-primary">[m
+[31m-                                    <i class="bi bi-save-fill me-2"></i> Guardar[m
+[31m-                                </button>[m
+[32m+[m[32m                            <a href="{{ route('facturas.index') }}" class="btn btn-danger me-2">[m
+[32m+[m[32m                                <i class="bi bi-x-circle me-2"></i> Cancelar[m
+[32m+[m[32m                            </a>[m
+[32m+[m
+[32m+[m[32m                            <button type="button" id="btnLimpiar" class="btn btn-warning me-2">[m
+[32m+[m[32m                                <i class="bi bi-eraser-fill me-2"></i> Limpiar[m
+[32m+[m[32m                            </button>[m
+[32m+[m
+[32m+[m[32m                            <button type="submit" class="btn btn-primary">[m
+[32m+[m[32m                                <i class="bi bi-save-fill me-2"></i> Guardar[m
+[32m+[m[32m                            </button>[m
+                             </div>[m
+                         </div>[m
+                     </form>[m
+[36m@@ -179,7 +205,7 @@[m
+ [m
+     <!-- Modal productos -->[m
+     <div class="modal fade" id="productosModal" tabindex="-1" aria-labelledby="productosModalLabel" aria-hidden="true">[m
+[31m-        <div class="modal-dialog modal-lg">[m
+[32m+[m[32m        <div class="modal-dialog-scrollablea modal-dialog modal-lg">[m
+             <div class="modal-content">[m
+                 <div class="modal-header" style="background-color: #0A1F44; color: white;">[m
+                     <h5 class="modal-title">Listado de Productos</h5>[m
+[36m@@ -197,7 +223,7 @@[m
+                     </div>[m
+ [m
+                     <!-- Tabla de productos -->[m
+[31m-                    <div class="table-responsive" style="max-height: 500px;">[m
+[32m+[m[32m                    <div class="table-responsive" style="max-height: 300px;">[m
+                         <table class="table table-bordered table-hover text-center" id="tablaProductos">[m
+                             <thead class="table-light sticky-top">[m
+                             <tr>[m
+[36m@@ -223,467 +249,255 @@[m
+ [m
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>[m
+     <script>[m
+[31m-[m
+[31m-        // validar fecha[m
+[31m-        // Función mejorada para forzar que el año siempre comience con "20"[m
+[31m-        function configurarValidacionFecha() {[m
+[32m+[m[32m        const fechaInput = document.getElementById('fecha');[m
+[32m+[m[32m        const errorFecha = document.createElement('div');[m
+[32m+[m[32m        errorFecha.style.color = 'red';[m
+[32m+[m[32m        errorFecha.style.fontSize = '0.9rem';[m
+[32m+[m[32m        errorFecha.style.marginTop = '4px';[m
+[32m+[m[32m        fechaInput.parentNode.appendChild(errorFecha);[m
+[32m+[m
+[32m+[m[32m        // Función para validar fecha - CORREGIDA[m
+[32m+[m[32m        function validarFecha() {[m
+             const fechaInput = document.getElementById('fecha');[m
+[32m+[m[32m            const val = fechaInput.value;[m
+ [m
+[31m-            if (!fechaInput) return;[m
+[31m-[m
+[31m-            // Función para formatear el año[m
+[31m-            function formatearAnio(valor) {[m
+[31m-                if (!valor) return valor;[m
+[31m-[m
+[31m-                const partes = valor.split('-');[m
+[31m-                let anio = partes[0] || '';[m
+[31m-[m
+[31m-                // Si el año tiene menos de 4 dígitos, completar con "20"[m
+[31m-                if (anio.length === 1 || anio.length === 2) {[m
+[31m-                    anio = '20' + anio.padStart(2, '0');[m
+[31m-                } else if (anio.length === 3) {[m
+[31m-                    anio = '20' + anio.slice(-2);[m
+[31m-                } else if (anio.length === 4) {[m
+[31m-                    // Si ya tiene 4 dígitos, verificar que comience con "20"[m
+[31m-                    if (!anio.startsWith('20')) {[m
+[31m-                        // Tomar los últimos 2 dígitos[m
+[31m-                        anio = '20' + anio.slice(-2);[m
+[31m-                    }[m
+[31m-                } else if (anio.length > 4) {[m
+[31m-                    // Si tiene más de 4 dígitos, tomar solo los primeros 4 y verificar[m
+[31m-                    anio = anio.slice(0, 4);[m
+[31m-                    if (!anio.startsWith('20')) {[m
+[31m-                        anio = '20' + anio.slice(-2);[m
+[31m-                    }[m
+[31m-                }[m
+[31m-[m
+[31m-                // Validar rango 2000-2099[m
+[31m-                const anioNum = parseInt(anio);[m
+[31m-                if (anioNum < 2000) anio = '2000';[m
+[31m-                if (anioNum > 2099) anio = '2099';[m
+[31m-[m
+[31m-                return anio;[m
+[31m-            }[m
+[31m-[m
+[31m-            // Función para validar fecha completa[m
+[31m-            function validarFechaCompleta(fechaStr) {[m
+[31m-                if (!fechaStr) return false;[m
+[31m-[m
+[31m-                const fecha = new Date(fechaStr);[m
+[31m-                const partes = fechaStr.split('-');[m
+[31m-[m
+[31m-                if (partes.length !== 3) return false;[m
+[31m-[m
+[31m-                const anio = parseInt(partes[0]);[m
+[31m-                const mes = parseInt(partes[1]);[m
+[31m-                const dia = parseInt(partes[2]);[m
+[31m-[m
+[31m-                // Verificar que la fecha sea válida[m
+[31m-                return fecha.getFullYear() === anio &&[m
+[31m-                    fecha.getMonth() + 1 === mes &&[m
+[31m-                    fecha.getDate() === dia &&[m
+[31m-                    anio >= 2000 && anio <= 2099;[m
+[32m+[m[32m            if (!val) {[m
+[32m+[m[32m                mostrarError('fecha', 'La fecha es obligatoria');[m
+[32m+[m[32m                return false;[m
+             }[m
+ [m
+[31m-            // Evento para formatear mientras se escribe[m
+[31m-            fechaInput.addEventListener('input', function(e) {[m
+[31m-                let valor = e.target.value;[m
+[31m-[m
+[31m-                if (valor) {[m
+[31m-                    const partes = valor.split('-');[m
+[31m-                    if (partes[0]) {[m
+[31m-                        const anioFormateado = formatearAnio(partes[0]);[m
+[31m-[m
+[31m-                        // Reconstruir la fecha[m
+[31m-                        const nuevaFecha = [anioFormateado, partes[1] || '', partes[2] || ''].join('-');[m
+[31m-[m
+[31m-                        // Solo actualizar si es diferente para evitar loops[m
+[31m-                        if (nuevaFecha !== valor) {[m
+[31m-                            // Guardar la posición del cursor[m
+[31m-                            const cursorPos = e.target.selectionStart;[m
+[31m-                            e.target.value = nuevaFecha;[m
+[31m-[m
+[31m-                            // Restaurar la posición del cursor[m
+[31m-                            const nuevaPos = Math.min(cursorPos, nuevaFecha.length);[m
+[31m-                            e.target.setSelectionRange(nuevaPos, nuevaPos);[m
+[31m-                        }[m
+[31m-                    }[m
+[32m+[m[32m            if (val.length === 10) {[m
+[32m+[m[32m                const year = val.substring(0, 4);[m
+[32m+[m[32m                if (!year.startsWith('2')) {[m
+[32m+[m[32m                    mostrarError('fecha', 'El año debe comenzar con "2" (entre 2000 y 2099)');[m
+[32m+[m[32m                    return false;[m
+                 }[m
+[32m+[m[32m            }[m
+ [m
+[31m-                // Validar fecha y mostrar/ocultar error[m
+[31m-                const errorFecha = document.getElementById('errorFecha');[m
+[31m-                if (valor && !validarFechaCompleta(valor)) {[m
+[31m-                    if (errorFecha) {[m
+[31m-                        errorFecha.textContent = 'Por favor ingrese una fecha válida (año entre 2000-2099)';[m
+[31m-                        errorFecha.style.display = 'block';[m
+[31m-                    }[m
+[31m-                    e.target.classList.add('field-error');[m
+[31m-                } else if (valor) {[m
+[31m-                    if (errorFecha) {[m
+[31m-                        errorFecha.style.display = 'none';[m
+[31m-                    }[m
+[31m-                    e.target.classList.remove('field-error');[m
+[31m-                }[m
+[31m-            });[m
+[32m+[m[32m            ocultarError('fecha');[m
+[32m+[m[32m            return true;[m
+[32m+[m[32m        }[m
+ [m
+[31m-            // Evento para validar al perder el foco[m
+[31m-            fechaInput.addEventListener('blur', function(e) {[m
+[31m-                let valor = e.target.value;[m
+[31m-[m
+[31m-                if (valor) {[m
+[31m-                    const partes = valor.split('-');[m
+[31m-                    if (partes[0]) {[m
+[31m-                        const anioFormateado = formatearAnio(partes[0]);[m
+[31m-[m
+[31m-                        // Reconstruir la fecha[m
+[31m-                        const nuevaFecha = [anioFormateado, partes[1] || '', partes[2] || ''].join('-');[m
+[31m-                        e.target.value = nuevaFecha;[m
+[31m-[m
+[31m-                        // Validar fecha final[m
+[31m-                        if (!validarFechaCompleta(nuevaFecha)) {[m
+[31m-                            const errorFecha = document.getElementById('errorFecha');[m
+[31m-                            if (errorFecha) {[m
+[31m-                                errorFecha.textContent = 'Fecha inválida. Por favor corrija la fecha.';[m
+[31m-                                errorFecha.style.display = 'block';[m
+[31m-                            }[m
+[31m-                            e.target.classList.add('field-error');[m
+[31m-                        } else {[m
+[31m-                            const errorFecha = document.getElementById('errorFecha');[m
+[31m-                            if (errorFecha) {[m
+[31m-                                errorFecha.style.display = 'none';[m
+[31m-                            }[m
+[31m-                            e.target.classList.remove('field-error');[m
+[31m-                        }[m
+[31m-                    }[m
+[32m+[m[32m        fechaInput.addEventListener('input', function() {[m
+[32m+[m[32m            const val = this.value;[m
+[32m+[m[32m            if (val.length === 10) {[m
+[32m+[m[32m                const year = val.substring(0,4);[m
+[32m+[m[32m                if (!year.startsWith('2')) {[m
+[32m+[m[32m                    errorFecha.textContent = 'El año debe comenzar con "2" (entre 2000 y 2099).';[m
+[32m+[m[32m                } else {[m
+[32m+[m[32m                    errorFecha.textContent = '';[m
+                 }[m
+[31m-            });[m
+[31m-[m
+[31m-            // Evento para manejar pegado de texto[m
+[31m-            fechaInput.addEventListener('paste', function(e) {[m
+[31m-                setTimeout(() => {[m
+[31m-                    let valor = e.target.value;[m
+[31m-[m
+[31m-                    if (valor) {[m
+[31m-                        const partes = valor.split('-');[m
+[31m-                        if (partes[0]) {[m
+[31m-                            const anioFormateado = formatearAnio(partes[0]);[m
+[31m-[m
+[31m-                            // Reconstruir la fecha[m
+[31m-                            const nuevaFecha = [anioFormateado, partes[1] || '', partes[2] || ''].join('-');[m
+[31m-                            e.target.value = nuevaFecha;[m
+[31m-[m
+[31m-                            // Disparar evento input para validación[m
+[31m-                            e.target.dispatchEvent(new Event('input', { bubbles: true }));[m
+[31m-                        }[m
+[31m-                    }[m
+[31m-                }, 0);[m
+[31m-            });[m
+[32m+[m[32m            } else {[m
+[32m+[m[32m                errorFecha.textContent = '';[m
+[32m+[m[32m            }[m
+[32m+[m[32m        });[m
+ [m
+[31m-            // Evento para teclas específicas[m
+[31m-            fechaInput.addEventListener('keydown', function(e) {[m
+[31m-                // Si presiona Enter, aplicar formato[m
+[31m-                if (e.key === 'Enter') {[m
+[31m-                    let valor = e.target.value;[m
+[32m+[m[32m        document.addEventListener("DOMContentLoaded", function () {[m
+[32m+[m[32m            const numeroInput = document.querySelector('input[name="numero_factura"]');[m
+ [m
+[31m-                    if (valor) {[m
+[31m-                        const partes = valor.split('-');[m
+[31m-                        if (partes[0]) {[m
+[31m-                            const anioFormateado = formatearAnio(partes[0]);[m
+[32m+[m[32m            if (numeroInput) {[m
+[32m+[m[32m                numeroInput.addEventListener('keypress', function (e) {[m
+[32m+[m[32m                    const key = e.key;[m
+[32m+[m[32m                    const pos = this.selectionStart;[m
+ [m
+[31m-                            // Reconstruir la fecha[m
+[31m-                            const nuevaFecha = [anioFormateado, partes[1] || '', partes[2] || ''].join('-');[m
+[31m-                            e.target.value = nuevaFecha;[m
+[32m+[m[32m                    // Solo permite letras, números y guiones[m
+[32m+[m[32m                    const permitido = /^[A-Za-z0-9\-]$/;[m
+ [m
+[31m-                            // Disparar evento input para validación[m
+[31m-                            e.target.dispatchEvent(new Event('input', { bubbles: true }));[m
+[31m-                        }[m
+[32m+[m[32m                    // Si el primer carácter no es letra o número, se bloquea[m
+[32m+[m[32m                    if (pos === 0 && !/^[A-Za-z0-9]$/.test(key)) {[m
+[32m+[m[32m                        e.preventDefault();[m
+[32m+[m[32m                        return false;[m
+                     }[m
+[31m-                }[m
+[31m-            });[m
+[31m-[m
+[31m-            // Evento para detectar cambios manuales en el año[m
+[31m-            fechaInput.addEventListener('keyup', function(e) {[m
+[31m-                // Solo procesar si se está escribiendo en la parte del año[m
+[31m-                const cursorPos = e.target.selectionStart;[m
+[31m-                const valor = e.target.value;[m
+ [m
+[31m-                if (cursorPos <= 4 && valor.length >= 4) {[m
+[31m-                    const partes = valor.split('-');[m
+[31m-                    if (partes[0] && partes[0].length >= 2) {[m
+[31m-                        const anioFormateado = formatearAnio(partes[0]);[m
+[31m-[m
+[31m-                        if (anioFormateado !== partes[0]) {[m
+[31m-                            const nuevaFecha = [anioFormateado, partes[1] || '', partes[2] || ''].join('-');[m
+[31m-                            e.target.value = nuevaFecha;[m
+[31m-[m
+[31m-                            // Mantener cursor en posición apropiada[m
+[31m-                            const nuevaPos = Math.min(cursorPos, 4);[m
+[31m-                            e.target.setSelectionRange(nuevaPos, nuevaPos);[m
+[31m-                        }[m
+[32m+[m[32m                    // Si en cualquier posición se escribe algo no permitido, se bloquea[m
+[32m+[m[32m                    if (!permitido.test(key)) {[m
+[32m+[m[32m                        e.preventDefault();[m
+[32m+[m[32m                        return false;[m
+                     }[m
+[31m-                }[m
+[31m-            });[m
+[31m-        }[m
+[31m-[m
+[31m-        // Función de validación mejorada para el formulario[m
+[31m-        function validarFecha() {[m
+[31m-            const fechaInput = document.getElementById('fecha');[m
+[31m-            const errorFecha = document.getElementById('errorFecha');[m
+[31m-[m
+[31m-            if (!fechaInput || !errorFecha) return true;[m
+[31m-[m
+[31m-            const valor = fechaInput.value;[m
+[31m-[m
+[31m-            if (!valor) {[m
+[31m-                errorFecha.textContent = 'Fecha es obligatoria';[m
+[31m-                errorFecha.style.display = 'block';[m
+[31m-                fechaInput.classList.add('field-error');[m
+[31m-                return false;[m
+[32m+[m[32m                });[m
+             }[m
+[32m+[m[32m        });[m
+ [m
+[31m-            // Validar formato y rango[m
+[31m-            const fecha = new Date(valor);[m
+[31m-            const partes = valor.split('-');[m
+[31m-[m
+[31m-            if (partes.length !== 3) {[m
+[31m-                errorFecha.textContent = 'Formato de fecha inválido';[m
+[31m-                errorFecha.style.display = 'block';[m
+[31m-                fechaInput.classList.add('field-error');[m
+[31m-                return false;[m
+[31m-            }[m
+[32m+[m[32m        function validarTexto(e) {[m
+[32m+[m[32m            const key = e.keyCode || e.which;[m
+[32m+[m[32m            const tecla = String.fromCharCode(key);[m
+[32m+[m[32m            const input = e.target;[m
+ [m
+[31m-            const anio = parseInt(partes[0]);[m
+[31m-            const mes = parseInt(partes[1]);[m
+[31m-            const dia = parseInt(partes[2]);[m
+[31m-[m
+[31m-            // Verificar que la fecha sea válida[m
+[31m-            if (fecha.getFullYear() !== anio ||[m
+[31m-                fecha.getMonth() + 1 !== mes ||[m
+[31m-                fecha.getDate() !== dia) {[m
+[31m-                errorFecha.textContent = 'Fecha inválida';[m
+[31m-                errorFecha.style.display = 'block';[m
+[31m-                fechaInput.classList.add('field-error');[m
+[32m+[m[32m            // Evitar espacio al inicio[m
+[32m+[m[32m            if (key === 32 && input.selectionStart === 0) {[m
+[32m+[m[32m                e.preventDefault();[m
+                 return false;[m
+             }[m
+ [m
+[31m-            // Verificar rango de años[m
+[31m-            if (anio < 2000 || anio > 2099) {[m
+[31m-                errorFecha.textContent = 'El año debe estar entre 2000 y 2099';[m
+[31m-                errorFecha.style.display = 'block';[m
+[31m-                fechaInput.classList.add('field-error');[m
+[32m+[m[32m            // Evitar múltiples espacios seguidos[m
+[32m+[m[32m            const pos = input.selectionStart;[m
+[32m+[m[32m            if (key === 32 && input.value.charAt(pos - 1) === ' ') {[m
+[32m+[m[32m                e.preventDefault();[m
+                 return false;[m
+             }[m
+ [m
+[31m-            // Si llegamos aquí, la fecha es válida[m
+[31m-            errorFecha.style.display = 'none';[m
+[31m-            fechaInput.classList.remove('field-error');[m
+             return true;[m
+         }[m
+ [m
+[31m-        // Función actualizada para validar formulario principal[m
+[31m-        function validarFormularioPrincipal() {[m
+[31m-            let esValido = true;[m
+[31m-[m
+[31m-            // Limpiar errores previos[m
+[31m-            ['numeroFactura', 'fecha', 'proveedor', 'formaPago', 'responsable'].forEach(campo => {[m
+[31m-                ocultarError(campo);[m
+[31m-            });[m
+[31m-            document.getElementById('errorProductos').style.display = 'none';[m
+[31m-[m
+[31m-            // Validar número de factura[m
+[31m-            const numeroFactura = document.getElementById('numeroFactura').value.trim();[m
+[31m-            if (!numeroFactura) {[m
+[31m-                mostrarError('numeroFactura', 'Número de factura es obligatorio');[m
+[31m-                esValido = false;[m
+[31m-            }[m
+[32m+[m[32m        document.addEventListener("DOMContentLoaded", function () {[m
+[32m+[m[32m            // Configurar el botón Limpiar[m
+[32m+[m[32m            const btnLimpiar = document.getElementById('btnLimpiar');[m
+ [m
+[31m-            // Validar fecha usando la nueva función[m
+[31m-            if (!validarFecha()) {[m
+[31m-                esValido = false;[m
+[31m-            }[m
+[31m-[m
+[31m-            // Validar proveedor[m
+[31m-            const proveedor = document.querySelector('select[name="proveedor"]').value;[m
+[31m-            if (!proveedor) {[m
+[31m-                mostrarError('proveedor', 'Proveedor es obligatorio');[m
+[31m-                esValido = false;[m
+[32m+[m[32m            if (btnLimpiar) {[m
+[32m+[m[32m                btnLimpiar.addEventListener('click', function (e) {[m
+[32m+[m[32m                    e.preventDefault();[m
+[32m+[m[32m                    limpiarFormularioCompleto();[m
+[32m+[m[32m                });[m
+             }[m
+[32m+[m[32m        });[m
+ [m
+[31m-            // Validar forma de pago[m
+[31m-            const formaPago = document.querySelector('select[name="forma_pago"]').value;[m
+[31m-            if (!formaPago) {[m
+[31m-                mostrarError('formaPago', 'Forma de pago es obligatorio');[m
+[31m-                esValido = false;[m
+[31m-            }[m
+[32m+[m[32m        function limpiarFormularioCompleto() {[m
+[32m+[m[32m            const form = document.getElementById('facturaForm');[m
+ [m
+[31m-            // Validar responsable[m
+[31m-            const responsable = document.getElementById('responsable_id').value.trim();[m
+[31m-            if (!responsable) {[m
+[31m-                mostrarError('responsable', 'Responsable es obligatorio');[m
+[31m-                esValido = false;[m
+[31m-            }[m
+[32m+[m[32m            if (!form) return;[m
+ [m
+[31m-            // Validar productos[m
+[31m-            const productos = document.querySelectorAll('#tablaFacturaBody tr:not(#filaVacia)');[m
+[31m-            if (productos.length === 0) {[m
+[31m-                document.getElementById('errorProductos').style.display = 'block';[m
+[31m-                document.getElementById('errorProductos').textContent = 'Debe agregar al menos un producto a la factura';[m
+[31m-                esValido = false;[m
+[31m-            }[m
+[32m+[m[32m            // 1. Limpiar campos básicos del formulario[m
+[32m+[m[32m            form.querySelectorAll('input[type="text"], input[type="date"], input[type="number"]').forEach(input => {[m
+[32m+[m[32m                input.value = '';[m
+[32m+[m[32m                input.classList.remove('is-valid', 'is-invalid');[m
+[32m+[m[32m            });[m
+ [m
+[31m-            return esValido;[m
+[31m-        }[m
+[32m+[m[32m            // 2. Resetear selects[m
+[32m+[m[32m            form.querySelectorAll('select').forEach(select => {[m
+[32m+[m[32m                select.selectedIndex = 0;[m
+[32m+[m[32m                select.classList.remove('is-valid', 'is-invalid');[m
+[32m+[m[32m            });[m
+ [m
+[31m-        // Llamar cuando el DOM esté listo[m
+[31m-        document.addEventListener('DOMContentLoaded', function() {[m
+[31m-            configurarValidacionFecha();[m
+[31m-        });[m
+[32m+[m[32m            // 3. Limpiar tabla de productos[m
+[32m+[m[32m            const tablaFacturaBody = document.getElementById('tablaFacturaBody');[m
+[32m+[m[32m            if (tablaFacturaBody) {[m
+[32m+[m[32m                // Eliminar todas las filas excepto la fila vacía[m
+[32m+[m[32m                const filas = tablaFacturaBody.querySelectorAll('tr:not(#filaVacia)');[m
+[32m+[m[32m                filas.forEach(fila => fila.remove());[m
+ [m
+[31m-        document.addEventListener('DOMContentLoaded', function() {[m
+[31m-            const numeroFactura = document.getElementById('numeroFactura');[m
+[31m-            const responsable = document.getElementById('responsable_id');[m
+[31m-            const errorNumeroFactura = document.getElementById('errorNumeroFactura');[m
+[31m-            const errorResponsable = document.getElementById('errorResponsable');[m
+[32m+[m[32m                // Mostrar la fila vacía[m
+[32m+[m[32m                actualizarFilaVacia();[m
+[32m+[m[32m            }[m
+ [m
+[32m+[m[32m            // 4. Resetear totales[m
+[32m+[m[32m            document.getElementById('subtotalGeneral').value = '';[m
+[32m+[m[32m            document.getElementById('impuestosGeneral').value = '';[m
+[32m+[m[32m            document.getElementById('totalGeneral').value = '';[m
+ [m
+[31m-            // Función para validar números (solo dígitos)[m
+[31m-            function validarNumeros(input) {[m
+[31m-                return /^\d*$/.test(input);[m
+[31m-            }[m
+[32m+[m[32m            // 5. Limpiar mensajes de error[m
+[32m+[m[32m            form.querySelectorAll('.text-danger, .invalid-feedback, .error-message').forEach(error => {[m
+[32m+[m[32m                error.style.display = 'none';[m
+[32m+[m[32m                error.textContent = '';[m
+[32m+[m[32m            });[m
+ [m
+[31m-            // Función para validar letras (solo letras y espacios, pero no espacios al inicio)[m
+[31m-            function validarLetras(input) {[m
+[31m-                return /^[a-zA-ZÀ-ÿ\u00f1\u00d1\s]*$/.test(input) && !input.startsWith(' ');[m
+[32m+[m[32m            // 6. Ocultar error de productos si está visible[m
+[32m+[m[32m            const errorProductos = document.getElementById('errorProductos');[m
+[32m+[m[32m            if (errorProductos) {[m
+[32m+[m[32m                errorProductos.style.display = 'none';[m
+             }[m
+ [m
+[31m-            // Función para prevenir espacios al inicio[m
+[31m-            function prevenirEspacioInicial(e) {[m
+[31m-                if (e.target.value === '' && e.key === ' ') {[m
+[31m-                    e.preventDefault();[m
+[32m+[m[32m            // 7. Cerrar modal si está abierto[m
+[32m+[m[32m            const modal = document.getElementById('productosModal');[m
+[32m+[m[32m            if (modal) {[m
+[32m+[m[32m                const modalInstance = bootstrap.Modal.getInstance(modal);[m
+[32m+[m[32m                if (modalInstance) {[m
+[32m+[m[32m                    modalInstance.hide();[m
+                 }[m
+             }[m
+ [m
+[31m-            // Validación para número de factura[m
+[31m-            numeroFactura.addEventListener('input', function(e) {[m
+[31m-                let valor = e.target.value;[m
+[32m+[m[32m            // 8. Resetear formularios del modal[m
+[32m+[m[32m            limpiarFormulariosModal();[m
+ [m
+[31m-                // Remover caracteres no numéricos[m
+[31m-                valor = valor.replace(/\D/g, '');[m
+[31m-[m
+[31m-                // Limitar a 15 caracteres[m
+[31m-                if (valor.length > 15) {[m
+[31m-                    valor = valor.substring(0, 15);[m
+[31m-                }[m
+[31m-[m
+[31m-                e.target.value = valor;[m
+[31m-[m
+[31m-                // Validar y mostrar/ocultar error[m
+[31m-                if (valor.length === 0) {[m
+[31m-                    errorNumeroFactura.style.display = 'block';[m
+[31m-                    numeroFactura.classList.add('invalid');[m
+[31m-                } else {[m
+[31m-                    errorNumeroFactura.style.display = 'none';[m
+[31m-                    numeroFactura.classList.remove('invalid');[m
+[31m-                }[m
+[31m-            });[m
+[31m-[m
+[31m-            // Prevenir espacios en número de factura[m
+[31m-            numeroFactura.addEventListener('keypress', function(e) {[m
+[31m-                if (e.key === ' ') {[m
+[31m-                    e.preventDefault();[m
+[31m-                }[m
+[31m-            });[m
+[31m-[m
+[31m-            // Validación para responsable[m
+[31m-            responsable.addEventListener('input', function(e) {[m
+[31m-                let valor = e.target.value;[m
+[31m-[m
+[31m-                // Remover espacios al inicio[m
+[31m-                valor = valor.replace(/^\s+/, '');[m
+[31m-[m
+[31m-                // Permitir solo letras y espacios[m
+[31m-                valor = valor.replace(/[^a-zA-ZÀ-ÿ\u00f1\u00d1\s]/g, '');[m
+[32m+[m[32m            // 9. Enfocar el primer campo[m
+[32m+[m[32m            const primerCampo = form.querySelector('input[name="numero_factura"]');[m
+[32m+[m[32m            if (primerCampo) {[m
+[32m+[m[32m                primerCampo.focus();[m
+[32m+[m[32m            }[m
+[32m+[m[32m        }[m
+ [m
+[31m-                // Limitar a 30 caracteres[m
+[31m-                if (valor.length > 30) {[m
+[31m-                    valor = valor.substring(0, 30);[m
+[31m-                }[m
+[32m+[m[32m        function limpiarFormulariosModal() {[m
+[32m+[m[32m            // Limpiar formularios de edición de productos en el modal[m
+[32m+[m[32m            const formulariosModal = document.querySelectorAll('.form-edicion-producto');[m
+[32m+[m[32m            formulariosModal.forEach(form => {[m
+[32m+[m[32m                form.reset();[m
+ [m
+[31m-                e.target.value = valor;[m
+[32m+[m[32m                // Remover clases de validación[m
+[32m+[m[32m                form.querySelectorAll('.form-control, .form-select').forEach(input => {[m
+[32m+[m[32m                    input.classList.remove('is-valid', 'is-invalid', 'field-error');[m
+[32m+[m[32m                });[m
+ [m
+[31m-                // Validar y mostrar/ocultar error[m
+[31m-                if (valor.length === 0) {[m
+[31m-                    errorResponsable.style.display = 'block';[m
+[31m-                    responsable.classList.add('invalid');[m
+[31m-                } else {[m
+[31m-                    errorResponsable.style.display = 'none';[m
+[31m-                    responsable.classList.remove('invalid');[m
+[31m-                }[m
+[32m+[m[32m                // Limpiar mensajes de error[m
+[32m+[m[32m                form.querySelectorAll('.error-message').forEach(error => {[m
+[32m+[m[32m                    error.style.display = 'none';[m
+[32m+[m[32m                });[m
+             });[m
+ [m
+[31m-            // Prevenir espacios al inicio en responsable[m
+[31m-            responsable.addEventListener('keypress', function(e) {[m
+[31m-                prevenirEspacioInicial(e);[m
+[32m+[m[32m            // Ocultar filas de edición y resetear botones[m
+[32m+[m[32m            document.querySelectorAll('.producto-edicion-fila').forEach(fila => {[m
+[32m+[m[32m                fila.style.display = 'none';[m
+             });[m
+ [m
+[31m-            // Prevenir espacios al inicio con keydown también[m
+[31m-            responsable.addEventListener('keydown', function(e) {[m
+[31m-                if (e.target.value === '' && e.key === ' ') {[m
+[31m-                    e.preventDefault();[m
+[31m-                }[m
+[32m+[m[32m            document.querySelectorAll('.seleccionar-producto').forEach(btn => {[m
+[32m+[m[32m                btn.className = 'btn btn-sm btn-info seleccionar-producto';[m
+[32m+[m[32m                btn.innerHTML = '<i class="bi bi-check-circle"></i> Seleccionar';[m
+             });[m
+ [m
+[31m-            // Prevenir espacios al inicio en input[m
+[31m-            responsable.addEventListener('beforeinput', function(e) {[m
+[31m-                if (e.target.value === '' && e.data === ' ') {[m
+[31m-                    e.preventDefault();[m
+[31m-                }[m
+[31m-            });[m
+[32m+[m[32m            // Resetear variable global[m
+[32m+[m[32m            productoSeleccionadoActual = null;[m
+ [m
+[31m-            // Prevenir pegar contenido que inicie con espacios[m
+[31m-            responsable.addEventListener('paste', function(e) {[m
+[31m-                e.preventDefault();[m
+[31m-                let pastedText = (e.clipboardData || window.clipboardData).getData('text');[m
+[32m+[m[32m            // Limpiar buscador[m
+[32m+[m[32m            const searchInput = document.getElementById('searchInput');[m
+[32m+[m[32m            if (searchInput) {[m
+[32m+[m[32m                searchInput.value = '';[m
+ [m
+[31m-                // Remover espacios al inicio[m
+[31m-                pastedText = pastedText.replace(/^\s+/, '');[m
+[32m+[m[32m                // Mostrar todas las filas de productos[m
+[32m+[m[32m                document.querySelectorAll('#tablaProductosBody .producto-fila').forEach(fila => {[m
+[32m+[m[32m                    fila.style.display = 'table-row';[m
+ [m
+[31m-                // Permitir solo letras y espacios[m
+[31m-                pastedText = pastedText.replace(/[^a-zA-ZÀ-ÿ\u00f1\u00d1\s]/g, '');[m
+[32m+[m[32m                    // Quitar resaltado[m
+[32m+[m[32m                    const celdaNombre = fila.querySelector('td:first-child');[m
+[32m+[m[32m                    if (celdaNombre) {[m
+[32m+[m[32m                        quitarResaltado(celdaNombre);[m
+[32m+[m[32m                    }[m
+[32m+[m[32m                });[m
+ [m
+[31m-                // Limitar a 30 caracteres[m
+[31m-                if (pastedText.length > 30) {[m
+[31m-                    pastedText = pastedText.substring(0, 30);[m
+[32m+[m[32m                // Limpiar resultados de búsqueda[m
+[32m+[m[32m                const searchResults = document.getElementById('searchResults');[m
+[32m+[m[32m                if (searchResults) {[m
+[32m+[m[32m                    searchResults.innerHTML = '';[m
+                 }[m
+[32m+[m[32m            }[m
+[32m+[m[32m        }[m
+ [m
+[31m-                // Solo pegar si hay contenido válido[m
+[31m-                if (pastedText.length > 0) {[m
+[31m-                    e.target.value = pastedText;[m
+[31m-                    // Disparar evento input para validación[m
+[31m-                    e.target.dispatchEvent(new Event('input'));[m
+[31m-                }[m
+[31m-            });[m
+[32m+[m[32m        // Función auxiliar para mostrar errores[m
+[32m+[m[32m        function mostrarError(campoId, mensaje) {[m
+[32m+[m[32m            const campo = document.getElementById(campoId);[m
+[32m+[m[32m            if (!campo) return;[m
+ [m
+[31m-            numeroFactura.addEventListener('paste', function(e) {[m
+[31m-                e.preventDefault();[m
+[31m-                let pastedText = (e.clipboardData || window.clipboardData).getData('text');[m
+[32m+[m[32m            campo.classList.add('is-invalid');[m
+ [m
+[31m-                // Remover caracteres no numéricos[m
+[31m-                pastedText = pastedText.replace(/\D/g, '');[m
+[32m+[m[32m            let errorDiv = campo.parentNode.querySelector('.text-danger');[m
+[32m+[m[32m            if (!errorDiv) {[m
+[32m+[m[32m                errorDiv = document.createElement('div');[m
+[32m+[m[32m                errorDiv.className = 'text-danger mt-1 small';[m
+[32m+[m[32m                campo.parentNode.appendChild(errorDiv);[m
+[32m+[m[32m            }[m
+[32m+[m[32m            errorDiv.textContent = mensaje;[m
+[32m+[m[32m            errorDiv.style.display = 'block';[m
+[32m+[m[32m        }[m
+ [m
+[31m-                // Limitar a 15 caracteres[m
+[31m-                if (pastedText.length > 15) {[m
+[31m-                    pastedText = pastedText.substring(0, 15);[m
+[31m-                }[m
+[32m+[m[32m        // Función auxiliar para ocultar errores[m
+[32m+[m[32m        function ocultarError(campoId) {[m
+[32m+[m[32m            const campo = document.getElementById(campoId);[m
+[32m+[m[32m            if (!campo) return;[m
+ [m
+[31m-                // Solo pegar si hay contenido válido[m
+[31m-                if (pastedText.length > 0) {[m
+[31m-                    e.target.value = pastedText;[m
+[31m-                    // Disparar evento input para validación[m
+[31m-                    e.target.dispatchEvent(new Event('input'));[m
+[31m-                }[m
+[31m-            });[m
+[31m-        });[m
+[32m+[m[32m            campo.classList.remove('is-invalid');[m
+[32m+[m
+[32m+[m[32m            const errorDiv = campo.parentNode.querySelector('.text-danger');[m
+[32m+[m[32m            if (errorDiv) {[m
+[32m+[m[32m                errorDiv.style.display = 'none';[m
+[32m+[m[32m            }[m
+[32m+[m[32m        }[m
+ [m
+         // Datos de productos[m
+         const nombresPorCategoria = {[m
+[36m@@ -725,100 +539,6 @@[m [mfunction prevenirEspacioInicial(e) {[m
+ [m
+         let productoSeleccionadoActual = null;[m
+ [m
+[31m-        // Funciones de validación[m
+[31m-        function mostrarError(campo, mensaje) {[m
+[31m-            let input;[m
+[31m-            let errorDiv;[m
+[31m-[m
+[31m-            if (campo === 'proveedor') {[m
+[31m-                input = document.querySelector('select[name="proveedor"]');[m
+[31m-                errorDiv = document.getElementById('errorProveedor');[m
+[31m-            } else if (campo === 'formaPago') {[m
+[31m-                input = document.querySelector('select[name="forma_pago"]');[m
+[31m-                errorDiv = document.getElementById('errorFormaPago');[m
+[31m-            } else {[m
+[31m-                input = document.getElementById(campo);[m
+[31m-                errorDiv = document.getElementById('error-' + campo) || document.getElementById('error' + campo.charAt(0).toUpperCase() + campo.slice(1));[m
+[31m-            }[m
+[31m-[m
+[31m-            if (input && errorDiv) {[m
+[31m-                input.classList.add('field-error');[m
+[31m-                errorDiv.style.display = 'block';[m
+[31m-                errorDiv.textContent = mensaje;[m
+[31m-            }[m
+[31m-        }[m
+[31m-[m
+[31m-        function ocultarError(campo) {[m
+[31m-            let input;[m
+[31m-            let errorDiv;[m
+[31m-[m
+[31m-            if (campo === 'proveedor') {[m
+[31m-                input = document.querySelector('select[name="proveedor"]');[m
+[31m-                errorDiv = document.getElementById('errorProveedor');[m
+[31m-            } else if (campo === 'formaPago') {[m
+[31m-                input = document.querySelector('select[name="forma_pago"]');[m
+[31m-                errorDiv = document.getElementById('errorFormaPago');[m
+[31m-            } else {[m
+[31m-                input = document.getElementById(campo);[m
+[31m-                errorDiv = document.getElementById('error-' + campo) || document.getElementById('error' + campo.charAt(0).toUpperCase() + campo.slice(1));[m
+[31m-            }[m
+[31m-[m
+[31m-            if (input && errorDiv) {[m
+[31m-                input.classList.remove('field-error');[m
+[31m-                errorDiv.style.display = 'none';[m
+[31m-            }[m
+[31m-        }[m
+[31m-[m
+[31m-[m
+[31m-        function validarFormularioPrincipal() {[m
+[31m-            let esValido = true;[m
+[31m-[m
+[31m-            // Limpiar errores previos[m
+[31m-            ['numeroFactura', 'fecha', 'proveedor', 'formaPago', 'responsable'].forEach(campo => {[m
+[31m-                ocultarError(campo);[m
+[31m-            });[m
+[31m-            document.getElementById('errorProductos').style.display = 'none';[m
+[31m-[m
+[31m-            // Validar número de factura[m
+[31m-            const numeroFactura = document.getElementById('numeroFactura').value.trim();[m
+[31m-            if (!numeroFactura) {[m
+[31m-                mostrarError('numeroFactura', 'Por favor ingrese un número de factura válido.');[m
+[31m-                esValido = false;[m
+[31m-            }[m
+[31m-[m
+[31m-[m
+[31m-[m
+[31m-            // Validar proveedor[m
+[31m-            const proveedor = document.getElementById('proveedor').value;[m
+[31m-            if (!proveedor) {[m
+[31m-                mostrarError('proveedor', 'Por favor seleccione un proveedor.');[m
+[31m-                esValido = false;[m
+[31m-            }[m
+[31m-[m
+[31m-            // Validar forma de pago[m
+[31m-            const formaPago = document.getElementById('formaPago').value;[m
+[31m-            if (!formaPago) {[m
+[31m-                mostrarError('formaPago', 'Por favor seleccione una forma de pago.');[m
+[31m-                esValido = false;[m
+[31m-            }[m
+[31m-[m
+[31m-            // Validar responsable[m
+[31m-            const responsable = document.getElementById('responsable').value.trim();[m
+[31m-            if (!responsable) {[m
+[31m-                mostrarError('responsable', 'Por favor ingrese el nombre del responsable.');[m
+[31m-                esValido = false;[m
+[31m-            }[m
+[31m-[m
+[31m-            // Validar productos[m
+[31m-            const productos = document.querySelectorAll('#tablaFacturaBody tr');[m
+[31m-            if (productos.length === 0) {[m
+[31m-                document.getElementById('errorProductos').style.display = 'block';[m
+[31m-                esValido = false;[m
+[31m-            }[m
+[31m-[m
+[31m-            return esValido;[m
+[31m-        }[m
+[31m-[m
+         function validarFormularioProducto(form) {[m
+             const precioCompra = form.querySelector('.precioCompra');[m
+             const precioVenta = form.querySelector('.precioVenta');[m
+[36m@@ -894,13 +614,35 @@[m [mfunction validarFormularioProducto(form) {[m
+             return esValido;[m
+         }[m
+ [m
+[31m-[m
+         // Inicializar cuando se carga la página[m
+         document.addEventListener('DOMContentLoaded', function() {[m
+             cargarProductosEnModal();[m
+             configurarBuscador();[m
+[32m+[m[32m            configurarValidacionFormulario();[m
+         });[m
+ [m
+[32m+[m[32m        // NUEVA FUNCIÓN - Configurar validación del formulario principal[m
+[32m+[m[32m        function configurarValidacionFormulario() {[m
+[32m+[m[32m            const form = document.getElementById('facturaForm');[m
+[32m+[m[32m            if (form) {[m
+[32m+[m[32m                form.addEventListener('submit', function(e) {[m
+[32m+[m[32m                    console.log('Formulario enviado, validando...');[m
+[32m+[m
+[32m+[m[32m                    // Validar formulario[m
+[32m+[m[32m                    if (!validarFormularioPrincipal()) {[m
+[32m+[m[32m                        console.log('Validación falló, previniendo envío');[m
+[32m+[m[32m                        e.preventDefault();[m
+[32m+[m[32m                        e.stopPropagation();[m
+[32m+[m[32m                        return false;[m
+[32m+[m[32m                    }[m
+[32m+[m
+[32m+[m[32m                    console.log('Validación exitosa, enviando formulario...');[m
+[32m+[m[32m                    // Si llegamos aquí, el formulario es válido y se puede enviar[m
+[32m+[m[32m                    return true;[m
+[32m+[m[32m                });[m
+[32m+[m[32m            }[m
+[32m+[m[32m        }[m
+[32m+[m
+         // Cargar productos en el modal[m
+         function cargarProductosEnModal() {[m
+             const tbody = document.getElementById('tablaProductosBody');[m
+[36m@@ -914,53 +656,53 @@[m [mfunction cargarProductosEnModal() {[m
+                     fila.setAttribute('data-categoria', categoria);[m
+ [m
+                     fila.innerHTML = `[m
+[31m-                        <td>${nombre}</td>[m
+[31m-                        <td>${categoria}</td>[m
+[31m-                        <td>[m
+[31m-                            <button type="button" class="btn btn-sm btn-info seleccionar-producto">[m
+[31m-                                <i class="bi bi-check-circle"></i> Seleccionar[m
+[31m-                            </button>[m
+[31m-                        </td>[m
+[31m-                    `;[m
+[32m+[m[32m                <td>${nombre}</td>[m
+[32m+[m[32m                <td>${categoria}</td>[m
+[32m+[m[32m                <td>[m
+[32m+[m[32m                    <button type="button" class="btn btn-sm btn-info seleccionar-producto">[m
+[32m+[m[32m                        <i class="bi bi-check-circle"></i> Seleccionar[m
+[32m+[m[32m                    </button>[m
+[32m+[m[32m                </td>[m
+[32m+[m[32m            `;[m
+ [m
+                     // Fila de edición (oculta inicialmente)[m
+                     const filaEdicion = document.createElement('tr');[m
+                     filaEdicion.className = 'producto-edicion-fila';[m
+                     filaEdicion.style.display = 'none';[m
+                     filaEdicion.innerHTML = `[m
+[31m-                        <td colspan="3">[m
+[31m-                            <form class="d-flex align-items-end gap-2 form-edicion-producto p-2" novalidate >[m
+[31m-                                <div class="width: 18%;">[m
+[31m-                                    <label class="form-label">Precio Compra (Lps)</label>[m
+[31m-                                    <input type="number" min="0" max="9999" maxlength="4"  class="form-control precioCompra" required>[m
+[31m-                                </div>[m
+[31m-                                <div class="width: 18%;">[m
+[31m-                                    <label class="form-label">Precio Venta (Lps)</label>[m
+[31m-                                    <input type="number" min="0" max="9999" maxlength="4" class="form-control precioVenta" required>[m
+[31m-                                </div>[m
+[31m-                                <div class="width: 10%;">[m
+[31m-                                    <label class="form-label">Cantidad</label>[m
+[31m-                                    <input type="number" min="1" max="999" maxlength="3" class="form-control cantidad" required>[m
+[31m-                                </div>[m
+[31m-                                <div class="width: 20%;">[m
+[31m-                                    <label class="form-label">IVA</label>[m
+[31m-                                    <select class="form-select iva">[m
+[31m-                                        <option value="">Seleccione</option>[m
+[31m-                                        <option value="0">0%</option>[m
+[31m-                                        <option value="15">15%</option>[m
+[31m-                                    </select>[m
+[31m-                                </div>[m
+[31m-                                <div class="d-flex gap-1">[m
+[31m-                                    <button type="submit" class="btn btn-primary btn-sm">[m
+[31m-                                        <i class="bi bi-plus-circle">Agregar</i>[m
+[31m-                                    </button>[m
+[31m-                                    <button type="button" class="btn btn-warning btn-sm limpiar-campos">[m
+[31m-                                         <i class="bi bi-eraser-fill">Limpiar</i>[m
+[31m-                                    </button>[m
+[31m-                                </div>[m
+[31m-                            </form>[m
+[31m-                        </td>[m
+[31m-                    `;[m
+[32m+[m[32m                <td colspan="3">[m
+[32m+[m[32m                    <form class="d-flex align-items-end gap-2 form-edicion-producto p-2" novalidate >[m
+[32m+[m[32m                        <div class="width: 18%;">[m
+[32m+[m[32m                            <label class="form-label">Precio Compra (Lps)</label>[m
+[32m+[m[32m                            <input type="number" min="0" max="9999" maxlength="4"  class="form-control precioCompra" required>[m
+[32m+[m[32m                        </div>[m
+[32m+[m[32m                        <div class="width: 18%;">[m
+[32m+[m[32m                            <label class="form-label">Precio Venta (Lps)</label>[m
+[32m+[m[32m                            <input type="number" min="0" max="9999" maxlength="4" class="form-control precioVenta" required>[m
+[32m+[m[32m                        </div>[m
+[32m+[m[32m                        <div class="width: 10%;">[m
+[32m+[m[32m                            <label class="form-label">Cantidad</label>[m
+[32m+[m[32m                            <input type="number" min="1" max="999" maxlength="3" class="form-control cantidad" required>[m
+[32m+[m[32m                        </div>[m
+[32m+[m[32m                        <div class="width: 20%;">[m
+[32m+[m[32m                            <label class="form-label">IVA</label>[m
+[32m+[m[32m                            <select class="form-select iva">[m
+[32m+[m[32m                                <option value="">Seleccione</option>[m
+[32m+[m[32m                                <option value="0">0%</option>[m
+[32m+[m[32m                                <option value="15">15%</option>[m
+[32m+[m[32m                            </select>[m
+[32m+[m[32m                        </div>[m
+[32m+[m[32m                        <div class="d-flex gap-1">[m
+[32m+[m[32m                            <button type="submit" class="btn btn-primary btn-sm">[m
+[32m+[m[32m                                <i class="bi bi-plus-circle">Agregar</i>[m
+[32m+[m[32m                            </button>[m
+[32m+[m[32m                            <button type="button" class="btn btn-warning btn-sm limpiar-campos">[m
+[32m+[m[32m                                 <i class="bi bi-eraser-fill">Limpiar</i>[m
+[32m+[m[32m                            </button>[m
+[32m+[m[32m                        </div>[m
+[32m+[m[32m                    </form>[m
+[32m+[m[32m                </td>[m
+[32m+[m[32m            `;[m
+ [m
+                     tbody.appendChild(fila);[m
+                     tbody.appendChild(filaEdicion);[m
+[36m@@ -973,6 +715,8 @@[m [mfunction cargarProductosEnModal() {[m
+         document.addEventListener('DOMContentLoaded', function() {[m
+             // Función para limitar dígitos[m
+             function limitarDigitos(input, maxDigitos) {[m
+[32m+[m[32m                if (!input) return;[m
+[32m+[m
+                 input.addEventListener('input', function(e) {[m
+                     // Remover cualquier carácter que no sea número[m
+                     let valor = e.target.value.replace(/[^0-9]/g, '');[m
+[36m@@ -1004,14 +748,16 @@[m [mfunction limitarDigitos(input, maxDigitos) {[m
+                 });[m
+             }[m
+ [m
+[31m-            // Aplicar limitaciones[m
+[31m-            const precioCompra = document.querySelector('.precioCompra');[m
+[31m-            const precioVenta = document.querySelector('.precioVenta');[m
+[31m-            const cantidad = document.querySelector('.cantidad');[m
+[32m+[m[32m            // Aplicar limitaciones cuando se cargan los productos[m
+[32m+[m[32m            setTimeout(() => {[m
+[32m+[m[32m                const precioCompra = document.querySelector('.precioCompra');[m
+[32m+[m[32m                const precioVenta = document.querySelector('.precioVenta');[m
+[32m+[m[32m                const cantidad = document.querySelector('.cantidad');[m
+ [m
+[31m-            limitarDigitos(precioCompra, 4);  // Máximo 4 dígitos (9999)[m
+[31m-            limitarDigitos(precioVenta, 4);   // Máximo 4 dígitos (9999)[m
+[31m-            limitarDigitos(cantidad, 3);      // Máximo 3 dígitos (999)[m
+[32m+[m[32m                if (precioCompra) limitarDigitos(precioCompra, 4);[m
+[32m+[m[32m                if (precioVenta) limitarDigitos(precioVenta, 4);[m
+[32m+[m[32m                if (cantidad) limitarDigitos(cantidad, 3);[m
+[32m+[m[32m            }, 1000);[m
+         });[m
+ [m
+         // Configurar eventos de productos[m
+[36m@@ -1085,8 +831,6 @@[m [mfunction configurarEventosProductos() {[m
+                 });[m
+             });[m
+ [m
+[31m-[m
+[31m-[m
+             // Formularios de edición de productos[m
+             document.querySelectorAll('.form-edicion-producto').forEach(form => {[m
+                 form.addEventListener('submit', function(e) {[m
+[36m@@ -1106,8 +850,6 @@[m [mfunction configurarEventosProductos() {[m
+                     const cantidad = parseInt(this.querySelector('.cantidad').value);[m
+                     const iva = parseInt(this.querySelector('.iva').value);[m
+ [m
+[31m-[m
+[31m-[m
+                     // Verificar si el producto ya está en la factura[m
+                     const tablaFactura = document.getElementById('tablaFacturaBody');[m
+                     const productosExistentes = Array.from(tablaFactura.querySelectorAll('tr')).map(tr => {[m
+[36m@@ -1130,7 +872,6 @@[m [mfunction configurarEventosProductos() {[m
+                         return;[m
+                     }[m
+ [m
+[31m-[m
+                     // Calcular subtotal[m
+                     const base = precioCompra * cantidad;[m
+                     const impuesto = (iva / 100) * base;[m
+[36m@@ -1139,36 +880,36 @@[m [mfunction configurarEventosProductos() {[m
+                     // Crear fila en la tabla de factura[m
+                     const nuevaFila = document.createElement('tr');[m
+                     nuevaFila.innerHTML = `[m
+[31m-                        <td>[m
+[31m-                            <input type="hidden" name="productos[][nombre]" value="${nombre}">[m
+[31m-                            ${nombre}[m
+[31m-                        </td>[m
+[31m-                        <td>[m
+[31m-                            <input type="hidden" name="productos[][categoria]" value="${categoria}">[m
+[31m-                            ${categoria}[m
+[31m-                        </td>[m
+[31m-                        <td>[m
+[31m-                            <input type="hidden" name="productos[][precioCompra]" value="${precioCompra}">[m
+[31m-                            ${precioCompra.toFixed(2)}[m
+[31m-                        </td>[m
+[31m-                        <td>[m
+[31m-                            <input type="hidden" name="productos[][cantidad]" value="${cantidad}">[m
+[31m-                            <input type="hidden" name="productos[][precioVenta]" value="${precioVenta}">[m
+[31m-                            ${cantidad}[m
+[31m-                        </td>[m
+[31m-                        <td>[m
+[31m-                            <input type="hidden" name="productos[][iva]" value="${iva}">[m
+[31m-                            ${iva}%[m
+[31m-                        </td>[m
+[31m-                        <td class="subtotal-producto">[m
+[31m-                            ${subtotal.toFixed(2)}[m
+[31m-                        </td>[m
+[31m-                        <td>[m
+[31m-                            <button type="button" class="btn btn-danger btn-sm btn-eliminar-producto" title="Eliminar producto">[m
+[31m-                                <i class="bi bi-trash"></i>[m
+[31m-                            </button>[m
+[31m-                        </td>[m
+[31m-                    `;[m
+[32m+[m[32m                <td>[m
+[32m+[m[32m                    <input type="hidden" name="productos[][nombre]" value="${nombre}">[m
+[32m+[m[32m                    ${nombre}[m
+[32m+[m[32m                </td>[m
+[32m+[m[32m                <td>[m
+[32m+[m[32m                    <input type="hidden" name="productos[][categoria]" value="${categoria}">[m
+[32m+[m[32m                    ${categoria}[m
+[32m+[m[32m                </td>[m
+[32m+[m[32m                <td>[m
+[32m+[m[32m                    <input type="hidden" name="productos[][precioCompra]" value="${precioCompra}">[m
+[32m+[m[32m                    ${precioCompra.toFixed(2)}[m
+[32m+[m[32m                </td>[m
+[32m+[m[32m                <td>[m
+[32m+[m[32m                    <input type="hidden" name="productos[][cantidad]" value="${cantidad}">[m
+[32m+[m[32m                    <input type="hidden" name="productos[][precioVenta]" value="${precioVenta}">[m
+[32m+[m[32m                    ${cantidad}[m
+[32m+[m[32m                </td>[m
+[32m+[m[32m                <td>[m
+[32m+[m[32m                    <input type="hidden" name="productos[][iva]" value="${iva}">[m
+[32m+[m[32m                    ${iva}%[m
+[32m+[m[32m                </td>[m
+[32m+[m[32m                <td class="subtotal-producto">[m
+[32m+[m[32m                    ${subtotal.toFixed(2)}[m
+[32m+[m[32m                </td>[m
+[32m+[m[32m                <td>[m
+[32m+[m[32m                    <button type="button" class="btn btn-danger btn-sm btn-eliminar-producto" title="Eliminar producto">[m
+[32m+[m[32m                        <i class="bi bi-trash"></i>[m
+[32m+[m[32m                    </button>[m
+[32m+[m[32m                </td>[m
+[32m+[m[32m            `;[m
+ [m
+                     tablaFactura.appendChild(nuevaFila);[m
+                     actualizarFilaVacia();[m
+[36m@@ -1260,10 +1001,11 @@[m [mfunction resaltarTexto(elemento, termino) {[m
+             }[m
+ [m
+             const regex = new RegExp(`(${escapeRegex(termino)})`, 'gi');[m
+[31m-            const textoResaltado = textoOriginal.replace(regex, '<mark style="background-color: #ffeb3b; padding: 2px; border-radius: 3px; font-weight: bold;">$1</mark>');[m
+[32m+[m[32m            const textoResaltado = textoOriginal.replace(regex, '<mark class="bg-warning">$1</mark>');[m
+             elemento.innerHTML = textoResaltado;[m
+         }[m
+ [m
+[32m+[m
+         function quitarResaltado(elemento) {[m
+             if (!elemento) return;[m
+ [m
+[36m@@ -1348,17 +1090,15 @@[m [mfunction actualizarFilaVacia() {[m
+             }[m
+         }[m
+ [m
+[31m-[m
+         // Eliminar productos de la factura[m
+         document.addEventListener('click', function(e) {[m
+             if (e.target.closest('.btn-eliminar-producto')) {[m
+[31m-                    const fila = e.target.closest('tr');[m
+[31m-                    fila.remove();[m
+[31m-                    calcularTotalesGenerales();[m
+[31m-                    actualizarFilaVacia();[m
+[32m+[m[32m                const fila = e.target.closest('tr');[m
+[32m+[m[32m                fila.remove();[m
+[32m+[m[32m                calcularTotalesGenerales();[m
+[32m+[m[32m                actualizarFilaVacia();[m
+             }[m
+         });[m
+[31m-[m
+         // Calcular totales generales[m
+         function calcularTotalesGenerales() {[m
+             const subtotales = document.querySelectorAll('.subtotal-producto');[m
+[36m@@ -1385,167 +1125,8 @@[m [mfunction calcularTotalesGenerales() {[m
+             document.getElementById('totalGeneral').value = totalGeneral.toFixed(2);[m
+         }[m
+ [m
+[31m-        // Limpiar formulario[m
+[31m-        document.getElementById('btnLimpiar').addEventListener('click', function() {[m
+[31m-            // Resetear el formulario[m
+[31m-            document.getElementById('facturaForm').reset();[m
+[31m-[m
+[31m-            // Limpiar tabla de productos[m
+[31m-            document.getElementById('tablaFacturaBody').innerHTML = '';[m
+[31m-            calcularTotalesGenerales();[m
+[31m-            actualizarFilaVacia();[m
+[31m-[m
+[31m-            // Limpiar todas las advertencias y errores de validación[m
+[31m-            limpiarTodasLasAdvertencias();[m
+ [m
+[31m-            // Limpiar estado del modal[m
+[31m-            document.querySelectorAll('.producto-edicion-fila').forEach(fila => {[m
+[31m-                fila.style.display = 'none';[m
+[31m-            });[m
+[31m-            document.querySelectorAll('.seleccionar-producto').forEach(btn => {[m
+[31m-                btn.className = 'btn btn-sm btn-info seleccionar-producto';[m
+[31m-                btn.innerHTML = '<i class="bi bi-check-circle"></i> Seleccionar';[m
+[31m-            });[m
+[31m-            productoSeleccionadoActual = null;[m
+[31m-        });[m
+[31m-[m
+[31m-        // Función para limpiar todas las advertencias y errores de validación[m
+[31m-        function limpiarTodasLasAdvertencias() {[m
+[31m-            // Lista de todos los campos que pueden tener errores[m
+[31m-            const campos = ['numeroFactura', 'fecha', 'proveedor', 'formaPago', 'responsable'];[m
+[31m-[m
+[31m-            // Ocultar errores de cada campo[m
+[31m-            campos.forEach(campo => {[m
+[31m-                ocultarError(campo);[m
+[31m-            });[m
+[31m-[m
+[31m-            // Ocultar error de productos[m
+[31m-            const errorProductos = document.getElementById('errorProductos');[m
+[31m-            if (errorProductos) {[m
+[31m-                errorProductos.style.display = 'none';[m
+[31m-            }[m
+[31m-[m
+[31m-            // Remover clases de error de todos los inputs y selects[m
+[31m-            document.querySelectorAll('#facturaForm .form-control, #facturaForm .form-select').forEach(input => {[m
+[31m-                input.classList.remove('field-error', 'invalid');[m
+[31m-            });[m
+[31m-[m
+[31m-            // Ocultar todos los mensajes de error visibles[m
+[31m-            document.querySelectorAll('#facturaForm .error-message').forEach(error => {[m
+[31m-                error.style.display = 'none';[m
+[31m-            });[m
+[31m-[m
+[31m-            // Limpiar validaciones de Bootstrap si las hay[m
+[31m-            document.getElementById('facturaForm').classList.remove('was-validated');[m
+[31m-[m
+[31m-            // Remover cualquier estado de validación personalizado[m
+[31m-            document.querySelectorAll('#facturaForm .is-invalid, #facturaForm .is-valid').forEach(element => {[m
+[31m-                element.classList.remove('is-invalid', 'is-valid');[m
+[31m-            });[m
+[31m-        }[m
+[31m-[m
+[31m-        // Validación del formulario al enviar[m
+[31m-[m
+[31m-        document.getElementById('facturaForm').addEventListener('submit', function(e) {[m
+[31m-            e.preventDefault();[m
+[31m-[m
+[31m-            // Validar formulario antes de enviar[m
+[31m-            if (!validarFormularioPrincipal()) {[m
+[31m-                return;[m
+[31m-            }[m
+[31m-[m
+[31m-            // Si llegamos aquí, el formulario es válido[m
+[31m-            console.log('Formulario válido - Enviando datos...');[m
+[31m-[m
+[31m-            // Aquí puedes agregar la lógica para enviar los datos[m
+[31m-            // Por ejemplo: this.submit(); o hacer una petición AJAX[m
+[31m-        });[m
+[31m-[m
+[31m-        // Actualizar la función validarFormularioPrincipal para que funcione correctamente:[m
+[31m-        function validarFormularioPrincipal() {[m
+[31m-            let esValido = true;[m
+[31m-[m
+[31m-            // Limpiar errores previos[m
+[31m-            ['numeroFactura', 'fecha', 'proveedor', 'formaPago', 'responsable'].forEach(campo => {[m
+[31m-                ocultarError(campo);[m
+[31m-            });[m
+[31m-            document.getElementById('errorProductos').style.display = 'none';[m
+[31m-[m
+[31m-            // Validar número de factura[m
+[31m-            const numeroFactura = document.getElementById('numeroFactura').value.trim();[m
+[31m-            if (!numeroFactura) {[m
+[31m-                mostrarError('numeroFactura', 'Número de factura es obligatorio');[m
+[31m-                esValido = false;[m
+[31m-            }[m
+[31m-[m
+[31m-            // Validar fecha[m
+[31m-            const fecha = document.getElementById('fecha').value;[m
+[31m-            if (!fecha) {[m
+[31m-                mostrarError('fecha', 'Fecha es obligatoria');[m
+[31m-                esValido = false;[m
+[31m-            }[m
+[31m-[m
+[31m-            // Validar proveedor[m
+[31m-            const proveedor = document.querySelector('select[name="proveedor"]').value;[m
+[31m-            if (!proveedor) {[m
+[31m-                mostrarError('proveedor', 'Proveedor es obligatorio');[m
+[31m-                esValido = false;[m
+[31m-            }[m
+[31m-[m
+[31m-            // Validar forma de pago[m
+[31m-            const formaPago = document.querySelector('select[name="forma_pago"]').value;[m
+[31m-            if (!formaPago) {[m
+[31m-                mostrarError('formaPago', 'Forma de pago es obligatorio');[m
+[31m-                esValido = false;[m
+[31m-            }[m
+[31m-[m
+[31m-            // Validar responsable[m
+[31m-            const responsable = document.getElementById('responsable').value.trim();[m
+[31m-            if (!responsable) {[m
+[31m-                mostrarError('responsable', 'Responsable es obligatorio');[m
+[31m-                esValido = false;[m
+[31m-            }[m
+[31m-[m
+[31m-            // Validar productos[m
+[31m-            const productos = document.querySelectorAll('#tablaFacturaBody tr');[m
+[31m-            if (productos.length === 0) {[m
+[31m-                document.getElementById('errorProductos').style.display = 'block';[m
+[31m-                document.getElementById('errorProductos').textContent = 'Debe agregar al menos un producto a la factura';[m
+[31m-                esValido = false;[m
+[31m-            }[m
+[31m-[m
+[31m-            return esValido;[m
+[31m-        }[m
+[31m-[m
+[31m-[m
+[31m-        // Limpiar modal al cerrarlo[m
+[31m-        document.getElementById('productosModal').addEventListener('hidden.bs.modal', function() {[m
+[31m-            document.getElementById('searchInput').value = '';[m
+[31m-[m
+[31m-            // Limpiar resaltados[m
+[31m-            document.querySelectorAll('#tablaProductosBody .producto-fila td:first-child').forEach(celda => {[m
+[31m-                quitarResaltado(celda);[m
+[31m-            });[m
+[31m-[m
+[31m-            // Limpiar resultados de búsqueda[m
+[31m-            const searchResults = document.getElementById('searchResults');[m
+[31m-            if (searchResults) {[m
+[31m-                searchResults.innerHTML = '';[m
+[31m-            }[m
+[31m-[m
+[31m-            document.querySelectorAll('.producto-edicion-fila').forEach(fila => {[m
+[31m-                fila.style.display = 'none';[m
+[31m-            });[m
+[31m-            document.querySelectorAll('.seleccionar-producto').forEach(btn => {[m
+[31m-                btn.className = 'btn btn-sm btn-info seleccionar-producto';[m
+[31m-                btn.innerHTML = '<i class="bi bi-check-circle"></i> Seleccionar';[m
+[31m-            });[m
+[31m-            document.querySelectorAll('.producto-fila').forEach(fila => {[m
+[31m-                fila.style.display = 'table-row';[m
+[31m-            });[m
+[31m-            productoSeleccionadoActual = null;[m
+[31m-        });[m
+     </script>[m
+[31m-[m
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">[m
+ @endsection[m
+[41m+[m
+[1mdiff --git a/resources/views/facturas/index.blade.php b/resources/views/facturas/index.blade.php[m
+[1mindex 2d7ffd4..9bca76a 100644[m
+[1m--- a/resources/views/facturas/index.blade.php[m
+[1m+++ b/resources/views/facturas/index.blade.php[m
+[36m@@ -6,19 +6,24 @@[m
+         table {[m
+             width: 100%;[m
+             border-collapse: collapse;[m
+[32m+[m
+         }[m
+[32m+[m
+         th, td {[m
+             padding: 12px 15px;[m
+             border: 1px solid #090909;[m
+             text-align: center;[m
+         }[m
+[32m+[m
+     </style>[m
+ [m
+     <h1 class="text-center mb-4" style="color: #09457f;">[m
+         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">[m
+[31m-        <i class="bi bi-file-text"></i> Listado de facturas de compra[m
+[32m+[m[32m        <i class="bi bi-file-text"></i>Listado de facturas de compra[m
+     </h1>[m
+ [m
+[32m+[m
+[32m+[m[32m    <!-- Botón de volver y buscador -->[m
+     <div class="row mb-4 align-items-center">[m
+         <div class="col-md-6 d-flex justify-content-start">[m
+             <div class="w-100" style="max-width: 300px;">[m
+[36m@@ -28,7 +33,7 @@[m
+                         id="searchInput"[m
+                         class="form-control"[m
+                         maxlength="30"[m
+[31m-                        placeholder="Buscar por número de factura"[m
+[32m+[m[32m                        placeholder="Buscar por nombre"[m
+                         onkeydown="bloquearEspacioAlInicio(event, this)"[m
+                         oninput="eliminarEspaciosIniciales(this)">[m
+                     <span class="input-group-text"><i class="bi bi-search"></i></span>[m
+[36m@@ -36,62 +41,24 @@[m [mclass="form-control"[m
+             </div>[m
+         </div>[m
+         <div class="col-md-6 d-flex justify-content-end">[m
+[31m-            <a href="{{ route('facturas.create') }}" class="btn btn-md btn-outline-dark">[m
+[31m-                <i class="bi bi-pencil-square me-2"></i>Registrar nueva factura de compra[m
+[32m+[m[32m            <a href="{{ route('facturas.create') }}" class="btn btn-md btn-outline-dark btn-md">[m
+[32m+[m[32m                <i class="bi bi-pencil-square me-2"></i>Registrar una nueva factura de compra[m
+             </a>[m
+         </div>[m
+     </div>[m
+ [m
+[31m-    <table class="table table-striped">[m
+[31m-        <thead>[m
+[31m-        <tr>[m
+[31m-            <th>Número Factura</th>[m
+[31m-            <th>Categoría</th>[m
+[31m-            <th>Cantidad</th>[m
+[31m-            <th>Responsable</th>[m
+[31m-            <th>Acciones</th>[m
+[31m-        </tr>[m
+[31m-        </thead>[m
+[31m-        <tbody id="facturasTableBody">[m
+[31m-        @forelse ($facturas as $factura)[m
+[31m-            <tr class="factura-row">[m
+[31m-                <td class="factura-numeroFactura">{{ $factura->numero_factura }}</td>[m
+[31m-                <td>{{ $factura->categoria ?? 'N/A' }}</td>[m
+[31m-                <td>{{ $factura->cantidad ?? 'N/A' }}</td>[m
+[31m-                <td>[m
+[31m-                    @if($factura->empleado)[m
+[31m-                        {{ $factura->empleado->nombre }} {{ $factura->empleado->apellido }}[m
+[31m-                    @else[m
+[31m-                        No asignado[m
+[31m-                    @endif[m
+[31m-                </td>[m
+[31m-                <a href="{{ route('facturas.show', $factura->id) }}" class="btn btn-primary">[m
+[31m-                    <i class="bi bi-eye"></i> Ver[m
+[31m-                </a>[m
+[31m-                <td>[m
+[31m-                    <a href="{{ route('facturas.show', $factura->id) }}" class="btn btn-sm btn-primary">[m
+[31m-                        Ver[m
+[31m-                    </a>[m
+[31m-                </td>[m
+[31m-            </tr>[m
+[31m-        @empty[m
+[31m-            <tr id="noProductsRow">[m
+[31m-                <td colspan="5" class="text-center">No hay facturas registradas.</td>[m
+[31m-            </tr>[m
+[31m-        @endforelse[m
+[31m-        </tbody>[m
+[31m-    </table>[m
+[31m-[m
+[31m-    {{ $facturas->links() }}[m
+ [m
+     @if(session()->has('status'))[m
+         <div class="alert alert-warning alert-dismissible fade show" role="alert">[m
+             <i class="bi bi-check-circle-fill me-2"></i>[m
+[31m-            {{ session('status') }}[m
+[32m+[m[32m            <strong></strong>{{ session('status') }}[m
+             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>[m
+         </div>[m
+     @endif[m
+ [m
+[32m+[m[32m    <!-- Mensaje de resultados -->[m
+[32m+[m[32m    <div id="searchResults" class="mb-3"></div>[m
+[32m+[m
+     <script>[m
+         document.addEventListener('DOMContentLoaded', () => {[m
+             const searchInput = document.getElementById('searchInput');[m
+[36m@@ -103,11 +70,14 @@[m [mclass="form-control"[m
+                 let resultadosVisibles = 0;[m
+ [m
+                 filas.forEach(fila => {[m
+[31m-                    const numeroFactura = fila.querySelector('.factura-numeroFactura').textContent.toLowerCase();[m
+[32m+[m[32m                    // Buscar en la columna "Nombre" (3ra columna, índice 2 en nth-child porque empieza en 1)[m
+[32m+[m[32m                    const nombre = fila.querySelector('.factura-numeroFactura').textContent.toLowerCase();[m
+ [m
+[31m-                    if (filtro === '' || numeroFactura.includes(filtro)) {[m
+[32m+[m[32m                    if (filtro === '' || nombre.includes(filtro)) {[m
+                         fila.style.display = '';[m
+                         resultadosVisibles++;[m
+[32m+[m
+[32m+[m[32m                        // Resaltar texto encontrado si hay búsqueda[m
+                         if (filtro !== '') {[m
+                             resaltarTexto(fila.querySelector('.factura-numeroFactura'), filtro);[m
+                         } else {[m
+[36m@@ -118,17 +88,27 @@[m [mclass="form-control"[m
+                     }[m
+                 });[m
+ [m
+[32m+[m[32m                // Mostrar mensaje de resultados[m
+[32m+[m[32m                mostrarResultados(filtro, resultadosVisibles);[m
+[32m+[m
+[32m+[m[32m                // Ocultar/mostrar mensaje de "no hay productos" según corresponda[m
+                 if (noProductsRow) {[m
+[31m-                    noProductsRow.style.display = resultadosVisibles === 0 ? '' : 'none';[m
+[32m+[m[32m                    if (filtro === '') {[m
+[32m+[m[32m                        noProductsRow.style.display = filas.length === 0 ? '' : 'none';[m
+[32m+[m[32m                    } else {[m
+[32m+[m[32m                        noProductsRow.style.display = 'none';[m
+[32m+[m[32m                    }[m
+                 }[m
+             });[m
+         });[m
+ [m
+         function resaltarTexto(elemento, termino) {[m
+             const textoOriginal = elemento.getAttribute('data-original') || elemento.textContent;[m
+[32m+[m
+             if (!elemento.getAttribute('data-original')) {[m
+                 elemento.setAttribute('data-original', textoOriginal);[m
+             }[m
+[32m+[m
+             const regex = new RegExp(`(${escapeRegex(termino)})`, 'gi');[m
+             const textoResaltado = textoOriginal.replace(regex, '<mark style="background-color: #ffeb3b; padding: 2px;">$1</mark>');[m
+             elemento.innerHTML = textoResaltado;[m
+[36m@@ -145,6 +125,32 @@[m [mfunction escapeRegex(string) {[m
+             return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');[m
+         }[m
+ [m
+[32m+[m[32m        function mostrarResultados(termino, cantidad) {[m
+[32m+[m[32m            const searchResults = document.getElementById('searchResults');[m
+[32m+[m
+[32m+[m[32m            if (termino === '') {[m
+[32m+[m[32m                searchResults.innerHTML = '';[m
+[32m+[m[32m                return;[m
+[32m+[m[32m            }[m
+[32m+[m
+[32m+[m[32m            if (cantidad === 0) {[m
+[32m+[m[32m                searchResults.innerHTML = `[m
+[32m+[m[32m                    <div class="alert alert-warning" role="alert">[m
+[32m+[m[32m                        <i class="bi bi-exclamation-triangle me-2"></i>[m
+[32m+[m[32m                        No se encontraron facturas con ese numero de factura "<strong>${termino}</strong>"[m
+[32m+[m[32m                    </div>[m
+[32m+[m[32m                `;[m
+[32m+[m[32m            } else {[m
+[32m+[m[32m                searchResults.innerHTML = `[m
+[32m+[m[32m                    <div class="alert alert-success" role="alert">[m
+[32m+[m[32m                        <i class="bi bi-check-circle me-2"></i>[m
+[32m+[m[32m                        Se encontraron <strong>${cantidad}</strong> factura(s) con ese numero de factura "<strong>${termino}</strong>"[m
+[32m+[m[32m                    </div>[m
+[32m+[m[32m                `;[m
+[32m+[m[32m            }[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m
+         function bloquearEspacioAlInicio(e, input) {[m
+             if (e.key === ' ' && input.selectionStart === 0) {[m
+                 e.preventDefault();[m
+[36m@@ -153,6 +159,7 @@[m [mfunction bloquearEspacioAlInicio(e, input) {[m
+ [m
+         function eliminarEspaciosIniciales(input) {[m
+             input.value = input.value.replace(/^\s+/, '');[m
+[32m+[m[32m            // Si pega un texto largo, lo limita a 30 caracteres[m
+             if (input.value.length > 30) {[m
+                 input.value = input.value.substring(0, 30);[m
+             }[m
+[36m@@ -165,4 +172,6 @@[m [mfunction eliminarEspaciosIniciales(input) {[m
+         </a>[m
+     </div>[m
+ [m
+[32m+[m[32m    {{ $facturas->links() }}[m
+[32m+[m
+ @endsection[m
+[1mdiff --git a/resources/views/productos/formulario.blade.php b/resources/views/productos/formulario.blade.php[m
+[1mindex f143547..ddc9ab7 100644[m
+[1m--- a/resources/views/productos/formulario.blade.php[m
+[1m+++ b/resources/views/productos/formulario.blade.php[m
+[36m@@ -126,7 +126,7 @@[m
+                             </div>[m
+ [m
+                             <div class="col-md-6">[m
+[31m-                                <label for="iva" class="form-label">IVA</label>[m
+[32m+[m[32m                                <label for="iva" class="form-label">IVA del producto</label>[m
+                                 <div class="input-group has-validation">[m
+                                     <span class="input-group-text"><i class="bi bi-briefcase-fill"></i></span>[m
+                                     <select name="iva" class="form-select @error('iva') is-invalid @enderror" required>[m
