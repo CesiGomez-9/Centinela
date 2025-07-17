@@ -32,7 +32,10 @@ class FacturaVenta extends Model
         return $this->belongsTo(Empleado::class, 'responsable_id');
     }
 
-
+    public function empleado()
+    {
+        return $this->belongsTo(Empleado::class, 'responsable_id');
+    }
 
 }
 
