@@ -164,4 +164,18 @@ class ClienteController extends Controller
     {
         //
     }
+
+    public function search(Request $request)
+    {
+        $q = $request->input('q');
+
+        $clientes = Cliente::where('nombre', 'like', "%{$q}%")
+            ->orWhere('identidad', 'like', "%{$q}%")
+            ->orderBy('nombre', 'asc')
+            ->limit(10)
+            ->get(['id', 'nombre', 'identidad']);
+
+        return response()->json($clientes);
+    }
+
 }

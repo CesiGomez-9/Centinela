@@ -19,15 +19,14 @@ class Producto extends Model
         'impuesto_id',
         'categoria',
         'descripcion',
-        'precio_compra', // New field added
-        'precio_venta',  // New field added
+        'precio_compra',
+        'precio_venta',
     ];
 
     protected $casts = [
         'cantidad' => 'integer',
-        'precio_compra' => 'decimal:2', // Ensures it's handled as a decimal with 2 places.
-        'precio_venta' => 'decimal:2',  // Ensures it's handled as a decimal with 2 places.
-    ];
+        'precio_compra' => 'decimal:2',
+        'precio_venta' => 'decimal:2',];
 
     /**
      * Defines the one-to-many relationship with Detalle.
@@ -52,7 +51,6 @@ class Producto extends Model
      */
     public function precioCompras()
     {
-        // Orders by creation date in descending order to show the most recent first.
-        return $this->hasMany(PrecioCompra::class)->orderBy('created_at', 'desc');
+        return $this->hasMany(PrecioCompra::class);
     }
 }

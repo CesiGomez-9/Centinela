@@ -7,66 +7,47 @@ use App\Models\Impuesto;
 use App\Models\PrecioCompra;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use Carbon\Carbon; // Importa Carbon para mejor manejo de fechas
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class ProductoController extends Controller
 {
-    /**
-     * Muestra una lista de los recursos.
-     */
-
     public function index(Request $request)
     {
-        // Cargar la relación 'impuesto' para mostrar el nombre del impuesto en la vista si es necesario
         $query = Producto::with('impuesto');
 
-        if ($request->filled('search')) {
-            $search = $request->input('search');
-            $query->where(function ($q) use ($search) {
-                $q->where('nombre', 'like', "%{$search}%")
-                    ->orWhere('serie', 'like', "%{$search}%")
-                    ->orWhere('codigo', 'like', "%{$search}%");
+        if ($request->has('search') && !empty($request->search)) {
+            $searchTerm = $request->search;
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('serie', 'LIKE', '%' . $searchTerm . '%')
+                    ->orWhere('codigo', 'LIKE', '%' . $searchTerm . '%')
+                    ->orWhere('nombre', 'LIKE', '%' . $searchTerm . '%')
+                    ->orWhere('categoria', 'LIKE', '%' . $searchTerm . '%');
             });
         }
 
-        if ($request->filled('categoria')) {
-            $query->where('categoria', $request->input('categoria'));
-        }
+        $productos = $query->paginate(10);
 
-        $productos = $query->orderBy('nombre')->paginate(10)->withQueryString();
-
-        $categorias = Producto::select('categoria')->distinct()->pluck('categoria');
-
-        return view('productos.index', compact('productos', 'categorias'));
+        return view('productos.index', compact('productos'));
     }
 
-
-    /**
-     * Muestra el formulario para crear un nuevo recurso.
-     */
     public function create()
     {
-        // Obtener todos los impuestos para el selector en el formulario
         $impuestos = Impuesto::all();
         return view('productos.formulario', compact('impuestos'));
     }
 
-    /**
-     * Almacena un recurso recién creado en el almacenamiento.
-     */
     public function store(Request $request)
     {
-        // Validar los datos de entrada
         $validated = $request->validate([
             'serie' => [
                 'required',
                 'min:1',
                 'max:12',
                 'regex:/^[A-Za-z0-9\-]+$/',
-                'regex:/.*\S.*/', // Asegura que no sea solo espacios
-                'not_regex:/^0+$/', // No puede ser solo ceros
-                'not_regex:/^[^A-Za-z0-9]/', // No puede empezar con caracteres especiales
-                Rule::unique('productos', 'serie') // Debe ser único en la tabla productos
+                'regex:/.*\S.*/',
+                'not_regex:/^0+$/',
+                'not_regex:/^[^A-Za-z0-9]/',
+                Rule::unique('productos', 'serie')
             ],
             'codigo' => [
                 'required',
@@ -82,17 +63,17 @@ class ProductoController extends Controller
                 'required',
                 'min:3',
                 'max:30',
-                'regex:/^[\pL0-9\s\-.,#]+$/u', // Permite letras Unicode, números, espacios, guiones, puntos, comas, almohadillas
-                'regex:/.*\S.*/' // Asegura que no sea solo espacios
+                'regex:/^[\pL0-9\s\-.,#]+$/u',
+                'regex:/.*\S.*/'
             ],
             'marca' => [
-                'required', // Ahora es requerido
+                'required',
                 'string',
                 'max:50',
                 'regex:/^[\pL0-9\s\-.,#()]*$/u',
             ],
             'modelo' => [
-                'required', // Ahora es requerido
+                'required',
                 'string',
                 'max:50',
                 'regex:/^[\pL0-9\s\-.,#()]*$/u',
@@ -103,19 +84,16 @@ class ProductoController extends Controller
                 'max:50',
 
             ],
-            // 'cantidad' no se valida aquí porque se inicializa en 0 al crear
-            'impuesto_id' => 'required|exists:impuestos,id', // Validar que el ID del impuesto exista en la tabla 'impuestos'
+            'impuesto_id' => 'required|exists:impuestos,id',
             'descripcion' => [
                 'required',
                 'min:1',
                 'max:255',
-                'regex:/^[\pL][\pL0-9\s,.\-#()]*$/u', // Debe empezar con letra, permite letras Unicode, números, espacios, etc.
-                'regex:/.*\S.*/', // Asegura que no sea solo espacios
-                'not_regex:/^0+$/' // No puede ser solo ceros
+                'regex:/^[\pL][\pL0-9\s,.\-#()]*$/u',
+                'regex:/.*\S.*/',
+                'not_regex:/^0+$/'
             ],
-            // 'precio_compra' y 'precio_venta' no se validan aquí, ya que se gestionan desde el formulario de factura.
         ], [
-            // Mensajes de error personalizados
             'serie.unique' => 'La serie ingresada ya está registrada.',
             'codigo.unique' => 'El código ingresado ya está registrada.',
             'marca.required' => 'La marca del producto es obligatoria.',
@@ -132,11 +110,8 @@ class ProductoController extends Controller
             'descripcion.regex' => 'La descripción contiene caracteres no permitidos o es solo ceros/espacios.'
         ]);
 
-        // Crear el producto con los datos validados
         $producto = new Producto($validated);
-        // Asegurar que la cantidad se inicialice en 0 al crear un nuevo producto
         $producto->cantidad = 0;
-        // El precio_compra y precio_venta se inicializan en 0.00 por defecto y se actualizarán desde el formulario de factura.
         $producto->precio_compra = 0.00;
         $producto->precio_venta = 0.00;
 
@@ -147,35 +122,52 @@ class ProductoController extends Controller
         }
     }
 
-    /**
-     * Muestra el recurso especificado.
-     */
     public function show(string $id)
     {
-        // Cargar las relaciones 'impuesto' y 'precioCompras' para mostrar los detalles y el historial de precios.
-        $producto = Producto::with(['impuesto', 'precioCompras'])->findOrFail($id);
-        return view('productos.show', compact('producto'));
+        $producto = Producto::with('impuesto')->findOrFail($id);
+
+        // Obtener todo el historial de precios de compra, ordenado de más antiguo a más reciente
+        $allPrecioCompras = $producto->precioCompras()->orderBy('created_at', 'asc')->get();
+
+        // Procesar la colección para añadir el 'previous_price' a cada elemento
+        $processedPrecioCompras = $allPrecioCompras->map(function ($precioHistorial, $key) use ($allPrecioCompras) {
+            $previousPrice = null;
+            if ($key > 0) {
+                // Si no es el primer elemento, el precio anterior es el del índice anterior
+                $previousPrice = $allPrecioCompras->get($key - 1)->precio_compra;
+            }
+            // Añadir el previous_price como un atributo temporal al objeto
+            $precioHistorial->previous_price = $previousPrice;
+            return $precioHistorial;
+        });
+
+        // Paginación manual de la colección procesada
+        $perPage = 10;
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        $currentPageItems = $processedPrecioCompras->slice(($currentPage - 1) * $perPage, $perPage)->values();
+        $precioComprasPaginadas = new LengthAwarePaginator(
+            $currentPageItems,
+            $processedPrecioCompras->count(),
+            $perPage,
+            $currentPage,
+            ['path' => LengthAwarePaginator::resolveCurrentPath()]
+        );
+
+        return view('productos.show', compact('producto', 'precioComprasPaginadas'));
     }
 
-    /**
-     * Muestra el formulario para editar el recurso especificado.
-     */
+
     public function edit(string $id)
     {
         $producto = Producto::findOrFail($id);
-        // Obtener todos los impuestos para el selector en el formulario
         $impuestos = Impuesto::all();
         return view('productos.formulario', compact('producto', 'impuestos'));
     }
 
-    /**
-     * Actualiza el recurso especificado en el almacenamiento.
-     */
     public function update(Request $request, string $id)
     {
         $producto = Producto::findOrFail($id);
 
-        // Validar los datos de entrada para la actualización
         $validated = $request->validate([
             'serie' => [
                 'required',
@@ -185,7 +177,7 @@ class ProductoController extends Controller
                 'regex:/.*\S.*/',
                 'not_regex:/^0+$/',
                 'not_regex:/^[^A-Za-z0-9]/',
-                Rule::unique('productos', 'serie')->ignore($producto->id) // Ignora el propio ID al validar unicidad
+                Rule::unique('productos', 'serie')->ignore($producto->id)
             ],
             'codigo' => [
                 'required',
@@ -222,7 +214,7 @@ class ProductoController extends Controller
                 'max:50',
 
             ],
-            'impuesto_id' => 'required|exists:impuestos,id', // Validar que el ID del impuesto exista
+            'impuesto_id' => 'required|exists:impuestos,id',
             'descripcion' => [
                 'required',
                 'min:1',
@@ -231,9 +223,7 @@ class ProductoController extends Controller
                 'regex:/.*\S.*/',
                 'not_regex:/^0+$/'
             ],
-            // 'precio_compra' y 'precio_venta' no se validan ni se actualizan aquí, ya que se gestionan desde el formulario de factura.
         ], [
-            // Mensajes de error personalizados para la actualización
             'serie.unique' => 'La serie ingresada ya está registrada.',
             'codigo.unique' => 'El código ingresado ya está registrada.',
             'marca.required' => 'La marca del producto es obligatoria.',
@@ -250,12 +240,14 @@ class ProductoController extends Controller
             'descripcion.regex' => 'La descripción contiene caracteres no permitidos o es solo ceros/espacios.'
         ]);
 
-        // Actualizar el producto con los datos validados
-        // La lógica de precio_compra, precio_venta y su historial se manejará en el controlador de factura.
-        if ($producto->update($validated)) {
-            return redirect()->route('productos.index')->with('status', 'Producto actualizado correctamente');
-        } else {
-            return back()->withInput()->with('error', 'Error al actualizar el producto');
+        if ($producto->precio_compra != $request->precio_compra) {
+            $producto->precioCompras()->create([
+                'precio_compra' => $request->precio_compra,
+            ]);
         }
+
+        $producto->update($validated);
+
+        return redirect()->route('productos.index')->with('status', 'Producto actualizado correctamente');
     }
 }

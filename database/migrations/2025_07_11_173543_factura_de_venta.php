@@ -24,9 +24,7 @@ return new class extends Migration
 
             $table->unsignedBigInteger('responsable_id');
             $table->foreign('responsable_id')->references('id')->on('empleados')->onDelete('cascade');
-
-            // Llave foránea para cliente (asumiendo que tienes tabla clientes)
-          //  $table->foreign('cliente_id')->references('id')->on('clientes')->onDelete('cascade');
+           $table->foreign('cliente_id')->references('id')->on('clientes')->onDelete('cascade');
         });
     }
 
