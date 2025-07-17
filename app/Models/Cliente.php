@@ -20,4 +20,10 @@ class Cliente extends Model
         'direccion',
         'departamento',
     ];
+
+    public function facturas()
+    {
+        return $this->hasMany(FacturaVenta::class);
+    }
+
 }

@@ -133,8 +133,8 @@
             <div class="card">
                 <div class="card-header">
                     <h5 class="mb-0"><i class="bi bi-info-circle-fill me-2"></i>Información del Servicio</h5>
-                    <small class="position-absolute top-50 end-0 translate-middle-y me-3">Creado {{ \Carbon\Carbon::parse($servicio->created_at)->diffForHumans() }}
-
+                    <small class="position-absolute top-50 end-0 translate-middle-y me-3">
+                        Creado: {{ $servicio->created_at ? $servicio->created_at->diffForHumans() : 'Fecha no disponible' }}
                     </small>
                 </div>
                 <div class="card-body">
@@ -146,36 +146,21 @@
                             <p><i class="bi bi-clock-history me-2"></i><strong>Duración:</strong> {{ $servicio->duracion_cantidad }} {{ $servicio->duracion_tipo }}</p>
                         </div>
                         <div class="col-md-6">
+                            <p><i class="bi bi-diagram-3-fill me-2"></i><strong>Categoría:</strong> {{ ucfirst($servicio->categoria) }}</p>
+                            @php
+                                $productos = json_decode($servicio->productos_especificos, true) ?? [];
+                            @endphp
 
-                            <div class="col-md-6">
-                                <p><i class="bi bi-diagram-3-fill me-2"></i><strong>Categoría:</strong> {{ ucfirst($servicio->categoria) }}</p>
-
-                                <p><i class="bi bi-box-seam me-2"></i><strong>Productos requeridos:</strong></p>
-
-                                @if($productos->count() > 0)
-                                    @if($productos->count() > 3)
-                                        <div class="row">
-                                            @foreach($productos as $producto)
-                                                <div class="col-6 mb-1">
-                                                    • {{ $producto->nombre }}
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    @else
-                                        <ul class="mb-0 ps-3">
-                                            @foreach($productos as $producto)
-                                                <li>{{ $producto->nombre }}</li>
-                                            @endforeach
-                                        </ul>
-                                    @endif
-                                @else
-                                    <p><em>No hay productos específicos requeridos.</em></p>
-                                @endif
-                            </div>
-
-
-
-
+                            <p><i class="bi bi-box-seam me-2"></i><strong>Productos requeridos:</strong></p>
+                            @if(count($productos) > 0)
+                                <ul class="mb-0 ps-4">
+                                    @foreach($productos as $producto)
+                                        <li>{{ $producto }}</li>
+                                    @endforeach
+                                </ul>
+                            @else
+                                <p><em>No hay productos específicos requeridos.</em></p>
+                            @endif
                         </div>
                     </div>
                 </div>

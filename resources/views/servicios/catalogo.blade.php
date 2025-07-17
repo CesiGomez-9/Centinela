@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -29,11 +28,6 @@
             font-size: 0.9rem;
             color: red;
             margin-top: 0.5rem;
-        }
-        .pagination .page-item.active .page-link {
-            background-color: #000 !important;
-            border-color: #000 !important;
-            color: #fff !important;
         }
     </style>
 </head>

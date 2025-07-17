@@ -23,7 +23,8 @@ class FacturaVentaController extends Controller
     public function create()
     {
         // Obtener productos con sus detalles relacionados
-        $productos = Producto::with('detallesFactura')->get();
+        $productos = Producto::with('detalleFactura')->get();
+
 
         // Obtener clientes reales desde la base de datos
         $clientes = Cliente::orderBy('nombre')->get();
@@ -95,23 +96,37 @@ class FacturaVentaController extends Controller
                     'cantidad' => $producto['cantidad'],
                     'iva' => $producto['iva'],
                     'subtotal' => ($producto['precioVenta'] * $producto['cantidad']) * (1 + $producto['iva'] / 100),
+                    'responsable_id' => $validatedData['responsable_id'],
                 ]);
+
             }
 
             DB::commit();
+
             return redirect()->route('facturas_ventas.index')->with('success', 'Factura de venta creada correctamente.');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withErrors(['error' => 'Ocurrió un error al guardar la factura: ' . $e->getMessage()])->withInput();
+            // Al usar $request->validate, para conservar los datos debes hacer return back()->withInput()
+            return back()
+                ->withErrors(['error' => 'Ocurrió un error al guardar la factura: ' . $e->getMessage()])
+                ->withInput();
         }
     }
 
     public function show($id)
     {
-        $factura = FacturaVenta::with('cliente', 'detalles', 'empleados')->findOrFail($id);
+
+        $factura = FacturaVenta::with('detalles')->find($id);
+
+        foreach($factura->detalles as $detalle) {
+            dd($detalle->iva); // Aquí haces la prueba
+        }
+
+        $factura = FacturaVenta::with('cliente', 'detalles.producto', 'empleado')->findOrFail($id);
         return view('facturas_ventas.show', compact('factura'));
     }
+
 
     public function edit($id)
     {
@@ -160,8 +175,7 @@ class FacturaVentaController extends Controller
                 DetalleFacturaVenta::create([
                     'factura_venta_id' => $factura->id,
                     'producto_id' => $producto['product_id'],
-                    'responsable_id.required' => 'El responsable es obligatorio.',
-                    'responsable_id.exists' => 'El empleado responsable seleccionado no es válido.',
+                    'responsable_id' => $validatedData['responsable_id'], // ✅ Aquí el fix
                     'nombre' => $producto['nombre'],
                     'categoria' => $producto['categoria'] ?? null,
                     'precio_venta' => $producto['precioVenta'],
@@ -170,6 +184,7 @@ class FacturaVentaController extends Controller
                     'subtotal' => ($producto['precioVenta'] * $producto['cantidad']) * (1 + $producto['iva'] / 100),
                 ]);
             }
+
 
             DB::commit();
             return redirect()->route('facturas_ventas.show', $factura->id)->with('success', 'Factura de venta actualizada correctamente.');
