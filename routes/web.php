@@ -36,7 +36,6 @@ Route::get('/clientes/buscar', [App\Http\Controllers\ClienteController::class, '
 
 
 
-
 Route::get('/Proveedores/crear', [ProveedorController::class, 'create'])->name('Proveedores.create');
 
 

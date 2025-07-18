@@ -351,8 +351,8 @@
             const query = inputCliente.value;
 
             if (query.length >= 1) {
-                fetch(`/clientes/buscar?q=${encodeURIComponent(query)}`)
-                    .then(response => response.json())
+                fetch(/clientes/buscar?q=${encodeURIComponent(query)})
+            .then(response => response.json())
                     .then(clientes => {
                         resultsContainer.innerHTML = '';
                         if (clientes.length === 0) {
@@ -364,11 +364,11 @@
                             const item = document.createElement('button');
                             item.type = 'button';
                             item.classList.add('list-group-item', 'list-group-item-action');
-                            item.textContent = `${cliente.nombre} ${cliente.apellido} - ${cliente.identidad}`;
+                            item.textContent = ${cliente.nombre} ${cliente.apellido} - ${cliente.identidad};
                             item.dataset.id = cliente.id;
 
                             item.addEventListener('click', () => {
-                                inputCliente.value = `${cliente.nombre} ${cliente.apellido}`;
+                                inputCliente.value = ${cliente.nombre} ${cliente.apellido};
                                 clienteIdInput.value = cliente.id;
                                 resultsContainer.innerHTML = '';
                             });
@@ -420,30 +420,30 @@
 
 
     // --- Agregar producto a la factura ---
-        function agregarProductoAFactura(producto) {
-            const tablaFactura = document.getElementById('tablaFacturaBody');
-            const productosExistentes = Array.from(tablaFactura.querySelectorAll('tr')).map(tr => {
-                const idInput = tr.querySelector('input[name^="productos["][name$="][product_id]"]');
-                return idInput ? idInput.value : null;
-            }).filter(id => id !== null);
+    function agregarProductoAFactura(producto) {
+        const tablaFactura = document.getElementById('tablaFacturaBody');
+        const productosExistentes = Array.from(tablaFactura.querySelectorAll('tr')).map(tr => {
+            const idInput = tr.querySelector('input[name^="productos["][name$="][product_id]"]');
+            return idInput ? idInput.value : null;
+        }).filter(id => id !== null);
 
-            if (productosExistentes.includes(producto.id)) {
-                mostrarAlertaProductoDuplicado('El producto ya está agregado a la factura.');
-                return;
-            }
+        if (productosExistentes.includes(producto.id)) {
+            mostrarAlertaProductoDuplicado('El producto ya está agregado a la factura.');
+            return;
+        }
 
-            const filaVacia = document.getElementById('filaVacia');
-            if (filaVacia) filaVacia.remove();
+        const filaVacia = document.getElementById('filaVacia');
+        if (filaVacia) filaVacia.remove();
 
-            const newRowIndex = tablaFactura.querySelectorAll('tr').length;
-            const base = parseFloat(producto.precioVenta);
-            const ivaPorcentaje = parseFloat(producto.iva);
-            const impuestoCalculado = (ivaPorcentaje / 100) * base;
-            const subtotalLinea = base + impuestoCalculado;
+        const newRowIndex = tablaFactura.querySelectorAll('tr').length;
+        const base = parseFloat(producto.precioVenta);
+        const ivaPorcentaje = parseFloat(producto.iva);
+        const impuestoCalculado = (ivaPorcentaje / 100) * base;
+        const subtotalLinea = base + impuestoCalculado;
 
-            const nuevaFila = document.createElement('tr');
-            nuevaFila.dataset.index = newRowIndex;
-            nuevaFila.innerHTML = `
+        const nuevaFila = document.createElement('tr');
+        nuevaFila.dataset.index = newRowIndex;
+        nuevaFila.innerHTML = `
             <td>${newRowIndex + 1}</td>
             <td>
                 <input type="hidden" name="productos[${newRowIndex}][product_id]" value="${producto.id}">
@@ -474,205 +474,205 @@
             </td>
         `;
 
-            tablaFactura.appendChild(nuevaFila);
+        tablaFactura.appendChild(nuevaFila);
 
-            nuevaFila.querySelector('.btn-eliminar-producto').addEventListener('click', function () {
-                this.closest('tr').remove();
-                actualizarNumeracionFilas();
-                calcularTotalesGenerales();
-                actualizarFilaVacia();
+        nuevaFila.querySelector('.btn-eliminar-producto').addEventListener('click', function () {
+            this.closest('tr').remove();
+            actualizarNumeracionFilas();
+            calcularTotalesGenerales();
+            actualizarFilaVacia();
+        });
+
+        actualizarFilaVacia();
+        calcularTotalesGenerales();
+        actualizarNumeracionFilas();
+        ocultarAlertaProductoDuplicado();
+    }
+
+    function mostrarAlertaProductoDuplicado(mensaje) {
+        let contenedorAlerta = document.getElementById('alertaProductoDuplicado');
+        if (!contenedorAlerta) {
+            contenedorAlerta = document.createElement('div');
+            contenedorAlerta.id = 'alertaProductoDuplicado';
+            contenedorAlerta.className = 'alert alert-danger mt-2';
+            const formulario = document.getElementById('formFacturaVenta');
+            formulario.insertBefore(contenedorAlerta, formulario.firstChild);
+        }
+        contenedorAlerta.textContent = mensaje;
+        contenedorAlerta.style.display = 'block';
+    }
+
+    function ocultarAlertaProductoDuplicado() {
+        const contenedorAlerta = document.getElementById('alertaProductoDuplicado');
+        if (contenedorAlerta) {
+            contenedorAlerta.style.display = 'none';
+        }
+    }
+
+    // --- Limpiar formulario ---
+    const btnLimpiar = document.querySelector('button[type="reset"]');
+    if (btnLimpiar) {
+        btnLimpiar.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            const formulario = document.getElementById('formFacturaVenta');
+
+            // Limpiar campos (excepto hidden y botones)
+            formulario.querySelectorAll('input:not([type="hidden"]), select, textarea').forEach(el => {
+                if (el.type !== 'submit' && el.type !== 'button') {
+                    el.value = '';
+                }
             });
 
-            actualizarFilaVacia();
-            calcularTotalesGenerales();
-            actualizarNumeracionFilas();
-            ocultarAlertaProductoDuplicado();
-        }
+            // Limpiar Select2 si usas
+            $('#responsable_id').val('').trigger('change');
+            $('#formaPago').val('').trigger('change');
 
-        function mostrarAlertaProductoDuplicado(mensaje) {
-            let contenedorAlerta = document.getElementById('alertaProductoDuplicado');
-            if (!contenedorAlerta) {
-                contenedorAlerta = document.createElement('div');
-                contenedorAlerta.id = 'alertaProductoDuplicado';
-                contenedorAlerta.className = 'alert alert-danger mt-2';
-                const formulario = document.getElementById('formFacturaVenta');
-                formulario.insertBefore(contenedorAlerta, formulario.firstChild);
+            // Vaciar cliente buscado y resultados
+            const inputCliente = document.getElementById('searchInput');
+            const clienteIdInput = document.getElementById('cliente_id');
+            const resultsContainer = document.getElementById('searchResults');
+
+            if (inputCliente) inputCliente.value = '';
+            if (clienteIdInput) clienteIdInput.value = '';
+            if (resultsContainer) resultsContainer.innerHTML = '';
+
+            // Limpiar tabla productos
+            const tablaFacturaBody = document.getElementById('tablaFacturaBody');
+            if (tablaFacturaBody) {
+                tablaFacturaBody.innerHTML = '';
+                actualizarFilaVacia();
             }
-            contenedorAlerta.textContent = mensaje;
-            contenedorAlerta.style.display = 'block';
-        }
 
-        function ocultarAlertaProductoDuplicado() {
-            const contenedorAlerta = document.getElementById('alertaProductoDuplicado');
-            if (contenedorAlerta) {
-                contenedorAlerta.style.display = 'none';
-            }
-        }
-
-        // --- Limpiar formulario ---
-        const btnLimpiar = document.querySelector('button[type="reset"]');
-        if (btnLimpiar) {
-            btnLimpiar.addEventListener('click', function(e) {
-                e.preventDefault();
-
-                const formulario = document.getElementById('formFacturaVenta');
-
-                // Limpiar campos (excepto hidden y botones)
-                formulario.querySelectorAll('input:not([type="hidden"]), select, textarea').forEach(el => {
-                    if (el.type !== 'submit' && el.type !== 'button') {
-                        el.value = '';
-                    }
-                });
-
-                // Limpiar Select2 si usas
-                $('#responsable_id').val('').trigger('change');
-                $('#formaPago').val('').trigger('change');
-
-                // Vaciar cliente buscado y resultados
-                const inputCliente = document.getElementById('searchInput');
-                const clienteIdInput = document.getElementById('cliente_id');
-                const resultsContainer = document.getElementById('searchResults');
-
-                if (inputCliente) inputCliente.value = '';
-                if (clienteIdInput) clienteIdInput.value = '';
-                if (resultsContainer) resultsContainer.innerHTML = '';
-
-                // Limpiar tabla productos
-                const tablaFacturaBody = document.getElementById('tablaFacturaBody');
-                if (tablaFacturaBody) {
-                    tablaFacturaBody.innerHTML = '';
-                    actualizarFilaVacia();
+            // Reiniciar totales a cero
+            const idsTotales = [
+                'importeGravadoLabel',
+                'importeExentoLabel',
+                'isv15Label',
+                'isv18Label',
+                'subtotalGeneralLabel',
+                'totalGeneralLabel',
+                'inputSubtotalGeneral',
+                'inputImpuestosGeneral',
+                'inputTotalGeneral'
+            ];
+            idsTotales.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    if (el.tagName === 'INPUT') el.value = '0.00';
+                    else el.textContent = '0.00';
                 }
+            });
 
-                // Reiniciar totales a cero
-                const idsTotales = [
-                    'importeGravadoLabel',
-                    'importeExentoLabel',
-                    'isv15Label',
-                    'isv18Label',
-                    'subtotalGeneralLabel',
-                    'totalGeneralLabel',
-                    'inputSubtotalGeneral',
-                    'inputImpuestosGeneral',
-                    'inputTotalGeneral'
-                ];
-                idsTotales.forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el) {
-                        if (el.tagName === 'INPUT') el.value = '0.00';
-                        else el.textContent = '0.00';
-                    }
-                });
-
-                // Quitar clases de error/validación visual
-                formulario.querySelectorAll('.is-invalid, .is-valid').forEach(el => {
-                    el.classList.remove('is-invalid', 'is-valid');
-                });
+            // Quitar clases de error/validación visual
+            formulario.querySelectorAll('.is-invalid, .is-valid').forEach(el => {
+                el.classList.remove('is-invalid', 'is-valid');
+            });
 
 // Quitar los mensajes de error que están en texto debajo de inputs
-                formulario.querySelectorAll('.invalid-feedback, .text-danger, .error-mensaje-js').forEach(el => {
-                    el.textContent = '';
-                    el.style.display = 'none';
-                });
-
-
-                // Eliminar todas las alertas del DOM, para borrar errores de Laravel y JS
-                document.querySelectorAll('.alert').forEach(alerta => alerta.remove());
-
-                // Quitar clase que indica que el formulario fue validado
-                formulario.classList.remove('was-validated');
-            });
-        }
-
-
-
-        // --- Filtrar productos en modal ---
-        const inputBuscar = document.getElementById('searchInput');
-        const selectCategoria = document.getElementById('categoriaFiltro');
-        const mensaje = document.getElementById('mensajeCoincidencias');
-
-        function filtrarProductos() {
-            const texto = inputBuscar.value.toLowerCase().trim();
-            const categoria = selectCategoria.value.toLowerCase();
-            const filas = document.querySelectorAll('#tablaProductosBody tr');
-
-            let coincidencias = 0;
-
-            filas.forEach(fila => {
-                const nombre = fila.cells[0].textContent.toLowerCase();
-                const cat = fila.cells[1].textContent.toLowerCase();
-
-                const coincideTexto = nombre.includes(texto);
-                const coincideCategoria = categoria === '' || cat === categoria;
-
-                if (coincideTexto && coincideCategoria) {
-                    fila.style.display = '';
-                    coincidencias++;
-                } else {
-                    fila.style.display = 'none';
-                }
+            formulario.querySelectorAll('.invalid-feedback, .text-danger, .error-mensaje-js').forEach(el => {
+                el.textContent = '';
+                el.style.display = 'none';
             });
 
-            if (mensaje) {
-                mensaje.textContent = coincidencias === 0
-                    ? 'No se encontraron productos.'
-                    : `Se encontraron ${coincidencias} producto(s).`;
-            }
-        }
 
-        if (inputBuscar && selectCategoria) {
-            inputBuscar.addEventListener('input', filtrarProductos);
-            selectCategoria.addEventListener('change', filtrarProductos);
-        }
+            // Eliminar todas las alertas del DOM, para borrar errores de Laravel y JS
+            document.querySelectorAll('.alert').forEach(alerta => alerta.remove());
 
-        const tablaProductosBody = document.getElementById('tablaProductosBody');
-        const modalProductos = new bootstrap.Modal(document.getElementById('productosModal'));
+            // Quitar clase que indica que el formulario fue validado
+            formulario.classList.remove('was-validated');
+        });
+    }
 
-        tablaProductosBody.addEventListener('click', function (e) {
-            const btn = e.target.closest('.btnSeleccionarProducto');
-            if (btn) {
-                const producto = {
-                    id: btn.dataset.id,
-                    nombre: btn.dataset.nombre,
-                    categoria: btn.dataset.categoria,
-                    precioVenta: btn.dataset.precioventa,
-                    iva: btn.dataset.iva
-                };
 
-                agregarProductoAFactura(producto);
-                modalProductos.hide();
+
+    // --- Filtrar productos en modal ---
+    const inputBuscar = document.getElementById('searchInput');
+    const selectCategoria = document.getElementById('categoriaFiltro');
+    const mensaje = document.getElementById('mensajeCoincidencias');
+
+    function filtrarProductos() {
+        const texto = inputBuscar.value.toLowerCase().trim();
+        const categoria = selectCategoria.value.toLowerCase();
+        const filas = document.querySelectorAll('#tablaProductosBody tr');
+
+        let coincidencias = 0;
+
+        filas.forEach(fila => {
+            const nombre = fila.cells[0].textContent.toLowerCase();
+            const cat = fila.cells[1].textContent.toLowerCase();
+
+            const coincideTexto = nombre.includes(texto);
+            const coincideCategoria = categoria === '' || cat === categoria;
+
+            if (coincideTexto && coincideCategoria) {
+                fila.style.display = '';
+                coincidencias++;
+            } else {
+                fila.style.display = 'none';
             }
         });
 
-        function actualizarNumeracionFilas() {
-            const tablaFactura = document.getElementById('tablaFacturaBody');
-            if (!tablaFactura) return;
-            const filas = tablaFactura.querySelectorAll('tr:not(#filaVacia)');
-
-            filas.forEach((fila, index) => {
-                fila.dataset.index = index;
-                fila.cells[0].textContent = index + 1;
-
-                fila.querySelectorAll('input').forEach(input => {
-                    if (input.name) {
-                        input.name = input.name.replace(/productos\[\d+\]/, `productos[${index}]`);
-                    }
-                });
-            });
+        if (mensaje) {
+            mensaje.textContent = coincidencias === 0
+                ? 'No se encontraron productos.'
+                : Se encontraron ${coincidencias} producto(s).;
         }
+    }
 
-        function actualizarFilaVacia() {
-            const tablaFactura = document.getElementById('tablaFacturaBody');
-            if (!tablaFactura) return;
-            let filaVacia = document.getElementById('filaVacia');
-            const productosReales = tablaFactura.querySelectorAll('tr:not(#filaVacia)');
+    if (inputBuscar && selectCategoria) {
+        inputBuscar.addEventListener('input', filtrarProductos);
+        selectCategoria.addEventListener('change', filtrarProductos);
+    }
 
-            if (productosReales.length === 0) {
-                if (!filaVacia) {
-                    filaVacia = document.createElement('tr');
-                    filaVacia.id = 'filaVacia';
-                    filaVacia.className = 'fila-vacia';
-                    filaVacia.innerHTML = `
+    const tablaProductosBody = document.getElementById('tablaProductosBody');
+    const modalProductos = new bootstrap.Modal(document.getElementById('productosModal'));
+
+    tablaProductosBody.addEventListener('click', function (e) {
+        const btn = e.target.closest('.btnSeleccionarProducto');
+        if (btn) {
+            const producto = {
+                id: btn.dataset.id,
+                nombre: btn.dataset.nombre,
+                categoria: btn.dataset.categoria,
+                precioVenta: btn.dataset.precioventa,
+                iva: btn.dataset.iva
+            };
+
+            agregarProductoAFactura(producto);
+            modalProductos.hide();
+        }
+    });
+
+    function actualizarNumeracionFilas() {
+        const tablaFactura = document.getElementById('tablaFacturaBody');
+        if (!tablaFactura) return;
+        const filas = tablaFactura.querySelectorAll('tr:not(#filaVacia)');
+
+        filas.forEach((fila, index) => {
+            fila.dataset.index = index;
+            fila.cells[0].textContent = index + 1;
+
+            fila.querySelectorAll('input').forEach(input => {
+                if (input.name) {
+                    input.name = input.name.replace(/productos\[\d+\]/, productos[${index}]);
+                }
+            });
+        });
+    }
+
+    function actualizarFilaVacia() {
+        const tablaFactura = document.getElementById('tablaFacturaBody');
+        if (!tablaFactura) return;
+        let filaVacia = document.getElementById('filaVacia');
+        const productosReales = tablaFactura.querySelectorAll('tr:not(#filaVacia)');
+
+        if (productosReales.length === 0) {
+            if (!filaVacia) {
+                filaVacia = document.createElement('tr');
+                filaVacia.id = 'filaVacia';
+                filaVacia.className = 'fila-vacia';
+                filaVacia.innerHTML = `
                     <td colspan="8" class="text-center text-muted py-4" style="border: 1px dashed #dee2e6; background-color: #f8f9fa;">
                         <i class="bi bi-inbox" style="font-size: 2rem; opacity: 0.5;"></i>
                         <br>
@@ -681,78 +681,78 @@
                         <small style="font-size: 0.8rem; opacity: 0.7;">Haga clic en "Buscar Productos" para agregar productos a la factura</small>
                     </td>
                 `;
-                    tablaFactura.appendChild(filaVacia);
-                } else {
-                    filaVacia.style.display = 'table-row';
-                }
+                tablaFactura.appendChild(filaVacia);
             } else {
-                if (filaVacia) filaVacia.style.display = 'none';
+                filaVacia.style.display = 'table-row';
             }
+        } else {
+            if (filaVacia) filaVacia.style.display = 'none';
+        }
+    }
+
+    function calcularTotalesGenerales() {
+        let importeGravado = 0, importeExento = 0, isv15 = 0, isv18 = 0, subtotal = 0, total = 0;
+
+        const filas = document.querySelectorAll('#tablaFacturaBody tr');
+
+        filas.forEach(fila => {
+            const subtotalCell = fila.querySelector('.subtotal-producto');
+            if (!subtotalCell) return;
+
+            const precio = parseFloat(fila.querySelector('input[name$="[precioVenta]"]').value) || 0;
+            const cantidad = parseFloat(fila.querySelector('input[name$="[cantidad]"]').value) || 0;
+            const iva = parseFloat(fila.querySelector('input[name$="[iva]"]').value) || 0;
+
+            const base = precio * cantidad;
+            const impuesto = (iva / 100) * base;
+            const totalLinea = base + impuesto;
+
+            if (iva === 0) {
+                importeExento += base;
+            } else {
+                importeGravado += base;
+                if (iva === 15) isv15 += impuesto;
+                if (iva === 18) isv18 += impuesto;
+            }
+
+            subtotal += base;
+            total += totalLinea;
+
+            subtotalCell.textContent = totalLinea.toFixed(2);
+
+            document.getElementById('inputSubtotalGeneral').value = subtotal.toFixed(2);
+            document.getElementById('inputImpuestosGeneral').value = (isv15 + isv18).toFixed(2);
+            document.getElementById('inputTotalGeneral').value = total.toFixed(2);
+        });
+
+        document.getElementById('importeGravadoLabel').textContent = importeGravado.toFixed(2);
+        document.getElementById('importeExentoLabel').textContent = importeExento.toFixed(2);
+        document.getElementById('isv15Label').textContent = isv15.toFixed(2);
+        document.getElementById('isv18Label').textContent = isv18.toFixed(2);
+        document.getElementById('subtotalGeneralLabel').textContent = subtotal.toFixed(2);
+        document.getElementById('totalGeneralLabel').textContent = total.toFixed(2);
+    }
+
+    // --- Validación final antes de enviar el formulario ---
+    const form = document.getElementById('formFacturaVenta');
+    const btnGuardar = form.querySelector('button[type="submit"]');
+
+    form.addEventListener('submit', function (e) {
+        const productos = document.querySelectorAll('#tablaFacturaBody tr:not(#filaVacia)');
+        if (productos.length === 0) {
+            e.preventDefault();
+            const errorProductos = document.getElementById('errorProductos');
+            if (errorProductos) {
+                errorProductos.style.display = 'block';
+                errorProductos.textContent = 'Debe agregar al menos un producto antes de guardar.';
+            }
+            return false;
         }
 
-        function calcularTotalesGenerales() {
-            let importeGravado = 0, importeExento = 0, isv15 = 0, isv18 = 0, subtotal = 0, total = 0;
-
-            const filas = document.querySelectorAll('#tablaFacturaBody tr');
-
-            filas.forEach(fila => {
-                const subtotalCell = fila.querySelector('.subtotal-producto');
-                if (!subtotalCell) return;
-
-                const precio = parseFloat(fila.querySelector('input[name$="[precioVenta]"]').value) || 0;
-                const cantidad = parseFloat(fila.querySelector('input[name$="[cantidad]"]').value) || 0;
-                const iva = parseFloat(fila.querySelector('input[name$="[iva]"]').value) || 0;
-
-                const base = precio * cantidad;
-                const impuesto = (iva / 100) * base;
-                const totalLinea = base + impuesto;
-
-                if (iva === 0) {
-                    importeExento += base;
-                } else {
-                    importeGravado += base;
-                    if (iva === 15) isv15 += impuesto;
-                    if (iva === 18) isv18 += impuesto;
-                }
-
-                subtotal += base;
-                total += totalLinea;
-
-                subtotalCell.textContent = totalLinea.toFixed(2);
-
-                document.getElementById('inputSubtotalGeneral').value = subtotal.toFixed(2);
-                document.getElementById('inputImpuestosGeneral').value = (isv15 + isv18).toFixed(2);
-                document.getElementById('inputTotalGeneral').value = total.toFixed(2);
-            });
-
-            document.getElementById('importeGravadoLabel').textContent = importeGravado.toFixed(2);
-            document.getElementById('importeExentoLabel').textContent = importeExento.toFixed(2);
-            document.getElementById('isv15Label').textContent = isv15.toFixed(2);
-            document.getElementById('isv18Label').textContent = isv18.toFixed(2);
-            document.getElementById('subtotalGeneralLabel').textContent = subtotal.toFixed(2);
-            document.getElementById('totalGeneralLabel').textContent = total.toFixed(2);
+        if (btnGuardar) {
+            btnGuardar.disabled = true;
+            btnGuardar.innerHTML = <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Guardando...;
         }
-
-        // --- Validación final antes de enviar el formulario ---
-        const form = document.getElementById('formFacturaVenta');
-        const btnGuardar = form.querySelector('button[type="submit"]');
-
-        form.addEventListener('submit', function (e) {
-            const productos = document.querySelectorAll('#tablaFacturaBody tr:not(#filaVacia)');
-            if (productos.length === 0) {
-                e.preventDefault();
-                const errorProductos = document.getElementById('errorProductos');
-                if (errorProductos) {
-                    errorProductos.style.display = 'block';
-                    errorProductos.textContent = 'Debe agregar al menos un producto antes de guardar.';
-                }
-                return false;
-            }
-
-            if (btnGuardar) {
-                btnGuardar.disabled = true;
-                btnGuardar.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Guardando...`;
-            }
 
 
     });

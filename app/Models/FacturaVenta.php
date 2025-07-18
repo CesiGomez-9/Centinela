@@ -38,4 +38,3 @@ class FacturaVenta extends Model
     }
 
 }
-
