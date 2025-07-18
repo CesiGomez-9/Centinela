@@ -31,6 +31,8 @@ Route::get('/facturas_ventas/{factura_venta}', [\App\Http\Controllers\FacturaVen
 Route::get('/facturas_ventas/{factura_venta}/edit', [\App\Http\Controllers\FacturaVentaController::class, 'edit'])->name('facturas_ventas.edit');
 Route::put('/facturas_ventas/{factura_venta}', [\App\Http\Controllers\FacturaVentaController::class, 'update'])->name('facturas_ventas.update');
 
+Route::get('/clientes/buscar', [App\Http\Controllers\ClienteController::class, 'buscar'])->name('clientes.buscar');
+
 
 
 
@@ -65,6 +67,12 @@ Route::get('/servicios/index', [ServicioController::class, 'index'])->name('serv
 Route::post('/servicios', [ServicioController::class, 'store'])->name('servicios.store');
 Route::delete('/servicios/{id}', [ServicioController::class, 'destroy'])->name('servicios.destroy');
 Route::get('/catalogo', [ServicioController::class, 'catalogo'])->name('servicios.catalogo');
+Route::get('/servicios/{servicio}', [ServicioController::class, 'show'])->name('servicios.show');
+Route::get('/servicios/{servicio}/edit', [ServicioController::class, 'edit'])->name('servicios.edit');
+Route::put('/servicios/{id}', [ServicioController::class, 'update'])->name('servicios.update');
+
+
+
 
 
 

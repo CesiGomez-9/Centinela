@@ -50,6 +50,14 @@ class DetalleFactura extends Model
         return $this->belongsTo(Producto::class, 'product_id');
     }
 
+    public function facturaVenta()
+    {
+        return $this->belongsTo(FacturaVenta::class, 'factura_venta_id');
+    }
+
+
+
+
     // Eliminamos la relación 'public function producto()' para evitar ambigüedad
     // ya que 'productoInventario()' ya maneja la relación con el modelo Producto.
 }

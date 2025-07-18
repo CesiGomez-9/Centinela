@@ -18,10 +18,10 @@ return new class extends Migration
             $table->string('nombre');
             $table->string('marca')->nullable();
             $table->string('modelo')->nullable();
-            $table->integer('cantidad')->default(0); // Cantidad inicial del inventario
-            $table->foreignId('impuesto_id') // Nueva columna para la clave foránea
-            ->constrained('impuestos') // Relaciona con la tabla 'impuestos'
-            ->onDelete('restrict'); // Evita borrar un impuesto si hay productos asociados
+            $table->integer('cantidad')->default(0);
+            $table->foreignId('impuesto_id')
+            ->constrained('impuestos')
+            ->onDelete('restrict');
 
             $table->string('categoria');
             $table->text('descripcion')->nullable();

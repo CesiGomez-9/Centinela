@@ -9,16 +9,11 @@ class PrecioCompra extends Model
 {
     use HasFactory;
 
-    // Define los campos que pueden ser asignados masivamente.
     protected $fillable = [
-        'producto_id',   // ID del producto al que pertenece este registro de precio.
-        'precio_compra', // El precio de compra registrado.
+        'producto_id',
+        'precio_compra',
     ];
 
-    /**
-     * Define la relación muchos a uno con Producto.
-     * Un registro de PrecioCompra pertenece a un Producto.
-     */
     public function producto()
     {
         return $this->belongsTo(Producto::class);

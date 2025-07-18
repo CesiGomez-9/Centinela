@@ -30,19 +30,19 @@
             background-color: #0d1b2a;
             padding: 1.75rem 1.75rem;
             border-bottom: 4px solid #cda34f;
-            display: flex; /* Para alinear el título y la pequeña nota */
+            display: flex;
             align-items: center;
-            justify-content: center; /* Centrar el contenido del header */
-            position: relative; /* Para posicionar la nota de "Creado" */
+            justify-content: center;
+            position: relative;
         }
 
         .card-header h5 {
             color: #ffffff;
             font-weight: 700;
             font-size: 1.4rem;
-            text-align: center; /* Asegurar que el texto esté centrado */
-            flex-grow: 0; /* No permitir que el título ocupe todo el espacio */
-            margin-left: 0; /* Eliminar margen izquierdo */
+            text-align: center;
+            flex-grow: 0;
+            margin-left: 0;
         }
 
         .card-header small {
@@ -61,8 +61,8 @@
         }
 
         .card-body p {
-            margin-bottom: 0.3rem; /* Reducir el margen inferior para los párrafos */
-            font-size: 0.9rem; /* Hacer la fuente un poco más pequeña */
+            margin-bottom: 0.3rem;
+            font-size: 0.9rem;
         }
 
         .card-body i {
@@ -151,73 +151,73 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            justify-content: center; /* Centrar el espacio si no hay texto ni icono */
+            justify-content: center;
         }
 
         .invoice-header-info {
             display: flex;
-            justify-content: space-between; /* Distribuye el espacio entre las columnas */
+            justify-content: space-between;
             margin-bottom: 1.5rem;
             flex-wrap: wrap;
-            align-items: stretch; /* Hace que las columnas tengan la misma altura */
-            gap: 20px; /* Espacio entre las columnas */
+            align-items: stretch;
+            gap: 20px;
         }
 
         @media (max-width: 767.98px) {
             .invoice-header-info {
-                flex-direction: column; /* Se apilan en pantallas pequeñas */
+                flex-direction: column;
             }
         }
 
         .invoice-header-info .company-details,
         .invoice-header-info .invoice-details {
-            flex: 1; /* Permite que ambas columnas crezcan y ocupen el espacio */
-            min-width: 280px; /* Asegura que no se colapsen demasiado en pantallas pequeñas */
-            padding: 15px 20px; /* Más padding para los detalles */
+            flex: 1;
+            min-width: 280px;
+            padding: 15px 20px;
             border-radius: 8px;
             background-color: #fdfdfd;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* Sombra sutil */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
         .company-details {
-            display: flex; /* Para organizar el logo y el resto del contenido */
-            flex-direction: column; /* Apila el logo-and-name y la info de contacto */
-            align-items: flex-start; /* Alinea todo el contenido a la izquierda */
-            text-align: left; /* Asegura que el texto esté alineado a la izquierda */
-            gap: 10px; /* Espacio entre el bloque de logo/nombre y la info de contacto */
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
+            gap: 10px;
         }
 
         .logo-and-name {
-            display: flex; /* Para que el logo y el nombre estén a la par */
-            align-items: center; /* Centra verticalmente el logo y el nombre */
-            gap: 15px; /* Espacio entre el logo y el nombre */
-            margin-bottom: 5px; /* Espacio entre el nombre y la info de contacto */
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 5px;
         }
 
         .company-details img {
-            max-width: 120px; /* Tamaño del logo */
+            max-width: 120px;
             height: auto;
             border-radius: 5px;
-            flex-shrink: 0; /* Evita que el logo se encoja */
+            flex-shrink: 0;
         }
 
         .company-details strong {
-            font-size: 1.1rem; /* Un poco más grande para el nombre de la empresa */
-            display: block; /* Asegura que el strong ocupe su propia línea */
-            margin-bottom: 0; /* Eliminar margen inferior extra */
+            font-size: 1.1rem;
+            display: block;
+            margin-bottom: 0;
         }
 
         .company-address-contact p {
-            margin-bottom: 0.3rem; /* Ajustar margen para los párrafos dentro de esta sección */
-            font-size: 0.9rem; /* Hacer la fuente un poco más pequeña */
+            margin-bottom: 0.3rem;
+            font-size: 0.9rem;
         }
 
         .invoice-details {
             display: flex;
-            flex-direction: column; /* Apila los elementos verticalmente */
-            justify-content: center; /* Centra verticalmente el contenido dentro de la columna */
-            align-items: flex-start; /* Alinea el contenido a la izquierda */
-            text-align: left; /* Alinea el texto dentro de este contenedor */
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            text-align: left;
         }
 
         .invoice-details .invoice-details-grid {
@@ -226,24 +226,24 @@
         }
 
         .invoice-details .invoice-details-grid > div {
-            font-size: 0.9rem; /* Tamaño de fuente para los detalles */
-            margin-bottom: 0.5rem; /* Espacio entre cada línea de información */
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
         }
         .invoice-details .invoice-details-grid strong {
-            display: inline; /* Asegura que el strong no rompa la línea */
-            margin-right: 5px; /* Espacio entre la etiqueta y el valor */
+            display: inline;
+            margin-right: 5px;
         }
 
         .product-table-container {
             margin-top: 2rem;
-            margin-bottom: 2rem;
+            margin-bottom: 0.5rem; /* Reducido de 2rem a 0.5rem */
             border: 1px solid #e0e0e0;
             border-radius: 8px;
-            overflow: hidden; /* Para que los bordes redondeados se apliquen a la tabla */
+            overflow: hidden;
         }
 
         .product-table-container table {
-            margin-bottom: 0; /* Elimina el margen inferior predeterminado de la tabla */
+            margin-bottom: 0;
         }
 
         .product-table-container th,
@@ -269,40 +269,37 @@
         }
 
         .invoice-summary-totals {
-            margin-top: 2rem;
-            display: flex;
-            justify-content: flex-end;
+            margin-top: 0.5rem; /* Reducido de 1rem a 0.5rem */
         }
 
         .invoice-summary-totals .summary-box {
-            width: 100%;
-            max-width: 350px; /* Ancho máximo para la caja de resumen */
             border: 1px solid #e0e0e0;
             border-radius: 8px;
             padding: 15px;
             background-color: #fdfdfd;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
         .invoice-summary-totals .summary-item {
             display: flex;
             justify-content: space-between;
             margin-bottom: 8px;
-            font-size: 0.875rem; /* Tamaño de fuente unificado y más pequeño */
+            font-size: 0.875rem;
         }
 
         .invoice-summary-totals .summary-item strong {
             color: #0d1b2a;
-            font-weight: 600; /* Mantener negrita para las etiquetas */
+            font-weight: 600;
         }
 
         .invoice-summary-totals .summary-item span {
             font-weight: 500;
             color: #333;
-            font-size: 0.875rem; /* Asegurar que el valor tenga el mismo tamaño */
+            font-size: 0.875rem;
         }
 
         .invoice-summary-totals .summary-item.total {
-            font-size: 1rem; /* Mantener el total un poco más grande para destacarlo */
+            font-size: 1rem;
             font-weight: 700;
             border-top: 2px solid #cda34f;
             padding-top: 10px;
@@ -349,7 +346,7 @@
                         </div>
 
                         <h6 class="section-header">
-                            {{-- Solo el icono, sin texto --}}
+                            Productos comprados
                         </h6>
 
                         <div class="table-responsive product-table-container">
@@ -358,8 +355,7 @@
                                 <tr>
                                     <th>N°</th>
                                     <th>Descripción</th>
-                                    <th>Categoría</th>
-                                    <th>Precio compra (Lps)</th>
+                                    <th>Precio(Lps)</th>
                                     <th>Cantidad</th>
                                     <th>IVA%</th>
                                     <th>Subtotal(Lps)</th>
@@ -370,7 +366,6 @@
                                     <tr>
                                         <td>{{ $index + 1 }}</td>
                                         <td>{{ $detalle->producto }}</td>
-                                        <td>{{ $detalle->categoria }}</td>
                                         <td>{{ number_format($detalle->precio_compra, 2) }}</td>
                                         <td>{{ $detalle->cantidad }}</td>
                                         <td>{{ $detalle->iva }}%</td>
@@ -378,42 +373,47 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="text-muted fst-italic py-3">No hay productos agregados a esta factura.</td>
+                                        <td colspan="6" class="text-muted fst-italic py-3">No hay productos agregados a esta factura.</td>
                                     </tr>
                                 @endforelse
                                 </tbody>
                             </table>
                         </div>
 
-                        <div class="invoice-summary-totals">
-                            <div class="summary-box">
-                                <div class="summary-item">
-                                    <strong>Importe Gravado (Lps):</strong>
-                                    <span>{{ number_format($factura->importe_gravado, 2) }}</span>
-                                </div>
-                                <div class="summary-item">
-                                    <strong>Importe Exento (Lps):</strong>
-                                    <span>{{ number_format($factura->importe_exento, 2) }}</span>
-                                </div>
-                                <div class="summary-item">
-                                    <strong>Importe Exonerado (Lps):</strong>
-                                    <span>{{ number_format($factura->importe_exonerado, 2) }}</span>
-                                </div>
-                                <div class="summary-item">
-                                    <strong>Subtotal (Lps):</strong>
-                                    <span>{{ number_format($factura->subtotal, 2) }}</span>
-                                </div>
-                                <div class="summary-item">
-                                    <strong>ISV 15% (Lps):</strong>
-                                    <span>{{ number_format($factura->isv_15, 2) }}</span>
-                                </div>
-                                <div class="summary-item">
-                                    <strong>ISV 18% (Lps):</strong>
-                                    <span>{{ number_format($factura->isv_18, 2) }}</span>
-                                </div>
-                                <div class="summary-item total">
-                                    <strong>Total Final (Lps):</strong>
-                                    <span>{{ number_format($factura->totalF, 2) }}</span>
+                        {{-- Contenedor para los totales: ajustado para que sea más pequeño y a la derecha --}}
+                        <div class="row justify-content-end">
+                            <div class="col-md-6 col-lg-5"> {{-- Columna para limitar el ancho y alinear a la derecha --}}
+                                <div class="invoice-summary-totals">
+                                    <div class="summary-box">
+                                        <div class="summary-item">
+                                            <strong>Importe Gravado (Lps):</strong>
+                                            <span>{{ number_format($factura->importe_gravado, 2) }}</span>
+                                        </div>
+                                        <div class="summary-item">
+                                            <strong>Importe Exento (Lps):</strong>
+                                            <span>{{ number_format($factura->importe_exento, 2) }}</span>
+                                        </div>
+                                        <div class="summary-item">
+                                            <strong>Importe Exonerado (Lps):</strong>
+                                            <span>{{ number_format($factura->importe_exonerado, 2) }}</span>
+                                        </div>
+                                        <div class="summary-item">
+                                            <strong>Subtotal (Lps):</strong>
+                                            <span>{{ number_format($factura->subtotal, 2) }}</span>
+                                        </div>
+                                        <div class="summary-item">
+                                            <strong>ISV 15% (Lps):</strong>
+                                            <span>{{ number_format($factura->isv_15, 2) }}</span>
+                                        </div>
+                                        <div class="summary-item">
+                                            <strong>ISV 18% (Lps):</strong>
+                                            <span>{{ number_format($factura->isv_18, 2) }}</span>
+                                        </div>
+                                        <div class="summary-item total">
+                                            <strong>Total Final (Lps):</strong>
+                                            <span>{{ number_format($factura->totalF, 2) }}</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
