@@ -117,13 +117,13 @@
                         @endisset
                     </h3>
 
-                    <form method="POST" id="facturaForm" action="{{ isset($factura) ? route('facturas.update', $factura->id) : route('facturas.store') }}" novalidate>
+                    <form method="POST" id="facturaForm" action="{{ isset($factura) ? route('facturas_compras.update', $factura->id) : route('facturas_compras.store') }}" novalidate>
                         @csrf
                         @isset($factura)
                             @method('PUT')
                         @endisset
                         <div class="row g-4">
-                            {{-- Número de Factura --}}
+                            {{-- Número de FacturaCompra --}}
                             <div class="col-md-6">
                                 <label for="numeroFactura" class="form-label">Número de Factura</label>
                                 <div class="input-group">
@@ -235,7 +235,7 @@
                                 </div>
                             </div>
 
-                            {{-- Sección de Resumen de Factura --}}
+                            {{-- Sección de Resumen de FacturaCompra --}}
                             <div class="row mt-4 justify-content-end">
                                 <div class="col-md-6 col-lg-4">
                                     <div class="row g-1">
@@ -322,7 +322,7 @@
                             </div>
 
                             <div class="text-center mt-5">
-                                <a href="{{ route('facturas.index') }}" class="btn btn-danger me-2">
+                                <a href="{{ route('facturas_compras.index') }}" class="btn btn-danger me-2">
                                     <i class="bi bi-x-circle"></i> Cancelar
                                 </a>
 
@@ -1235,15 +1235,14 @@
                 console.log('DEBUG: Productos cargados desde old() data:', productsToLoad);
 
             } else {
-                // 2. Si no hay `old()` data, intentar cargar desde la factura existente (modo edición)
                 const existingFacturaDetalles = @json(isset($factura) ? $factura->detalles : null);
                 if (existingFacturaDetalles && existingFacturaDetalles.length > 0) {
                     productsToLoad = existingFacturaDetalles.map(detail => ({
                         product_id: String(detail.product_id || ''),
-                        nombre: String(detail.producto_inventario.nombre || ''), // Acceder a producto_inventario.nombre
+                        nombre: String(detail.producto_inventario.nombre || ''),
                         categoria: String(detail.producto_inventario.categoria || ''), // Acceder a producto_inventario.categoria
-                        precioCompra: parseInt(detail.precio_compra || 0), // Parsear como entero
-                        precioVenta: parseInt(detail.precio_venta || 0),   // Parsear como entero
+                        precioCompra: parseInt(detail.precio_compra || 0),
+                        precioVenta: parseInt(detail.precio_venta || 0),
                         cantidad: parseInt(detail.cantidad || 0),
                         iva: parseFloat(detail.iva || 0),
                         total: parseFloat(detail.total || 0)
@@ -1255,11 +1254,11 @@
             productoIndexCounter = productsToLoad.length;
 
             if (productsToLoad.length > 0) {
-                tablaFacturaBody.innerHTML = ''; // Limpiar la fila vacía si hay productos
+                tablaFacturaBody.innerHTML = '';
                 productsToLoad.forEach((producto, index) => {
                     const baseProductoRepoblado = producto.precioCompra * producto.cantidad;
                     const impuestoProductoRepoblado = (producto.iva / 100) * baseProductoRepoblado;
-                    const subtotalDisplay = (baseProductoRepoblado + impuestoProductoRepoblado).toFixed(2); // Mostrar con dos decimales
+                    const subtotalDisplay = (baseProductoRepoblado + impuestoProductoRepoblado).toFixed(2);
 
                     const nuevaFila = document.createElement('tr');
                     nuevaFila.dataset.index = index;

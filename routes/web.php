@@ -73,12 +73,12 @@ Route::get('/Proveedores/{id}', [ProveedorController::class, 'show'])->name('Pro
 
 
 Route::controller(FacturaCompraController::class)->group(function () {
-    Route::get('/facturas', 'index')->name('facturas.index');
-    Route::get('/facturas/{id}', 'show')->name('facturas.show')->whereNumber('id');
-    Route::get('/facturas/crear', 'create')->name('facturas.create');
-    Route::post('/facturas/crear', 'store')->name('facturas.store');
-    Route::get('/facturas/{id}/editar', 'edit')->name('facturas.edit')->whereNumber('id');
-    Route::put('/facturas/{id}/editar', 'update')->name('facturas.update')->whereNumber('id');
+    Route::get('/facturas_compras', 'index')->name('facturas_compras.index');
+    Route::get('/facturas_compras/{id}', 'show')->name('facturas_compras.show')->whereNumber('id');
+    Route::get('/facturas_compras/crear', 'create')->name('facturas_compras.create');
+    Route::post('/facturas_compras/crear', 'store')->name('facturas_compras.store');
+    Route::get('/facturas_compras/{id}/editar', 'edit')->name('facturas_compras.edit')->whereNumber('id');
+    Route::put('/facturas_compras/{id}/editar', 'update')->name('facturas_compras.update')->whereNumber('id');
 });
 
 Route::get('/Clientes/crear', [\App\Http\Controllers\ClienteController::class, 'create'])->name('Clientes.create');

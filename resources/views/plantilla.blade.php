@@ -45,12 +45,21 @@
                         <li><a class="dropdown-item" href="{{route('productos.index')}}">Inventario de productos</a></li>
                         <li><a class="dropdown-item" href="{{route('productos.create')}}">Registrar un nuevo producto</a></li>
                         <li><hr class="dropdown-divider"></li> {{-- Separador opcional --}}
-                        <li><a class="dropdown-item" href="{{route('facturas.index')}}">Listado de facturas de compra</a></li>
-                        <li><a class="dropdown-item" href="{{route('facturas.create')}}">Registrar una factura de compra</a></li>
+                        <li><a class="dropdown-item" href="{{route('facturas_compras.index')}}">Listado de facturas de compra</a></li>
+                        <li><a class="dropdown-item" href="{{route('facturas_compras.create')}}">Registrar una factura de compra</a></li>
+                        <li><hr class="dropdown-divider"></li> {{-- Separador opcional --}}
+                        <li><a class="dropdown-item" href="{{route('facturas_ventas.index')}}">Listado de facturas de venta</a></li>
+                        <li><a class="dropdown-item" href="{{route('facturas_ventas.create')}}">Registrar una factura de venta</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Servicios</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{{route('servicios.catalogo')}}">Listado de servicios</a></li>
+                        <li><a class="dropdown-item" href="{{route('servicios.index')}}">Registrar un nuevo servicio</a></li>
                     </ul>
                 </li>
                 <li class="nav-item"><a class="nav-link text-white" href="#">Registrate</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="#">Servicios</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="#">Nosotros</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="#">Contacto</a></li>
             </ul>

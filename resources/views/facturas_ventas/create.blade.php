@@ -58,7 +58,7 @@
                     @csrf
 
                     <div class="row g-4">
-                        {{-- Número de Factura --}}
+                        {{-- Número de FacturaCompra --}}
                         <div class="col-md-6">
                             <label for="numero" class="form-label">Número de Factura</label>
                             <div class="input-group">

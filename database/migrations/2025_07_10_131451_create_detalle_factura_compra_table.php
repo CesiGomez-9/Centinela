@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('detalles', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('factura_id')->constrained('facturas')->onDelete('cascade');
+            $table->foreignId('factura_id')->constrained('facturas_compras')->onDelete('cascade');
             $table->foreignId('product_id')->constrained('productos');
             $table->decimal('precio_compra', 10, 2);
             $table->decimal('precio_venta', 10, 2);

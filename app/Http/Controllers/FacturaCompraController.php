@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Factura;
+use App\Models\FacturaCompra;
 use App\Models\Proveedor;
 use App\Models\Empleado;
 use App\Models\Producto;
@@ -18,7 +18,7 @@ class FacturaCompraController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Factura::with(['detalles', 'proveedor', 'empleado']);
+        $query = FacturaCompra::with(['detalles', 'proveedor', 'empleado']);
 
         if ($request->has('search') && !empty($request->search)) {
             $searchTerm = $request->search;
@@ -34,7 +34,7 @@ class FacturaCompraController extends Controller
         }
 
         $facturas = $query->orderBy('fecha', 'desc')->paginate(10);
-        return view('facturas.index', compact('facturas'));
+        return view('facturas_compras.index', compact('facturas'));
     }
 
     public function create()
@@ -43,12 +43,12 @@ class FacturaCompraController extends Controller
         $empleados = Empleado::orderBy('nombre')->get();
         $formasPago = ['Efectivo', 'Cheque', 'Transferencia'];
 
-        return view('facturas.formulario', compact('proveedores', 'formasPago', 'empleados'));
+        return view('facturas_compras.formulario', compact('proveedores', 'formasPago', 'empleados'));
     }
     public function store(Request $request)
     {
         $request->validate([
-            'numero_factura' => ['required', 'string', 'max:20', Rule::unique('facturas', 'numero_factura')],
+            'numero_factura' => ['required', 'string', 'max:20', Rule::unique('facturas_compras', 'numero_factura')],
             'fecha' => [
                 'required',
                 'date',
@@ -124,7 +124,7 @@ class FacturaCompraController extends Controller
                 $impuestosGeneral = 0;
                 $totalFinal = 0;
 
-                $factura = Factura::create([
+                $factura = FacturaCompra::create([
                     'numero_factura' => $request->numero_factura,
                     'fecha' => $request->fecha,
                     'proveedor_id' => $request->proveedor_id,
@@ -211,7 +211,7 @@ class FacturaCompraController extends Controller
                 ]);
             });
 
-            return redirect()->route('facturas.index')->with('status', 'Factura registrada correctamente');
+            return redirect()->route('facturas_compras.index')->with('status', 'Factura registrada correctamente');
 
         } catch (\Throwable $e) {
             Log::error("Error al guardar factura: " . $e->getMessage() . " en " . $e->getFile() . " línea " . $e->getLine());
@@ -221,28 +221,28 @@ class FacturaCompraController extends Controller
 
     public function show(string $id)
     {
-        $factura = Factura::with(['detalles.productoInventario.impuesto', 'proveedor', 'empleado'])->findOrFail($id);
-        return view('facturas.show', compact('factura'));
+        $factura = FacturaCompra::with(['detalles.productoInventario.impuesto', 'proveedor', 'empleado'])->findOrFail($id);
+        return view('facturas_compras.show', compact('factura'));
     }
 
     public function edit(string $id)
     {
-        $factura = Factura::with(['detalles.productoInventario.impuesto', 'proveedor', 'empleado'])->findOrFail($id);
+        $factura = FacturaCompra::with(['detalles.productoInventario.impuesto', 'proveedor', 'empleado'])->findOrFail($id);
         $proveedores = Proveedor::orderBy('nombreEmpresa')->get();
         $empleados = Empleado::orderBy('nombre')->get();
         $formasPago = ['Efectivo', 'Cheque', 'Transferencia'];
 
         $factura->fecha = Carbon::parse($factura->fecha)->format('Y-m-d');
 
-        return view('facturas.formulario', compact('factura', 'proveedores', 'formasPago', 'empleados'));
+        return view('facturas_compras.formulario', compact('factura', 'proveedores', 'formasPago', 'empleados'));
     }
 
     public function update(Request $request, string $id)
     {
-        $factura = Factura::findOrFail($id);
+        $factura = FacturaCompra::findOrFail($id);
 
         $request->validate([
-            'numero_factura' => ['required', 'string', 'max:20', Rule::unique('facturas', 'numero_factura')->ignore($factura->id)],
+            'numero_factura' => ['required', 'string', 'max:20', Rule::unique('facturas_compras', 'numero_factura')->ignore($factura->id)],
             'fecha' => [
                 'required',
                 'date',
@@ -397,7 +397,7 @@ class FacturaCompraController extends Controller
                 ]);
             });
 
-            return redirect()->route('facturas.index')->with('status', 'Factura actualizada correctamente!');
+            return redirect()->route('facturas_compras.index')->with('status', 'Factura actualizada correctamente!');
 
         } catch (\Throwable $e) {
             Log::error("Error al actualizar factura: " . $e->getMessage() . " en " . $e->getFile() . " línea " . $e->getLine());

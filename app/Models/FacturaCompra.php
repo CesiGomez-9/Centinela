@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Factura extends Model
+class FacturaCompra extends Model
 {
     use HasFactory;
+
+    protected $table = 'facturas_compras';
 
     protected $fillable = [
         'numero_factura',
@@ -32,7 +34,7 @@ class Factura extends Model
      */
     public function detalles()
     {
-        return $this->hasMany(DetalleFacturaCompra::class);
+        return $this->hasMany(DetalleFacturaCompra::class, 'factura_id');
     }
 
     /**

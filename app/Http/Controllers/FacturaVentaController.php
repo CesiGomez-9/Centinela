@@ -134,7 +134,7 @@ class FacturaVentaController extends Controller
 
             DB::commit();
 
-            return redirect()->route('facturas_ventas.index')->with('success', 'Factura de venta creada correctamente.');
+            return redirect()->route('facturas_ventas.index')->with('success', 'FacturaCompra de venta creada correctamente.');
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -218,7 +218,7 @@ class FacturaVentaController extends Controller
 
 
             DB::commit();
-            return redirect()->route('facturas_ventas.show', $factura->id)->with('success', 'Factura de venta actualizada correctamente.');
+            return redirect()->route('facturas_ventas.show', $factura->id)->with('success', 'FacturaCompra de venta actualizada correctamente.');
 
         } catch (\Exception $e) {
             DB::rollBack();

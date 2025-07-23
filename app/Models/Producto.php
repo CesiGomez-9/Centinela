@@ -19,10 +19,12 @@ class Producto extends Model
         'impuesto_id',
         'categoria',
         'descripcion',
+        'precio_compra',
     ];
 
     protected $casts = [
         'cantidad' => 'integer',
+        'precio_compra' => 'decimal:2',
     ];
 
     /**
@@ -42,7 +44,10 @@ class Producto extends Model
         return $this->belongsTo(Impuesto::class);
     }
 
-
+    public function precioCompras()
+    {
+        return $this->hasMany(PrecioCompra::class);
+    }
 
     public function detallefactura()
     {
