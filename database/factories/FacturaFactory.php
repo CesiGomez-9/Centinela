@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\DetalleFactura;
+use App\Models\DetalleFacturaCompra;
 use App\Models\Factura;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -127,7 +127,7 @@ class FacturaFactory extends Factory
                 $ivaCalculado = ($iva / 100) * $subtotal;
                 $total = $subtotal + $ivaCalculado;
 
-                DetalleFactura::create([
+                DetalleFacturaCompra::create([
                     'factura_id' => $factura->id,
                     'producto' => $producto,
                     'categoria' => $categoria,

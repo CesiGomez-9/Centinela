@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Models\DetalleFactura;
+use App\Models\DetalleFacturaCompra;
 use App\Models\FacturaVenta;
 use App\Models\DetalleFacturaVenta;
 use App\Models\Cliente;

@@ -27,12 +27,12 @@ class Factura extends Model
     ];
 
     /**
-     * Relación uno a muchos con DetalleFactura.
+     * Relación uno a muchos con DetalleFacturaCompra.
      * Una factura puede tener muchos detalles de factura (productos).
      */
     public function detalles()
     {
-        return $this->hasMany(DetalleFactura::class);
+        return $this->hasMany(DetalleFacturaCompra::class);
     }
 
     /**
