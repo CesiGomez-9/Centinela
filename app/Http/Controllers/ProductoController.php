@@ -221,7 +221,7 @@ class ProductoController extends Controller
                 'max:50',
 
             ],
-            // 'cantidad' no se actualiza desde este formulario, solo desde FacturaController
+            // 'cantidad' no se actualiza desde este formulario, solo desde FacturaCompraController
             // 'es_exento' se reemplaza por 'impuesto_id'
             'impuesto_id' => 'required|exists:impuestos,id', // Validar que el ID del impuesto exista
             'descripcion' => [

@@ -14,7 +14,7 @@ use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
-class FacturaController extends Controller
+class FacturaCompraController extends Controller
 {
     public function index(Request $request)
     {
