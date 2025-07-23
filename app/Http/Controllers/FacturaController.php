@@ -7,18 +7,15 @@ use App\Models\Proveedor;
 use App\Models\Empleado;
 use App\Models\Producto;
 use App\Models\Impuesto;
-use App\Models\PrecioCompra; // Importar el modelo PrecioCompra
+use App\Models\PrecioCompra;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Log; // Asegúrate de importar la fachada Log
+use Illuminate\Support\Facades\Log;
 
 class FacturaController extends Controller
 {
-    /**
-     * Muestra una lista de los recursos.
-     */
     public function index(Request $request)
     {
         $query = Factura::with(['detalles', 'proveedor', 'empleado']);
@@ -37,13 +34,9 @@ class FacturaController extends Controller
         }
 
         $facturas = $query->orderBy('fecha', 'desc')->paginate(10);
-
         return view('facturas.index', compact('facturas'));
     }
 
-    /**
-     * Muestra el formulario para crear un nuevo recurso.
-     */
     public function create()
     {
         $proveedores = Proveedor::orderBy('nombreEmpresa')->get();
@@ -52,11 +45,6 @@ class FacturaController extends Controller
 
         return view('facturas.formulario', compact('proveedores', 'formasPago', 'empleados'));
     }
-
-    /**
-     * Almacena un recurso recién creado en el almacenamiento.
-     * @throws \Throwable
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -72,19 +60,19 @@ class FacturaController extends Controller
             'responsable_id' => ['required', 'exists:empleados,id'],
             'productos' => ['required', 'array', 'min:1'],
             'productos.*.product_id' => ['required', 'exists:productos,id'],
-            'productos.*.nombre' => ['required', 'string', 'max:255'],
-            'productos.*.categoria' => ['required', 'string', 'max:255'],
+            'productos.*.nombre' => ['required', 'string', 'max:255'], // Se mantiene para lógica de negocio
+            'productos.*.categoria' => ['required', 'string', 'max:255'], // Se mantiene para lógica de negocio
             'productos.*.precioCompra' => [
                 'required',
-                'integer', // Ahora es entero
+                'integer',
                 'min:0',
-                'max:9999', // Máximo 4 dígitos enteros
+                'max:9999',
             ],
             'productos.*.precioVenta' => [
                 'required',
-                'integer', // Ahora es entero
+                'integer',
                 'min:0',
-                'max:9999', // Máximo 4 dígitos enteros
+                'max:9999',
                 function ($attribute, $value, $fail) use ($request) {
                     $index = explode('.', $attribute)[1];
                     $precioCompra = $request->input("productos.{$index}.precioCompra");
@@ -97,8 +85,8 @@ class FacturaController extends Controller
                 'required',
                 'integer',
                 'min:1',
-                'max:999', // Máximo 3 dígitos enteros
-                'digits_between:1,3', // Asegura que la cantidad tenga entre 1 y 3 dígitos
+                'max:999',
+                'digits_between:1,3',
             ],
         ], [
             'numero_factura.unique' => 'El número de factura ingresado ya existe. Por favor, ingrese uno diferente.',
@@ -179,42 +167,31 @@ class FacturaController extends Controller
 
                         $factura->detalles()->create([
                             'product_id' => $productoData['product_id'],
-                            'producto' => $productoData['nombre'],
-                            'categoria' => $productoData['categoria'],
                             'precio_compra' => $productoData['precioCompra'],
                             'precio_venta' => $productoData['precioVenta'],
                             'cantidad' => $productoData['cantidad'],
-                            'iva' => $porcentajeIVA,
-                            'total' => $totalProducto,
+
                         ]);
 
-                        // Lógica para actualizar el precio de compra y venta del producto y registrar el historial de compra
                         $oldPrecioCompra = $producto->precio_compra;
                         $newPrecioCompra = $productoData['precioCompra'];
                         $newPrecioVenta = $productoData['precioVenta'];
 
-                        // Actualizar la cantidad del producto en inventario
                         $producto->cantidad += $productoData['cantidad'];
 
-                        // Asignar siempre el nuevo precio de venta al producto
-                        // Esto asegura que el precio de venta en el producto refleje la última compra/actualización
                         $producto->precio_venta = $newPrecioVenta;
 
-                        // Si el precio de compra ha cambiado, actualizarlo en el producto y registrar en el historial
-                        // Usamos un pequeño margen de error para comparar flotantes
-                        if (abs($newPrecioCompra - $oldPrecioCompra) > 0.001) { // Comparación segura para flotantes
+                        if (abs($newPrecioCompra - $oldPrecioCompra) > 0.001) {
                             $producto->precio_compra = $newPrecioCompra;
                             PrecioCompra::create([
                                 'producto_id' => $producto->id,
                                 'precio_compra' => $newPrecioCompra,
                             ]);
                         } else {
-                            // Si el precio de compra no cambió, asegúrate de que el valor actual del producto sea el del formulario
-                            // Esto es importante si el precio_compra en el producto era 0.00 inicialmente.
                             $producto->precio_compra = $newPrecioCompra;
                         }
 
-                        $producto->save(); // Guardar el producto con la cantidad, posible nuevo precio de compra y nuevo precio de venta
+                        $producto->save();
                     } else {
                         Log::warning("Producto o Impuesto asociado no encontrado para ID {$productoData['product_id']} al crear factura.");
                     }
@@ -242,20 +219,12 @@ class FacturaController extends Controller
         }
     }
 
-    /**
-     * Muestra el recurso especificado.
-     */
     public function show(string $id)
     {
-        // Cargar las relaciones necesarias para mostrar los detalles completos
-        // Asegúrate de que 'productoInventario' está definida en tu modelo Detalle
         $factura = Factura::with(['detalles.productoInventario.impuesto', 'proveedor', 'empleado'])->findOrFail($id);
         return view('facturas.show', compact('factura'));
     }
 
-    /**
-     * Muestra el formulario para editar el recurso especificado.
-     */
     public function edit(string $id)
     {
         $factura = Factura::with(['detalles.productoInventario.impuesto', 'proveedor', 'empleado'])->findOrFail($id);
@@ -268,9 +237,6 @@ class FacturaController extends Controller
         return view('facturas.formulario', compact('factura', 'proveedores', 'formasPago', 'empleados'));
     }
 
-    /**
-     * Actualiza el recurso especificado en el almacenamiento.
-     */
     public function update(Request $request, string $id)
     {
         $factura = Factura::findOrFail($id);
@@ -292,15 +258,15 @@ class FacturaController extends Controller
             'productos.*.categoria' => ['required', 'string', 'max:255'],
             'productos.*.precioCompra' => [
                 'required',
-                'integer', // Ahora es entero
+                'integer',
                 'min:0',
-                'max:9999', // Máximo 4 dígitos enteros
+                'max:9999',
             ],
             'productos.*.precioVenta' => [
                 'required',
-                'integer', // Ahora es entero
+                'integer',
                 'min:0',
-                'max:9999', // Máximo 4 dígitos enteros
+                'max:9999',
                 function ($attribute, $value, $fail) use ($request) {
                     $index = explode('.', $attribute)[1];
                     $precioCompra = $request->input("productos.{$index}.precioCompra");
@@ -313,8 +279,8 @@ class FacturaController extends Controller
                 'required',
                 'integer',
                 'min:1',
-                'max:999', // Máximo 3 dígitos enteros
-                'digits_between:1,3', // Asegura que la cantidad tenga entre 1 y 3 dígitos
+                'max:999',
+                'digits_between:1,3',
             ],
         ], [
             'numero_factura.unique' => 'El número de factura ingresado ya existe. Por favor, ingrese uno diferente.',
@@ -343,7 +309,6 @@ class FacturaController extends Controller
 
         try {
             DB::transaction(function () use ($request, $factura) {
-                // 1. Revertir las cantidades de los productos de la factura ORIGINAL al inventario
                 foreach ($factura->detalles as $originalDetail) {
                     $productoOriginal = Producto::find($originalDetail->product_id);
                     if ($productoOriginal) {
@@ -351,8 +316,6 @@ class FacturaController extends Controller
                         $productoOriginal->save();
                     }
                 }
-
-                // 2. Eliminar todos los detalles de la factura existente (para reemplazarlos por los nuevos)
                 $factura->detalles()->delete();
 
                 $importeGravado = 0;
@@ -364,7 +327,6 @@ class FacturaController extends Controller
                 $impuestosGeneral = 0;
                 $totalFinal = 0;
 
-                // 3. Itera sobre los productos enviados en la solicitud (los nuevos detalles)
                 foreach ($request->productos as $productoData) {
                     $producto = Producto::with('impuesto')->find($productoData['product_id']);
 
@@ -392,39 +354,30 @@ class FacturaController extends Controller
 
                         $factura->detalles()->create([
                             'product_id' => $productoData['product_id'],
-                            'producto' => $productoData['nombre'],
-                            'categoria' => $productoData['categoria'],
                             'precio_compra' => $productoData['precioCompra'],
                             'precio_venta' => $productoData['precioVenta'],
                             'cantidad' => $productoData['cantidad'],
-                            'iva' => $porcentajeIVA,
-                            'total' => $totalProducto,
                         ]);
 
-                        // Lógica para actualizar el precio de compra y venta del producto y registrar el historial de compra
                         $oldPrecioCompra = $producto->precio_compra;
                         $newPrecioCompra = $productoData['precioCompra'];
                         $newPrecioVenta = $productoData['precioVenta'];
 
-                        // Actualizar la cantidad del producto en inventario
                         $producto->cantidad += $productoData['cantidad'];
 
-                        // Asignar siempre el nuevo precio de venta al producto
                         $producto->precio_venta = $newPrecioVenta;
 
-                        // Si el precio de compra ha cambiado, actualizarlo en el producto y registrar en el historial
-                        if (abs($newPrecioCompra - $oldPrecioCompra) > 0.001) { // Comparación segura para flotantes
+                        if (abs($newPrecioCompra - $oldPrecioCompra) > 0.001) {
                             $producto->precio_compra = $newPrecioCompra;
                             PrecioCompra::create([
                                 'producto_id' => $producto->id,
                                 'precio_compra' => $newPrecioCompra,
                             ]);
                         } else {
-                            // Si el precio de compra no cambió, asegúrate de que el valor actual del producto sea el del formulario
                             $producto->precio_compra = $newPrecioCompra;
                         }
 
-                        $producto->save(); // Guardar el producto con la cantidad, posible nuevo precio de compra y nuevo precio de venta
+                        $producto->save();
                     } else {
                         Log::warning("Producto o Impuesto asociado no encontrado para ID {$productoData['product_id']} al actualizar factura.");
                     }

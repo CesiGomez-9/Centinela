@@ -169,7 +169,7 @@
             }
         }
 
-        .invoice-header-info .company-details,
+        .invoice-header-info .supplier-details,
         .invoice-header-info .invoice-details {
             flex: 1;
             min-width: 280px;
@@ -179,7 +179,7 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
-        .company-details {
+        .supplier-details {
             display: flex;
             flex-direction: column;
             align-items: flex-start;
@@ -187,27 +187,28 @@
             gap: 10px;
         }
 
-        .logo-and-name {
+        .supplier-details .logo-and-name {
             display: flex;
             align-items: center;
             gap: 15px;
             margin-bottom: 5px;
         }
 
-        .company-details img {
+        .supplier-details img {
             max-width: 120px;
             height: auto;
             border-radius: 5px;
             flex-shrink: 0;
+            display: none;
         }
 
-        .company-details strong {
-            font-size: 1.1rem;
+        .supplier-details strong {
+            font-size: 0.9rem;
             display: block;
             margin-bottom: 0;
         }
 
-        .company-address-contact p {
+        .supplier-address-contact p {
             margin-bottom: 0.3rem;
             font-size: 0.9rem;
         }
@@ -236,7 +237,7 @@
 
         .product-table-container {
             margin-top: 2rem;
-            margin-bottom: 0.5rem; /* Reducido de 2rem a 0.5rem */
+            margin-bottom: 0.5rem;
             border: 1px solid #e0e0e0;
             border-radius: 8px;
             overflow: hidden;
@@ -269,7 +270,7 @@
         }
 
         .invoice-summary-totals {
-            margin-top: 0.5rem; /* Reducido de 1rem a 0.5rem */
+            margin-top: 0.5rem;
         }
 
         .invoice-summary-totals .summary-box {
@@ -321,23 +322,22 @@
                     </div>
                     <div class="card-body">
                         <div class="invoice-header-info">
-                            <div class="company-details">
+                            <div class="supplier-details">
                                 <div class="logo-and-name">
-                                    <img src="{{ asset('centinela.jpg') }}" alt="Logo de la Empresa Centinela">
-                                    <strong>GRUPO CENTINELA</strong>
+                                    <strong>{{ $factura->proveedor->nombreEmpresa }}</strong>
                                 </div>
-                                <div class="company-address-contact">
-                                    <p>RTN: 06021999123456.</p>
-                                    <p>Dirección: Barrio Oriental, cuatro cuadras al sur del parque central, Danlí, El Paraíso, Honduras.</p>
-                                    <p>Teléfono fijo: +504 2763-3585.</p>
-                                    <p>Teléfono celular: +504 9322-5352.</p>
-                                    <p>Email: grupocentinela.hn@gmail.com.</p>
+                                <div class="supplier-address-contact">
+                                    <p><strong>Dirección:</strong> {{ $factura->proveedor->direccion }}.</p>
+                                    <p><strong>Teléfono de la empresa:</strong> {{ $factura->proveedor->telefonodeempresa }}.</p>
+                                    <p><strong>Email:</strong> {{ $factura->proveedor->correoempresa }}.</p>
+                                    <p><strong>Representante:</strong> {{ $factura->proveedor->nombrerepresentante }}.</p>
+                                    <p><strong>Teléfono Representante:</strong> {{ $factura->proveedor->telefonoderepresentante }}.</p>
                                 </div>
                             </div>
                             <div class="invoice-details">
                                 <div class="invoice-details-grid">
                                     <div><strong>Factura de compra N°:</strong> {{ $factura->numero_factura }}.</div>
-                                    <div><strong>Fecha comprobante:</strong> {{ \Carbon\Carbon::parse($factura->fecha)->format('d/m/Y') }}.</div>
+                                    <div><strong>Fecha de la factura:</strong> {{ \Carbon\Carbon::parse($factura->fecha)->format('d/m/Y') }}.</div>
                                     <div><strong>Proveedor:</strong> {{ $factura->proveedor->nombreEmpresa }}.</div>
                                     <div><strong>Forma de pago:</strong> {{ $factura->forma_pago }}.</div>
                                     <div><strong>Responsable:</strong> {{ $factura->empleado->nombre }} {{ $factura->empleado->apellido }}.</div>
@@ -382,7 +382,7 @@
 
                         {{-- Contenedor para los totales: ajustado para que sea más pequeño y a la derecha --}}
                         <div class="row justify-content-end">
-                            <div class="col-md-6 col-lg-5"> {{-- Columna para limitar el ancho y alinear a la derecha --}}
+                            <div class="col-md-6 col-lg-5">
                                 <div class="invoice-summary-totals">
                                     <div class="summary-box">
                                         <div class="summary-item">

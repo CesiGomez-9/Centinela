@@ -9,13 +9,12 @@
             background-color: #e6f0ff;
             margin: 0;
         }
-        /* Mantener .error-message para los errores de JS en productos del modal */
         .error-message {
             color: #dc3545;
             font-size: 0.875em;
             margin-top: 0.25rem;
-            display: none; /* Controlado por JS para mostrar/ocultar */
-            width: 100%; /* Asegura que ocupe todo el ancho disponible de su contenedor */
+            display: none;
+            width: 100%;
         }
         .field-error {
             border-color: #dc3545;
@@ -24,23 +23,20 @@
             border-color: #dc3545;
         }
 
-        /* CSS de depuración: Asegura la visibilidad del texto en la tabla */
         #tablaFacturaBody td {
-            color: black !important; /* Fuerza el color del texto a negro */
-            font-size: 1rem !important; /* Asegura un tamaño de fuente legible */
-            visibility: visible !important; /* Asegura que el elemento sea visible */
-            opacity: 1 !important; /* Asegura que no sea transparente */
-            background-color: #ffffff !important; /* Fondo blanco para contraste */
-            min-width: 50px; /* Asegura un ancho mínimo para las celdas */
-            padding: 8px; /* Añade un poco de padding para que el texto no esté pegado */
+            color: black !important;
+            font-size: 1rem !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            background-color: #ffffff !important;
+            min-width: 50px;
+            padding: 8px;
         }
 
-        /* Opcional: Si el texto está muy pegado al input hidden */
         #tablaFacturaBody td input[type="hidden"] + * {
             margin-left: 5px;
         }
 
-        /* CSS para asegurar que el modal y su backdrop se oculten completamente */
         .modal:not(.show) {
             display: none !important;
         }
@@ -49,63 +45,58 @@
             opacity: 0 !important;
         }
 
-        /* Estilos específicos para la sección de resumen */
         .summary-value-box {
             background-color: #e9ecef;
             border: 1px solid #ced4da;
             border-radius: 0.25rem;
             padding: 0.375rem 0.75rem;
             text-align: end;
-            font-weight: normal !important; /* Asegura que no haya negrita */
-            box-sizing: border-box; /* Incluye padding y border en el ancho */
-            width: 100%; /* Asegura que tome el 100% del ancho de su columna col-4 */
+            font-weight: normal !important;
+            box-sizing: border-box;
+            width: 100%;
         }
 
-        /* Estilos para el modal */
         #productosModal .modal-body {
-            font-size: 0.95rem; /* Tamaño de fuente para el cuerpo del modal */
+            font-size: 0.95rem;
         }
         #productosModal .table th,
         #productosModal .table td {
-            font-size: 0.9rem; /* Tamaño de fuente para las celdas de la tabla del modal */
+            font-size: 0.9rem;
         }
         #productosModal .form-label {
-            font-size: 0.95rem; /* Tamaño de fuente para las etiquetas de los formularios en el modal */
+            font-size: 0.95rem;
         }
         #productosModal .form-control {
-            font-size: 0.95rem; /* Tamaño de fuente para los inputs en el modal */
+            font-size: 0.95rem;
         }
 
-        /* Estilos para el formulario principal (ajustados para coincidir con el modal) */
         .form-label {
-            font-size: 0.95rem; /* Tamaño de fuente para las etiquetas del formulario principal */
+            font-size: 0.95rem;
         }
         .form-control, .form-select {
-            font-size: 0.95rem; /* Tamaño de fuente para los inputs y selects del formulario principal */
+            font-size: 0.95rem;
         }
         #tablaFacturaProductos th,
         #tablaFacturaProductos td {
-            font-size: 0.9rem; /* Tamaño de fuente para la tabla principal */
+            font-size: 0.9rem;
         }
         .summary-value-box {
-            font-size: 0.95rem; /* Ajustar el tamaño de la letra en las cajas de resumen */
+            font-size: 0.95rem;
         }
 
-        /* Hacer más pequeños los textfields de precio compra, precio venta y cantidad en el modal */
         #productosModal .form-edicion-producto input[type="number"] {
-            max-width: 100px; /* Ajusta este valor según sea necesario */
-            display: inline-block; /* Asegura que no rompa el diseño de la línea */
+            max-width: 100px;
+            display: inline-block;
         }
 
-        /* Reducir el espacio entre los campos de precio y cantidad en el modal */
         #productosModal .modal-product-inputs-row > [class*="col-"] {
-            padding-left: 0 !important; /* Elimina el padding izquierdo de las columnas */
-            padding-right: 0 !important; /* Elimina el padding derecho de las columnas */
+            padding-left: 0 !important;
+            padding-right: 0 !important;
         }
-        /* Añadir un pequeño margen entre los inputs para que no estén completamente pegados si se desea */
         #productosModal .modal-product-inputs-row .cantidad {
-            margin-right: 0.5rem; /* Margen a la derecha del campo cantidad */
+            margin-right: 0.5rem;
         }
+
     </style>
 
     <div class="container my-5">
@@ -142,7 +133,6 @@
                                            maxlength="20" value="{{ old('numero_factura', isset($factura) ? $factura->numero_factura : '') }}"
                                            onkeypress="validarTexto(event)" required>
                                 </div>
-                                {{-- Este div se mantiene si lo usas para otros JS o si Laravel lo llena --}}
                                 <div class="text-danger mt-1 small error-mensaje-js"></div>
                                 @error('numero_factura')
                                 <div class="text-danger mt-1 small">{{ $message }}</div>
@@ -247,8 +237,8 @@
 
                             {{-- Sección de Resumen de Factura --}}
                             <div class="row mt-4 justify-content-end">
-                                <div class="col-md-6 col-lg-4"> {{-- Este div es el contenedor de toda la sección de resumen --}}
-                                    <div class="row g-1"> <!-- Usar un row con un pequeño gap para los items del resumen -->
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="row g-1">
 
                                         {{-- Importe Gravado --}}
                                         <div class="col-8 text-start">
@@ -275,10 +265,10 @@
                                         </div>
 
                                         {{-- Subtotal (Lps) --}}
-                                        <div class="col-8 text-start"> <!-- Columna para la etiqueta -->
+                                        <div class="col-8 text-start">
                                             <label class="form-label mb-0" style="white-space: nowrap; font-weight: normal;">Subtotal (Lps)</label>
                                         </div>
-                                        <div class="col-4 text-end"> <!-- Columna para el valor -->
+                                        <div class="col-4 text-end">
                                             <label class="form-control summary-value-box" id="subtotalGeneralLabel">0.00</label>
                                         </div>
 
@@ -310,7 +300,7 @@
                             </div>
 
 
-                            {{-- Responsable (Ahora un select que usa ID) --}}
+                            {{-- Responsable --}}
                             <div class="col-md-6">
                                 <label for="responsable_id" class="form-label">Responsable</label>
                                 <div class="input-group">
@@ -396,37 +386,19 @@
 
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // Este listener del botón cerrar es redundante si ya tienes el hidden.bs.modal
-            // Lo mantengo comentado si quieres un comportamiento extra solo al presionar este botón
-            /*
-            const btnCerrarModal = document.getElementById('cerrarModalProductos');
-            if (btnCerrarModal) {
-                btnCerrarModal.addEventListener('click', function() {
-                    console.log('DEBUG: Botón "Cerrar" del modal presionado. Limpiando formularios del modal.');
-                    limpiarFormulariosModal();
-                });
-            }
-            */
-        });
-        // Variables globales
         let productoSeleccionadoActual = null;
-        let productoIndexCounter = 0; // Nuevo contador para los índices de productos
-
-        // --- Funciones de Validación y Utilidad ---
+        let productoIndexCounter = 0;
 
         function validarTexto(e) {
             const key = e.keyCode || e.which;
             const tecla = String.fromCharCode(key);
             const input = e.target;
 
-            // Evitar espacio al inicio
             if (key === 32 && input.selectionStart === 0) {
                 e.preventDefault();
                 return false;
             }
 
-            // Evitar múltiples espacios seguidos
             const pos = input.selectionStart;
             if (key === 32 && input.value.charAt(pos - 1) === ' ') {
                 e.preventDefault();
