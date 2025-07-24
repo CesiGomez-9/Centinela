@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('facturas_ventas', function (Blueprint $table) {
             $table->id();
-            $table->string('numero')->unique(); // número de factura
+            $table->string('numero', 12)->unique(); // número de factura
             $table->unsignedBigInteger('cliente_id'); // relación con clientes
             $table->date('fecha');
             $table->decimal('subtotal', 12, 2);
@@ -24,7 +24,7 @@ return new class extends Migration
 
             $table->unsignedBigInteger('responsable_id');
             $table->foreign('responsable_id')->references('id')->on('empleados')->onDelete('cascade');
-           $table->foreign('cliente_id')->references('id')->on('clientes')->onDelete('cascade');
+            $table->foreign('cliente_id')->references('id')->on('clientes')->onDelete('cascade');
         });
     }
 

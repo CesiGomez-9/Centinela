@@ -12,7 +12,7 @@ class DetalleFacturaVenta extends Model
     protected $table = 'detalles_facturas_ventas';
 
     protected $fillable = [
-        'factura_venta_id', 'producto_id', 'nombre', 'categoria',
+        'factura_venta_id', 'product_id', 'nombre', 'categoria',
         'precio_venta', 'cantidad', 'iva', 'subtotal', 'responsable_id'
     ];
 
@@ -23,7 +23,7 @@ class DetalleFacturaVenta extends Model
 
     public function producto()
     {
-        return $this->belongsTo(Producto::class, 'producto_id');
+        return $this->belongsTo(Producto::class, 'product_id');
     }
 
     public function responsable()

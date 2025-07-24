@@ -6,6 +6,7 @@ use App\Models\FacturaVenta;
 use App\Models\DetalleFacturaVenta;
 use App\Models\Cliente;
 use App\Models\Producto;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -16,22 +17,41 @@ class FacturaVentaController extends Controller
 {
     public function index(Request $request)
     {
-        $search = $request->input('search');
+        // ✅ Validar que las fechas estén dentro del mes y año actual
+        if ($request->filled('fecha_inicio') && $request->filled('fecha_fin')) {
+            $mesActual = Carbon::now()->format('m');
+            $anioActual = Carbon::now()->format('Y');
 
-        $facturas = FacturaVenta::with(['cliente', 'empleado']) // Asegúrate que la relación sea "empleado" si así se llama en el modelo
-        ->when($search, function ($query, $search) {
-            $query->where('numero', 'like', "%{$search}%")
-                ->orWhere('fecha', 'like', "%{$search}%")
-                ->orWhereHas('cliente', function ($q) use ($search) {
-                    $q->where('nombre', 'like', "%{$search}%");
-                })
-                ->orWhereHas('empleado', function ($q) use ($search) {
-                    $q->where('nombre', 'like', "%{$search}%");
-                });
-        })
-            ->orderBy('fecha', 'desc')
-            ->paginate(10)
-            ->appends(['search' => $search]); // para que mantenga el término en la paginación
+            if (
+                Carbon::parse($request->fecha_inicio)->format('Y') !== $anioActual ||
+                Carbon::parse($request->fecha_fin)->format('Y') !== $anioActual ||
+                Carbon::parse($request->fecha_inicio)->format('m') !== $mesActual ||
+                Carbon::parse($request->fecha_fin)->format('m') !== $mesActual
+            ) {
+                return back()->with('status', 'Solo puedes buscar facturas del mes y año actual.');
+            }
+        }
+
+        $query = FacturaVenta::query();
+
+        // 🔍 Filtro por texto (número o fecha exacta)
+        if ($request->filled('searchInput')) {
+            $search = $request->searchInput;
+            $query->where('numero', 'like', "%$search%")
+                ->orWhereDate('fecha', $search);
+        }
+
+        // 📅 Filtros por fechas
+        if ($request->filled('fecha_inicio')) {
+            $query->whereDate('fecha', '>=', $request->fecha_inicio);
+        }
+
+        if ($request->filled('fecha_fin')) {
+            $query->whereDate('fecha', '<=', $request->fecha_fin);
+        }
+
+        // 📄 Paginación de resultados
+        $facturas = $query->orderByDesc('fecha')->paginate(10);
 
         return view('facturas_ventas.index', compact('facturas'));
     }
@@ -39,9 +59,8 @@ class FacturaVentaController extends Controller
 
     public function create()
     {
-        // Obtener productos con sus detalles relacionados
-        $productos = Producto::with('detalleFactura')->get();
 
+        $productos = Producto::with('ultimoDetalleFactura')->get();
 
         // Obtener clientes reales desde la base de datos
         $clientes = Cliente::orderBy('nombre')->get();
@@ -54,13 +73,32 @@ class FacturaVentaController extends Controller
 
         $categorias = Producto::distinct()->pluck('categoria'); // trae todas las categorías únicas
 
+// Obtener el último número de factura
+        $ultimoNumero = FacturaVenta::orderBy('id', 'desc')->value('numero');
+
+        // Extraer el número y sumarle 1
+        if ($ultimoNumero) {
+            // Suponiendo formato: F000001
+            $numero = 'F' . str_pad((intval(substr($ultimoNumero, 1)) + 1), 6, '0', STR_PAD_LEFT);
+        } else {
+            // Primer número si no hay facturas
+            $numero = 'F000001';
+        }
+
+        $clienteNombre = '';
+        if (old('cliente_id')) {
+            $cliente = Cliente::find(old('cliente_id'));
+            if ($cliente) {
+                $clienteNombre = $cliente->nombre . ' ' . $cliente->apellido;
+            }
+        }
 
 
         return view('facturas_ventas.create', compact(
             'productos',
             'clientes',
             'empleados',
-            'formasPago', 'categorias'
+            'formasPago', 'categorias', 'numero', 'clienteNombre'
         ));
     }
 
@@ -68,7 +106,6 @@ class FacturaVentaController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'numero' => 'required|unique:facturas_ventas,numero',
             'cliente_id' => 'required|exists:clientes,id',
             'fecha' => ['required', 'date', function ($attribute, $value, $fail) {
                 $fecha = \Carbon\Carbon::parse($value)->startOfDay();
@@ -84,7 +121,7 @@ class FacturaVentaController extends Controller
             'impuestos' => 'required|numeric|min:0',
             'total' => 'required|numeric|min:0',
             'productos' => 'required|array|min:1',
-            'productos.*.product_id' => 'required|exists:productos,id',
+            'productos.*.producto_id' => 'required|exists:productos,id',
             'productos.*.nombre' => 'required|string',
             'productos.*.categoria' => 'nullable|string',
             'productos.*.precioVenta' => 'required|numeric|min:0',
@@ -94,20 +131,32 @@ class FacturaVentaController extends Controller
 
         DB::beginTransaction();
         try {
+            // Generar número automático:
+            $ultimoNumero = FacturaVenta::orderBy('id', 'desc')->value('numero');
+
+            if ($ultimoNumero) {
+                // Extraer parte numérica (asumiendo formato "F000001")
+                $numeroInt = intval(substr($ultimoNumero, 1)) + 1;
+            } else {
+                $numeroInt = 1;
+            }
+            $nuevoNumero = 'F' . str_pad($numeroInt, 6, '0', STR_PAD_LEFT);
+
             $factura = FacturaVenta::create([
-                'numero' => $validatedData['numero'],
+                'numero' => $nuevoNumero,
                 'cliente_id' => $validatedData['cliente_id'],
                 'fecha' => $validatedData['fecha'],
                 'subtotal' => $validatedData['subtotal'],
                 'impuestos' => $validatedData['impuestos'],
                 'total' => $validatedData['total'],
+                'forma_pago' => $validatedData['forma_pago'],
+                'responsable_id' => $validatedData['responsable_id'],
             ]);
 
             foreach ($validatedData['productos'] as $productoData) {
-                // Guardar detalle
                 DetalleFacturaVenta::create([
                     'factura_venta_id' => $factura->id,
-                    'producto_id' => $productoData['product_id'],
+                    'producto_id' => $productoData['producto_id'],
                     'nombre' => $productoData['nombre'],
                     'categoria' => $productoData['categoria'] ?? null,
                     'precio_venta' => $productoData['precioVenta'],
@@ -117,16 +166,12 @@ class FacturaVentaController extends Controller
                     'responsable_id' => $validatedData['responsable_id'],
                 ]);
 
-                // ✅ Reducir la cantidad del producto
-                $producto = Producto::find($productoData['product_id']);
+                $producto = Producto::find($productoData['producto_id']);
                 if ($producto) {
                     $nuevaCantidad = $producto->cantidad - $productoData['cantidad'];
-
-                    // Validación de stock suficiente (opcional pero recomendable)
                     if ($nuevaCantidad < 0) {
                         throw new \Exception("No hay suficiente stock para el producto: {$producto->nombre}");
                     }
-
                     $producto->cantidad = $nuevaCantidad;
                     $producto->save();
                 }
@@ -134,16 +179,16 @@ class FacturaVentaController extends Controller
 
             DB::commit();
 
-            return redirect()->route('facturas_ventas.index')->with('success', 'Factura de venta creada correctamente.');
+            return redirect()->route('facturas_ventas.index')->with('success', 'Factura de venta creada correctamente con número ' . $nuevoNumero);
 
         } catch (\Exception $e) {
             DB::rollBack();
-            // Al usar $request->validate, para conservar los datos debes hacer return back()->withInput()
             return back()
                 ->withErrors(['error' => 'Ocurrió un error al guardar la factura: ' . $e->getMessage()])
                 ->withInput();
         }
     }
+
 
     public function show($id)
     {
@@ -169,14 +214,13 @@ class FacturaVentaController extends Controller
     public function update(Request $request, $id)
     {
         $validatedData = $request->validate([
-            'numero' => ['required', Rule::unique('facturas_ventas', 'numero')->ignore($id)],
             'cliente_id' => 'required|exists:clientes,id',
             'fecha' => 'required|date',
             'subtotal' => 'required|numeric|min:0',
             'impuestos' => 'required|numeric|min:0',
             'total' => 'required|numeric|min:0',
             'productos' => 'required|array|min:1',
-            'productos.*.product_id' => 'required|exists:productos,id',
+            'productos.*.producto_id' => 'required|exists:producto_id',
             'productos.*.nombre' => 'required|string',
             'productos.*.categoria' => 'nullable|string',
             'productos.*.precioVenta' => 'required|numeric|min:0',
@@ -205,7 +249,7 @@ class FacturaVentaController extends Controller
             foreach ($validatedData['productos'] as $producto) {
                 DetalleFacturaVenta::create([
                     'factura_venta_id' => $factura->id,
-                    'producto_id' => $producto['product_id'],
+                    'producto_id' => $producto['producto_id'],
                     'responsable_id' => $validatedData['responsable_id'], // ✅ Aquí el fix
                     'nombre' => $producto['nombre'],
                     'categoria' => $producto['categoria'] ?? null,

@@ -39,24 +39,19 @@
     #tablaFacturaBody td input[type="hidden"] + * { margin-left: 5px; }
     .modal:not(.show), .modal-backdrop:not(.show) { display: none !important; opacity: 0 !important; }
 </style>
-
 <div class="container my-5">
     <div class="row justify-content-center">
         <div class="col-lg-10">
             <div class="bg-white p-5 rounded shadow-lg position-relative">
-
                 <div class="position-absolute top-0 end-0 p-3 text-secondary opacity-25">
                     <i class="bi bi-cash-coin" style="font-size: 4rem;"></i>
                 </div>
-
                 <h3 class="text-center mb-4" style="color: #09457f;">
                     <i class="bi bi-file-earmark-text-fill"></i>
                     Registrar nueva factura de venta
                 </h3>
-
                 <form method="POST" id="formFacturaVenta" action="{{ route('facturas_ventas.store') }}" novalidate>
                     @csrf
-
                     <div class="row g-4">
                         {{-- Número de Factura --}}
                         <div class="col-md-6">
@@ -65,8 +60,8 @@
                                 <span class="input-group-text"><i class="bi bi-hash"></i></span>
                                 <input type="text" name="numero" id="numero"
                                        class="form-control @error('numero') is-invalid @enderror"
-                                       value="{{ old('numero') }}"
-                                       maxlength="12" required />
+                                       value="{{ old('numero', $numero) }}"
+                                       maxlength="12" readonly />
                             </div>
                             @error('numero')
                             <div class="text-danger small mt-1">{{ $message }}</div>
@@ -78,30 +73,35 @@
                             <label class="form-label">Fecha</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-calendar-check"></i></span>
-                                <span class="form-control">{{ date('Y-m-d') }}</span>
-                                <input type="hidden" name="fecha" value="{{ date('Y-m-d') }}">
+                                <span class="form-control">{{ date('d-m-Y') }}</span>
+                                <input type="hidden" name="fecha" value="{{ date('d-m-Y') }}">
                             </div>
                         </div>
-
-
+                        {{-- Cliente --}}
                         <div class="col-md-6">
                             <label for="searchInput" class="form-label">Cliente</label>
-                            <div class="input-group mb-2">
+                            <div class="input-group has-validation mb-2">
                                 <input
                                     type="text"
                                     id="searchInput"
-                                    class="form-control"
+                                    class="form-control @error('cliente_id') is-invalid @enderror"
                                     placeholder="Buscar cliente por nombre"
                                     autocomplete="off"
+                                    value="{{ old('cliente_id') ? $clienteNombre : '' }}"
                                 >
                                 <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                <div class="invalid-feedback" id="error_cliente_id">
+                                    @error('cliente_id'){{ $message }}@else Debe seleccionar un cliente. @enderror
+                                </div>
                             </div>
+
+                            {{-- Lista de resultados del buscador --}}
                             <div id="searchResults" class="list-group" style="max-height: 200px; overflow-y: auto;"></div>
-                            <input type="hidden" name="cliente_id" id="cliente_id">
-                            @error('cliente_id')
-                            <div class="text-danger small mt-1">{{ $message }}</div>
-                            @enderror
+
+                            {{-- Input oculto para ID del cliente --}}
+                            <input type="hidden" name="cliente_id" id="cliente_id" value="{{ old('cliente_id') }}">
                         </div>
+
 
                         {{-- Forma de Pago --}}
                         <div class="col-md-6">
@@ -119,9 +119,9 @@
                                 </select>
                             </div>
                             <div class="text-danger mt-1 small error-mensaje-js"></div>
-                            @error('forma_pago')
-                            <div class="text-danger mt-1 small">{{ $message }}</div>
-                            @enderror
+                            <div id="error_forma_pago" class="text-danger small mt-1">
+                                @error('forma_pago'){{ $message }}@enderror
+                            </div>
                         </div>
                     </div>
 
@@ -153,17 +153,19 @@
                             <tr id="filaVacia">
                                 <td colspan="8" class="text-center text-muted py-4" style="border: 1px dashed #dee2e6; background-color: #f8f9fa;">
                                     <i class="bi bi-inbox" style="font-size: 2rem; opacity: 0.5;"></i><br />
-                                    <span>No hay productos agregados</span><br />
+                                    <span class="text-danger">No hay productos agregados</span><br />
                                     <small>Use el botón "Buscar Productos" para agregarlos</small>
                                 </td>
                             </tr>
                             </tbody>
                         </table>
+
+                        <div id="errorProductos" class="text-danger small mt-2 d-none">
+                            Debe agregar al menos un producto a la factura.
+                        </div>
                     </div>
 
-                    <div id="errorProductos" class="text-danger small" style="display: none;">
-                        Debe agregar al menos un producto a la factura.
-                    </div>
+
 
                     {{-- Totales --}}
                     <div class="row mt-4 justify-content-end">
@@ -193,7 +195,6 @@
                     <input type="hidden" name="impuestos" id="inputImpuestosGeneral">
                     <input type="hidden" name="total" id="inputTotalGeneral">
 
-
                     {{-- Responsable --}}
                     <div class="col-md-6">
                         <label for="responsable_id" class="form-label">Responsable</label>
@@ -210,9 +211,9 @@
                             </select>
                         </div>
                         <div class="text-danger mt-1 small error-mensaje-js"></div>
-                        @error('responsable_id')
-                        <div class="text-danger mt-1 small">{{ $message }}</div>
-                        @enderror
+                        <div id="error_responsable_id" class="text-danger small mt-1">
+                            @error('responsable_id'){{ $message }}@enderror
+                        </div>
                     </div>
 
                     {{-- Botones --}}
@@ -227,8 +228,6 @@
                         </button>
                     </div>
                 </form>
-
-
             </div>
         </div>
     </div>
@@ -253,7 +252,6 @@
                         <!-- Aquí va el mensaje -->
                     </div>
 
-
                     <!-- Filtro por categoría -->
                     <div class="col-md-5">
                         <div class="input-group">
@@ -267,9 +265,7 @@
                         </div>
                     </div>
                 </div>
-
                 <div id="mensajeCoincidencias" class="text-muted mt-2" style="font-size: 14px;"></div>
-
                 <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
                     <table class="table table-bordered table-hover text-center" id="tablaProductos">
                         <thead class="table-light sticky-top">
@@ -284,33 +280,31 @@
                         </thead>
                         <tbody id="tablaProductosBody">
                         @foreach ($productos as $producto)
-                            @foreach ($producto->detalleFactura as $detalle)
-                                @if($detalle)
-                                    <tr>
-                                        <td>{{ $producto->nombre }}</td>
-                                        <td>{{ $producto->categoria }}</td>
-                                        <td>{{ number_format($detalle->precio_venta, 2) }}</td>
-                                        <td>{{ $detalle->cantidad ?? 'N/A' }}</td>
-                                        <td>{{ $detalle->iva }}</td>
-                                        <td>
-                                            <div class="d-flex justify-content-center gap-2">
-                                                <button class="btn btn-sm btn-primary btnSeleccionarProducto"
-                                                        data-id="{{ $producto->id }}"
-                                                        data-nombre="{{ $producto->nombre }}"
-                                                        data-categoria="{{ $producto->categoria }}"
-                                                        data-precioventa="{{ number_format($detalle->precio_venta, 2, '.', '') }}"
-                                                        data-iva="{{ $detalle->iva }}">
-                                                    Seleccionar
-                                                </button>
-                                                <a href="{{ route('productos.show', $producto->id) }}" class="btn btn-sm btn-info">
-                                                    Detalle
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endif
-                            @endforeach
+                            @php
+                                $detalle = $producto->ultimoDetalleFactura;
+                            @endphp
+                            @if($detalle)
+                                <tr>
+                                    <td>{{ $producto->nombre }}</td>
+                                    <td>{{ $producto->categoria }}</td>
+                                    <td>{{ number_format($detalle->precio_venta, 2) }}</td>
+                                    <td>{{ $detalle->cantidad ?? 'N/A' }}</td>
+                                    <td>{{ $detalle->iva }}</td>
+                                    <td>{{ number_format($detalle->precio_venta ?? 0, 2) }}</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-primary btnSeleccionarProducto"
+                                                data-id="{{ $producto->id }}"
+                                                data-nombre="{{ $producto->nombre }}"
+                                                data-categoria="{{ $producto->categoria }}"
+                                                data-precioventa="{{ number_format($detalle->precio_venta, 2, '.', '') }}"
+                                                data-iva="{{ $detalle->iva }}">
+                                            Seleccionar
+                                        </button>
+                                    </td>
+                                </tr>
+                            @endif
                         @endforeach
+
                         </tbody>
                     </table>
                 </div>
@@ -319,37 +313,29 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                     <i class="bi bi-x-circle"></i> Cerrar
                 </button>
-
             </div>
         </div>
     </div>
 </div>
-
-
 <!-- JS de Select2 -->
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         // --- Buscador de clientes ---
         const inputCliente = document.getElementById('searchInput');
         const resultsContainer = document.getElementById('searchResults');
         const clienteIdInput = document.getElementById('cliente_id');
-
         // Verificar si se debe abrir el modal de productos automáticamente
         const urlParams = new URLSearchParams(window.location.search);
         const abrirModal = urlParams.get('abrir_modal');
-
         if (abrirModal === 'productos') {
             const modalElement = document.getElementById('productosModal');
             const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
             modalInstance.show();
         }
-
         // Buscador de clientes
-        inputCliente.addEventListener('input', function () {
+        inputCliente.addEventListener('input', function (e) {
             const query = inputCliente.value;
-
             if (query.length >= 1) {
                 fetch(`/clientes/buscar?q=${encodeURIComponent(query)}`)
                     .then(response => response.json())
@@ -359,32 +345,39 @@
                             resultsContainer.innerHTML = '<div class="list-group-item text-muted">Sin resultados</div>';
                             return;
                         }
-
                         clientes.forEach(cliente => {
                             const item = document.createElement('button');
                             item.type = 'button';
                             item.classList.add('list-group-item', 'list-group-item-action');
                             item.textContent = `${cliente.nombre} ${cliente.apellido} - ${cliente.identidad}`;
                             item.dataset.id = cliente.id;
-
                             item.addEventListener('click', () => {
                                 inputCliente.value = `${cliente.nombre} ${cliente.apellido}`;
                                 clienteIdInput.value = cliente.id;
                                 resultsContainer.innerHTML = '';
                             });
-
                             resultsContainer.appendChild(item);
                         });
                     });
             } else {
                 resultsContainer.innerHTML = '';
             }
-        });
 
+            if (!clienteIdInput.value) {
+                e.preventDefault();
+                if (searchInput) {
+                    searchInput.classList.add('is-invalid');
+                }
+                const errorCliente = document.getElementById('error_cliente_id');
+                if (errorCliente) {
+                    errorCliente.textContent = 'Debe seleccionar un cliente.';
+                }
+                return false;
+            }
+        });
         // Cerrar modal desde botón cerrar y al seleccionar producto
         const productosModalEl = document.getElementById('productosModal');
         const productosModal = bootstrap.Modal.getOrCreateInstance(productosModalEl);
-
         // Evento para botón cerrar manual (por si deseas manipularlo adicionalmente)
         const btnCerrar = document.querySelector('[data-bs-dismiss="modal"]');
         if (btnCerrar) {
@@ -392,7 +385,6 @@
                 productosModal.hide();
             });
         }
-
         // Evento para seleccionar producto y cerrar modal automáticamente
         const tablaProductosBody = document.getElementById('tablaProductosBody');
         if (tablaProductosBody) {
@@ -406,42 +398,37 @@
                         precioVenta: btn.dataset.precioventa,
                         iva: btn.dataset.iva
                     };
-
                     // Función para agregar a la factura (ya deberías tenerla)
                     if (typeof agregarProductoAFactura === 'function') {
                         agregarProductoAFactura(producto);
                     }
-
                     productosModal.hide(); // ✅ Cierra el modal al seleccionar producto
                 }
             });
         }
     });
-
-
     // --- Agregar producto a la factura ---
         function agregarProductoAFactura(producto) {
             const tablaFactura = document.getElementById('tablaFacturaBody');
             const productosExistentes = Array.from(tablaFactura.querySelectorAll('tr')).map(tr => {
-                const idInput = tr.querySelector('input[name^="productos["][name$="][product_id]"]');
+                const idInput = tr.querySelector('input[name^="productos["][name$="][producto_id]"]');
                 return idInput ? idInput.value : null;
             }).filter(id => id !== null);
-
             if (productosExistentes.includes(producto.id)) {
                 mostrarAlertaProductoDuplicado('El producto ya está agregado a la factura.');
                 return;
             }
-
             const filaVacia = document.getElementById('filaVacia');
             if (filaVacia) filaVacia.remove();
-
             const newRowIndex = tablaFactura.querySelectorAll('tr').length;
             const base = parseFloat(producto.precioVenta);
             const ivaPorcentaje = parseFloat(producto.iva);
             const impuestoCalculado = (ivaPorcentaje / 100) * base;
             const subtotalLinea = base + impuestoCalculado;
-
             const nuevaFila = document.createElement('tr');
+            const mensajeNoProductos = document.getElementById('mensajeNoProductos');
+            const subMensajeNoProductos = document.getElementById('subMensajeNoProductos');
+
             nuevaFila.dataset.index = newRowIndex;
             nuevaFila.innerHTML = `
             <td>${newRowIndex + 1}</td>
@@ -473,22 +460,18 @@
                 </button>
             </td>
         `;
-
             tablaFactura.appendChild(nuevaFila);
-
             nuevaFila.querySelector('.btn-eliminar-producto').addEventListener('click', function () {
                 this.closest('tr').remove();
                 actualizarNumeracionFilas();
                 calcularTotalesGenerales();
                 actualizarFilaVacia();
             });
-
             actualizarFilaVacia();
             calcularTotalesGenerales();
             actualizarNumeracionFilas();
             ocultarAlertaProductoDuplicado();
         }
-
         function mostrarAlertaProductoDuplicado(mensaje) {
             let contenedorAlerta = document.getElementById('alertaProductoDuplicado');
             if (!contenedorAlerta) {
@@ -501,92 +484,103 @@
             contenedorAlerta.textContent = mensaje;
             contenedorAlerta.style.display = 'block';
         }
-
         function ocultarAlertaProductoDuplicado() {
             const contenedorAlerta = document.getElementById('alertaProductoDuplicado');
             if (contenedorAlerta) {
                 contenedorAlerta.style.display = 'none';
             }
         }
-
         // --- Limpiar formulario ---
+    document.addEventListener('DOMContentLoaded', function () {
         const btnLimpiar = document.querySelector('button[type="reset"]');
         if (btnLimpiar) {
-            btnLimpiar.addEventListener('click', function(e) {
-                e.preventDefault();
+            btnLimpiar.addEventListener('click', function (e) {
+                // No usamos preventDefault para que se ejecute el reset natural del formulario
+                setTimeout(() => {
+                    const formulario = document.getElementById('formFacturaVenta');
 
-                const formulario = document.getElementById('formFacturaVenta');
+                    // Limpiar alertas de validación visual
+                    formulario.querySelectorAll('.is-invalid, .is-valid').forEach(el => {
+                        el.classList.remove('is-invalid', 'is-valid');
+                    });
 
-                // Limpiar campos (excepto hidden y botones)
-                formulario.querySelectorAll('input:not([type="hidden"]), select, textarea').forEach(el => {
-                    if (el.type !== 'submit' && el.type !== 'button') {
-                        el.value = '';
+                    // Limpiar mensajes de error
+                    document.querySelectorAll('.text-danger, .invalid-feedback, .error-mensaje-js').forEach(el => {
+                        el.textContent = '';
+                        el.classList.add('d-none'); // ✅ mejor que style.display
+                    });
+
+                    // Limpiar alertas (duplicados u otros)
+                    document.querySelectorAll('.alert.alert-danger').forEach(el => el.remove());
+
+                    // Limpiar tabla de productos
+                    const tablaFacturaBody = document.getElementById('tablaFacturaBody');
+                    if (tablaFacturaBody) {
+                        tablaFacturaBody.innerHTML = '';
+                        actualizarFilaVacia();
                     }
-                });
 
-                // Limpiar Select2 si usas
-                $('#responsable_id').val('').trigger('change');
-                $('#formaPago').val('').trigger('change');
+                    // Reiniciar totales
+                    const idsTotales = [
+                        'importeGravadoLabel',
+                        'importeExentoLabel',
+                        'isv15Label',
+                        'isv18Label',
+                        'subtotalGeneralLabel',
+                        'totalGeneralLabel',
+                        'inputSubtotalGeneral',
+                        'inputImpuestosGeneral',
+                        'inputTotalGeneral'
+                    ];
+                    idsTotales.forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) {
+                            if (el.tagName === 'INPUT') el.value = '0.00';
+                            else el.textContent = '0.00';
+                        }
+                    });
 
-                // Vaciar cliente buscado y resultados
-                const inputCliente = document.getElementById('searchInput');
-                const clienteIdInput = document.getElementById('cliente_id');
-                const resultsContainer = document.getElementById('searchResults');
-
-                if (inputCliente) inputCliente.value = '';
-                if (clienteIdInput) clienteIdInput.value = '';
-                if (resultsContainer) resultsContainer.innerHTML = '';
-
-                // Limpiar tabla productos
-                const tablaFacturaBody = document.getElementById('tablaFacturaBody');
-                if (tablaFacturaBody) {
-                    tablaFacturaBody.innerHTML = '';
-                    actualizarFilaVacia();
-                }
-
-                // Reiniciar totales a cero
-                const idsTotales = [
-                    'importeGravadoLabel',
-                    'importeExentoLabel',
-                    'isv15Label',
-                    'isv18Label',
-                    'subtotalGeneralLabel',
-                    'totalGeneralLabel',
-                    'inputSubtotalGeneral',
-                    'inputImpuestosGeneral',
-                    'inputTotalGeneral'
-                ];
-                idsTotales.forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el) {
-                        if (el.tagName === 'INPUT') el.value = '0.00';
-                        else el.textContent = '0.00';
+                    // Asegurar limpieza total de select de responsable y forma de pago
+                    if (typeof $ !== 'undefined') {
+                        $('#responsable_id').val('').trigger('change').change();
+                        $('#formaPago').val('').trigger('change').change();
                     }
-                });
 
-                // Quitar clases de error/validación visual
-                formulario.querySelectorAll('.is-invalid, .is-valid').forEach(el => {
-                    el.classList.remove('is-invalid', 'is-valid');
-                });
-
-// Quitar los mensajes de error que están en texto debajo de inputs
-                formulario.querySelectorAll('.invalid-feedback, .text-danger, .error-mensaje-js').forEach(el => {
-                    el.textContent = '';
-                    el.style.display = 'none';
-                });
+// Quitar manualmente atributos "selected" de opciones marcadas por Laravel
+                    document.querySelectorAll('#responsable_id option[selected], #formaPago option[selected]').forEach(opt => {
+                        opt.removeAttribute('selected');
+                    });
 
 
-                // Eliminar todas las alertas del DOM, para borrar errores de Laravel y JS
-                document.querySelectorAll('.alert').forEach(alerta => alerta.remove());
+                    // Limpiar cliente y errores
+                    const inputCliente = document.getElementById('searchInput');
+                    const clienteIdInput = document.getElementById('cliente_id');
+                    const errorClienteId = document.getElementById('error_cliente_id');
 
-                // Quitar clase que indica que el formulario fue validado
-                formulario.classList.remove('was-validated');
+                    if (inputCliente) inputCliente.value = '';
+                    if (clienteIdInput) clienteIdInput.value = '';
+                    document.getElementById('searchResults').innerHTML = '';
+
+                    if (errorClienteId) {
+                        errorClienteId.textContent = '';
+                        errorClienteId.classList.add('d-none');
+                    }
+                    inputCliente?.classList.remove('is-invalid');
+
+                    // Ocultar error de productos
+                    const errorProductos = document.getElementById('errorProductos');
+                    if (errorProductos) {
+                        errorProductos.textContent = '';
+                        errorProductos.classList.add('d-none');
+                    }
+
+                    formulario.classList.remove('was-validated');
+                }, 10);
             });
         }
+    });
 
-
-
-        // --- Filtrar productos en modal ---
+    // --- Filtrar productos en modal ---
         const inputBuscar = document.getElementById('searchInput');
         const selectCategoria = document.getElementById('categoriaFiltro');
         const mensaje = document.getElementById('mensajeCoincidencias');
@@ -595,13 +589,11 @@
             const texto = inputBuscar.value.toLowerCase().trim();
             const categoria = selectCategoria.value.toLowerCase();
             const filas = document.querySelectorAll('#tablaProductosBody tr');
-
             let coincidencias = 0;
 
             filas.forEach(fila => {
                 const nombre = fila.cells[0].textContent.toLowerCase();
                 const cat = fila.cells[1].textContent.toLowerCase();
-
                 const coincideTexto = nombre.includes(texto);
                 const coincideCategoria = categoria === '' || cat === categoria;
 
@@ -619,12 +611,10 @@
                     : `Se encontraron ${coincidencias} producto(s).`;
             }
         }
-
         if (inputBuscar && selectCategoria) {
             inputBuscar.addEventListener('input', filtrarProductos);
             selectCategoria.addEventListener('change', filtrarProductos);
         }
-
         const tablaProductosBody = document.getElementById('tablaProductosBody');
         const modalProductos = new bootstrap.Modal(document.getElementById('productosModal'));
 
@@ -660,7 +650,6 @@
                 });
             });
         }
-
         function actualizarFilaVacia() {
             const tablaFactura = document.getElementById('tablaFacturaBody');
             if (!tablaFactura) return;
@@ -736,31 +725,67 @@
         // --- Validación final antes de enviar el formulario ---
         const form = document.getElementById('formFacturaVenta');
         const btnGuardar = form.querySelector('button[type="submit"]');
+        const errorProductos = document.getElementById('errorProductos');
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('formFacturaVenta');
+        const btnGuardar = form.querySelector('button[type="submit"]');
+        const errorProductos = document.getElementById('errorProductos');
 
         form.addEventListener('submit', function (e) {
+            let errores = false;
+
+            // Validar productos
             const productos = document.querySelectorAll('#tablaFacturaBody tr:not(#filaVacia)');
             if (productos.length === 0) {
-                e.preventDefault();
-                const errorProductos = document.getElementById('errorProductos');
-                if (errorProductos) {
-                    errorProductos.style.display = 'block';
-                    errorProductos.textContent = 'Debe agregar al menos un producto antes de guardar.';
-                }
-                return false;
+                errorProductos.textContent = 'Debe agregar al menos un producto antes de guardar.';
+                errorProductos.classList.remove('d-none');  // muestra el div
+            } else {
+                errorProductos.textContent = '';
+                errorProductos.classList.add('d-none');  // oculta el div si no hay error
             }
 
-            if (btnGuardar) {
+            // Validar cliente
+            const inputCliente = document.getElementById('searchInput');
+            const clienteIdInput = document.getElementById('cliente_id');
+            const errorCliente = document.getElementById('error_cliente_id');
+            if (!clienteIdInput.value) {
+                e.preventDefault();
+                errores = true;
+                inputCliente.classList.add('is-invalid');
+                errorCliente.textContent = 'Debe seleccionar un cliente.';
+                errorCliente.classList.remove('d-none');
+            } else {
+                inputCliente.classList.remove('is-invalid');
+                errorCliente.textContent = '';
+                errorCliente.classList.add('d-none');
+            }
+
+            // Validar forma de pago
+            const formaPagoSelect = document.getElementById('formaPago');
+            const errorFormaPago = document.getElementById('error_forma_pago');
+            if (!formaPagoSelect.value) {
+                e.preventDefault();
+                errores = true;
+                formaPagoSelect.classList.add('is-invalid');
+                errorFormaPago.textContent = 'Forma de pago es obligatoria.';
+                errorFormaPago.classList.remove('d-none');
+            } else {
+                formaPagoSelect.classList.remove('is-invalid');
+                errorFormaPago.textContent = '';
+                errorFormaPago.classList.add('d-none');
+            }
+
+            // Mostrar spinner solo si no hay errores
+            if (!errores && btnGuardar) {
                 btnGuardar.disabled = true;
                 btnGuardar.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Guardando...`;
             }
-
-
+        });
     });
+
 </script>
-
-
 <script src="{{ asset('js/tu-script.js') }}"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

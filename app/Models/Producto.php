@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\DetalleFactura;  // <- aquí afuera, al inicio
 
 class Producto extends Model
 {
@@ -25,24 +26,10 @@ class Producto extends Model
         'cantidad' => 'integer',
     ];
 
-    /**
-     * Define la relación uno a muchos con Detalle.
-     */
-    public function detalles()
-    {
-        return $this->hasMany(Detalle::class);
-    }
-
-    /**
-     * Define la relación muchos a uno con Impuesto.
-     * Un producto pertenece a un tipo de impuesto.
-     */
     public function impuesto()
     {
         return $this->belongsTo(Impuesto::class);
     }
-
-
 
     public function detallefactura()
     {
@@ -54,8 +41,6 @@ class Producto extends Model
         return $this->hasMany(DetalleFacturaVenta::class);
     }
 
-    // En App\Models\Producto.php
-
     public function scopeBuscar($query, $termino)
     {
         if ($termino) {
@@ -66,7 +51,14 @@ class Producto extends Model
         return $query;
     }
 
+    public function detallesFacturasVenta()
+    {
+        return $this->hasMany(DetalleFacturaVenta::class);
+    }
 
-
-
+    public function ultimoDetalleFactura()
+    {
+        return $this->hasOne(DetalleFactura::class, 'product_id')
+            ->latestOfMany();
+    }
 }

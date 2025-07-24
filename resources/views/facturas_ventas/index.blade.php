@@ -28,15 +28,15 @@
 </nav>
 
 <style>
-    table {
-        width: 100%;
-        border-collapse: collapse;
+    .table-bordered {
+        border: 1px solid #dee2e6 !important; /* borde estándar Bootstrap */
     }
-    th, td {
-        padding: 12px 15px;
-        border: 1px solid #090909;
-        text-align: center;
+
+    .table-bordered th,
+    .table-bordered td {
+        border: 1px solid #dee2e6 !important; /* bordes uniformes */
     }
+
 </style>
 
 <div class="container my-5">
@@ -45,32 +45,66 @@
             <i class="bi bi-file-text"></i> Listado de facturas de venta
         </h3>
 
-        <!-- Buscador y botón -->
-        <div class="row mb-4 align-items-center">
-            <div class="col-md-6 d-flex justify-content-start">
-                <div class="w-100" style="max-width: 300px;">
-                    <div class="input-group">
+        <form method="GET" action="{{ route('facturas_ventas.index') }}">
+            <div class="row mb-4 g-2 d-flex flex-wrap align-items-start">
+
+                <!-- Buscador principal -->
+                <div class="col-md-4">
+                    <div class="input-group input-group-sm">
                         <input
                             type="text"
                             id="searchInput"
+                            name="searchInput"
                             class="form-control"
-                            name="search"
-                            value="{{ request('search') }}"
-                            placeholder="Buscar por número, fecha, cliente o responsable"
+                            maxlength="30"
+                            placeholder="Buscar por número de factura o fecha"
+                            value="{{ request('searchInput') }}"
                             onkeydown="bloquearEspacioAlInicio(event, this)"
                             oninput="eliminarEspaciosIniciales(this)">
                         <span class="input-group-text"><i class="bi bi-search"></i></span>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-6 d-flex justify-content-end">
-                <a href="{{ route('facturas_ventas.create') }}" class="btn btn-md btn-outline-dark">
-                    <i class="bi bi-pencil-square me-2"></i>Registrar una nueva factura de venta
-                </a>
-            </div>
-        </div>
 
-        @if(session()->has('status'))
+                <!-- Fechas: Desde / Hasta -->
+                <div class="col-md-2 ms-4 d-flex flex-column gap-2">
+                    <!-- Desde -->
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text">Desde</span>
+                        <input type="date" name="fecha_inicio" id="fechaInicio" class="form-control"
+                               value="{{ request('fecha_inicio') }}">
+                    </div>
+                    <!-- Hasta -->
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text">Hasta</span>
+                        <input type="date" name="fecha_fin" id="fechaFin" class="form-control"
+                               value="{{ request('fecha_fin') }}">
+                    </div>
+                </div>
+
+                <!-- Botones Filtrar / Limpiar -->
+                <div class="col-md-2 ms-3 d-flex flex-column gap-2">
+                    <!-- Filtrar -->
+                    <button type="submit" class="btn btn-sm btn-primary w-100">
+                        <i class="bi bi-funnel me-1"></i> Filtrar
+                    </button>
+                    <!-- Limpiar -->
+                    <a href="{{ route('facturas_ventas.index') }}" class="btn btn-sm btn-secondary w-100">
+                        <i class="bi bi-x-circle me-1"></i> Limpiar
+                    </a>
+                </div>
+
+                <!-- Botón Registrar nueva factura -->
+                <div class="col-md-3 ms-auto">
+                    <a href="{{ route('facturas_ventas.create') }}" class="btn btn-outline-dark w-100">
+                        <i class="bi bi-pencil-square me-1"></i> Registrar nueva factura
+                    </a>
+                </div>
+
+            </div>
+        </form>
+
+
+    @if(session()->has('status'))
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
                 <i class="bi bi-check-circle-fill me-2"></i>
                 {{ session('status') }}
@@ -78,91 +112,84 @@
             </div>
         @endif
 
-        <table class="table table-bordered table-hover align-middle">
-            <thead class="table-dark text-center">
+        <table class="table table-bordered table-striped">
+        <thead class="table-dark">
             <tr>
                 <th>#</th>
-                <th>Número Factura</th>
+                <th>Número de factura</th>
                 <th>Fecha</th>
-                <th>Subtotal</th>
-                <th>Impuestos</th>
-                <th>Total</th>
                 <th>Cliente</th>
+                <th>Forma de pago</th>
+                <th>Total</th>
                 <th>Acciones</th>
             </tr>
             </thead>
             <tbody id="facturasVentasTableBody">
             @forelse ($facturas as $index => $factura)
-                <tr class="factura-venta-row">
+                <tr>
                     <td>{{ $index + 1 }}</td>
-                    <td class="factura-numeroFactura">{{ $factura->numero }}</td>
-                    <td class="factura-fecha">{{ \Carbon\Carbon::parse($factura->fecha)->format('d/m/Y') }}</td>
-                    <td class="factura-subtotal">L. {{ number_format($factura->subtotal, 2) }}</td>
-                    <td class="factura-impuestos">L. {{ number_format($factura->impuestos, 2) }}</td>
-                    <td class="factura-total">L. {{ number_format($factura->total, 2) }}</td>
-                    <td>{{ $factura->cliente->nombre ?? 'No asignado' }}</td>
-                    <td>
+                    <td style="max-width: 150px; word-wrap: break-word; white-space: normal;">
+                        {{ $factura->numero }}
+                    </td>
+                    <td>{{ \Carbon\Carbon::parse($factura->fecha)->format('d/m/Y') }}</td>
+                    <td style="max-width: 200px; word-wrap: break-word; white-space: normal;">
+                        {{ $factura->cliente->nombre ?? 'No asignado' }}
+                    </td>
+                    <td>{{ ucfirst($factura->forma_pago) }}</td>
+                    <td>L. {{ number_format($factura->total, 2) }}</td>
+                    <td class="text-center">
                         <a href="{{ route('facturas_ventas.show', $factura->id) }}" class="btn btn-sm btn-outline-info">
                             <i class="bi bi-eye"></i> Ver
                         </a>
-                        <a href="{{ route('facturas_ventas.edit', $factura->id) }}" class="btn btn-sm btn-outline-warning">
-                            <i class="bi bi-pencil"></i> Editar
+                        <a href="{{ route('facturas_ventas.edit', $factura->id) }}" class="btn btn-sm btn-outline-warning" title="Editar">
+                            <i class="bi bi-pencil-square"></i> Editar
                         </a>
                     </td>
                 </tr>
             @empty
-                <tr id="noFacturasRow">
-                    <td colspan="8" class="text-center">No hay facturas de venta registradas.</td>
+                <tr>
+                    <td colspan="7" class="text-center text-muted">No hay facturas de venta registradas.</td>
                 </tr>
             @endforelse
             </tbody>
         </table>
 
-        {{-- Mensajes de búsqueda --}}
-        @if(request('search') && $facturas->total() > 0)
-            <div class="mb-3 text-muted">
-                Mostrando {{ $facturas->count() }} de {{ $facturas->total() }} resultados para:
-                "<strong>{{ request('search') }}</strong>".
-            </div>
-        @elseif(request('search') && $facturas->total() === 0)
-            <div class="mb-3 text-danger">
-                No se encontraron resultados para "<strong>{{ request('search') }}</strong>".
-            </div>
-        @endif
+        {{ $facturas->links() }}
 
-        {{-- Paginación --}}
-        <div class="d-flex justify-content-center mt-4">
-            {{ $facturas->links('pagination::bootstrap-5') }}
-        </div>
     </div>
 </div>
-
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const searchInput = document.getElementById('searchInput');
+    document.addEventListener('DOMContentLoaded', function () {
+        const fechaInicio = document.getElementById('fechaInicio');
+        const fechaFin = document.getElementById('fechaFin');
 
-        if (searchInput.value !== '') {
-            searchInput.focus();
-            const val = searchInput.value;
-            searchInput.value = '';
-            searchInput.value = val;
+        const hoy = new Date();
+
+        // Obtener año y mes actual
+        const year = hoy.getFullYear();
+        const month = hoy.getMonth(); // 0-indexado (enero = 0)
+
+        // Primer día del mes
+        const primerDia = new Date(year, month, 1);
+        // Último día del mes (día 0 del mes siguiente = último del actual)
+        const ultimoDia = new Date(year, month + 1, 0);
+
+        const formatoFecha = (fecha) => fecha.toISOString().split('T')[0];
+
+        const minDate = formatoFecha(primerDia);
+        const maxDate = formatoFecha(ultimoDia);
+
+        // Establecer los límites
+        if (fechaInicio) {
+            fechaInicio.setAttribute('min', minDate);
+            fechaInicio.setAttribute('max', maxDate);
         }
-
-        let timeout = null;
-
-        searchInput.addEventListener('input', function () {
-            clearTimeout(timeout);
-
-            timeout = setTimeout(() => {
-                const search = this.value;
-                const url = new URL(window.location.href);
-                url.searchParams.set('search', search);
-                window.location.href = url.toString();
-            }, 700);
-        });
+        if (fechaFin) {
+            fechaFin.setAttribute('min', minDate);
+            fechaFin.setAttribute('max', maxDate);
+        }
     });
 </script>
-
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

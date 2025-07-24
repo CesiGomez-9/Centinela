@@ -15,7 +15,7 @@ class FacturaVenta extends Model
         'responsable_id',
     ];
 
-    public function detalles()
+    public function detallefactura()
     {
         return $this->hasMany(DetalleFacturaVenta::class, 'factura_venta_id');
     }
