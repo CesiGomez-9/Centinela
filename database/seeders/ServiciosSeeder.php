@@ -13,8 +13,28 @@ class ServiciosSeeder extends Seeder
      */
     public function run(): void
     {
-        Servicio::factory(1)->create();
+        Servicio::create([
+            'nombre' => 'Supervisión Nocturna',
+            'descripcion' => 'Servicio de vigilancia durante la noche',
+            'categoria' => 'vigilancia',
+            'tipo_personal' => 'vigilancia',
+            'costo' => 750,
+            'duracion_cantidad' => 8,
+            'duracion_tipo' => 'horas',
+            'productos_vigilancia' => ['Linterna', 'Botas reforzadas', 'Chaleco antibalas']
+        ]);
 
+        Servicio::create([
+            'nombre' => 'Instalación de Cámaras HD',
+            'descripcion' => 'Instalación técnica de cámaras en interiores',
+            'categoria' => 'tecnico',
+            'tipo_personal' => 'tecnico',
+            'costo' => 850,
+            'duracion_cantidad' => 3,
+            'duracion_tipo' => 'dias',
+            'productos_tecnico' => ['Cámara Bullet 4K', 'Caja de herramientas', 'Escalera']
+        ]);
 
+        Servicio::factory()->count(5)->create();
     }
 }
