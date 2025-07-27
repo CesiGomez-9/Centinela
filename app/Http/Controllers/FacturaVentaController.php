@@ -6,6 +6,7 @@ use App\Models\FacturaVenta;
 use App\Models\DetalleFacturaVenta;
 use App\Models\Cliente;
 use App\Models\Producto;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -14,11 +15,48 @@ use App\Models\Empleado;
 
 class FacturaVentaController extends Controller
 {
-    public function index()
+
+    public function index(Request $request)
     {
-        $facturas = FacturaVenta::with('cliente')->orderBy('fecha', 'desc')->paginate(10);
+        // ✅ Validar que las fechas estén dentro del mes y año actual
+        if ($request->filled('fecha_inicio') && $request->filled('fecha_fin')) {
+            $mesActual = Carbon::now()->format('m');
+            $anioActual = Carbon::now()->format('Y');
+
+            if (
+                Carbon::parse($request->fecha_inicio)->format('Y') !== $anioActual ||
+                Carbon::parse($request->fecha_fin)->format('Y') !== $anioActual ||
+                Carbon::parse($request->fecha_inicio)->format('m') !== $mesActual ||
+                Carbon::parse($request->fecha_fin)->format('m') !== $mesActual
+            ) {
+                return back()->with('status', 'Solo puedes buscar facturas del mes y año actual.');
+            }
+        }
+
+        $query = FacturaVenta::query();
+
+        // 🔍 Filtro por texto (número o fecha exacta)
+        if ($request->filled('searchInput')) {
+            $search = $request->searchInput;
+            $query->where('numero', 'like', "%$search%")
+                ->orWhereDate('fecha', $search);
+        }
+
+        // 📅 Filtros por fechas
+        if ($request->filled('fecha_inicio')) {
+            $query->whereDate('fecha', '>=', $request->fecha_inicio);
+        }
+
+        if ($request->filled('fecha_fin')) {
+            $query->whereDate('fecha', '<=', $request->fecha_fin);
+        }
+
+        // 📄 Paginación de resultados
+        $facturas = $query->orderByDesc('fecha')->paginate(10);
+
         return view('facturas_ventas.index', compact('facturas'));
     }
+
 
     public function create()
     {

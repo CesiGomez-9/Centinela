@@ -43,15 +43,15 @@ Route::put('/facturas_ventas/{factura_venta}', [\App\Http\Controllers\FacturaVen
 
 
 
-Route::get('/Proveedores/crear', [\App\Http\Controllers\ProductoController::class, 'create'])->name('Proveedores.create');
+Route::get('/Proveedores/crear', [\App\Http\Controllers\ProveedorController::class, 'create'])->name('Proveedores.create');
 
 
-Route::post('/Proveedores/crear', [\App\Http\Controllers\ProductoController::class, 'store'])->name('Proveedores.store');
-Route::get('/Proveedores', [\App\Http\Controllers\ProductoController::class, 'index'])->name('Proveedores.indexProveedor');
+Route::post('/Proveedores/crear', [\App\Http\Controllers\ProveedorController::class, 'store'])->name('Proveedores.store');
+Route::get('/Proveedores', [\App\Http\Controllers\ProveedorController::class, 'index'])->name('Proveedores.indexProveedor');
 Route::get('/Proveedores/crear', [\App\Http\Controllers\ProductoController::class, 'create'])->name('Proveedores.nuevo');
-Route::get('/Proveedores/{id}', [ProveedorController::class, 'show'])->name('Proveedores.detalle')->whereNumber('id');
-Route::get('/Proveedores/{id}/editar', [ProveedorController::class, 'edit'])->name('Proveedores.edit');
-Route::put('/Proveedores/{id}', [ProveedorController::class, 'update'])->name('Proveedores.update');
+Route::get('/Proveedores/{id}', [\App\Http\Controllers\ProveedorController::class, 'show'])->name('Proveedores.detalle')->whereNumber('id');
+Route::get('/Proveedores/{id}/editar', [\App\Http\Controllers\ProveedorController::class, 'edit'])->name('Proveedores.edit');
+Route::put('/Proveedores/{id}', [\App\Http\Controllers\ProveedorController::class, 'update'])->name('Proveedores.update');
 
 
 

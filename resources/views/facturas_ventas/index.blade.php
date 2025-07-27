@@ -46,28 +46,64 @@
     </h3>
 
     <!-- Botón de volver y buscador -->
-    <div class="row mb-4 align-items-center">
-        <div class="col-md-6 d-flex justify-content-start">
-            <div class="w-100" style="max-width: 300px;">
-                <div class="input-group">
-                    <input
-                        type="text"
-                        id="searchInput"
-                        class="form-control"
-                        maxlength="30"
-                        placeholder="Buscar por número o fecha"
-                        onkeydown="bloquearEspacioAlInicio(event, this)"
-                        oninput="eliminarEspaciosIniciales(this)">
-                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+        <form method="GET" action="{{ route('facturas_ventas.index') }}">
+            <div class="row mb-4 g-2">
+                <!-- Buscador -->
+                <div class="col-md-4">
+                    <div class="input-group input-group-sm">
+                        <input
+                            type="text"
+                            id="searchInput"
+                            name="searchInput"
+                            class="form-control"
+                            maxlength="30"
+                            placeholder="Buscar por número o fecha"
+                            value="{{ request('searchInput') }}"
+                            onkeydown="bloquearEspacioAlInicio(event, this)"
+                            oninput="eliminarEspaciosIniciales(this)">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    </div>
+                </div>
+
+                <!-- Desde -->
+                <div class="col-md-2">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text">Desde</span>
+                        <input type="date" name="fecha_inicio" id="fechaInicio" class="form-control"
+                               value="{{ request('fecha_inicio') }}">
+                    </div>
+                </div>
+
+                <!-- Botón Filtrar -->
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-sm btn-primary w-100">
+                        <i class="bi bi-funnel me-1"></i> Filtrar
+                    </button>
+                </div>
+
+                <!-- Botón Registrar factura -->
+                <div class="col-md-2">
+                    <a href="{{ route('facturas_ventas.create') }}" class="btn btn-sm btn-outline-dark w-100">
+                        <i class="bi bi-pencil-square me-2"></i> Registrar factura
+                    </a>
+                </div>
+
+                <!-- Segunda fila: Hasta y Limpiar -->
+                <div class="offset-md-4 col-md-2">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text">Hasta</span>
+                        <input type="date" name="fecha_fin" id="fechaFin" class="form-control"
+                               value="{{ request('fecha_fin') }}">
+                    </div>
+                </div>
+
+                <div class="col-md-2">
+                    <a href="{{ route('facturas_ventas.index') }}" class="btn btn-sm btn-secondary w-100">
+                        <i class="bi bi-x-circle me-1"></i> Limpiar
+                    </a>
                 </div>
             </div>
-        </div>
-        <div class="col-md-6 d-flex justify-content-end">
-            <a href="{{ route('facturas_ventas.create') }}" class="btn btn-md btn-outline-dark">
-                <i class="bi bi-pencil-square me-2"></i>Registrar una nueva factura de venta
-            </a>
-        </div>
-    </div>
+        </form>
 
     @if(session()->has('status'))
         <div class="alert alert-warning alert-dismissible fade show" role="alert">
@@ -121,6 +157,39 @@
 
     </div>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const fechaInicio = document.getElementById('fechaInicio');
+        const fechaFin = document.getElementById('fechaFin');
+
+        const hoy = new Date();
+
+        // Obtener año y mes actual
+        const year = hoy.getFullYear();
+        const month = hoy.getMonth(); // 0-indexado (enero = 0)
+
+        // Primer día del mes
+        const primerDia = new Date(year, month, 1);
+        // Último día del mes (día 0 del mes siguiente = último del actual)
+        const ultimoDia = new Date(year, month + 1, 0);
+
+        const formatoFecha = (fecha) => fecha.toISOString().split('T')[0];
+
+        const minDate = formatoFecha(primerDia);
+        const maxDate = formatoFecha(ultimoDia);
+
+        // Establecer los límites
+        if (fechaInicio) {
+            fechaInicio.setAttribute('min', minDate);
+            fechaInicio.setAttribute('max', maxDate);
+        }
+        if (fechaFin) {
+            fechaFin.setAttribute('min', minDate);
+            fechaFin.setAttribute('max', maxDate);
+        }
+    });
+</script>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

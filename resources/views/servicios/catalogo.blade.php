@@ -29,6 +29,11 @@
             color: red;
             margin-top: 0.5rem;
         }
+        .pagination .page-item.active .page-link {
+            background-color: #000 !important;
+            border-color: #000 !important;
+            color: #fff !important;
+        }
     </style>
 </head>
 <body class="bg-light p-4">
@@ -55,34 +60,32 @@
 </nav>
 
 <!-- CONTENIDO -->
-<div class="container bg-white p-5 rounded shadow mt-4">
+<div class="container bg-white p-5 rounded shadow mt-5">
 
     <!-- Título centrado -->
-    <div class="text-center mb-4">
+    <div class="text-center mb-3">
         <h2 class="fw-bold mb-0">
             <i class="bi bi-list-check me-2"></i>Lista de servicios
         </h2>
     </div>
 
     <!-- Botón de volver a la derecha y buscador a la izquierda -->
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-row-reverse">
-        <!-- Botón Volver a la derecha -->
-        <a href="{{ route('servicios.index') }}" class="btn btn-outline-primary btn-md">
-            <i class="bi bi-pencil-square me-2"></i>Crear un registro nuevo
-        </a>
-
-        <!-- Formulario de búsqueda a la izquierda -->
-        <form id="formBuscar" action="{{ route('servicios.catalogo') }}" method="GET" class="d-flex flex-column" style="max-width: 350px;">
+    <div class="d-flex justify-content-between align-items-start mb-5 flex-wrap w-100">
+        <!-- Formulario de búsqueda alineado a la izquierda -->
+        <form method="GET" action="{{ route('servicios.catalogo') }}" style="width: 400px;" class="align-self-start">
             <div class="input-group">
-                <input type="text" id="campoBuscar" name="search" class="form-control" placeholder="Buscar por nombre..." value="{{ request('search') }}">
-                <button class="btn btn-primary" type="submit">
+                <input type="text" id="searchInput" name="search" class="form-control form-control-md"
+                       placeholder="Buscar por nombre..." value="{{ request('search') }}">
+                <button class="btn btn-outline-primary" type="submit">
                     <i class="bi bi-search"></i>
                 </button>
             </div>
-            <div id="errorBuscar" class="search-alert d-none">
-                Por favor, ingresa solo letras y no dejes el campo vacío.
-            </div>
         </form>
+
+        <!-- Botón "Crear un registro nuevo" alineado a la derecha -->
+        <a href="{{ route('servicios.index') }}" class="btn btn-outline-primary d-block align-self-start" style="width: 300px;">
+            <i class="bi bi-pencil-square me-2"></i> Crear un registro nuevo
+        </a>
     </div>
 
 
@@ -95,23 +98,25 @@
     @endif
 
     <!-- Tabla -->
-    <div class="table-responsive">
+    <div class="table-responsive mx-auto" style="max-width: 1100px;">
         <table class="table table-bordered table-hover align-middle">
             <thead class="table-dark text-center">
             <tr>
-                <th>#</th>
-                <th>Nombre</th>
-                <th>Descripción</th>
-                <th>Categoría</th>
-                <th>Acciones</th>
+                <th style="width: 50px;">#</th>
+                <th style="width: 300px;">Nombre</th>
+                <th style="width: 120px;">Costo</th>
+                <th style="width: 140px;">Duración</th>
+                <th style="width: 130px;">Categoría</th>
+                <th style="width: 160px;">Acciones</th>
             </tr>
             </thead>
             <tbody>
             @forelse($servicios as $index => $servicio)
                 <tr>
                     <td class="text-center">{{ $loop->iteration }}</td>
-                    <td class="text-start">{{ $servicio->nombre }}</td>
-                    <td class="text-start">{{ Str::limit($servicio->descripcion, 80) }}</td>
+                    <td class="text-start text-truncate" style="max-width: 300px;">{{ $servicio->nombre }}</td>
+                    <td class="text-center">L. {{ number_format($servicio->costo, 2) }}</td>
+                    <td class="text-center">{{ $servicio->duracion_cantidad }} {{ $servicio->duracion_tipo }}</td>
                     <td class="text-start">{{ ucfirst($servicio->categoria) }}</td>
                     <td class="text-center">
                         <a href="{{ route('servicios.show', $servicio->id) }}" class="btn btn-sm btn-outline-info">
@@ -120,46 +125,61 @@
                         <a href="{{ route('servicios.edit', $servicio->id) }}" class="btn btn-sm btn-outline-warning">
                             <i class="bi bi-pencil-square"></i> Editar
                         </a>
-
-                        </form>
                     </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="5" class="text-center text-muted">No hay servicios registrados.</td>
+                    <td colspan="6" class="text-center text-muted">No hay servicios registrados.</td>
                 </tr>
             @endforelse
             </tbody>
         </table>
-
     </div>
+
+
+
+    @if(request('search') && $servicios->total() > 0)
+        <div class="mb-3 text-muted">
+            Mostrando {{ $servicios->count() }} de {{ $servicios->total() }} servicios encontrados para
+            "<strong>{{ request('search') }}</strong>".
+        </div>
+    @elseif(request('search') && $$servicios->total() === 0)
+        <div class="mb-3 text-danger">
+            No se encontraron resultados para "<strong>{{ request('search') }}</strong>".
+        </div>
+    @endif
 
     <!-- Paginación -->
     <div class="d-flex justify-content-center mt-4">
-        {{ $servicios->links('pagination::bootstrap-5') }}
+        {{ $servicios->appends(['search' => request('search')])->links() }}
     </div>
 </div>
 
 <!-- Validación con JavaScript -->
 <script>
-    const campoBuscar = document.getElementById('campoBuscar');
-    const errorDiv = document.getElementById('errorBuscar');
-    const soloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.getElementById('searchInput');
 
-    campoBuscar.addEventListener('input', function () {
-        this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '');
-        errorDiv.classList.add('d-none');
-    });
 
-    campoBuscar.form.addEventListener('submit', function (e) {
-        const valor = campoBuscar.value.trim();
-
-        if (valor !== "" && !soloLetras.test(valor)) {
-            e.preventDefault();
-            errorDiv.classList.remove('d-none');
-        } else {
-            errorDiv.classList.add('d-none');
+        if (searchInput.value !== '') {
+            searchInput.focus();
+            const val = searchInput.value;
+            searchInput.value = '';
+            searchInput.value = val;
         }
+
+        let timeout = null;
+
+        searchInput.addEventListener('input', function () {
+            clearTimeout(timeout);
+
+            timeout = setTimeout(() => {
+                const search = this.value;
+                const url = new URL(window.location.href);
+                url.searchParams.set('search', search);
+                window.location.href = url.toString();
+            }, 700);
+        });
     });
 </script>
 
