@@ -169,7 +169,7 @@
             }
         }
 
-        .invoice-header-info .company-details,
+        .invoice-header-info .supplier-details,
         .invoice-header-info .invoice-details {
             flex: 1;
             min-width: 280px;
@@ -179,7 +179,7 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
-        .company-details {
+        .supplier-details {
             display: flex;
             flex-direction: column;
             align-items: flex-start;
@@ -187,27 +187,28 @@
             gap: 10px;
         }
 
-        .logo-and-name {
+        .supplier-details .logo-and-name {
             display: flex;
             align-items: center;
             gap: 15px;
             margin-bottom: 5px;
         }
 
-        .company-details img {
+        .supplier-details img {
             max-width: 120px;
             height: auto;
             border-radius: 5px;
             flex-shrink: 0;
+            display: none;
         }
 
-        .company-details strong {
-            font-size: 1.1rem;
+        .supplier-details strong {
+            font-size: 0.9rem;
             display: block;
             margin-bottom: 0;
         }
 
-        .company-address-contact p {
+        .supplier-address-contact p {
             margin-bottom: 0.3rem;
             font-size: 0.9rem;
         }
@@ -236,7 +237,7 @@
 
         .product-table-container {
             margin-top: 2rem;
-            margin-bottom: 0.5rem; /* Reducido de 2rem a 0.5rem */
+            margin-bottom: 0.5rem;
             border: 1px solid #e0e0e0;
             border-radius: 8px;
             overflow: hidden;
@@ -269,7 +270,7 @@
         }
 
         .invoice-summary-totals {
-            margin-top: 0.5rem; /* Reducido de 1rem a 0.5rem */
+            margin-top: 0.5rem;
         }
 
         .invoice-summary-totals .summary-box {
@@ -321,26 +322,25 @@
                     </div>
                     <div class="card-body">
                         <div class="invoice-header-info">
-                            <div class="company-details">
+                            <div class="supplier-details">
                                 <div class="logo-and-name">
-                                    <img src="{{ asset('centinela.jpg') }}" alt="Logo de la Empresa Centinela">
-                                    <strong>GRUPO CENTINELA</strong>
+                                    <strong>{{ $factura->proveedor->nombreEmpresa ?? 'N/A' }}</strong>
                                 </div>
-                                <div class="company-address-contact">
-                                    <p>RTN: 06021999123456.</p>
-                                    <p>Dirección: Barrio Oriental, cuatro cuadras al sur del parque central, Danlí, El Paraíso, Honduras.</p>
-                                    <p>Teléfono fijo: +504 2763-3585.</p>
-                                    <p>Teléfono celular: +504 9322-5352.</p>
-                                    <p>Email: grupocentinela.hn@gmail.com.</p>
+                                <div class="supplier-address-contact">
+                                    <p><strong>Dirección:</strong> {{ $factura->proveedor->direccion ?? 'N/A' }}.</p>
+                                    <p><strong>Teléfono de la empresa:</strong> {{ $factura->proveedor->telefonodeempresa ?? 'N/A' }}.</p>
+                                    <p><strong>Email:</strong> {{ $factura->proveedor->correoempresa ?? 'N/A' }}.</p>
+                                    <p><strong>Representante:</strong> {{ $factura->proveedor->nombrerepresentante ?? 'N/A' }}.</p>
+                                    <p><strong>Teléfono Representante:</strong> {{ $factura->proveedor->telefonoderepresentante ?? 'N/A' }}.</p>
                                 </div>
                             </div>
                             <div class="invoice-details">
                                 <div class="invoice-details-grid">
-                                    <div><strong>Factura de compra N°:</strong> {{ $factura->numero_factura }}.</div>
-                                    <div><strong>Fecha comprobante:</strong> {{ \Carbon\Carbon::parse($factura->fecha)->format('d/m/Y') }}.</div>
-                                    <div><strong>Proveedor:</strong> {{ $factura->proveedor->nombreEmpresa }}.</div>
-                                    <div><strong>Forma de pago:</strong> {{ $factura->forma_pago }}.</div>
-                                    <div><strong>Responsable:</strong> {{ $factura->empleado->nombre }} {{ $factura->empleado->apellido }}.</div>
+                                    <div><strong>Factura de compra N°:</strong> {{ $factura->numero_factura ?? 'N/A' }}.</div>
+                                    <div><strong>Fecha de la factura:</strong> {{ \Carbon\Carbon::parse($factura->fecha ?? now())->format('d/m/Y') }}.</div>
+                                    <div><strong>Proveedor:</strong> {{ $factura->proveedor->nombreEmpresa ?? 'N/A' }}.</div>
+                                    <div><strong>Forma de pago:</strong> {{ $factura->forma_pago ?? 'N/A' }}.</div>
+                                    <div><strong>Responsable:</strong> {{ $factura->empleado->nombre ?? 'N/A' }} {{ $factura->empleado->apellido ?? 'N/A' }}.</div>
                                 </div>
                             </div>
                         </div>
@@ -357,19 +357,24 @@
                                     <th>Descripción</th>
                                     <th>Precio(Lps)</th>
                                     <th>Cantidad</th>
-                                    <th>IVA%</th>
-                                    <th>Subtotal(Lps)</th>
+                                    <th>IVA%</th> {{-- Ahora se calcula dinámicamente --}}
+                                    <th>Subtotal(Lps)</th> {{-- Ahora se calcula dinámicamente --}}
                                 </tr>
                                 </thead>
                                 <tbody>
-                                @forelse ($factura->detalles as $index => $detalle)
+                                @forelse ($factura->detalles ?? [] as $index => $detalle)
+                                    @php
+                                        // Calcula el IVA y el subtotal por línea dinámicamente
+                                        $ivaPorcentaje = $detalle->productoInventario->impuesto->porcentaje ?? 0;
+                                        $subtotalLinea = $detalle->precio_compra * $detalle->cantidad;
+                                    @endphp
                                     <tr>
                                         <td>{{ $index + 1 }}</td>
-                                        <td>{{ $detalle->producto }}</td>
+                                        <td>{{ $detalle->productoInventario->nombre ?? 'Producto Desconocido' }}</td>
                                         <td>{{ number_format($detalle->precio_compra, 2) }}</td>
                                         <td>{{ $detalle->cantidad }}</td>
-                                        <td>{{ $detalle->iva }}%</td>
-                                        <td>{{ number_format($detalle->total, 2) }}</td>
+                                        <td>{{ number_format($ivaPorcentaje, 0) }}%</td> {{-- Muestra el IVA del producto --}}
+                                        <td>{{ number_format($subtotalLinea, 2) }}</td> {{-- Muestra el subtotal calculado --}}
                                     </tr>
                                 @empty
                                     <tr>
@@ -382,36 +387,36 @@
 
                         {{-- Contenedor para los totales: ajustado para que sea más pequeño y a la derecha --}}
                         <div class="row justify-content-end">
-                            <div class="col-md-6 col-lg-5"> {{-- Columna para limitar el ancho y alinear a la derecha --}}
+                            <div class="col-md-6 col-lg-5">
                                 <div class="invoice-summary-totals">
                                     <div class="summary-box">
                                         <div class="summary-item">
                                             <strong>Importe Gravado (Lps):</strong>
-                                            <span>{{ number_format($factura->importe_gravado, 2) }}</span>
+                                            <span>{{ number_format($factura->importe_gravado ?? 0, 2) }}</span>
                                         </div>
                                         <div class="summary-item">
                                             <strong>Importe Exento (Lps):</strong>
-                                            <span>{{ number_format($factura->importe_exento, 2) }}</span>
+                                            <span>{{ number_format($factura->importe_exento ?? 0, 2) }}</span>
                                         </div>
                                         <div class="summary-item">
                                             <strong>Importe Exonerado (Lps):</strong>
-                                            <span>{{ number_format($factura->importe_exonerado, 2) }}</span>
+                                            <span>{{ number_format($factura->importe_exonerado ?? 0, 2) }}</span>
                                         </div>
                                         <div class="summary-item">
                                             <strong>Subtotal (Lps):</strong>
-                                            <span>{{ number_format($factura->subtotal, 2) }}</span>
+                                            <span>{{ number_format($factura->subtotal ?? 0, 2) }}</span>
                                         </div>
                                         <div class="summary-item">
                                             <strong>ISV 15% (Lps):</strong>
-                                            <span>{{ number_format($factura->isv_15, 2) }}</span>
+                                            <span>{{ number_format($factura->isv_15 ?? 0, 2) }}</span>
                                         </div>
                                         <div class="summary-item">
                                             <strong>ISV 18% (Lps):</strong>
-                                            <span>{{ number_format($factura->isv_18, 2) }}</span>
+                                            <span>{{ number_format($factura->isv_18 ?? 0, 2) }}</span>
                                         </div>
                                         <div class="summary-item total">
                                             <strong>Total Final (Lps):</strong>
-                                            <span>{{ number_format($factura->totalF, 2) }}</span>
+                                            <span>{{ number_format($factura->totalF ?? 0, 2) }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -425,7 +430,7 @@
                 </div>
 
                 <div class="d-flex justify-content-center align-items-center gap-3 mt-4 flex-wrap">
-                    <a href="{{ route('facturas.index') }}" class="btn-return">
+                    <a href="{{ route('facturas_compras.index') }}" class="btn-return">
                         <i class="bi bi-arrow-left me-2"></i>Volver a la lista
                     </a>
                 </div>

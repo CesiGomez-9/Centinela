@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\Api\ProductoApiController;
 use App\Http\Controllers\EmpleadoController;
-use App\Http\Controllers\FacturaController;
+use App\Http\Controllers\FacturaCompraController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\ServicioController;
@@ -35,10 +35,7 @@ Route::get('/clientes/buscar', [App\Http\Controllers\ClienteController::class, '
 
 
 
-
 Route::get('/Proveedores/crear', [ProveedorController::class, 'create'])->name('Proveedores.create');
-
-
 Route::post('/Proveedores/crear', [ProveedorController::class, 'store'])->name('Proveedores.store');
 Route::get('/Proveedores', [ProveedorController::class, 'index'])->name('Proveedores.indexProveedor');
 Route::get('/Proveedores/crear', [ProveedorController::class, 'create'])->name('Proveedores.nuevo');
@@ -60,8 +57,6 @@ Route::controller(ProductoController::class)->group(function () {
     Route::put('/productos/{id}/editar', 'update')->name('productos.update')->whereNumber('id');
 });
 
-
-
 Route::get('/servicios/index', [ServicioController::class, 'index'])->name('servicios.index');
 Route::post('/servicios', [ServicioController::class, 'store'])->name('servicios.store');
 Route::delete('/servicios/{id}', [ServicioController::class, 'destroy'])->name('servicios.destroy');
@@ -70,11 +65,6 @@ Route::get('/servicios/{servicio}', [ServicioController::class, 'show'])->name('
 Route::get('/servicios/{servicio}/edit', [ServicioController::class, 'edit'])->name('servicios.edit');
 Route::put('/servicios/{id}', [ServicioController::class, 'update'])->name('servicios.update');
 
-
-
-
-
-
 Route::get('/Proveedores/crear', [\App\Http\Controllers\ProveedorController::class, 'create'])->name('Proveedores.create');
 Route::post('/Proveedores/crear', [\App\Http\Controllers\ProveedorController::class, 'store'])->name('Proveedores.store');
 Route::get('/Proveedores', [\App\Http\Controllers\ProveedorController::class, 'index'])->name('Proveedores.indexProveedor');
@@ -82,15 +72,13 @@ Route::get('/Proveedores/crear', [\App\Http\Controllers\ProveedorController::cla
 Route::get('/Proveedores/{id}', [ProveedorController::class, 'show'])->name('Proveedores.detalle')->whereNumber('id');
 
 
-Route::controller(FacturaController::class)->group(function () {
-    Route::get('/facturas', 'index')->name('facturas.index');
-    Route::get('/facturas/{id}', 'show')->name('facturas.show')->whereNumber('id');
-    Route::get('/facturas/crear', 'create')->name('facturas.create');
-    Route::post('/facturas/crear', 'store')->name('facturas.store');
-
-
-    Route::get('/facturas/{id}/editar', 'edit')->name('facturas.edit')->whereNumber('id');
-    Route::put('/facturas/{id}/editar', 'update')->name('facturas.update')->whereNumber('id');
+Route::controller(FacturaCompraController::class)->group(function () {
+    Route::get('/facturas_compras', 'index')->name('facturas_compras.index');
+    Route::get('/facturas_compras/{id}', 'show')->name('facturas_compras.show')->whereNumber('id');
+    Route::get('/facturas_compras/crear', 'create')->name('facturas_compras.create');
+    Route::post('/facturas_compras/crear', 'store')->name('facturas_compras.store');
+    Route::get('/facturas_compras/{id}/editar', 'edit')->name('facturas_compras.edit')->whereNumber('id');
+    Route::put('/facturas_compras/{id}/editar', 'update')->name('facturas_compras.update')->whereNumber('id');
 });
 
 Route::get('/Clientes/crear', [\App\Http\Controllers\ClienteController::class, 'create'])->name('Clientes.create');
@@ -98,5 +86,5 @@ Route::post('/Clientes/crear', [\App\Http\Controllers\ClienteController::class, 
 Route::get('/Clientes/crear', [\App\Http\Controllers\ClienteController::class, 'create'])->name('Clientes.formulariocliente');
 Route::get('/Clientes', [\App\Http\Controllers\ClienteController::class, 'index'])->name('Clientes.indexCliente');
 
-Route::get('/Clientes/{id}', [\App\Http\Controllers\ClienteController::class, 'show'])->name('Clientes.detalleCliente')->whereNumber('id');
+
 

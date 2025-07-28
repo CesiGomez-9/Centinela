@@ -56,10 +56,16 @@
 </nav>
 
 <div class="container my-3">
-    <div class="form-contenedor">
+    <div class="form-contenedor position-relative">
+        <!-- Título e ícono izquierdo -->
         <h2 class="text-center mb-4 text-primary fs-8">
             <i class="bi bi-journal-plus me-2"></i> Registrar un nuevo servicio
         </h2>
+
+        <!-- Ícono decorativo a la derecha -->
+        <div class="position-absolute top-0 end-0 me-3 mt-2 d-none d-md-block" style="font-size: 4rem; color: #dce6f5;">
+            <i class="bi bi-shield-lock"></i> <!-- o bi-tools -->
+        </div>
 
         @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show py-2" role="alert" style="font-size: 0.85rem;">
@@ -67,6 +73,7 @@
                 <button type="button" class="btn-close btn-close-sm" data-bs-dismiss="alert" aria-label="Cerrar"></button>
             </div>
         @endif
+
 
         <form id="servicioForm" action="{{ route('servicios.store') }}" method="POST" class="needs-validation" novalidate>
             @csrf

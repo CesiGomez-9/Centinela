@@ -192,17 +192,17 @@
                             <p><i class="bi bi-envelope-fill me-2"></i><strong>Correo:</strong> {{ $empleado->email }}</p>
                             <p><i class="bi bi-telephone-fill me-2"></i><strong>Teléfono:</strong> {{ $empleado->telefono }}</p>
                             <p><i class="bi bi-droplet-fill me-2"></i><strong>Tipo de sangre:</strong> {{ $empleado->tipodesangre }}</p>
-                            <p><i class="bi bi-exclamation-triangle-fill me-2"></i><strong>Alergias:</strong><br>
-                            @if(is_array($empleado->alergias))
-                                <ul class="mb-0 ps-4" style="border-left: 4px solid #cda34f; padding-left: 10px;">
-                                    @foreach($empleado->alergias as $alergia)
-                                        <li>{{ $alergia }}</li>
+                            <p><i class="bi bi-box-seam me-2"></i><strong>Productos requeridos:</strong></p>
+                            @if(count($productos) > 0)
+                                <ul class="mb-0 ps-4">
+                                    @foreach($productos as $producto)
+                                        <li>{{ $producto }}</li>
                                     @endforeach
                                 </ul>
-                                @else
-                                    {{ $empleado->$alergia }}
-                                @endif
-                                </p>
+                            @else
+                                <p><em>No hay productos específicos requeridos.</em></p>
+                            @endif
+
                         </div>
                     </div>
                     <div class="section-header mt-4">

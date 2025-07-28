@@ -37,6 +37,8 @@ class ServicioController extends Controller
     }
 
 
+
+
     /**
      * Store a newly created resource in storage.
      */
@@ -68,7 +70,6 @@ class ServicioController extends Controller
         $servicio->costo = $request->costo;
         $servicio->duracion_cantidad = $request->duracion_cantidad;
         $servicio->duracion_tipo = $request->duracion_tipo;
-        $servicio->duracion_estimada = $request->duracion_cantidad . ' ' . $request->duracion_tipo;
         $servicio->productos = json_encode($request->productos ?? []);
 
         $servicio->save();
@@ -86,8 +87,8 @@ class ServicioController extends Controller
     {
         $servicio = Servicio::findOrFail($id);
 
-        // Decodificar IDs desde el campo JSON
-        $productosIds = $servicio->productos ?? [];
+        // Decodificar correctamente el JSON a array
+        $productosIds = json_decode($servicio->productos ?? '[]', true);
 
         // Cargar los productos desde la base de datos
         $productos = Producto::whereIn('id', $productosIds)->get();
@@ -97,34 +98,29 @@ class ServicioController extends Controller
 
 
 
+
     /**
      * Show the form for editing the specified resource.
      */
     public function edit($id)
     {
-        // Buscar el servicio por ID o lanzar error si no existe
         $servicio = Servicio::findOrFail($id);
 
-        // Unir cantidad y tipo de duración en un solo campo para mostrar en el formulario
-        $servicio->duracion_estimada = $servicio->duracion_cantidad . ' ' . $servicio->duracion_tipo;
+        // Convertir a array si ya está en JSON
+        $productosSeleccionados = json_decode($servicio->productos, true) ?? [];
 
-        // Obtener los IDs de productos seleccionados (desde JSON)
-        $productosSeleccionados = $servicio->productos ?? [];
-
-
-        // Obtener todos los productos de categoría 'vigilancia' o que estén seleccionados
+        // Obtener productos vigilancia + los seleccionados
         $productosVigilancia = Producto::where(function ($query) use ($productosSeleccionados) {
             $query->where('categoria', 'vigilancia')
                 ->orWhereIn('id', $productosSeleccionados);
         })->get()->unique('id');
 
-        // Obtener todos los productos de categoría 'tecnico' o que estén seleccionados
+        // Obtener productos técnicos + los seleccionados
         $productosTecnicos = Producto::where(function ($query) use ($productosSeleccionados) {
             $query->where('categoria', 'tecnico')
                 ->orWhereIn('id', $productosSeleccionados);
         })->get()->unique('id');
 
-        // Retornar la vista con todos los datos necesarios
         return view('servicios.edit', [
             'servicio' => $servicio,
             'productosVigilancia' => $productosVigilancia,
@@ -133,14 +129,6 @@ class ServicioController extends Controller
         ]);
     }
 
-
-
-
-
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -148,7 +136,7 @@ class ServicioController extends Controller
             'descripcionServicio' => 'required|string|max:125|regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/',
             'costo' => 'required|numeric|min:1|max:9999',
             'duracion_cantidad' => 'required|numeric|min:1|max:99',
-            'duracion_tipo' => 'required|in:horas,dias,meses,años', // ajusté "días" a "dias" para que coincida con select
+            'duracion_tipo' => 'required|in:horas,dias,meses,años',
             'categoria' => 'required|in:vigilancia,tecnico',
             'productos' => 'required|array',
             'productos.*' => 'integer|exists:productos,id'
@@ -156,22 +144,18 @@ class ServicioController extends Controller
 
         $servicio = Servicio::findOrFail($id);
 
-        $productosSeleccionados = collect(json_decode($servicio->productos, true) ?? [])
-            ->map(fn($id) => (int)$id)
-            ->toArray();
-
         $servicio->nombre = $request->nombreServicio;
         $servicio->descripcion = $request->descripcionServicio;
         $servicio->costo = $request->costo;
-        $servicio->duracion_estimada = $request->duracion_cantidad . ' ' . $request->duracion_tipo;
+        $servicio->duracion_cantidad . ' ';
+        $servicio->duracion_tipo . ' ';
         $servicio->categoria = $request->categoria;
-        $productosSeleccionados = $servicio->productos ?? [];
+        $servicio->productos = json_encode($request->productos); // Guardar como JSON
 
         $servicio->save();
 
         return redirect()->route('servicios.catalogo')->with('success', 'Servicio actualizado correctamente.');
     }
-
 
     /**
      * Remove the specified resource from storage.
@@ -185,16 +169,18 @@ class ServicioController extends Controller
     }
     public function catalogo(Request $request)
     {
-        $query = $request->input('search');
+        $query = Servicio::query();
 
-        if ($query) {
-            $servicios = Servicio::where('nombre', 'like', "%$query%")->paginate(10);
-        } else {
-            $servicios = Servicio::paginate(10); // sin filtro
+        if ($request->filled('search')) {
+            $query->where('nombre', 'like', '%' . $request->search . '%');
         }
+
+        $servicios = $query->paginate(10)->appends(['search' => $request->search]);
 
         return view('servicios.catalogo', compact('servicios'));
     }
+
+
 
 
 

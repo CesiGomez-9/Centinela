@@ -16,14 +16,18 @@ class ServicioFactory extends Factory
      */
     public function definition(): array
     {
-        $requiere = $this->faker->boolean();
+        $categoria = $this->faker->randomElement(['vigilancia', 'tecnico']);
+
         return [
-            'nombre' => $this->faker->words(3, true),  // Cambiado a string
-            'descripcion' => $this->faker->paragraph,
-            'tipo' => $this->faker->randomElement(['Instalación', 'Mantenimiento', 'Asesoría']),
-            'duracion_estimada' => $this->faker->randomElement(['2 horas', '1 día', '3 días']),
-            'requiere_productos' => $requiere,
-            'productos_especificos' => $requiere ? $this->faker->words(3, true) : null,
+            'nombre' => $this->faker->words(3, true),
+            'descripcion' => $this->faker->sentence(5),
+            'categoria' => $categoria,
+            'tipo_personal' => $categoria,
+            'costo' => $this->faker->numberBetween(100, 5000),
+            'duracion_cantidad' => $this->faker->numberBetween(1, 30),
+            'duracion_tipo' => $this->faker->randomElement(['horas', 'dias', 'meses', 'años']),
+            'productos_tecnico' => $categoria === 'tecnico' ? ['Cámara IP Full HD', 'Escalera'] : null,
+            'productos_vigilancia' => $categoria === 'vigilancia' ? ['Botas reforzadas', 'Linterna'] : null,
         ];
     }
 
