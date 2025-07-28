@@ -83,9 +83,9 @@ class ClienteController extends Controller
         $municipio = substr($value, 2, 2);
 
         if (!in_array($departamento, $codigosDep)) {
-            $fail('Código de departamento inválido en la identidad.');
+            $fail('El departamento es inválido en la identidad.');
         } elseif (!isset($municipiosPorDepartamento[$departamento]) || !in_array($municipio, $municipiosPorDepartamento[$departamento])) {
-            $fail('Código de municipio inválido para el departamento seleccionado en la identidad.');
+            $fail('El municipio es inválido para el departamento seleccionado en la identidad.');
         }
     },
                 function ($attribute, $value, $fail) {
@@ -95,7 +95,8 @@ class ClienteController extends Controller
                     }
                 }
             ],
-            'correo' => ['required', 'string', 'email', 'max:50', 'unique:clientes,correo'],
+            'correo' => ['required', 'string', 'email', 'max:50', 'unique:clientes,correo', 'regex:/^[^@\s]+@[^@\s]+\.[^@\s]+$/'],
+
             'telefono' => ['required', 'regex:/^[2389][0-9]{7}$/', 'size:8', 'unique:clientes,telefono'],
             'direccion' => ['required', 'string','max:250'],
             'departamento' => ['required', 'string'],
@@ -156,6 +157,8 @@ class ClienteController extends Controller
     public function show(string $id)
     {
         //
+        $cliente = Cliente::findOrFail($id);
+        return view('Clientes.detalleCliente', compact('cliente'));
     }
 
     /**

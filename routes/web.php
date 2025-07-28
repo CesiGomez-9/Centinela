@@ -98,5 +98,5 @@ Route::post('/Clientes/crear', [\App\Http\Controllers\ClienteController::class, 
 Route::get('/Clientes/crear', [\App\Http\Controllers\ClienteController::class, 'create'])->name('Clientes.formulariocliente');
 Route::get('/Clientes', [\App\Http\Controllers\ClienteController::class, 'index'])->name('Clientes.indexCliente');
 
-
+Route::get('/Clientes/{id}', [\App\Http\Controllers\ClienteController::class, 'show'])->name('Clientes.detalleCliente')->whereNumber('id');
 

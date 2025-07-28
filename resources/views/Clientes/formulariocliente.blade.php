@@ -159,7 +159,7 @@
                             <label for="departamento" class="form-label">Departamento</label>
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
-                                <select name="departamento" class="form-select @error('departamento') is-invalid @enderror" required>
+                                <select name="departamento" class="form-select @error('departamento') is-invalid @enderror" >
                                     <option value="">Seleccione un departamento</option>
                                     <option value="Atlántida" {{ old('departamento') == 'Atlántida' ? 'selected' : '' }}>Atlántida</option>
                                     <option value="Choluteca" {{ old('departamento') == 'Choluteca' ? 'selected' : '' }}>Choluteca</option>
@@ -212,7 +212,7 @@
                                 <select name="sexo"
                                         id="sexo"
                                         class="form-select @error('sexo') is-invalid @enderror"
-                                        required>
+                                        >
                                     <option value="">Seleccione su sexo</option>
                                     <option value="Hombre" {{ old('sexo') == 'Hombre' ? 'selected' : '' }}>Hombre</option>
                                     <option value="Mujer" {{ old('sexo') == 'Mujer' ? 'selected' : '' }}>Mujer</option>
@@ -268,35 +268,35 @@
                 const form = this.closest('form');
                 if (!form) return;
 
-                // Limpiar manualmente cada campo
+                // Limpiar inputs de texto y números
                 form.querySelectorAll('input[type="text"], input[type="number"], textarea').forEach(el => {
                     el.value = '';
-                });
-
-                form.querySelectorAll('select').forEach(el => {
-                    el.selectedIndex = 0;
-                    el.classList.remove('is-invalid', 'is-valid');
-                });
-
-                form.querySelectorAll('select').forEach(el => {
-                    el.selectedIndex = 0;
-                });
-
-                // Remover clases de validación
-                form.querySelectorAll('.is-valid, .is-invalid').forEach(el => {
                     el.classList.remove('is-valid', 'is-invalid');
                 });
 
+                // Limpiar selects (sexo, departamento, etc.)
+                form.querySelectorAll('select').forEach(el => {
+                    el.selectedIndex = 0; // primera opción, normalmente el placeholder
+                    el.classList.remove('is-valid', 'is-invalid');
+                });
+
+                // Eliminar clases generales de validación
                 form.classList.remove('was-validated');
 
-                // Limpiar mensajes de error si hay
+                // Limpiar mensajes de error Laravel (si están debajo del input)
                 form.querySelectorAll('.text-danger').forEach(el => {
-                    el.innerText = '';
+                    el.textContent = '';
+                });
+
+                // Si usas Laravel con errores en span.invalid-feedback, también:
+                form.querySelectorAll('.invalid-feedback').forEach(el => {
+                    el.style.display = 'none';
                 });
             });
         }
     });
 </script>
+
 
 
 
@@ -434,33 +434,33 @@
     }
 
     function limpiarFormulario() {
-        const formulario = document.getElementById("form-cliente");
+        const form = document.getElementById('form-cliente');
+        if (!form) return;
 
-        // Limpiar campos manualmente
-        const elementos = formulario.querySelectorAll("input, textarea, select");
-        elementos.forEach(elemento => {
-            if (elemento.type === "checkbox" || elemento.type === "radio") {
-                elemento.checked = false;
-            } else {
-                elemento.value = "";
-            }
+        // Limpiar valores de inputs y textarea
+        form.querySelectorAll('input[type="text"], input[type="email"], textarea').forEach(input => {
+            input.value = '';
+            input.classList.remove('is-invalid', 'is-valid');
         });
 
-        // Quitar clases de error
-        const inputsInvalidos = formulario.querySelectorAll('.form-control.is-invalid');
-        inputsInvalidos.forEach(input => {
-            input.classList.remove('is-invalid');
+        // Limpiar selects (departamento, sexo)
+        form.querySelectorAll('select').forEach(select => {
+            select.selectedIndex = 0;
+            select.classList.remove('is-invalid', 'is-valid');
         });
 
-        // Borrar los mensajes de error
-        const mensajesError = formulario.querySelectorAll('.invalid-feedback');
-        mensajesError.forEach(msg => {
-            msg.textContent = '';
+        // Limpiar mensajes de error de Laravel / Bootstrap
+        form.querySelectorAll('.invalid-feedback, .text-danger').forEach(el => {
+            el.textContent = '';
+            el.style.display = 'none'; // Opcional si usas display none para errores
         });
 
+        // Quitar clase que muestra validación visual de bootstrap
+        form.classList.remove('was-validated');
 
-
-
+        // Opcional: poner foco en el primer campo
+        const primerCampo = form.querySelector('input, select, textarea');
+        if (primerCampo) primerCampo.focus();
     }
 
 

@@ -30,7 +30,7 @@
         <div class="card shadow p-4" style="background-color: #ffffff;">
             <h3 class="text-center mb-4" style="color: #09457f;">
                 <i class="bi bi-people-fill me-2"></i>
-                Lista de Clientes
+                Lista de clientes
             </h3>
 
             <div class="row mb-4">
@@ -43,7 +43,7 @@
                                 name="search"
                                 value="{{request('search')}}"
                                 class="form-control"
-                                placeholder="Buscar por nombre,identidad,departamento"
+                                placeholder="Buscar por nombre, identidad, departamento"
                             >
                             <span class="input-group-text"><i class="bi bi-search"></i></span>
                         </div>
@@ -70,12 +70,9 @@
                     <th>N°</th>
                     <th>Nombre</th>
                     <th>Apellido</th>
-                    <th>Sexo</th>
                     <th>Identidad</th>
-                    <th>Correo</th>
-                    <th>Teléfono</th>
-                    <th>Dirección</th>
                     <th>Departamento</th>
+                    <th>Acciones</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -84,12 +81,14 @@
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ $cliente->nombre }}</td>
                         <td>{{ $cliente->apellido }}</td>
-                        <td>{{ $cliente->sexo }}</td>
                         <td>{{ $cliente->identidad}}</td>
-                        <td>{{ $cliente->correo }}</td>
-                        <td>{{ $cliente->telefono }}</td>
-                        <td>{{ $cliente->direccion }}</td>
                         <td>{{ $cliente->departamento }}</td>
+                        <td class="text-center">
+                            <a href="{{ route('Clientes.detalleCliente', $cliente->id) }}" class="btn btn-sm btn-outline-info">
+                                <i class="bi bi-eye"></i> Ver
+                            </a>
+
+                        </td>
 
                     </tr>
                 @empty
@@ -138,14 +137,16 @@
                 clearTimeout(timeout);
 
                 timeout = setTimeout(() => {
-                    const search = this.value;
+                    const search = this.value.trim();
+
                     const url = new URL(window.location.href);
-                    url.searchParams.set('search', search);
+                    url.searchParams.set('search', search); // ✅ deja espacios, los codifica automáticamente
+                    url.searchParams.delete('page'); // ✅ reinicia a la página 1
+
                     window.location.href = url.toString();
-                }, 0.5);
+                }, 750); // ⏱️ Espera 800ms para que puedas escribir tranquilo
             });
         });
-
     </script>
 
 
