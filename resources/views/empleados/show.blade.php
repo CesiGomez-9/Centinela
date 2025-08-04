@@ -168,7 +168,6 @@
     }
 </style>
 
-
 <div class="container py-4">
     <div class="row justify-content-center">
         <div class="col-xl-8 col-lg-9">
@@ -187,6 +186,7 @@
                             <p><i class="bi bi-credit-card-2-front-fill me-2"></i><strong>Identidad:</strong> {{ $empleado->identidad }}</p>
                             <p><i class="bi bi-geo-alt-fill me-2"></i><strong>Departamento:</strong> {{ $empleado->departamento }}</p>
                             <p><i class="bi bi-geo-alt-fill me-2"></i><strong>Dirección:</strong> {{ $empleado->direccion }}</p>
+                            <p><i class="bi bi-list me-2"></i><strong>Categoría:</strong> {{ $empleado->categoria }}</p>
                         </div>
                         <div class="col-md-6">
                             <p><i class="bi bi-envelope-fill me-2"></i><strong>Correo:</strong> {{ $empleado->email }}</p>

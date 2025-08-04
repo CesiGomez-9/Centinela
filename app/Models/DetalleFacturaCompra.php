@@ -9,6 +9,7 @@ class DetalleFacturaCompra extends Model
 {
     protected $table = 'detalles';
 
+
     use HasFactory;
 
     protected $fillable = [
@@ -39,7 +40,7 @@ class DetalleFacturaCompra extends Model
 
     public function facturaVenta()
     {
-        return $this->belongsTo(FacturaVenta::class, 'factura_venta_id');
+        return $this->belongsTo(FacturaVenta::class, 'facturas_ventas_id');
     }
 
 }

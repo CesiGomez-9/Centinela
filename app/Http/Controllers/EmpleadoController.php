@@ -11,10 +11,11 @@ class EmpleadoController extends Controller
 {
     public function index(Request $request)
     {
+
         $request->validate([
-            'search' => ['nullable', 'regex:/^[\pL\pN\s\-]+$/u', 'max:25']
+            'search' => ['nullable', 'string', 'max:25'],
         ], [
-            'search.regex' => 'Ingresa texto válido para buscar por nombre, departamento o identidad.'
+            'search.string' => 'Ingresa texto válido para buscar por nombre, departamento o identidad.'
         ]);
 
         $search = $request->input('search');
@@ -30,8 +31,7 @@ class EmpleadoController extends Controller
             });
         }
 
-        $empleados = $empleados->paginate(10);
-
+        $empleados = $empleados->paginate(10)->withQueryString();
 
         return view('empleados.index', compact('empleados'));
     }
@@ -39,7 +39,6 @@ class EmpleadoController extends Controller
 
     public function create(Request $request)
     {
-
         $empleados = $request->session()->get('empleados', null);
         $guardado = $request->session()->get('guardado', false);
         return view('empleados.create', compact('empleados', 'guardado'));
@@ -114,6 +113,8 @@ class EmpleadoController extends Controller
             'alergiaOtros' => 'nullable|string|max:150|regex:/^[\pL\s]+$/u',
             'alergiaAlimentos' => 'nullable|string|max:150|regex:/^[\pL\s]+$/u',
             'alergiaMedicamentos' => 'nullable|string|max:150|regex:/^[\pL\s]+$/u',
+            'categoria' => 'required|in:Administracion,Tecnico,Vigilancia',
+
         ];
 
         $messages = [
@@ -141,6 +142,7 @@ class EmpleadoController extends Controller
             'telefonodeemergencia.regex' => 'El teléfono de emergencia debe tener 8 dígitos y comenzar con 2, 3, 8 o 9.',
             'telefonodeemergencia.unique' => 'Este número de teléfono ya está registrado',
             'telefonodeemergencia.max' => 'El teléfono de emergencia no debe tener más de 8 dígitos.',
+            'categoria.required' => 'Debe seleccionar una categoria'
         ];
 
         $validated = $request->validate($rules, $messages);
@@ -269,6 +271,7 @@ class EmpleadoController extends Controller
             'alergiaOtros' => 'nullable|string|max:150|regex:/^[\pL\s]+$/u',
             'alergiaAlimentos' => 'nullable|string|max:150|regex:/^[\pL\s]+$/u',
             'alergiaMedicamentos' => 'nullable|string|max:150|regex:/^[\pL\s]+$/u',
+            'categoria' => 'required|in:Administracion,Tecnico,Vigilancia',
         ];
 
         $messages = [
@@ -295,7 +298,8 @@ class EmpleadoController extends Controller
             'alergiaOtros.regex' => 'Solo letras y espacios en el campo de alergia',
             'alergiaAlimentos.regex' => 'Solo letras y espacios en el campo de alimentos',
             'alergiaMedicamentos.regex' => 'Solo letras y espacios en el campo de medicamentos',
-        ];
+            'categoria.required' => 'Debe seleccionar una categoria'
+            ];
 
         $validated = $request->validate($rules, $messages);
         $alergias = $validated['alergias'];
@@ -342,6 +346,7 @@ class EmpleadoController extends Controller
             'telefonodeemergencia' => $validated['telefonodeemergencia'],
             'tipodesangre' => $validated['tipodesangre'],
             'departamento' => $validated['departamento'],
+            'categoria' => $validated['categoria'],
             'alergias' => $validated['alergias'],
             'alergiaOtros' => $validated['alergiaOtros'],
             'alergiaAlimentos' => $validated['alergiaAlimentos'],

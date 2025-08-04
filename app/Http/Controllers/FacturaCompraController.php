@@ -46,7 +46,9 @@ class FacturaCompraController extends Controller
         return view('facturas_compras.formulario', compact('proveedores', 'formasPago', 'empleados'));
     }
     public function store(Request $request)
+
     {
+
         $request->validate([
             'numero_factura' => ['required', 'string', 'max:20', Rule::unique('facturas_compras', 'numero_factura')],
             'fecha' => [

@@ -20,11 +20,13 @@ class Producto extends Model
         'categoria',
         'descripcion',
         'precio_compra',
+        'precio_venta'
     ];
 
     protected $casts = [
         'cantidad' => 'integer',
         'precio_compra' => 'decimal:2',
+        'precio_venta' => 'decimal:2'
     ];
 
     /**
@@ -69,6 +71,11 @@ class Producto extends Model
                 ->orWhere('categoria', 'LIKE', "%$termino%");
         }
         return $query;
+    }
+
+    public function ultimoDetalleFactura()
+    {
+        return $this->hasOne(DetalleFacturaVenta::class)->latestOfMany();
     }
 
 
