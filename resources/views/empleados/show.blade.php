@@ -192,15 +192,38 @@
                             <p><i class="bi bi-envelope-fill me-2"></i><strong>Correo:</strong> {{ $empleado->email }}</p>
                             <p><i class="bi bi-telephone-fill me-2"></i><strong>Teléfono:</strong> {{ $empleado->telefono }}</p>
                             <p><i class="bi bi-droplet-fill me-2"></i><strong>Tipo de sangre:</strong> {{ $empleado->tipodesangre }}</p>
-                            <p><i class="bi bi-box-seam me-2"></i><strong>Productos requeridos:</strong></p>
-                            @if(count($productos) > 0)
+                            <p><i class="bi bi-exclamation-diamond-fill me-2"></i><strong>Alergias:</strong></p>
+
+                            @php
+                                // Convertir alergias a array, para evitar errores
+                                $alergiasArray = [];
+
+                                if (is_string($empleado->alergias)) {
+                                    $alergiasArray = array_map('trim', explode(',', $empleado->alergias));
+                                } elseif (is_array($empleado->alergias)) {
+                                    $alergiasArray = $empleado->alergias;
+                                }
+                            @endphp
+
+                            @if(count($alergiasArray) > 0)
                                 <ul class="mb-0 ps-4">
-                                    @foreach($productos as $producto)
-                                        <li>{{ $producto }}</li>
+                                    @foreach($alergiasArray as $alergia)
+                                        <li>
+                                            {{ $alergia }}
+
+                                            {{-- Mostrar detalles si aplica --}}
+                                            @if($alergia === 'Alimentos' && !empty($empleado->alergiaAlimentos))
+                                                : {{ $empleado->alergiaAlimentos }}
+                                            @elseif($alergia === 'Medicamentos' && !empty($empleado->alergiaMedicamentos))
+                                                : {{ $empleado->alergiaMedicamentos }}
+                                            @elseif($alergia === 'Otros' && !empty($empleado->alergiaOtros))
+                                                : {{ $empleado->alergiaOtros }}
+                                            @endif
+                                        </li>
                                     @endforeach
                                 </ul>
                             @else
-                                <p><em>No hay productos específicos requeridos.</em></p>
+                                <p><em>No tiene alergias registradas.</em></p>
                             @endif
 
                         </div>
@@ -234,6 +257,7 @@
         </div>
     </div>
 </div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
