@@ -96,7 +96,6 @@
                     </div>
                 </div>
 
-
                 <div class="col-md-3">
                     <label class="form-label fw-bold">Correo electrónico</label>
                     <div class="input-group">
@@ -212,17 +211,43 @@
                     @enderror
                 </div>
 
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Dirección</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
+                            <textarea id="direccion" name="direccion" maxlength="250"
+                                      class="form-control @error('direccion') is-invalid @enderror"
+                                      oninput="autoAjustarAltura(this); validarTexto(this, 250)"
+                                      rows="1"
+                                      style="resize: none; overflow: hidden;">{{ old('direccion') }}</textarea>
+                            <div class="invalid-feedback">@error('direccion') {{ $message }} @enderror</div>
+                        </div>
+                    </div>
 
-                <div class="col-md-8">
-                    <label class="form-label fw-bold">Dirección</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
-                        <textarea id="direccion" name="direccion" maxlength="250"
-                                  class="form-control @error('direccion') is-invalid @enderror"
-                                  oninput="autoAjustarAltura(this); validarTexto(this, 250)"
-                                  rows="1"
-                                  style="resize: none; overflow: hidden;">{{ old('direccion') }}</textarea>
-                        <div class="invalid-feedback">@error('direccion') {{ $message }} @enderror</div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Categoría</label>
+                        <div class="input-group">
+            <span class="input-group-text">
+                @php
+                    $cat = old('categoria') ?? '';
+                    $icon = match($cat) {
+                        'Administración' => 'bi-briefcase-fill',
+                        'Técnico' => 'bi-tools',
+                        'Vigilancia' => 'bi-shield-lock-fill',
+                        default => 'bi-list',
+                    };
+                @endphp
+                <i class="bi bi-ui-checks"></i>
+            </span>
+                            <select name="categoria" id="categoria" class="form-select @error('categoria') is-invalid @enderror" required>
+                                <option value=""> Seleccione una categoría...</option>
+                                <option value="Administracion" {{ old('categoria') == 'Administracion' ? 'selected' : '' }}>Administración</option>
+                                <option value="Tecnico" {{ old('categoria') == 'Tecnico' ? 'selected' : '' }}>Técnico</option>
+                                <option value="Vigilancia" {{ old('categoria') == 'Vigilancia' ? 'selected' : '' }}>Vigilancia</option>
+                            </select>
+                            <div class="invalid-feedback">@error('categoria') {{ $message }} @enderror</div>
+                        </div>
                     </div>
                 </div>
 
@@ -286,6 +311,8 @@
         const campoAlimentos = document.getElementById('alergiaAlimentos');
         const campoMedicamentos = document.getElementById('alergiaMedicamentos');
         const campoOtros = document.getElementById('alergiaOtros');
+
+        const categoriaSelect = document.getElementById('categoria');
 
         function actualizarCampos() {
             const otrosChecked = otrosCheckbox.checked;
@@ -404,8 +431,6 @@
             }, 10);
         });
     });
-
-
 
     function validarTexto(input, max) {
         input.value = input.value
@@ -579,7 +604,7 @@
             }
 
             if (errores) {
-                e.preventDefault(); // Evita el envío si hay errores
+                e.preventDefault();
             }
         });
 

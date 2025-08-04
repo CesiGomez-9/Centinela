@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('facturas_ventas', function (Blueprint $table) {
             $table->id();
-            $table->string('numero', 12)->unique(); // número de factura
-            $table->unsignedBigInteger('cliente_id'); // relación con clientes
+            $table->string('numero', 12)->unique();
+            $table->unsignedBigInteger('cliente_id');
             $table->date('fecha');
             $table->decimal('subtotal', 12, 2);
             $table->decimal('impuestos', 12, 2);

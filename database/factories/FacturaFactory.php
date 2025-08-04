@@ -2,12 +2,12 @@
 
 namespace Database\Factories;
 
-use App\Models\DetalleFactura;
-use App\Models\Factura;
+use App\Models\DetalleFacturaCompra;
+use App\Models\FacturaCompra;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Factura>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\FacturaCompra>
  */
 class FacturaFactory extends Factory
 {
@@ -16,7 +16,7 @@ class FacturaFactory extends Factory
      *
      * @return array<string, mixed>
      */
-    protected $model = Factura::class;
+    protected $model = FacturaCompra::class;
 
     public function definition(): array
     {
@@ -59,7 +59,7 @@ class FacturaFactory extends Factory
 
     public function configure(): static
     {
-        return $this->afterCreating(function (Factura $factura) {
+        return $this->afterCreating(function (FacturaCompra $factura) {
             $nombresPorCategoria = [
                 'Cámaras de seguridad' => ['Cámara IP Full HD',
                     'Cámara Bullet 4K',
@@ -127,7 +127,7 @@ class FacturaFactory extends Factory
                 $ivaCalculado = ($iva / 100) * $subtotal;
                 $total = $subtotal + $ivaCalculado;
 
-                DetalleFactura::create([
+                DetalleFacturaCompra::create([
                     'factura_id' => $factura->id,
                     'producto' => $producto,
                     'categoria' => $categoria,

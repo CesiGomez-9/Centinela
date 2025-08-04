@@ -2,18 +2,19 @@
 @section('titulo','Registrar una factura')
 @section('content')
 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
     <style>
         body {
             background-color: #e6f0ff;
             margin: 0;
         }
-        /* Mantener .error-message para los errores de JS en productos del modal */
         .error-message {
             color: #dc3545;
             font-size: 0.875em;
             margin-top: 0.25rem;
-            display: none; /* Controlado por JS para mostrar/ocultar */
-            width: 100%; /* Asegura que ocupe todo el ancho disponible de su contenedor */
+            display: none;
+            width: 100%;
         }
         .field-error {
             border-color: #dc3545;
@@ -22,23 +23,20 @@
             border-color: #dc3545;
         }
 
-        /* CSS de depuración: Asegura la visibilidad del texto en la tabla */
         #tablaFacturaBody td {
-            color: black !important; /* Fuerza el color del texto a negro */
-            font-size: 1rem !important; /* Asegura un tamaño de fuente legible */
-            visibility: visible !important; /* Asegura que el elemento sea visible */
-            opacity: 1 !important; /* Asegura que no sea transparente */
-            background-color: #ffffff !important; /* Fondo blanco para contraste */
-            min-width: 50px; /* Asegura un ancho mínimo para las celdas */
-            padding: 8px; /* Añade un poco de padding para que el texto no esté pegado */
+            color: black !important;
+            font-size: 1rem !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            background-color: #ffffff !important;
+            min-width: 50px;
+            padding: 8px;
         }
 
-        /* Opcional: Si el texto está muy pegado al input hidden */
         #tablaFacturaBody td input[type="hidden"] + * {
             margin-left: 5px;
         }
 
-        /* CSS para asegurar que el modal y su backdrop se oculten completamente */
         .modal:not(.show) {
             display: none !important;
         }
@@ -47,63 +45,58 @@
             opacity: 0 !important;
         }
 
-        /* Estilos específicos para la sección de resumen */
         .summary-value-box {
             background-color: #e9ecef;
             border: 1px solid #ced4da;
             border-radius: 0.25rem;
             padding: 0.375rem 0.75rem;
             text-align: end;
-            font-weight: normal !important; /* Asegura que no haya negrita */
-            box-sizing: border-box; /* Incluye padding y border en el ancho */
-            width: 100%; /* Asegura que tome el 100% del ancho de su columna col-4 */
+            font-weight: normal !important;
+            box-sizing: border-box;
+            width: 100%;
         }
 
-        /* Estilos para el modal */
         #productosModal .modal-body {
-            font-size: 0.95rem; /* Tamaño de fuente para el cuerpo del modal */
+            font-size: 0.95rem;
         }
         #productosModal .table th,
         #productosModal .table td {
-            font-size: 0.9rem; /* Tamaño de fuente para las celdas de la tabla del modal */
+            font-size: 0.9rem;
         }
         #productosModal .form-label {
-            font-size: 0.95rem; /* Tamaño de fuente para las etiquetas de los formularios en el modal */
+            font-size: 0.95rem;
         }
         #productosModal .form-control {
-            font-size: 0.95rem; /* Tamaño de fuente para los inputs en el modal */
+            font-size: 0.95rem;
         }
 
-        /* Estilos para el formulario principal (ajustados para coincidir con el modal) */
         .form-label {
-            font-size: 0.95rem; /* Tamaño de fuente para las etiquetas del formulario principal */
+            font-size: 0.95rem;
         }
         .form-control, .form-select {
-            font-size: 0.95rem; /* Tamaño de fuente para los inputs y selects del formulario principal */
+            font-size: 0.95rem;
         }
         #tablaFacturaProductos th,
         #tablaFacturaProductos td {
-            font-size: 0.9rem; /* Tamaño de fuente para la tabla principal */
+            font-size: 0.9rem;
         }
         .summary-value-box {
-            font-size: 0.95rem; /* Ajustar el tamaño de la letra en las cajas de resumen */
+            font-size: 0.95rem;
         }
 
-        /* Hacer más pequeños los textfields de precio compra, precio venta y cantidad en el modal */
         #productosModal .form-edicion-producto input[type="number"] {
-            max-width: 100px; /* Ajusta este valor según sea necesario */
-            display: inline-block; /* Asegura que no rompa el diseño de la línea */
+            max-width: 100px;
+            display: inline-block;
         }
 
-        /* Reducir el espacio entre los campos de precio y cantidad en el modal */
         #productosModal .modal-product-inputs-row > [class*="col-"] {
-            padding-left: 0 !important; /* Elimina el padding izquierdo de las columnas */
-            padding-right: 0 !important; /* Elimina el padding derecho de las columnas */
+            padding-left: 0 !important;
+            padding-right: 0 !important;
         }
-        /* Añadir un pequeño margen entre los inputs para que no estén completamente pegados si se desea */
         #productosModal .modal-product-inputs-row .cantidad {
-            margin-right: 0.5rem; /* Margen a la derecha del campo cantidad */
+            margin-right: 0.5rem;
         }
+
     </style>
 
     <div class="container my-5">
@@ -124,13 +117,13 @@
                         @endisset
                     </h3>
 
-                    <form method="POST" id="facturaForm" action="{{ isset($factura) ? route('facturas.update', $factura->id) : route('facturas.store') }}" novalidate>
+                    <form method="POST" id="facturaForm" action="{{ isset($factura) ? route('facturas_compras.update', $factura->id) : route('facturas_compras.store') }}" novalidate>
                         @csrf
                         @isset($factura)
                             @method('PUT')
                         @endisset
                         <div class="row g-4">
-                            {{-- Número de Factura --}}
+                            {{-- Número de FacturaCompra --}}
                             <div class="col-md-6">
                                 <label for="numeroFactura" class="form-label">Número de Factura</label>
                                 <div class="input-group">
@@ -140,7 +133,6 @@
                                            maxlength="20" value="{{ old('numero_factura', isset($factura) ? $factura->numero_factura : '') }}"
                                            onkeypress="validarTexto(event)" required>
                                 </div>
-                                {{-- Este div se mantiene si lo usas para otros JS o si Laravel lo llena --}}
                                 <div class="text-danger mt-1 small error-mensaje-js"></div>
                                 @error('numero_factura')
                                 <div class="text-danger mt-1 small">{{ $message }}</div>
@@ -243,10 +235,10 @@
                                 </div>
                             </div>
 
-                            {{-- Sección de Resumen de Factura --}}
+                            {{-- Sección de Resumen de FacturaCompra --}}
                             <div class="row mt-4 justify-content-end">
-                                <div class="col-md-6 col-lg-4"> {{-- Este div es el contenedor de toda la sección de resumen --}}
-                                    <div class="row g-1"> <!-- Usar un row con un pequeño gap para los items del resumen -->
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="row g-1">
 
                                         {{-- Importe Gravado --}}
                                         <div class="col-8 text-start">
@@ -273,10 +265,10 @@
                                         </div>
 
                                         {{-- Subtotal (Lps) --}}
-                                        <div class="col-8 text-start"> <!-- Columna para la etiqueta -->
+                                        <div class="col-8 text-start">
                                             <label class="form-label mb-0" style="white-space: nowrap; font-weight: normal;">Subtotal (Lps)</label>
                                         </div>
-                                        <div class="col-4 text-end"> <!-- Columna para el valor -->
+                                        <div class="col-4 text-end">
                                             <label class="form-control summary-value-box" id="subtotalGeneralLabel">0.00</label>
                                         </div>
 
@@ -308,7 +300,7 @@
                             </div>
 
 
-                            {{-- Responsable (Ahora un select que usa ID) --}}
+                            {{-- Responsable --}}
                             <div class="col-md-6">
                                 <label for="responsable_id" class="form-label">Responsable</label>
                                 <div class="input-group">
@@ -330,7 +322,7 @@
                             </div>
 
                             <div class="text-center mt-5">
-                                <a href="{{ route('facturas.index') }}" class="btn btn-danger me-2">
+                                <a href="{{ route('facturas_compras.index') }}" class="btn btn-danger me-2">
                                     <i class="bi bi-x-circle"></i> Cancelar
                                 </a>
 
@@ -394,37 +386,19 @@
 
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // Este listener del botón cerrar es redundante si ya tienes el hidden.bs.modal
-            // Lo mantengo comentado si quieres un comportamiento extra solo al presionar este botón
-            /*
-            const btnCerrarModal = document.getElementById('cerrarModalProductos');
-            if (btnCerrarModal) {
-                btnCerrarModal.addEventListener('click', function() {
-                    console.log('DEBUG: Botón "Cerrar" del modal presionado. Limpiando formularios del modal.');
-                    limpiarFormulariosModal();
-                });
-            }
-            */
-        });
-        // Variables globales
         let productoSeleccionadoActual = null;
-        let productoIndexCounter = 0; // Nuevo contador para los índices de productos
-
-        // --- Funciones de Validación y Utilidad ---
+        let productoIndexCounter = 0;
 
         function validarTexto(e) {
             const key = e.keyCode || e.which;
             const tecla = String.fromCharCode(key);
             const input = e.target;
 
-            // Evitar espacio al inicio
             if (key === 32 && input.selectionStart === 0) {
                 e.preventDefault();
                 return false;
             }
 
-            // Evitar múltiples espacios seguidos
             const pos = input.selectionStart;
             if (key === 32 && input.value.charAt(pos - 1) === ' ') {
                 e.preventDefault();
@@ -605,8 +579,8 @@
                 field.classList.remove('field-error');
             });
 
-            const precioCompra = parseFloat(precioCompraInput.value);
-            const precioVenta = parseFloat(precioVentaInput.value);
+            const precioCompra = parseInt(precioCompraInput.value); // Parsear como entero
+            const precioVenta = parseInt(precioVentaInput.value);   // Parsear como entero
             const cantidad = parseInt(cantidadInput.value);
 
             // Validar Precio Compra
@@ -665,89 +639,6 @@
             return esValido;
         }
 
-        function validarFormularioPrincipal() {
-            let esValido = true;
-            let primerCampoConError = null;
-
-            // Ocultar errores previos manejados por JS
-            // Asegúrate de incluir 'fecha' aquí para que su error-mensaje-js se limpie
-            ['numeroFactura', 'fecha', 'proveedor_id', 'formaPago', 'responsable_id'].forEach(campo => {
-                ocultarError(campo);
-            });
-
-            const errorProductos = document.getElementById('errorProductos');
-            if (errorProductos) {
-                errorProductos.style.display = 'none';
-            }
-
-            // Validar Número de Factura
-            const numeroFacturaInput = document.getElementById('numeroFactura');
-            const numeroFactura = numeroFacturaInput.value.trim();
-            if (!numeroFactura) {
-                mostrarError('numeroFactura', 'Número de factura es obligatorio');
-                if (!primerCampoConError) primerCampoConError = numeroFacturaInput;
-                esValido = false;
-            }
-
-            // Validar Fecha
-            const fechaInput = document.getElementById('fecha');
-            const fecha = fechaInput.value.trim();
-            if (!fecha) { // Si el campo de fecha está vacío
-                mostrarError('fecha', 'La fecha es obligatoria'); // Llama a mostrarError para la fecha
-                if (!primerCampoConError) primerCampoConError = fechaInput;
-                esValido = false;
-            }
-            // Puedes añadir aquí más validaciones de JS para la fecha si las necesitas (ej. rango)
-            // Pero recuerda que Laravel también valida el rango, así que no dupliques innecesariamente.
-
-
-            // Validar Proveedor
-            const proveedorSelect = document.getElementById('proveedor_id');
-            const proveedorId = proveedorSelect.value;
-            if (!proveedorId) {
-                mostrarError('proveedor_id', 'Proveedor es obligatorio');
-                if (!primerCampoConError) primerCampoConError = proveedorSelect;
-                esValido = false;
-            }
-
-            // Validar Forma de Pago
-            const formaPagoSelect = document.getElementById('formaPago');
-            const formaPago = formaPagoSelect.value;
-            if (!formaPago) {
-                mostrarError('formaPago', 'Forma de pago es obligatorio');
-                if (!primerCampoConError) primerCampoConError = formaPagoSelect;
-                esValido = false;
-            }
-
-            // Validar Responsable
-            const responsableSelect = document.getElementById('responsable_id');
-            const responsableId = responsableSelect.value;
-            if (!responsableId) {
-                mostrarError('responsable_id', 'Responsable es obligatorio');
-                if (!primerCampoConError) primerCampoConError = responsableSelect;
-                esValido = false;
-            }
-
-            // Validar Productos en la tabla
-            const productos = document.querySelectorAll('#tablaFacturaBody tr:not(#filaVacia)');
-            if (productos.length === 0) {
-                const errorProductos = document.getElementById('errorProductos');
-                if (errorProductos) {
-                    errorProductos.style.display = 'block';
-                    errorProductos.textContent = 'Debe agregar al menos un producto a la factura';
-                }
-                esValido = false;
-            }
-
-            // Enfocar el primer campo con error si existe
-            if (!esValido && primerCampoConError) {
-                primerCampoConError.focus();
-                primerCampoConError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-
-            return esValido;
-        }
-
         function configurarValidacionFormulario() {
             const form = document.getElementById('facturaForm');
             if (form) {
@@ -774,6 +665,7 @@
             tbody.innerHTML = '<tr><td colspan="5" class="text-center py-3">Cargando productos...</td></tr>';
 
             try {
+                // Asegúrate de que tu ruta API devuelva el impuesto asociado al producto
                 const apiUrl = `/api/productos?search=${encodeURIComponent(searchTerm)}`;
                 const response = await fetch(apiUrl);
 
@@ -860,6 +752,12 @@
                     `;
                     tbody.appendChild(fila);
                     tbody.appendChild(filaEdicion);
+
+                    // APLICAR handleNumericInput A LOS NUEVOS CAMPOS CREADOS
+                    const form = filaEdicion.querySelector('.form-edicion-producto');
+                    handleNumericInput(form.querySelector('.precioCompra'), 4, false);
+                    handleNumericInput(form.querySelector('.precioVenta'), 4, false);
+                    handleNumericInput(form.querySelector('.cantidad'), 3, false);
                 });
                 configurarEventosProductos();
                 mostrarResultados(searchTerm, productos.length);
@@ -1032,8 +930,8 @@
                     const product_id = filaProducto.dataset.id;
                     const nombre = filaProducto.dataset.nombre;
                     const categoria = filaProducto.dataset.categoria;
-                    const precioCompra = parseFloat(this.querySelector('.precioCompra').value);
-                    const precioVenta = parseFloat(this.querySelector('.precioVenta').value);
+                    const precioCompra = parseInt(this.querySelector('.precioCompra').value); // Parsear como entero
+                    const precioVenta = parseInt(this.querySelector('.precioVenta').value);   // Parsear como entero
                     const cantidad = parseInt(this.querySelector('.cantidad').value);
                     const ivaPorcentaje = parseFloat(filaProducto.dataset.ivaPorcentaje); // Obtener el porcentaje de IVA real
 
@@ -1064,9 +962,6 @@
 
                     const nuevaFila = document.createElement('tr');
 
-                    // No usamos productoIndexCounter para el `name` del input,
-                    // sino para el `data-index` y la numeración visible.
-                    // El `name` se manejará con un enfoque más robusto para Laravel (índices numéricos).
                     const newRowIndex = tablaFactura.children.length; // Usar la longitud actual para el nuevo índice
 
                     nuevaFila.dataset.index = newRowIndex; // Asignar un índice al data-attribute de la fila
@@ -1082,12 +977,12 @@
                             ${categoria}
                         </td>
                         <td>
-                            <input type="hidden" name="productos[${newRowIndex}][precioCompra]" value="${precioCompra.toFixed(0)}" class="hidden-precio-compra">
-                            ${precioCompra.toFixed(0)}
+                            <input type="hidden" name="productos[${newRowIndex}][precioCompra]" value="${precioCompra}" class="hidden-precio-compra">
+                            ${precioCompra}
                         </td>
                         <td>
                             <input type="hidden" name="productos[${newRowIndex}][cantidad]" value="${cantidad}" class="hidden-cantidad">
-                            <input type="hidden" name="productos[${newRowIndex}][precioVenta]" value="${precioVenta.toFixed(0)}" class="hidden-precio-venta">
+                            <input type="hidden" name="productos[${newRowIndex}][precioVenta]" value="${precioVenta}" class="hidden-precio-venta">
                             ${cantidad}
                         </td>
                         <td>
@@ -1258,7 +1153,7 @@
             let totalFinal = 0;
 
             filasProductos.forEach(fila => {
-                const precioCompra = parseFloat(fila.querySelector('.hidden-precio-compra').value);
+                const precioCompra = parseInt(fila.querySelector('.hidden-precio-compra').value); // Parsear como entero
                 const cantidad = parseInt(fila.querySelector('.hidden-cantidad').value);
                 const ivaPorcentaje = parseInt(fila.querySelector('.hidden-iva').value);
 
@@ -1287,6 +1182,7 @@
             // Calcular el total final (subtotal + ISV15 + ISV18)
             totalFinal = subtotalCalculado + isv15 + isv18;
 
+            // Mostrar con dos decimales para precisión en los totales
             document.getElementById('importeGravadoLabel').textContent = importeGravado.toFixed(2);
             document.getElementById('importeExentoLabel').textContent = importeExento.toFixed(2);
             document.getElementById('importeExoneradoLabel').textContent = importeExonerado.toFixed(2);
@@ -1308,20 +1204,6 @@
                 });
             }
 
-            // Aplicar handleNumericInput a los campos de precio y cantidad en el modal
-            // Usamos setTimeout para asegurar que los elementos estén en el DOM después de la carga inicial
-            setTimeout(() => {
-                document.querySelectorAll('.form-edicion-producto .precioCompra').forEach(input => {
-                    handleNumericInput(input, 4, false); // 4 dígitos enteros, SIN decimales
-                });
-                document.querySelectorAll('.form-edicion-producto .precioVenta').forEach(input => {
-                    handleNumericInput(input, 4, false); // 4 dígitos enteros, SIN decimales
-                });
-                document.querySelectorAll('.form-edicion-producto .cantidad').forEach(input => {
-                    handleNumericInput(input, 3, false); // 3 dígitos enteros, sin decimales
-                });
-            }, 500); // Pequeño retraso para asegurar que los elementos del modal estén disponibles
-
             configurarValidacionFormulario();
             cargarProductosEnModal(); // Carga inicial de productos en el modal
             configurarBuscador();
@@ -1336,8 +1218,6 @@
             const oldProductsFromSession = @json(session()->getOldInput('productos'));
 
             if (oldProductsFromSession && Object.keys(oldProductsFromSession).length > 0) {
-                // `oldProductsFromSession` es un objeto como {0: {product_id: 'x', nombre: 'y'}, 1: {...}}
-                // Convertirlo a un array de objetos más fácil de manejar
                 for (const key in oldProductsFromSession) {
                     if (Object.hasOwnProperty.call(oldProductsFromSession, key)) {
                         const prodData = oldProductsFromSession[key];
@@ -1345,71 +1225,61 @@
                             product_id: String(prodData.product_id || ''),
                             nombre: String(prodData.nombre || ''),
                             categoria: String(prodData.categoria || ''),
-                            // Asegurarse de que los valores cargados de old() sean enteros para precioCompra y precioVenta
-                            precioCompra: parseInt(prodData.precioCompra || 0),
-                            precioVenta: parseInt(prodData.precioVenta || 0),
+                            precioCompra: parseInt(prodData.precioCompra || 0), // Parsear como entero
+                            precioVenta: parseInt(prodData.precioVenta || 0),   // Parsear como entero
                             cantidad: parseInt(prodData.cantidad || 0),
                             iva: parseFloat(prodData.iva || 0),
-                            // El 'total' de old() podría no ser preciso si los cálculos cambian,
-                            // así que lo recalcularemos al añadir.
-                            // total: parseFloat(prodData.total || 0)
                         });
                     }
                 }
                 console.log('DEBUG: Productos cargados desde old() data:', productsToLoad);
 
             } else {
-                // 2. Si no hay `old()` data, intentar cargar desde la factura existente (modo edición)
                 const existingFacturaDetalles = @json(isset($factura) ? $factura->detalles : null);
                 if (existingFacturaDetalles && existingFacturaDetalles.length > 0) {
                     productsToLoad = existingFacturaDetalles.map(detail => ({
                         product_id: String(detail.product_id || ''),
-                        nombre: String(detail.producto.nombre || ''), // Acceder a producto.nombre
-                        categoria: String(detail.producto.categoria.nombre || ''), // Acceder a producto.categoria.nombre
-                        // Asegurarse de que los valores cargados de la DB sean enteros para precioCompra y precioVenta
+                        nombre: String(detail.producto_inventario.nombre || ''),
+                        categoria: String(detail.producto_inventario.categoria || ''), // Acceder a producto_inventario.categoria
                         precioCompra: parseInt(detail.precio_compra || 0),
                         precioVenta: parseInt(detail.precio_venta || 0),
                         cantidad: parseInt(detail.cantidad || 0),
-                        iva: parseFloat(detail.iva || 0), // Aquí ya viene el IVA guardado en el detalle
-                        total: parseFloat(detail.total || 0) // Aquí ya viene el total guardado en el detalle
+                        iva: parseFloat(detail.iva || 0),
+                        total: parseFloat(detail.total || 0)
                     }));
                     console.log('DEBUG: Cargando productos desde detalles de factura existentes:', productsToLoad);
                 }
             }
 
-            // Asegurarse de que el contador de índice de productos sea el correcto
-            // No es necesario para la numeración visible, pero puede ayudar si se usa para algo más
             productoIndexCounter = productsToLoad.length;
 
             if (productsToLoad.length > 0) {
-                tablaFacturaBody.innerHTML = ''; // Limpiar la fila vacía si hay productos
+                tablaFacturaBody.innerHTML = '';
                 productsToLoad.forEach((producto, index) => {
-                    // Recalcular subtotal aquí para asegurar consistencia con la lógica JS actual
-                    // (aunque el total del detalle ya viene de la DB, lo recalculamos para la visualización)
                     const baseProductoRepoblado = producto.precioCompra * producto.cantidad;
                     const impuestoProductoRepoblado = (producto.iva / 100) * baseProductoRepoblado;
-                    const subtotalDisplay = (baseProductoRepoblado + impuestoProductoRepoblado).toFixed(2); // Mantener 2 decimales para el subtotal de la línea
+                    const subtotalDisplay = (baseProductoRepoblado + impuestoProductoRepoblado).toFixed(2);
 
                     const nuevaFila = document.createElement('tr');
-                    nuevaFila.dataset.index = index; // Usar el índice del array
+                    nuevaFila.dataset.index = index;
                     nuevaFila.innerHTML = `
                         <td>${index + 1}</td>
                         <td>
                             <input type="hidden" name="productos[${index}][product_id]" value="${producto.product_id}" class="hidden-product-id">
                             <input type="hidden" name="productos[${index}][nombre]" value="${producto.nombre}" class="hidden-nombre">
-                            ${producto.nombre} <!-- CORREGIDO: Usar producto.nombre -->
+                            ${producto.nombre}
                         </td>
                         <td>
                             <input type="hidden" name="productos[${index}][categoria]" value="${producto.categoria}" class="hidden-categoria">
-                            ${producto.categoria} <!-- CORREGIDO: Usar producto.categoria -->
+                            ${producto.categoria}
                         </td>
                         <td>
-                            <input type="hidden" name="productos[${index}][precioCompra]" value="${producto.precioCompra.toFixed(0)}" class="hidden-precio-compra">
-                            ${producto.precioCompra.toFixed(0)}
+                            <input type="hidden" name="productos[${index}][precioCompra]" value="${producto.precioCompra}" class="hidden-precio-compra">
+                            ${producto.precioCompra}
                         </td>
                         <td>
                             <input type="hidden" name="productos[${index}][cantidad]" value="${producto.cantidad}" class="hidden-cantidad">
-                            <input type="hidden" name="productos[${index}][precioVenta]" value="${producto.precioVenta.toFixed(0)}" class="hidden-precio-venta">
+                            <input type="hidden" name="productos[${index}][precioVenta]" value="${producto.precioVenta}" class="hidden-precio-venta">
                             ${producto.cantidad}
                         </td>
                         <td>
@@ -1425,11 +1295,11 @@
                     `;
                     tablaFacturaBody.appendChild(nuevaFila);
                 });
-                actualizarFilaVacia(); // Ocultará la fila vacía si hay productos
+                actualizarFilaVacia();
                 calcularTotalesGenerales();
-                actualizarNumeracionFilas(); // Asegurar que la numeración sea correcta al cargar
+                actualizarNumeracionFilas();
             } else {
-                actualizarFilaVacia(); // Asegurará que la fila vacía se muestre si no hay productos
+                actualizarFilaVacia();
                 calcularTotalesGenerales();
             }
             // --- FIN DE LA LÓGICA DE REPOBLACIÓN CORREGIDA ---
@@ -1441,7 +1311,7 @@
                 fila.remove();
                 calcularTotalesGenerales();
                 actualizarFilaVacia();
-                actualizarNumeracionFilas(); // Llama a la función para re-numerar
+                actualizarNumeracionFilas();
             }
         });
 
@@ -1458,10 +1328,9 @@
                 document.documentElement.style.overflow = '';
                 console.log('DEBUG: Body overflow/padding-right restored.');
 
-                limpiarFormulariosModal(); // Llama a la función para limpiar
+                limpiarFormulariosModal();
                 console.log('DEBUG: Formularios del modal limpiados al cerrar.');
             });
         }
     </script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 @endsection

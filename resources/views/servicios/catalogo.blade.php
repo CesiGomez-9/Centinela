@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Catálogo de servicios</title>
+    <title>Catálogo de Servicios</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
@@ -38,7 +37,7 @@
 <nav class="navbar navbar-expand-lg shadow-sm" style="background-color: #0A1F44;">
     <div class="container" style="max-width: 1600px;">
         <a class="navbar-brand text-white fw-bold" href="#">
-            <img src="{{ asset('centinela.jpg') }}" style="height:70px;">
+            <img src="{{ asset('seguridad/GrupoCentinela.jpg') }}" style="height:70px;">
             Grupo Centinela
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -61,16 +60,18 @@
     <!-- Título centrado -->
     <div class="text-center mb-4">
         <h2 class="fw-bold mb-0">
-            <i class="bi bi-list-check me-2"></i>Catálogo de Servicios
+            <i class="bi bi-list-check me-2"></i>Lista de servicios
         </h2>
     </div>
 
-    <!-- Botón de volver y buscador -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <!-- Botón de volver a la derecha y buscador a la izquierda -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-row-reverse">
+        <!-- Botón Volver a la derecha -->
         <a href="{{ route('servicios.index') }}" class="btn btn-outline-primary btn-md">
-            <i class="bi bi-arrow-left-circle me-2"></i>Volver al formulario
+            <i class="bi bi-pencil-square me-2"></i>Crear un registro nuevo
         </a>
 
+        <!-- Formulario de búsqueda a la izquierda -->
         <form id="formBuscar" action="{{ route('servicios.catalogo') }}" method="GET" class="d-flex flex-column" style="max-width: 350px;">
             <div class="input-group">
                 <input type="text" id="campoBuscar" name="search" class="form-control" placeholder="Buscar por nombre..." value="{{ request('search') }}">
@@ -83,6 +84,7 @@
             </div>
         </form>
     </div>
+
 
     <!-- Alerta de éxito -->
     @if(session('success'))
@@ -97,25 +99,39 @@
         <table class="table table-bordered table-hover align-middle">
             <thead class="table-dark text-center">
             <tr>
+                <th>#</th>
                 <th>Nombre</th>
                 <th>Descripción</th>
-                <th>Tipo</th>
+                <th>Categoría</th>
+                <th>Acciones</th>
             </tr>
             </thead>
             <tbody>
-            @forelse($servicios as $servicio)
+            @forelse($servicios as $index => $servicio)
                 <tr>
+                    <td class="text-center">{{ $loop->iteration }}</td>
                     <td class="text-start">{{ $servicio->nombre }}</td>
                     <td class="text-start">{{ Str::limit($servicio->descripcion, 80) }}</td>
-                    <td class="text-start">{{ $servicio->tipo }}</td>
+                    <td class="text-start">{{ ucfirst($servicio->categoria) }}</td>
+                    <td class="text-center">
+                        <a href="{{ route('servicios.show', $servicio->id) }}" class="btn btn-sm btn-outline-info">
+                            <i class="bi bi-eye"></i> Ver
+                        </a>
+                        <a href="{{ route('servicios.edit', $servicio->id) }}" class="btn btn-sm btn-outline-warning">
+                            <i class="bi bi-pencil-square"></i> Editar
+                        </a>
+
+                        </form>
+                    </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="3" class="text-center text-muted">No hay servicios registrados.</td>
+                    <td colspan="5" class="text-center text-muted">No hay servicios registrados.</td>
                 </tr>
             @endforelse
             </tbody>
         </table>
+
     </div>
 
     <!-- Paginación -->
@@ -126,23 +142,24 @@
 
 <!-- Validación con JavaScript -->
 <script>
-    document.getElementById('formBuscar').addEventListener('submit', function (e) {
-        const input = document.getElementById('campoBuscar');
-        const errorDiv = document.getElementById('errorBuscar');
-        const valor = input.value.trim();
-        const soloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
+    const campoBuscar = document.getElementById('campoBuscar');
+    const errorDiv = document.getElementById('errorBuscar');
+    const soloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
 
-        if (valor === "" || !soloLetras.test(valor)) {
+    campoBuscar.addEventListener('input', function () {
+        this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '');
+        errorDiv.classList.add('d-none');
+    });
+
+    campoBuscar.form.addEventListener('submit', function (e) {
+        const valor = campoBuscar.value.trim();
+
+        if (valor !== "" && !soloLetras.test(valor)) {
             e.preventDefault();
             errorDiv.classList.remove('d-none');
         } else {
             errorDiv.classList.add('d-none');
         }
-    });
-
-    document.getElementById('campoBuscar').addEventListener('input', function () {
-        this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '');
-        document.getElementById('errorBuscar').classList.add('d-none');
     });
 </script>
 

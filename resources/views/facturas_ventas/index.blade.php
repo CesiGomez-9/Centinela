@@ -29,12 +29,12 @@
 
 <style>
     .table-bordered {
-        border: 1px solid #dee2e6 !important; /* borde estándar Bootstrap */
+        border: 1px solid #dee2e6 !important;
     }
 
     .table-bordered th,
     .table-bordered td {
-        border: 1px solid #dee2e6 !important; /* bordes uniformes */
+        border: 1px solid #dee2e6 !important;
     }
 
 </style>
@@ -48,7 +48,6 @@
         <form method="GET" action="{{ route('facturas_ventas.index') }}">
             <div class="row mb-4 g-2 d-flex flex-wrap align-items-start">
 
-                <!-- Buscador principal -->
                 <div class="col-md-4">
                     <div class="input-group input-group-sm">
                         <input
@@ -57,53 +56,40 @@
                             name="searchInput"
                             class="form-control"
                             maxlength="30"
-                            placeholder="Buscar por número de factura o fecha"
+                            placeholder="Buscar por número de factura y cliente..."
                             value="{{ request('searchInput') }}"
                             onkeydown="bloquearEspacioAlInicio(event, this)"
                             oninput="eliminarEspaciosIniciales(this)">
                         <span class="input-group-text"><i class="bi bi-search"></i></span>
                     </div>
                 </div>
-
-                <!-- Fechas: Desde / Hasta -->
                 <div class="col-md-2 ms-4 d-flex flex-column gap-2">
-                    <!-- Desde -->
                     <div class="input-group input-group-sm">
                         <span class="input-group-text">Desde</span>
                         <input type="date" name="fecha_inicio" id="fechaInicio" class="form-control"
                                value="{{ request('fecha_inicio') }}">
                     </div>
-                    <!-- Hasta -->
                     <div class="input-group input-group-sm">
                         <span class="input-group-text">Hasta</span>
                         <input type="date" name="fecha_fin" id="fechaFin" class="form-control"
                                value="{{ request('fecha_fin') }}">
                     </div>
                 </div>
-
-                <!-- Botones Filtrar / Limpiar -->
                 <div class="col-md-2 ms-3 d-flex flex-column gap-2">
-                    <!-- Filtrar -->
                     <button type="submit" class="btn btn-sm btn-primary w-100">
                         <i class="bi bi-funnel me-1"></i> Filtrar
                     </button>
-                    <!-- Limpiar -->
                     <a href="{{ route('facturas_ventas.index') }}" class="btn btn-sm btn-secondary w-100">
                         <i class="bi bi-x-circle me-1"></i> Limpiar
                     </a>
                 </div>
-
-                <!-- Botón Registrar nueva factura -->
                 <div class="col-md-3 ms-auto">
-                    <a href="{{ route('facturas_ventas.create') }}" class="btn btn-outline-dark w-100">
-                        <i class="bi bi-pencil-square me-1"></i> Registrar nueva factura
+                    <a href="{{ route('facturas_ventas.create') }}"  class="btn btn-md btn-outline-primary w-80">
+                        <i class="bi bi-pencil-square me-1"></i> Registrar factura de venta
                     </a>
                 </div>
-
             </div>
         </form>
-
-
     @if(session()->has('status'))
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
                 <i class="bi bi-check-circle-fill me-2"></i>
@@ -111,7 +97,6 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
             </div>
         @endif
-
         <table class="table table-bordered table-striped">
         <thead class="table-dark">
             <tr>
@@ -139,10 +124,7 @@
                     <td>L. {{ number_format($factura->total, 2) }}</td>
                     <td class="text-center">
                         <a href="{{ route('facturas_ventas.show', $factura->id) }}" class="btn btn-sm btn-outline-info">
-                            <i class="bi bi-eye"></i> Ver
-                        </a>
-                        <a href="{{ route('facturas_ventas.edit', $factura->id) }}" class="btn btn-sm btn-outline-warning" title="Editar">
-                            <i class="bi bi-pencil-square"></i> Editar
+                            <i class="bi bi-eye me-1"></i> Ver
                         </a>
                     </td>
                 </tr>
@@ -153,33 +135,20 @@
             @endforelse
             </tbody>
         </table>
-
         {{ $facturas->links() }}
-
     </div>
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const fechaInicio = document.getElementById('fechaInicio');
         const fechaFin = document.getElementById('fechaFin');
-
         const hoy = new Date();
-
-        // Obtener año y mes actual
-        const year = hoy.getFullYear();
-        const month = hoy.getMonth(); // 0-indexado (enero = 0)
-
-        // Primer día del mes
-        const primerDia = new Date(year, month, 1);
-        // Último día del mes (día 0 del mes siguiente = último del actual)
-        const ultimoDia = new Date(year, month + 1, 0);
-
         const formatoFecha = (fecha) => fecha.toISOString().split('T')[0];
 
-        const minDate = formatoFecha(primerDia);
-        const maxDate = formatoFecha(ultimoDia);
+        const fechaMinima = new Date("{{ $fechaMinima ?? \Carbon\Carbon::now()->toDateString() }}");
+        const minDate = formatoFecha(fechaMinima);
+        const maxDate = formatoFecha(hoy);
 
-        // Establecer los límites
         if (fechaInicio) {
             fechaInicio.setAttribute('min', minDate);
             fechaInicio.setAttribute('max', maxDate);
@@ -189,8 +158,18 @@
             fechaFin.setAttribute('max', maxDate);
         }
     });
-</script>
 
+    const searchInput = document.getElementById('searchInput');
+    let timer;
+    searchInput.addEventListener('input', function () {
+        clearTimeout(timer);
+
+        timer = setTimeout(() => {
+            const form = searchInput.closest('form');
+            form.submit();
+        }, 500);
+    });
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

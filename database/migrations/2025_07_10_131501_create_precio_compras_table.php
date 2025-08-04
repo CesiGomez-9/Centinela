@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('facturas_compras', function (Blueprint $table) {
-            //
+        Schema::create('precio_compras', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('producto_id')->constrained('productos')->onDelete('cascade');
+            $table->decimal('precio_compra', 10, 2);
+            $table->timestamps();
         });
     }
 
@@ -21,8 +24,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('facturas_compras', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('precio_compras');
     }
 };
+

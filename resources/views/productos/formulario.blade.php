@@ -102,7 +102,7 @@
 
                             {{-- Campo 'Cantidad Inicial' ELIMINADO de la vista --}}
                             {{-- La cantidad se inicializa en 0 en el controlador al guardar un nuevo producto --}}
-                            {{-- Y solo se actualiza en el FacturaController al comprar --}}
+                            {{-- Y solo se actualiza en el FacturaCompraController al comprar --}}
 
                             <div class="col-md-6">
                                 <label for="categoria" class="form-label">Categoría</label>

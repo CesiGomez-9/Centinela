@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Factura extends Model
+class FacturaCompra extends Model
 {
     use HasFactory;
+
+    protected $table = 'facturas_compras';
 
     protected $fillable = [
         'numero_factura',
@@ -27,12 +29,12 @@ class Factura extends Model
     ];
 
     /**
-     * Relación uno a muchos con DetalleFactura.
+     * Relación uno a muchos con DetalleFacturaCompra.
      * Una factura puede tener muchos detalles de factura (productos).
      */
-    public function detallesfactura()
+    public function detalles()
     {
-        return $this->hasMany(DetalleFactura::class);
+        return $this->hasMany(DetalleFacturaCompra::class, 'factura_id');
     }
 
     /**

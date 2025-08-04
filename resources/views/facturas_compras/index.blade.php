@@ -1,5 +1,5 @@
 @extends('plantilla')
-@section('titulo', 'Listado de facturas')
+@section('titulo', 'Listado de facturas_compras')
 @section('content')
 
     <style>
@@ -44,7 +44,7 @@
             </div>
         </div>
         <div class="col-md-6 d-flex justify-content-end">
-            <a href="{{ route('facturas.create') }}" class="btn btn-sm btn-outline-primary mb-2">
+            <a href="{{ route('facturas_compras.create') }}" class="btn btn-sm btn-outline-primary mb-2">
                 <i class="bi bi-pencil-square me-2"></i>Registrar una nueva factura de compra
             </a>
         </div>
@@ -98,7 +98,7 @@
 
                 {{-- Acciones --}}
                 <td>
-                    <a href="{{ route('facturas.show', $factura->id) }}" class="btn btn-sm btn-outline-info">
+                    <a href="{{ route('facturas_compras.show', $factura->id) }}" class="btn btn-sm btn-outline-info">
                         <i class="bi bi-eye"></i> Ver
                     </a>
                 </td>

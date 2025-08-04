@@ -6,23 +6,17 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::table('facturas_compras', function (Blueprint $table) {
-            //
+        Schema::table('productos', function (Blueprint $table) {
+            $table->decimal('precio_venta', 10, 2)->default(0)->after('cantidad');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::table('facturas_compras', function (Blueprint $table) {
-            //
+        Schema::table('productos', function (Blueprint $table) {
+            $table->dropColumn('precio_venta');
         });
     }
 };

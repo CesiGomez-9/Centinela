@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\DetalleFactura;  // <- aquí afuera, al inicio
 
 class Producto extends Model
 {
@@ -20,26 +19,49 @@ class Producto extends Model
         'impuesto_id',
         'categoria',
         'descripcion',
+        'precio_compra',
+        'precio_venta'
     ];
 
     protected $casts = [
         'cantidad' => 'integer',
+        'precio_compra' => 'decimal:2',
+        'precio_venta' => 'decimal:2'
     ];
 
+    /**
+     * Define la relación uno a muchos con Detalle.
+     */
+    public function detalles()
+    {
+        return $this->hasMany(Detalle::class);
+    }
+
+    /**
+     * Define la relación muchos a uno con Impuesto.
+     * Un producto pertenece a un tipo de impuesto.
+     */
     public function impuesto()
     {
         return $this->belongsTo(Impuesto::class);
     }
 
+    public function precioCompras()
+    {
+        return $this->hasMany(PrecioCompra::class);
+    }
+
     public function detallefactura()
     {
-        return $this->hasMany(DetalleFactura::class, 'product_id');
+        return $this->hasMany(DetalleFacturaCompra::class, 'product_id');
     }
 
     public function detallesFacturas()
     {
         return $this->hasMany(DetalleFacturaVenta::class);
     }
+
+    // En App\Models\Producto.php
 
     public function scopeBuscar($query, $termino)
     {
@@ -51,14 +73,12 @@ class Producto extends Model
         return $query;
     }
 
-    public function detallesFacturasVenta()
-    {
-        return $this->hasMany(DetalleFacturaVenta::class);
-    }
-
     public function ultimoDetalleFactura()
     {
-        return $this->hasOne(DetalleFactura::class, 'product_id')
-            ->latestOfMany();
+        return $this->hasOne(DetalleFacturaVenta::class)->latestOfMany();
     }
+
+
+
+
 }

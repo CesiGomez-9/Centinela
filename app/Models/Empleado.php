@@ -24,7 +24,8 @@ class Empleado extends Model
         'alergias',
         'alergiaOtros',
         'alergiaAlimentos',
-        'alergiaMedicamentos'
+        'alergiaMedicamentos',
+        'categoria'
     ];
     protected $casts = [
         'alergias' => 'array',
