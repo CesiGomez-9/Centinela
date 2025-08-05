@@ -29,25 +29,24 @@
 </head>
 <body>
 
-
 <div class="container my-5">
-        <div class="form-contenedor position-relative">
-            <!-- Título e ícono izquierdo -->
-            <h2 class="text-center mb-4 text-primary fs-8">
-                <i class="bi bi-pencil-square me-2"></i> Editar servicio
-            </h2>
+    <div class="form-contenedor position-relative">
+        <!-- Título e ícono izquierdo -->
+        <h2 class="text-center mb-4 text-primary fs-4">
+            <i class="bi bi-pencil-square me-2"></i> Editar servicio
+        </h2>
 
-            <!-- Ícono decorativo a la derecha -->
-            <div class="position-absolute top-0 end-0 me-3 mt-2 d-none d-md-block" style="font-size: 4rem; color: #dce6f5;">
-                <i class="bi bi-shield-lock"></i> <!-- o bi-tools -->
+        <!-- Ícono decorativo a la derecha -->
+        <div class="position-absolute top-0 end-0 me-3 mt-2 d-none d-md-block" style="font-size: 4rem; color: #dce6f5;">
+            <i class="bi bi-shield-lock"></i>
+        </div>
+
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show py-2" role="alert" style="font-size: 0.85rem;">
+                {{ session('success') }}
+                <button type="button" class="btn-close btn-close-sm" data-bs-dismiss="alert" aria-label="Cerrar"></button>
             </div>
-
-            @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show py-2" role="alert" style="font-size: 0.85rem;">
-                    {{ session('success') }}
-                    <button type="button" class="btn-close btn-close-sm" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-                </div>
-            @endif
+        @endif
 
         <form id="servicioForm" action="{{ route('servicios.update', $servicio->id) }}" method="POST" class="needs-validation" novalidate>
             @csrf
@@ -56,11 +55,11 @@
 
                 {{-- Nombre --}}
                 <div class="col-md-6">
-                    <label class="form-label fs-6 mb-2">Nombre del servicio</label>
+                    <label for="nombreServicio" class="form-label fs-6 mb-2">Nombre del servicio</label>
                     <div class="input-group input-group-md">
                         <span class="input-group-text"><i class="bi bi-card-text"></i></span>
-                        <input type="text" name="nombreServicio" class="form-control form-control-md"
-                               value="{{ old('nombre', $servicio->nombre) }}"
+                        <input type="text" id="nombreServicio" name="nombreServicio" class="form-control form-control-md"
+                               value="{{ old('nombreServicio', $servicio->nombre) }}"
                                maxlength="50" pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$"
                                title="Solo letras, máximo 50 caracteres"
                                onkeydown="bloquearEspacioAlInicio(event, this)"
@@ -71,10 +70,10 @@
 
                 {{-- Descripción --}}
                 <div class="col-md-6">
-                    <label class="form-label fs-6 mb-2">Descripción</label>
+                    <label for="descripcionServicio" class="form-label fs-6 mb-2">Descripción</label>
                     <div class="input-group input-group-md">
                         <span class="input-group-text"><i class="bi bi-textarea-t"></i></span>
-                        <textarea name="descripcion" class="form-control form-control-md"
+                        <textarea id="descripcionServicio" name="descripcionServicio" class="form-control form-control-md"
                                   maxlength="125" pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$"
                                   onkeydown="bloquearEspacioAlInicio(event, this)"
                                   oninput="eliminarEspaciosIniciales(this); autoExpand(this);"
@@ -86,10 +85,10 @@
 
                 {{-- Costo --}}
                 <div class="col-md-6">
-                    <label class="form-label fs-6 mb-2">Costo estimado (L)</label>
+                    <label for="costo" class="form-label fs-6 mb-2">Costo estimado (L)</label>
                     <div class="input-group input-group-md">
                         <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
-                        <input type="text" class="form-control form-control-md" name="costo"
+                        <input type="text" id="costo" class="form-control form-control-md" name="costo"
                                value="{{ old('costo', $servicio->costo) }}"
                                pattern="^[1-9][0-9]{0,3}$" maxlength="4" required />
                         <div class="invalid-feedback" style="font-size: 0.85rem;">Ingrese un costo válido.</div>
@@ -98,23 +97,22 @@
 
                 {{-- Duración --}}
                 @php
-
                     $duracion_cantidad = $duracion[0] ?? '';
                     $duracion_tipo = $duracion[1] ?? '';
                 @endphp
                 <div class="col-sm-5">
-                    <label class="form-label fs-6 mb-2">Duración estimada</label>
+                    <label for="duracionCantidad" class="form-label fs-6 mb-2">Duración estimada</label>
                     <div class="input-group input-group-md">
                         <span class="input-group-text"><i class="bi bi-hourglass-split"></i></span>
-                        <input type="number" class="form-control form-control-md" name="duracion_cantidad"
+                        <input type="number" id="duracionCantidad" class="form-control form-control-md" name="duracion_cantidad"
                                value="{{ old('duracion_cantidad', $duracion_cantidad) }}"
                                min="1" max="99" placeholder="Cantidad" required />
-                        <select class="form-select form-select-md" name="duracion_tipo" required>
+                        <select id="duracionTipo" class="form-select form-select-md" name="duracion_tipo" required>
                             <option value="">Unidad</option>
-                            <option value="horas" {{ $duracion_tipo == 'horas' ? 'selected' : '' }}>Horas</option>
-                            <option value="dias" {{ $duracion_tipo == 'dias' ? 'selected' : '' }}>Días</option>
-                            <option value="meses" {{ $duracion_tipo == 'meses' ? 'selected' : '' }}>Meses</option>
-                            <option value="años" {{ $duracion_tipo == 'años' ? 'selected' : '' }}>Años</option>
+                            <option value="horas" {{ old('duracion_tipo', $duracion_tipo) == 'horas' ? 'selected' : '' }}>Horas</option>
+                            <option value="dias" {{ old('duracion_tipo', $duracion_tipo) == 'dias' ? 'selected' : '' }}>Días</option>
+                            <option value="meses" {{ old('duracion_tipo', $duracion_tipo) == 'meses' ? 'selected' : '' }}>Meses</option>
+                            <option value="años" {{ old('duracion_tipo', $duracion_tipo) == 'años' ? 'selected' : '' }}>Años</option>
                         </select>
                         <div class="invalid-feedback" style="font-size: 0.85rem;">Ingrese una duración válida.</div>
                     </div>
@@ -122,13 +120,13 @@
 
                 {{-- Categoría --}}
                 <div class="col-md-6">
-                    <label class="form-label fs-6 mb-2">Categoría</label>
+                    <label for="categoria" class="form-label fs-6 mb-2">Categoría</label>
                     <div class="input-group input-group-md">
                         <span class="input-group-text"><i class="bi bi-ui-checks"></i></span>
-                        <select class="form-select form-select-md" name="categoria" id="categoria" required>
+                        <select id="categoria" class="form-select form-select-md" name="categoria" required>
                             <option value="">Seleccione una categoría</option>
-                            <option value="vigilancia" {{ old('categoria', $servicio->categoria) == 'Vigilancia' ? 'selected' : '' }}>Vigilancia</option>
-                            <option value="tecnico" {{ $servicio->categoria == 'Técnico' ? 'selected' : '' }}>Técnico</option>
+                            <option value="vigilancia" {{ old('categoria', strtolower($servicio->categoria)) == 'vigilancia' ? 'selected' : '' }}>Vigilancia</option>
+                            <option value="tecnico" {{ old('categoria', strtolower($servicio->categoria)) == 'tecnico' ? 'selected' : '' }}>Técnico</option>
                         </select>
                         <div class="invalid-feedback" style="font-size: 0.85rem;">Seleccione una categoría.</div>
                     </div>
@@ -136,13 +134,13 @@
 
                 {{-- Productos requeridos --}}
                 <div class="col-sm-6">
-                    <label class="form-label fs-6 mb-2">Productos requeridos</label>
+                    <label for="productosCategoria" class="form-label fs-6 mb-2">Productos requeridos</label>
                     <div class="input-group input-group-md">
                         <span class="input-group-text"><i class="bi bi-box"></i></span>
-                        <select class="form-select form-select-md" id="productosCategoria" required>
+                        <select id="productosCategoria" class="form-select form-select-md" required>
                             <option value="">Seleccione una categoría</option>
-                            <option value="vigilancia" {{ old('productos_categoria', $servicio->categoria) == 'vigilancia' ? 'selected' : '' }}>Vigilancia</option>
-                            <option value="tecnico" {{ $servicio->categoria == 'tecnico' ? 'selected' : '' }}>Técnico</option>
+                            <option value="vigilancia" {{ old('categoria', strtolower($servicio->categoria)) == 'vigilancia' ? 'selected' : '' }}>Vigilancia</option>
+                            <option value="tecnico" {{ old('categoria', strtolower($servicio->categoria)) == 'tecnico' ? 'selected' : '' }}>Técnico</option>
                         </select>
                         <div class="invalid-feedback" style="font-size: 0.85rem;">Seleccione una categoría de productos.</div>
                     </div>
@@ -153,7 +151,7 @@
                     $productosSeleccionados = json_decode($servicio->productos, true) ?? [];
                 @endphp
 
-                <div class="col-md-12 {{ $servicio->categoria == 'vigilancia' ? '' : 'd-none' }}" id="productos_vigilancia">
+                <div class="col-md-12 {{ strtolower($servicio->categoria) == 'vigilancia' ? '' : 'd-none' }}" id="productos_vigilancia">
                     <label class="form-label fs-6 mb-2">Productos de vigilancia</label>
                     <div class="row g-2" style="font-size: 0.85rem;">
                         @foreach($productosVigilancia as $producto)
@@ -171,7 +169,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-12 {{ $servicio->categoria == 'tecnico' ? '' : 'd-none' }}" id="productos_tecnico">
+                <div class="col-md-12 {{ strtolower($servicio->categoria) == 'tecnico' ? '' : 'd-none' }}" id="productos_tecnico">
                     <label class="form-label fs-6 mb-2">Productos técnicos</label>
                     <div class="row g-2" style="font-size: 0.85rem;">
                         @foreach($productosTecnicos as $producto)
@@ -195,7 +193,7 @@
                         <i class="bi bi-x-circle me-2"></i> Cancelar
                     </a>
 
-                    <button type="button" class="btn btn-warning me-2" onclick="location.reload()" style="font-size: 0.85rem;">
+                    <button type="button" id="btnRestablecer" class="btn btn-warning me-2" style="font-size: 0.85rem;">
                         <i class="bi bi-arrow-counterclockwise me-2"></i> Restablecer
                     </button>
 
@@ -209,18 +207,26 @@
     </div>
 </div>
 
-
 <script>
     function autoExpand(textarea) {
         textarea.style.height = 'auto';
         textarea.style.height = (textarea.scrollHeight) + 'px';
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
-        autoExpand(document.getElementById('descripcionServicio'));
-    });
+    function eliminarEspaciosIniciales(input) {
+        input.value = input.value.replace(/^\s+/, '');
+    }
 
-    document.addEventListener('DOMContentLoaded', () => {
+    function bloquearEspacioAlInicio(e, input) {
+        if (e.key === ' ' && input.selectionStart === 0) {
+            e.preventDefault();
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        // Auto expand textarea on load
+        autoExpand(document.getElementById('descripcionServicio'));
+
         const categoriaSelect = document.getElementById('categoria');
         const productosCategoriaSelect = document.getElementById('productosCategoria');
         const vigilanciaDiv = document.getElementById('productos_vigilancia');
@@ -228,7 +234,7 @@
         const form = document.getElementById('servicioForm');
         const btnRestablecer = document.getElementById('btnRestablecer');
 
-        // Guardamos el estado original para restablecer
+        // Guardar estado original para resetear
         const estadoOriginal = {
             nombreServicio: document.getElementById('nombreServicio').value,
             descripcionServicio: document.getElementById('descripcionServicio').value,
@@ -255,24 +261,24 @@
         });
 
         categoriaSelect.addEventListener('change', function () {
-            const cat = this.value;
+            const cat = this.value.toLowerCase();
 
-            // Ajustar productosCategoria y tipoPersonal (si tienes ese campo)
+            // Sincronizar productosCategoria con categoria
             productosCategoriaSelect.value = cat;
 
-            // Deshabilitar opciones que no coinciden
+            // Deshabilitar opciones en productosCategoria que no coincidan
             for (let opt of productosCategoriaSelect.options) {
-                opt.disabled = opt.value !== cat;
+                opt.disabled = opt.value !== cat && opt.value !== '';
             }
 
-            // Mostrar productos
-            productosCategoriaSelect.dispatchEvent(new Event('change'));
+            // Mostrar productos correspondientes
+            mostrarProductosSegunCategoria(cat);
         });
 
-        // Mostrar productos al cargar según valor actual
+        // Mostrar productos al cargar la página
         mostrarProductosSegunCategoria(productosCategoriaSelect.value);
 
-        // Validaciones input personalizadas
+        // Validaciones personalizadas de inputs
         function validarInput(e, pattern, maxLength) {
             const input = e.target;
             let valor = input.value;
@@ -303,12 +309,6 @@
             this.value = valor.slice(0, 2);
         });
 
-        function bloquearEspacioAlInicio(e, input) {
-            if (e.key === ' ' && input.selectionStart === 0) {
-                e.preventDefault();
-            }
-        }
-
         form.addEventListener('submit', function (e) {
             if (!form.checkValidity()) {
                 e.preventDefault();
@@ -317,9 +317,8 @@
             form.classList.add('was-validated');
         });
 
-        // Botón Restablecer
         btnRestablecer.addEventListener('click', () => {
-            // Restaurar valores
+            // Restaurar valores originales
             document.getElementById('nombreServicio').value = estadoOriginal.nombreServicio;
             document.getElementById('descripcionServicio').value = estadoOriginal.descripcionServicio;
             document.getElementById('costo').value = estadoOriginal.costo;
@@ -330,7 +329,6 @@
 
             mostrarProductosSegunCategoria(estadoOriginal.productosCategoria);
 
-            // Desmarcar todos y marcar los originales
             const checkboxes = form.querySelectorAll('input[name="productos[]"]');
             checkboxes.forEach(cb => {
                 cb.checked = estadoOriginal.productosSeleccionados.includes(cb.value);
@@ -339,10 +337,8 @@
             form.classList.remove('was-validated');
             autoExpand(document.getElementById('descripcionServicio'));
         });
-
     });
 </script>
-
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
 </body>

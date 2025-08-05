@@ -24,11 +24,6 @@
         .navbar-brand img {
             margin-right: 12px;
         }
-        .search-alert {
-            font-size: 0.9rem;
-            color: red;
-            margin-top: 0.5rem;
-        }
         .pagination .page-item.active .page-link {
             background-color: #000 !important;
             border-color: #000 !important;
@@ -62,16 +57,16 @@
 <!-- CONTENIDO -->
 <div class="container bg-white p-5 rounded shadow mt-5">
 
-    <!-- Título centrado -->
+    <!-- Título -->
     <div class="text-center mb-3">
         <h2 class="fw-bold mb-0">
             <i class="bi bi-list-check me-2"></i>Lista de servicios
         </h2>
     </div>
 
-    <!-- Botón de volver a la derecha y buscador a la izquierda -->
+    <!-- Buscador y botón -->
     <div class="d-flex justify-content-between align-items-start mb-5 flex-wrap w-100">
-        <!-- Formulario de búsqueda alineado a la izquierda -->
+        <!-- Formulario búsqueda -->
         <form method="GET" action="{{ route('servicios.catalogo') }}" style="width: 400px;" class="align-self-start">
             <div class="input-group">
                 <input type="text" id="searchInput" name="search" class="form-control form-control-md"
@@ -82,14 +77,13 @@
             </div>
         </form>
 
-        <!-- Botón "Crear un registro nuevo" alineado a la derecha -->
+        <!-- Botón crear -->
         <a href="{{ route('servicios.index') }}" class="btn btn-outline-primary d-block align-self-start" style="width: 300px;">
             <i class="bi bi-pencil-square me-2"></i> Crear un registro nuevo
         </a>
     </div>
 
-
-    <!-- Alerta de éxito -->
+    <!-- Alerta éxito -->
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
@@ -103,9 +97,8 @@
             <thead class="table-dark text-center">
             <tr>
                 <th style="width: 50px;">#</th>
-                <th style="width: 300px;">Nombre</th>
-                <th style="width: 120px;">Costo</th>
-                <th style="width: 140px;">Duración</th>
+                <th style="width: 280px;">Nombre</th>
+                <th style="width: 200px;">Costo estimado</th>
                 <th style="width: 130px;">Categoría</th>
                 <th style="width: 160px;">Acciones</th>
             </tr>
@@ -114,9 +107,11 @@
             @forelse($servicios as $index => $servicio)
                 <tr>
                     <td class="text-center">{{ $loop->iteration }}</td>
-                    <td class="text-start text-truncate" style="max-width: 300px;">{{ $servicio->nombre }}</td>
-                    <td class="text-center">L. {{ number_format($servicio->costo, 2) }}</td>
-                    <td class="text-center">{{ $servicio->duracion_cantidad }} {{ $servicio->duracion_tipo }}</td>
+                    <td class="text-start text-truncate" style="max-width: 280px;">{{ $servicio->nombre }}</td>
+                    <td class="text-center">
+                        L. {{ number_format($servicio->costo_cantidad, 2) }}
+                        <br><small class="text-muted">({{ $servicio->costo_tipo }})</small>
+                    </td>
                     <td class="text-start">{{ ucfirst($servicio->categoria) }}</td>
                     <td class="text-center">
                         <a href="{{ route('servicios.show', $servicio->id) }}" class="btn btn-sm btn-outline-info">
@@ -129,21 +124,20 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="6" class="text-center text-muted">No hay servicios registrados.</td>
+                    <td colspan="5" class="text-center text-muted">No hay servicios registrados.</td>
                 </tr>
             @endforelse
             </tbody>
         </table>
     </div>
 
-
-
+    <!-- Mensajes búsqueda -->
     @if(request('search') && $servicios->total() > 0)
         <div class="mb-3 text-muted">
             Mostrando {{ $servicios->count() }} de {{ $servicios->total() }} servicios encontrados para
             "<strong>{{ request('search') }}</strong>".
         </div>
-    @elseif(request('search') && $$servicios->total() === 0)
+    @elseif(request('search') && $servicios->total() === 0)
         <div class="mb-3 text-danger">
             No se encontraron resultados para "<strong>{{ request('search') }}</strong>".
         </div>
@@ -155,11 +149,10 @@
     </div>
 </div>
 
-<!-- Validación con JavaScript -->
+<!-- JS búsqueda rápida -->
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const searchInput = document.getElementById('searchInput');
-
 
         if (searchInput.value !== '') {
             searchInput.focus();

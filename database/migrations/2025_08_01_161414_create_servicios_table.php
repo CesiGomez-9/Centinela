@@ -17,13 +17,11 @@ return new class extends Migration
             $table->string('nombre');
             $table->string('descripcion');
             $table->enum('categoria', ['vigilancia', 'tecnico']); // Categoría del servicio
-            $table->integer('costo'); // Hasta 4 cifras, sin decimales (según validación)
-            $table->tinyInteger('duracion_cantidad'); // Cantidad numérica
-            $table->enum('duracion_tipo', ['horas', 'dias', 'meses', 'años']); // Unidad de tiempo
+            $table->integer('costo_cantidad'); // Hasta 4 cifras, sin decimales (según validación)}
+            $table->enum('costo_tipo', ['Diurno', 'Nocturno', 'Mixto', '24 horas']); // Unidad de tiempo
             $table->json('productos')->nullable(); // Guardamos array de IDs de productos
             $table->unsignedBigInteger('producto_id')->nullable();
             $table->foreign('producto_id')->references('id')->on('productos')->onDelete('cascade');
-
             $table->timestamps();
 
         });

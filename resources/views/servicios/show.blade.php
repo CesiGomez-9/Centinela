@@ -133,8 +133,8 @@
             <div class="card">
                 <div class="card-header">
                     <h5 class="mb-0"><i class="bi bi-info-circle-fill me-2"></i>Información del Servicio</h5>
-                    <small class="position-absolute top-50 end-0 translate-middle-y me-3">Creado {{ \Carbon\Carbon::parse($servicio->created_at)->diffForHumans() }}
-
+                    <small class="position-absolute top-50 end-0 translate-middle-y me-3">
+                        Creado {{ \Carbon\Carbon::parse($servicio->created_at)->diffForHumans() }}
                     </small>
                 </div>
                 <div class="card-body">
@@ -143,21 +143,22 @@
                         <div class="col-md-6">
                             <p><i class="bi bi-card-text me-2"></i><strong>Nombre:</strong> {{ $servicio->nombre }}</p>
                             <p><i class="bi bi-paragraph me-2"></i><strong>Descripción:</strong> {{ $servicio->descripcion }}</p>
-                            <p><i class="bi bi-cash-coin me-2"></i><strong>Costo estimado:</strong> L {{ $servicio->costo }}</p>
+                            <p>
+                                <i class="bi bi-cash-coin me-2"></i><strong>Costo estimado:</strong>
+                                L {{ number_format($servicio->costo_cantidad, 2) }} <small>({{ $servicio->costo_tipo }})</small>
+                            </p>
                         </div>
 
                         <!-- Columna Derecha -->
                         <div class="col-md-6">
-                            <!-- Duración -->
-                            <p><i class="bi bi-clock-history me-2"></i><strong>Duración estimada:</strong> {{ $servicio->duracion_cantidad }} {{ $servicio->duracion_tipo }}</p>
+                            <!-- Duración estimada (descomentar si usas) -->
+                            {{-- <p><i class="bi bi-clock-history me-2"></i><strong>Duración estimada:</strong> {{ $servicio->duracion_cantidad }} {{ $servicio->duracion_tipo }}</p> --}}
 
-                            <!-- Categoría -->
                             <p class="mb-1">
                                 <i class="bi bi-diagram-3-fill me-1"></i>
                                 <strong>Categoría:</strong> {{ ucfirst($servicio->categoria) }}
                             </p>
 
-                            <!-- Productos requeridos -->
                             <p class="mb-1">
                                 <i class="bi bi-box-seam me-1"></i>
                                 <strong>Productos requeridos:</strong>
