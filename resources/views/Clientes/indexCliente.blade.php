@@ -10,21 +10,6 @@
         }
 
     </style>
-    @if(session('exito'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('exito') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-        </div>
-    @endif
-
-    @if(session('fracaso'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            {{ session('fracaso') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-        </div>
-    @endif
-
-
 
     <div class="container mt-5" style="max-width: 1100px;">
         <div class="card shadow p-4" style="background-color: #ffffff;">
@@ -41,10 +26,10 @@
                                 type="text"
                                 id="searchInput"
                                 name="search"
-                                value="{{request('search')}}"
+                                value="{{ request('search') }}"
                                 class="form-control"
-                                placeholder="Buscar por nombre"
-                            >
+                                placeholder="Buscar por nombre, departamento o identidad"
+                            />
                             <span class="input-group-text"><i class="bi bi-search"></i></span>
                         </div>
                     </div>
@@ -140,16 +125,10 @@
                     const url = new URL(window.location.href);
                     url.searchParams.set('search', search);
                     window.location.href = url.toString();
-                }, 0.5);
+                }, 500);
             });
         });
-
     </script>
-
-
-
-
-
 
 
 @endsection

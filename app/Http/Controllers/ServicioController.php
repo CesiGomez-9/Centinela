@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Producto;
 use App\Models\Servicio;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -14,16 +15,29 @@ class ServicioController extends Controller
     public function index()
     {
         $servicios = Servicio::all();
-        return view('servicios.index')->with('servicios', $servicios);
+
+        $productosVigilancia = Producto::where('categoria', 'Implementos de seguridad')->get();
+
+        $productosTecnico = Producto::whereIn('categoria', [
+            'Cámaras de seguridad',
+            'Alarmas antirrobo',
+            'Cerraduras inteligentes',
+            'Sensores de movimiento',
+            'Luces con sensor de movimiento',
+            'Rejas o puertas de seguridad',
+            'Sistema de monitoreo 24/7'
+        ])->get();
+
+        return view('servicios.index', compact('servicios', 'productosVigilancia', 'productosTecnico'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return redirect()->route('servicios.index');
     }
+
+
+
 
     /**
      * Store a newly created resource in storage.
@@ -34,12 +48,11 @@ class ServicioController extends Controller
             'nombreServicio' => ['required', 'string', 'max:50', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/'],
             'descripcionServicio' => ['required', 'string', 'max:125', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/'],
             'categoria' => ['required', 'in:vigilancia,tecnico'],
-            'costo' => ['required', 'digits_between:3,4', 'regex:/^[1-9][0-9]{0,3}$/'], // no puede empezar en 0
+            'costo' => ['required', 'digits_between:3,4', 'regex:/^[1-9][0-9]{0,3}$/'],
             'duracion_cantidad' => ['required', 'integer', 'min:1', 'max:99'],
             'duracion_tipo' => ['required', 'in:horas,dias,meses,años'],
             'productos_categoria' => ['required', 'in:vigilancia,tecnico'],
-            'productos_vigilancia' => ['nullable', 'array'],
-            'productos_tecnico' => ['nullable', 'array'],
+            'productos' => ['nullable', 'array'],
         ], [
             'nombreServicio.regex' => 'El nombre solo puede contener letras y espacios.',
             'descripcionServicio.regex' => 'La descripción solo puede contener letras y espacios.',
@@ -57,14 +70,7 @@ class ServicioController extends Controller
         $servicio->costo = $request->costo;
         $servicio->duracion_cantidad = $request->duracion_cantidad;
         $servicio->duracion_tipo = $request->duracion_tipo;
-
-        if ($request->productos_categoria === 'vigilancia') {
-            $servicio->productos_vigilancia = $request->productos_vigilancia ?? [];
-            $servicio->productos_tecnico = null;
-        } else {
-            $servicio->productos_tecnico = $request->productos_tecnico ?? [];
-            $servicio->productos_vigilancia = null;
-        }
+        $servicio->productos = json_encode($request->productos ?? []);
 
         $servicio->save();
 
@@ -74,15 +80,24 @@ class ServicioController extends Controller
 
 
 
-
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
         $servicio = Servicio::findOrFail($id);
-        return view('servicios.show', compact('servicio'));
+
+        // Decodificar correctamente el JSON a array
+        $productosIds = json_decode($servicio->productos ?? '[]', true);
+
+        // Cargar los productos desde la base de datos
+        $productos = Producto::whereIn('id', $productosIds)->get();
+
+        return view('servicios.show', compact('servicio', 'productos'));
     }
+
+
+
 
     /**
      * Show the form for editing the specified resource.
@@ -91,43 +106,29 @@ class ServicioController extends Controller
     {
         $servicio = Servicio::findOrFail($id);
 
-        // Listas de productos (puedes moverlos a config o BD si prefieres)
-        $productosVigilancia = [
-            'Cinturón táctico', 'Radio de comunicación (walkie-talkie)', 'Linterna',
-            'Cuaderno o libreta de bitácora', 'Bolígrafo o lápiz', 'Silbato', 'Toner o bastón',
-            'Esposas', 'Chaleco antibalas', 'Botas reforzadas'
-        ];
-
-        $productosTecnicos = [
-            'Cámara IP Full HD', 'Cámara Bullet 4K', 'Cámara domo PTZ', 'Cámara térmica portátil', 'Cámara con visión nocturna',
-            'Alarma inalámbrica', 'Alarma con sirena', 'Alarma de puerta y ventana', 'Sistema de alarma GSM', 'Alarma con detector de humo',
-            'Cerradura biométrica', 'Cerradura con teclado', 'Cerradura Bluetooth', 'Cerradura con control remoto', 'Cerradura electrónica para puertas',
-            'Sensor PIR inalámbrico', 'Sensor de movimiento con cámara', 'Sensor de movimiento para interiores', 'Sensor de movimiento con alarma', 'Sensor doble tecnología',
-            'Luz LED con sensor', 'Luz solar con sensor', 'Foco exterior con sensor', 'Luz para jardín con sensor', 'Lámpara de seguridad con sensor',
-            'Reja metálica reforzada', 'Puerta de seguridad con cerradura', 'Reja plegable de acero', 'Puerta blindada residencial', 'Reja corrediza automática',
-            'Casco de seguridad', 'Guantes tácticos', 'Botas reforzadas', 'Escalera', 'Caja de herramientas'
-        ];
-
+        // Convertir a array si ya está en JSON
         $productosSeleccionados = json_decode($servicio->productos, true) ?? [];
 
-        $productosVigilanciaSeleccionados = array_intersect($productosSeleccionados, $productosVigilancia);
-        $productosTecnicosSeleccionados = array_intersect($productosSeleccionados, $productosTecnicos);
+        // Obtener productos vigilancia + los seleccionados
+        $productosVigilancia = Producto::where(function ($query) use ($productosSeleccionados) {
+            $query->where('categoria', 'vigilancia')
+                ->orWhereIn('id', $productosSeleccionados);
+        })->get()->unique('id');
 
-        return view('servicios.edit', compact(
-            'servicio',
-            'productosVigilancia',
-            'productosTecnicos',
-            'productosVigilanciaSeleccionados',
-            'productosTecnicosSeleccionados'
-        ));
+        // Obtener productos técnicos + los seleccionados
+        $productosTecnicos = Producto::where(function ($query) use ($productosSeleccionados) {
+            $query->where('categoria', 'tecnico')
+                ->orWhereIn('id', $productosSeleccionados);
+        })->get()->unique('id');
 
+        return view('servicios.edit', [
+            'servicio' => $servicio,
+            'productosVigilancia' => $productosVigilancia,
+            'productosTecnicos' => $productosTecnicos,
+            'productosSeleccionados' => $productosSeleccionados,
+        ]);
     }
 
-
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -135,24 +136,22 @@ class ServicioController extends Controller
             'descripcionServicio' => 'required|string|max:125|regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/',
             'costo' => 'required|numeric|min:1|max:9999',
             'duracion_cantidad' => 'required|numeric|min:1|max:99',
-            'duracion_tipo' => 'required|in:horas,días,meses,años',
+            'duracion_tipo' => 'required|in:horas,dias,meses,años',
             'categoria' => 'required|in:vigilancia,tecnico',
-            'productos_categoria' => 'required|in:vigilancia,tecnico'
+            'productos' => 'required|array',
+            'productos.*' => 'integer|exists:productos,id'
         ]);
 
         $servicio = Servicio::findOrFail($id);
 
-        // Recoger productos seleccionados según la categoría
-        $productosSeleccionados = $request->categoria === 'vigilancia'
-            ? $request->input('productos_vigilancia', [])
-            : $request->input('productos_tecnico', []);
-
         $servicio->nombre = $request->nombreServicio;
         $servicio->descripcion = $request->descripcionServicio;
         $servicio->costo = $request->costo;
-        $servicio->duracion_estimada = $request->duracion_cantidad . ' ' . $request->duracion_tipo;
+        $servicio->duracion_cantidad . ' ';
+        $servicio->duracion_tipo . ' ';
         $servicio->categoria = $request->categoria;
-        $servicio->productos = json_encode($productosSeleccionados);
+        $servicio->productos = json_encode($request->productos); // Guardar como JSON
+
         $servicio->save();
 
         return redirect()->route('servicios.catalogo')->with('success', 'Servicio actualizado correctamente.');
@@ -170,16 +169,18 @@ class ServicioController extends Controller
     }
     public function catalogo(Request $request)
     {
-        $query = $request->input('search');
+        $query = Servicio::query();
 
-        if ($query) {
-            $servicios = Servicio::where('nombre', 'like', "%$query%")->paginate(10);
-        } else {
-            $servicios = Servicio::paginate(10); // sin filtro
+        if ($request->filled('search')) {
+            $query->where('nombre', 'like', '%' . $request->search . '%');
         }
+
+        $servicios = $query->paginate(10)->appends(['search' => $request->search]);
 
         return view('servicios.catalogo', compact('servicios'));
     }
+
+
 
 
 

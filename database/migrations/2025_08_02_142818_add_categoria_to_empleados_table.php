@@ -6,23 +6,17 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::table('facturas_compras', function (Blueprint $table) {
-            //
+        Schema::table('empleados', function (Blueprint $table) {
+            $table->string('categoria')->after('tipodesangre');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::table('facturas_compras', function (Blueprint $table) {
-            //
+        Schema::table('empleados', function (Blueprint $table) {
+            $table->dropColumn('categoria');
         });
     }
 };

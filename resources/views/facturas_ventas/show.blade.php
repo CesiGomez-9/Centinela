@@ -1,19 +1,140 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Facturas de Venta</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <meta charset="UTF-8" />
+    <title>Factura de Venta - Grupo Centinela</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: url('https://www.transparenttextures.com/patterns/beige-paper.png') repeat fixed #f8f4ec;
+            font-size: 16px;
+        }
+        .card {
+            border: none;
+            border-radius: 1.25rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            background: #ffffff;
+            max-width: 850px;
+            margin: 2rem auto;
+            transition: transform 0.2s ease-in-out;
+
+        }
+        .card:hover {
+            transform: scale(1.01);
+        }
+        .card-header {
+            background-color: #0d1b2a;
+            padding: 1.75rem 1.75rem;
+            border-bottom: 4px solid #cda34f;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+            border-top-left-radius: 1.25rem;
+            border-top-right-radius: 1.25rem;
+        }
+        .card-header h5 {
+            font-weight: 700;
+            font-size: 1.4rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .card-header small {
+            position: absolute;
+            right: 1.75rem;
+            font-size: 0.85rem;
+            color: #f0e6d2;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .card-body {
+            padding: 2.25rem 2rem;
+            font-size: 1rem;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+            border-radius: 0;
+        }
+        .card-footer {
+            background-color: #1b263b;
+            padding: 0.9rem 1.5rem;
+            font-size: 0.9rem;
+            color: #f5f5f5;
+            text-align: right;
+            border-radius: 0 0 1.25rem 1.25rem;
+            border: none;
+        }
+        .card-interno {
+            background: #f9f9f9;
+            padding: 1rem 1.25rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 2px 8px rgb(205 163 79 / 0.15);
+            height: 100%;
+        }
+        .section-header {
+            margin-top: 1rem;
+            padding-bottom: 0.5rem;
+            border-top: 4px solid #cda34f;
+            color: #0d1b2a;
+            font-weight: 700;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        table.table > tbody > tr > td,
+        table.table > thead > tr > th {
+            vertical-align: middle;
+        }
+        .totales-card {
+            background: #f9f9f9;
+            border-radius: 0.75rem;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 2px 8px rgb(205 163 79 / 0.15);
+        }
+        .totales-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            color: #0d1b2a;
+        }
+        .totales-row.total {
+            border-top: 2px solid #cda34f;
+            padding-top: 0.75rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+        .btn-warning {
+            background-color: #cda34f;
+            border-color: #cda34f;
+            color: #0d1b2a;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+        .btn-warning:hover {
+            background-color: #0d1b2a;
+            color: #fff;
+        }
+        table.table thead tr {
+            border-bottom: 4px solid #cda34f;
+        }
+    </style>
+
 </head>
-<body style="background-color: #e6f0ff;">
+<body>
 <nav class="navbar navbar-expand-lg" style="background-color: #0A1F44; padding-top: 1.2rem; padding-bottom: 1.2rem; font-family: 'Courier New', sans-serif;">
     <div class="container" style="max-width: 1600px;">
         <a class="navbar-brand text-white fw-bold d-flex align-items-center" href="#">
             <img src="{{ asset('seguridad/logo.jpg') }}" style="height:80px; margin-right: 10px;" alt="Logo Grupo Centinela">
-    Grupo Centinela
-</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            Grupo Centinela
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
@@ -26,175 +147,116 @@
         </div>
     </div>
 </nav>
-
-<!-- Estilo personalizado -->
-<style>
-    body {
-        font-family: 'Inter', sans-serif;
-        background: url('https://www.transparenttextures.com/patterns/beige-paper.png') repeat fixed #f8f4ec;
-        font-size: 16px;
-    }
-
-    .card {
-        border: none;
-        border-radius: 1.25rem;
-        overflow: hidden;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-        background: #ffffff;
-        min-height: 400px;
-        max-width: 1000px;
-        transition: transform 0.2s ease-in-out;
-    }
-
-    .card:hover {
-        transform: scale(1.01);
-    }
-
-    .card-header {
-        background-color: #0d1b2a;
-        padding: 1.75rem 1.75rem;
-        border-bottom: 4px solid #cda34f;
-    }
-
-    .card-header h5 {
-        color: #ffffff;
-        font-weight: 700;
-        font-size: 1.4rem;
-    }
-
-    .card-header small {
-        color: #f0e6d2;
-        font-size: 0.85rem;
-    }
-
-    .card-body {
-        padding: 2.25rem 1.75rem;
-        font-size: 1rem;
-        box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
-    }
-
-    .card-body p {
-        margin-bottom: 1.3rem;
-        border-left: 4px solid #cda34f;
-        padding-left: 0.75rem;
-    }
-
-    .card-body i {
-        color: #1b263b;
-    }
-
-    .card-body strong {
-        color: #0d1b2a;
-        font-weight: 600;
-    }
-
-    .card-footer {
-        background-color: #1b263b;
-        padding: 0.9rem 1.5rem;
-        border-top: 1px solid #cda34f;
-        font-size: 0.9rem;
-    }
-
-    .card-footer small {
-        color: #f5f5f5;
-    }
-
-    .btn-return {
-        background-color: #cda34f;
-        color: #ffffff;
-        border: none;
-        padding: 0.7rem 1.6rem;
-        border-radius: 0.5rem;
-        font-weight: 600;
-        transition: all 0.3s ease-in-out;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        font-size: 1rem;
-        margin: 0 0.5rem;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .btn-return:hover, .btn-return:focus {
-        background-color: #0d1b2a;
-        color: #ffffff;
-        text-decoration: none;
-    }
-
-    @media (max-width: 767.98px) {
-        .card-body {
-            padding: 1.75rem 1rem;
-            font-size: 0.95rem;
-        }
-
-        .btn-return {
-            display: block;
-            width: 100%;
-            margin: 0.5rem 0;
-        }
-    }
-
-    .section-header {
-        margin-top: 2rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 2px solid #cda34f;
-        color: #0d1b2a;
-        font-weight: 700;
-        font-size: 1.2rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-</style>
-
-<!-- Contenido -->
-<div class="container py-4">
-    <h2>Factura #{{ $factura->numero }}</h2>
-    <p><strong>Cliente:</strong> {{ $factura->cliente->nombre ?? 'N/A' }}</p>
-    <p><strong>Fecha:</strong> {{ $factura->fecha->format('d-m-Y') }}</p>
-    <p><strong>Responsable:</strong> {{ $factura->empleado->nombre ?? 'N/A' }}</p>
-
-    <h4>Productos en la Factura</h4>
-    <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
-        <table class="table table-bordered table-hover text-center">
-            <thead class="table-light sticky-top">
-            <tr>
-                <th>Nombre</th>
-                <th>Categoría</th>
-                <th>Precio (Lps)</th>
-                <th>Cantidad</th>
-                <th>IVA %</th>
-                <th>Subtotal</th>
-                <th>Acción</th>
-            </tr>
-            </thead>
-            <tbody>
-            @foreach ($factura->detalles as $detalle)
-                <tr>
-                    <td>{{ $detalle->nombre }}</td>
-                    <td>{{ $detalle->categoria }}</td>
-                    <td>{{ number_format($detalle->precio_venta, 2) }}</td>
-                    <td>{{ $detalle->cantidad }}</td>
-                    <td>{{ $detalle->iva }}</td>
-                    <td>{{ number_format($detalle->subtotal, 2) }}</td>
-                    <td>
-                        <a href="{{ route('productos.show', $detalle->producto_id) }}" class="btn btn-sm btn-info">
-                            Ver Detalle Producto
-                        </a>
-                    </td>
-                </tr>
-            @endforeach
-            </tbody>
-        </table>
+<div class="card position-relative">
+    <div class="card-header">
+        <h5>
+            <i class="bi bi-file-earmark-text"></i> Factura de venta
+        </h5>
+        <small>Creada hace {{ $factura->created_at->diffForHumans() }}</small>
     </div>
-
-    <p><strong>Subtotal:</strong> Lps. {{ number_format($factura->subtotal, 2) }}</p>
-    <p><strong>Impuestos:</strong> Lps. {{ number_format($factura->impuestos, 2) }}</p>
-    <p><strong>Total:</strong> Lps. {{ number_format($factura->total, 2) }}</p>
-
-    <button type="button" class="btn btn-secondary mt-3" data-bs-dismiss="modal">Volver a Factura</button>
-
+    <div class="card-body">
+        <div class="row mb-4">
+            <div class="col-md-6 mb-3 mb-md-0">
+                <div class="card-interno h-100">
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="{{ asset('centinela.jpg') }}" alt="Logo Centinela" width="70" class="me-3" />
+                        <div>
+                            <strong>GRUPO CENTINELA</strong>
+                        </div>
+                    </div>
+                    <p><strong>RTN: </strong>06021999123456</p>
+                    <p><strong>Dirección:</strong> Barrio Oriental, cuatro cuadras al sur del parque central, Danlí, El Paraíso, Honduras.</p>
+                    <p><strong>Teléfono fijo:</strong> +504 2763-3585</p>
+                    <p><strong>Celular: </strong>+504 9322-5352</p>
+                    <p><strong>Email:</strong> grupocentinela.hn@gmail.com</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card-interno h-100">
+                    <p><strong>Factura de venta N°:</strong> {{ $factura->numero }}</p>
+                    <p><strong>Fecha:</strong> {{ \Carbon\Carbon::parse($factura->fecha)->format('d/m/Y') }}</p>
+                    <p><strong>Cliente:</strong> {{ $factura->cliente->nombre ?? 'N/A' }}</p>
+                    <p><strong>Forma de pago:</strong> {{ $factura->forma_pago }}</p>
+                    <p><strong>Responsable:</strong> {{ $factura->responsable->nombre ?? '' }} {{ $factura->responsable->apellido ?? '' }}</p>
+                </div>
+            </div>
+        </div>
+        <h6 class="section-header"><i class="bi bi-box-seam"></i> Productos vendidos</h6>
+        <div class="table-responsive product-table-container">
+            <table class="table table-bordered table-striped text-center align-middle">
+                <thead class="table-light">
+                <tr>
+                    <th>N°</th>
+                    <th>Descripción</th>
+                    <th>Categoría</th>
+                    <th>Precio (Lps)</th>
+                    <th>Cantidad</th>
+                    <th>IVA%</th>
+                    <th>Subtotal (Lps)</th>
+                </tr>
+                </thead>
+                <tbody>
+                @forelse ($factura->detalles as $index => $detalle)
+                    <tr>
+                        <td>{{ $index + 1 }}</td>
+                        <td>{{ $detalle->nombre }}</td>
+                        <td>{{ $detalle->categoria ?? 'N/A' }}</td>
+                        <td>{{ number_format($detalle->precio_venta, 2) }}</td>
+                        <td>{{ $detalle->cantidad }}</td>
+                        <td>{{ $detalle->iva }}%</td>
+                        <td>{{ number_format($detalle->subtotal, 2) }}</td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="7" class="text-muted fst-italic py-3">No hay productos registrados en esta factura.</td>
+                    </tr>
+                @endforelse
+                </tbody>
+            </table>
+        </div>
+        <div class="row justify-content-end mt-4">
+            <div class="col-md-6 col-lg-5">
+                <div class="totales-card">
+                    <div class="totales-row">
+                        <span>Importe Gravado (Lps):</span>
+                        <span>{{ number_format($factura->importe_gravado, 2) }}</span>
+                    </div>
+                    <div class="totales-row">
+                        <span>Importe Exento (Lps):</span>
+                        <span>{{ number_format($factura->importe_exento, 2) }}</span>
+                    </div>
+                    <div class="totales-row">
+                        <span>Importe Exonerado (Lps):</span>
+                        <span>{{ number_format($factura->importe_exonerado, 2) }}</span>
+                    </div>
+                    <div class="totales-row">
+                        <span>Subtotal (Lps):</span>
+                        <span>{{ number_format($factura->subtotal, 2) }}</span>
+                    </div>
+                    <div class="totales-row">
+                        <span>ISV 15% (Lps):</span>
+                        <span>{{ number_format($factura->isv_15, 2) }}</span>
+                    </div>
+                    <div class="totales-row mb-3">
+                        <span>ISV 18% (Lps):</span>
+                        <span>{{ number_format($factura->isv_18, 2) }}</span>
+                    </div>
+                    <div class="totales-row total">
+                        <span>Total Final (Lps):</span>
+                        <span>{{ number_format($factura->totalF, 2) }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer">
+        Última actualización: {{ $factura->updated_at->diffForHumans() }}
+    </div>
+</div>
+<div class="btn-container" style="max-width: 1000px; margin: 1rem auto 2rem auto; text-align: center;">
+    <a href="{{ route('facturas_ventas.index') }}" class="btn btn-warning">
+        <i class="bi bi-arrow-left me-1"></i> Volver a la lista
+    </a>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
