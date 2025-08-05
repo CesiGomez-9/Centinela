@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('detalles_facturas_ventas', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('factura_venta_id'); // relación con factura venta
-            $table->unsignedBigInteger('producto_id'); // producto vendido
-            $table->string('nombre'); // para guardar nombre del producto al momento
+            $table->unsignedBigInteger('factura_venta_id');
+            $table->unsignedBigInteger('producto_id');
+            $table->string('nombre');
             $table->string('categoria')->nullable();
             $table->decimal('precio_venta', 12, 2);
             $table->integer('cantidad');
@@ -24,7 +24,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('factura_venta_id')->references('id')->on('facturas_ventas')->onDelete('cascade');
-           $table->foreign('producto_id')->references('id')->on('productos')->onDelete('cascade');
+            $table->foreign('producto_id')->references('id')->on('productos')->onDelete('cascade');
             $table->foreignId('responsable_id')->constrained('empleados')->onDelete('cascade');
 
         });

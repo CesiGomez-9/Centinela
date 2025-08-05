@@ -26,7 +26,6 @@
         </div>
     </div>
 </nav>
-
 <div class="container mt-5" style="max-width: 1100px;">
     <div class="card shadow p-4" style="background-color: #ffffff;">
         <h3 class="text-center mb-4" style="color: #09457f;">
@@ -37,18 +36,20 @@
         <div class="row mb-4 align-items-center">
             <div class="col-md-6 d-flex justify-content-start">
                 <div class="w-100" style="max-width: 400px;">
-                    <div class="input-group">
-                        <input
-                            type="text"
-                            id="searchInput"
-                            name="search"
-                            value="{{ request('search') }}"
-                            class="form-control"
-                            placeholder="Buscar por nombre, departamento o identidad"
-                        />
-
-                        <span class="input-group-text"><i class="bi bi-search"></i></span>
-                    </div>
+                    <form method="GET" action="{{ route('empleados.index') }}">
+                        <div class="input-group">
+                            <input
+                                type="text"
+                                id="searchInput"
+                                name="search"
+                                value="{{ request('search') }}"
+                                class="form-control"
+                                placeholder="Buscar por nombre, departamento o identidad"
+                                autocomplete="off"
+                            />
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        </div>
+                    </form>
                 </div>
             </div>
             <div class="col-md-6 d-flex justify-content-end">
@@ -57,8 +58,6 @@
                 </a>
             </div>
         </div>
-
-
 
         @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -120,18 +119,27 @@
         </div>
     </div>
 </div>
-@if ($errors->any())
 
+@if ($errors->any())
+@endif
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const searchInput = document.getElementById('searchInput');
+        const form = searchInput.closest('form');
 
-        if (searchInput.value !== '') {
-            searchInput.focus();
-            const val = searchInput.value;
-            searchInput.value = '';
-            searchInput.value = val;
+        if (form) {
+            form.addEventListener('submit', e => {
+                e.preventDefault();
+            });
         }
+
+        searchInput.addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+            }
+        });
 
         let timeout = null;
 
@@ -139,32 +147,19 @@
             clearTimeout(timeout);
 
             timeout = setTimeout(() => {
-                const search = this.value;
+                const search = this.value.trim();
                 const url = new URL(window.location.href);
-                url.searchParams.set('search', search);
+
+                if (search) {
+                    url.searchParams.set('search', search);
+                } else {
+                    url.searchParams.delete('search');
+                }
+
                 window.location.href = url.toString();
-            }, 700);
+            }, 400);
         });
     });
-
-    window.onload = function() {
-        history.replaceState({}, document.title, location.pathname); // limpia errores de sesión
-    }
-    document.addEventListener('DOMContentLoaded', function () {
-        const form = document.getElementById('formFacturaVenta');
-        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-
-        if (form && token) {
-            const tokenInput = form.querySelector('input[name="_token"]');
-            if (tokenInput) {
-                tokenInput.value = token;
-            }
-        }
-    });
 </script>
-
-@endif
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

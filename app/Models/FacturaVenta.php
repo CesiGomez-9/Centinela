@@ -17,15 +17,13 @@ class FacturaVenta extends Model
 
     public function detalles()
     {
-        return $this->hasMany(DetalleFacturaVenta::class, 'factura_venta_id');
+        return $this->hasMany(DetalleFacturaVenta::class, 'facturas_ventas_id');
     }
 
     public function cliente()
     {
         return $this->belongsTo(Cliente::class);
     }
-
-
 
     public function responsable()
     {
@@ -34,7 +32,8 @@ class FacturaVenta extends Model
 
     public function empleado()
     {
-        return $this->belongsTo(Empleado::class, 'responsable_id');
+        return $this->belongsTo(Empleado::class, 'empleado_id');
     }
+
 
 }
