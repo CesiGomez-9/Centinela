@@ -79,6 +79,7 @@
             @csrf
             <div class="row g-3">
 
+                <!-- Nombre y Costo en la misma fila -->
                 <div class="col-md-6">
                     <label for="nombreServicio" class="form-label fs-6 mb-2">Nombre del servicio</label>
                     <div class="input-group input-group-md">
@@ -93,6 +94,24 @@
                 </div>
 
                 <div class="col-md-6">
+                    <label class="form-label fs-6 mb-2">Costo estimado</label>
+                    <div class="input-group input-group-md">
+                        <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
+                        <input type="number" class="form-control form-control-md" id="costoCantidad" name="costo_cantidad"
+                               min="1" max="9999" placeholder="Cantidad" required />
+                        <select class="form-select form-select-md" id="costoTipo" name="costo_tipo" required>
+                            <option value="">Tipo</option>
+                            <option value="Diurno">Diurno</option>
+                            <option value="Nocturno">Nocturno</option>
+                            <option value="Mixto">Mixto</option>
+                            <option value="24 horas">24 horas</option>
+                        </select>
+                        <div class="invalid-feedback" style="font-size: 0.85rem;">Ingrese un costo válido.</div>
+                    </div>
+                </div>
+
+                <!-- Descripción (fila completa) -->
+                <div class="col-12">
                     <label for="descripcionServicio" class="form-label fs-6 mb-2">Descripción</label>
                     <div class="input-group input-group-md">
                         <span class="input-group-text"><i class="bi bi-textarea-t"></i></span>
@@ -107,35 +126,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-6">
-                    <label for="costo" class="form-label fs-6 mb-2">Costo estimado (L)</label>
-                    <div class="input-group input-group-md">
-                        <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
-                        <input type="text" class="form-control form-control-md" id="costo" name="costo"
-                               pattern="^[1-9][0-9]{0,3}$"
-                               maxlength="4"
-                               title="Solo números, hasta 4 cifras, no iniciar con cero" required />
-                        <div class="invalid-feedback" style="font-size: 0.85rem;">Ingrese un costo válido.</div>
-                    </div>
-                </div>
-
-                <div class="col-sm-5">
-                    <label class="form-label fs-6 mb-2">Duración estimada</label>
-                    <div class="input-group input-group-md">
-                        <span class="input-group-text"><i class="bi bi-hourglass-split"></i></span>
-                        <input type="number" class="form-control form-control-md" id="duracionCantidad" name="duracion_cantidad"
-                               min="1" max="99" placeholder="Cantidad" required />
-                        <select class="form-select form-select-md" id="duracionTipo" name="duracion_tipo" required>
-                            <option value="">Unidad</option>
-                            <option value="horas">Horas</option>
-                            <option value="dias">Días</option>
-                            <option value="meses">Meses</option>
-                            <option value="años">Años</option>
-                        </select>
-                        <div class="invalid-feedback" style="font-size: 0.85rem;">Ingrese una duración válida.</div>
-                    </div>
-                </div>
-
+                <!-- Categoría y Productos requeridos juntos -->
                 <div class="col-md-6">
                     <label for="categoria" class="form-label fs-6 mb-2">Categoría</label>
                     <div class="input-group input-group-md">
@@ -149,7 +140,7 @@
                     </div>
                 </div>
 
-                <div class="col-sm-6">
+                <div class="col-md-6">
                     <label class="form-label fs-6 mb-2">Productos requeridos</label>
                     <div class="input-group input-group-md">
                         <span class="input-group-text"><i class="bi bi-box"></i></span>
@@ -163,7 +154,7 @@
                 </div>
 
                 <!-- Productos de vigilancia -->
-                <div class="col-md-12 d-none" id="productos_vigilancia">
+                <div class="col-12 d-none" id="productos_vigilancia">
                     <label class="form-label fs-6 mb-2">Productos de vigilancia</label>
                     <div class="row g-2" style="font-size: 0.85rem;">
                         @foreach($productosVigilancia as $producto)
@@ -180,7 +171,7 @@
                 </div>
 
                 <!-- Productos técnicos -->
-                <div class="col-md-12 d-none" id="productos_tecnico">
+                <div class="col-12 d-none" id="productos_tecnico">
                     <label class="form-label fs-6 mb-2">Productos técnicos</label>
                     <div class="row g-2" style="font-size: 0.85rem;">
                         @foreach($productosTecnico as $producto)
@@ -196,6 +187,7 @@
                     </div>
                 </div>
 
+                <!-- Botones -->
                 <div class="text-center mt-4">
                     <a href="{{ route('servicios.catalogo') }}" class="btn btn-danger me-2" style="font-size: 0.85rem;">
                         <i class="bi bi-x-circle me-2"></i> Cancelar
@@ -212,6 +204,7 @@
 
             </div>
         </form>
+
     </div>
 </div>
 
@@ -271,9 +264,9 @@
         });
 
         // Costo: solo números, máx 4 cifras, sin iniciar con 0
-        document.getElementById('costo').addEventListener('input', function () {
+        document.getElementById('costoCantidad').addEventListener('input', function () {
             let valor = this.value.replace(/\D/g, '');
-            if (valor.startsWith('0')) valor = valor.replace(/^0+/, '');
+            valor = valor.replace(/^0+/, '');
             this.value = valor.slice(0, 4);
         });
 
