@@ -167,6 +167,7 @@ class ClienteController extends Controller
     public function edit(string $id)
     {
         //
+        
     }
 
     /**
@@ -175,7 +176,111 @@ class ClienteController extends Controller
     public function update(Request $request, string $id)
     {
         //
+
+        $cliente = Cliente::findOrFail($id);
+
+        $codigosDep = [ '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18' ];
+
+        $municipiosPorDepartamento = [
+            '01'=> [ "01", "02", "03", "04", "05", "06", "07", "08" ], // Atlántida
+            '02' => [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16" ], // Choluteca
+            '03'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10" ], // Colón
+            '04'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20","21" ], // Comayagua
+            '05'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14","15", "16", "17", "18", "19", "20","21", "22", "23" ], // Copán
+            '06'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12" ], // Cortés
+            '07'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19" ], // El Paraíso
+            '08'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18","19","20","21", "22", "23", "24", "25", "26", "27", "28" ], // Francisco Morazán
+            '09'=> [ "01", "02", "03", "04", "05", "06" ], // Gracias a Dios
+            '10'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17" ], // Intibucá
+            '11'=> [ "01", "02", "03", "04" ], // Islas de la Bahía
+            '12'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19" ], // La Paz
+            '13'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26","27","28" ], // Lempira
+            '14'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14","15", "16" ], // Ocotepeque
+            '15'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"], // Olancho
+            '16'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19","20","21", "22", "23", "24", "25", "26", "27", "28" ], // Santa Bárbara
+            '17'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09" ], // Valle
+            '18'=> [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11"]// Yoro
+        ];
+
+        $request->validate([
+            'nombre' => ['required', 'string', 'max:50', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/u'],
+            'apellido' => ['required', 'string', 'max:50', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/u'],
+            'identidad' => [
+                'required', 'string', 'size:13', 'regex:/^\d{13}$/',
+                Rule::unique('clientes', 'identidad')->ignore($cliente->id),
+                function ($attribute, $value, $fail) use ($codigosDep, $municipiosPorDepartamento) {
+                    $departamento = substr($value, 0, 2);
+                    $municipio = substr($value, 2, 2);
+
+                    if (!in_array($departamento, $codigosDep)) {
+                        $fail('El departamento es inválido en la identidad.');
+                    } elseif (!isset($municipiosPorDepartamento[$departamento]) || !in_array($municipio, $municipiosPorDepartamento[$departamento])) {
+                        $fail('El municipio es inválido para el departamento seleccionado en la identidad.');
+                    }
+                },
+                function ($attribute, $value, $fail) {
+                    $anio = (int) substr($value, 4, 4);
+                    if ($anio < 1940 || $anio > 2007) {
+                        $fail('El año de la identidad debe ser entre 1940 y 2007.');
+                    }
+                }
+            ],
+            'correo' => [
+                'required', 'string', 'email', 'max:50',
+                Rule::unique('clientes', 'correo')->ignore($cliente->id),
+                'regex:/^[^@\s]+@[^@\s]+\.[^@\s]+$/'
+            ],
+            'telefono' => [
+                'required', 'regex:/^[2389][0-9]{7}$/', 'size:8',
+                Rule::unique('clientes', 'telefono')->ignore($cliente->id)
+            ],
+            'direccion' => ['required', 'string','max:250'],
+            'departamento' => ['required', 'string'],
+            'sexo' => ['required', 'string'],
+        ], [
+            'nombre.required' => 'Debe ingresar el nombre.',
+            'nombre.regex' => 'El nombre solo debe contener letras, espacios y tildes.',
+            'direccion.required' => 'Debe ingresar la dirección.',
+
+            'telefono.required' => 'Debe ingresar el teléfono.',
+            'telefono.regex' => 'El teléfono debe comenzar con 2, 3, 8 o 9 y tener 8 dígitos.',
+            'telefono.size' => 'El teléfono debe tener exactamente 8 dígitos.',
+            'telefono.unique' => 'Este número de teléfono ya está registrado.',
+
+            'correo.required' => 'Debe ingresar el correo electrónico.',
+            'correo.email' => 'Debe ingresar un correo electrónico válido.',
+            'correo.unique' => 'Este correo ya está registrado.',
+
+            'departamento.required' => 'Debe seleccionar un departamento.',
+            'apellido.required' => 'Debe ingresar el apellido.',
+            'apellido.regex' => 'El apellido solo debe contener letras, espacios y tildes.',
+            'identidad.required' => 'Debe ingresar la identidad.',
+            'identidad.size' => 'La identidad debe tener exactamente 13 digitos.',
+            'identidad.unique' => 'Esta identidad ya está registrada.',
+            'sexo.required' => 'Debe seleccionar un sexo.',
+        ]);
+
+        $cliente = Cliente::findOrFail($id); // ✅ Actualizar el existente
+        $cliente->nombre= $request->input('nombre');
+        $cliente->apellido= $request->input('apellido');
+        $cliente->sexo = $request->input('sexo');
+        $cliente->identidad = $request->input('identidad');
+        $cliente->correo= $request->input('correo');
+        $cliente->telefono = $request->input('telefono');
+        $cliente->direccion = $request->input('direccion');
+        $cliente->departamento = $request->input('departamento');
+
+
+        if ($cliente->save()) {
+            return redirect()->route('Clientes.indexCliente')->with('exito', 'El cliente se editó correctamente.');
+        } else {
+            return redirect()->route('Clientes.indexCliente')->with('fracaso', 'El cliente no se editó correctamente.');
+        }
+
+
+
     }
+
 
     /**
      * Remove the specified resource from storage.

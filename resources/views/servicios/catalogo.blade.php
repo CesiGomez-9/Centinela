@@ -7,6 +7,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         body {
+            background-color: #e6f0ff;
+            height: 100vh;
+            margin: 0;
             background-color: #f2f4f8;
             font-family: 'Segoe UI', sans-serif;
         }
@@ -42,7 +45,7 @@
 <nav class="navbar navbar-expand-lg shadow-sm" style="background-color: #0A1F44;">
     <div class="container" style="max-width: 1600px;">
         <a class="navbar-brand text-white fw-bold" href="#">
-            <img src="{{ asset('seguridad/GrupoCentinela.jpg') }}" style="height:70px;">
+            <img src="{{ asset('centinela.jpg') }}" style="height:70px;">
             Grupo Centinela
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">

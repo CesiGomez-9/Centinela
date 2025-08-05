@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+
     <meta charset="UTF-8">
     <title>Facturas de Venta</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -37,6 +38,14 @@
         border: 1px solid #090909;
         text-align: center;
     }
+
+     body{
+         background-color: #e6f0ff;
+         height: 100vh;
+         margin: 0;
+     }
+
+
 </style>
 
 <div class="container my-5">
