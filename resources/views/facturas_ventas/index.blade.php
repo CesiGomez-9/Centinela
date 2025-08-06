@@ -135,7 +135,10 @@
             @endforelse
             </tbody>
         </table>
-        {{ $facturas->links() }}
+        <div class="d-flex justify-content-center">
+            {{ $facturas->links() }}
+        </div>
+
     </div>
 </div>
 <script>
