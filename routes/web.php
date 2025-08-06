@@ -6,7 +6,6 @@ use App\Http\Controllers\FacturaCompraController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\ServicioController;
-use App\Http\Controllers\TurnoController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -52,6 +51,8 @@ Route::controller(ProductoController::class)->group(function () {
     Route::get('/productos/{id}', 'show')->name('productos.show')->whereNumber('id');
     Route::get('/productos/crear', 'create')->name('productos.create');
     Route::post('/productos/crear', 'store')->name('productos.store');
+
+
     Route::get('/productos/{id}/editar', 'edit')->name('productos.edit')->whereNumber('id');
     Route::put('/productos/{id}/editar', 'update')->name('productos.update')->whereNumber('id');
 });
@@ -84,13 +85,10 @@ Route::get('/Clientes/crear', [\App\Http\Controllers\ClienteController::class, '
 Route::post('/Clientes/crear', [\App\Http\Controllers\ClienteController::class, 'store'])->name('Clientes.store');
 Route::get('/Clientes/crear', [\App\Http\Controllers\ClienteController::class, 'create'])->name('Clientes.formulariocliente');
 Route::get('/Clientes', [\App\Http\Controllers\ClienteController::class, 'index'])->name('Clientes.indexCliente');
+Route::get('/Clientes/{id}', [\App\Http\Controllers\ClienteController::class, 'show'])->name('Clientes.detalleCliente')->whereNumber('id');
 
 
-Route::controller(TurnoController::class)->group(function () {
-    Route::get('/turnos', 'index')->name('turnos.index');
-    Route::get('/turnos/{id}', 'show')->name('turnos.show')->whereNumber('id');
-    Route::get('/turnos/crear', 'create')->name('turnos.create');
-    Route::post('/turnos/crear', 'store')->name('turnos.store');
-
-    Route::get('/turnos/empleados-por-servicio/{servicio_id}', [TurnoController::class, 'getEmpleadosPorServicio'])->name('turnos.empleadosPorServicio');
-});
+Route::get('/instalaciones/formulario', [\App\Http\Controllers\InstalacionController::class, 'create'])->name('instalaciones.formulario');
+Route::post('/instalaciones', [\App\Http\Controllers\InstalacionController::class, 'store'])->name('instalaciones.store');
+Route::get('/instalaciones', [\App\Http\Controllers\InstalacionController::class, 'index'])->name('instalaciones.index');
+Route::get('/eventos', [\App\Http\Controllers\InstalacionController::class, 'obtenerEventos']);

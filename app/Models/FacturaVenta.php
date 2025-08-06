@@ -37,4 +37,3 @@ class FacturaVenta extends Model
 
 
 }
-
