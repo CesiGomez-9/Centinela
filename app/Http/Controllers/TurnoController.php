@@ -74,7 +74,7 @@ class TurnoController extends Controller
             'observaciones' => [
                 'required',
                 'string',
-                'max:255',
+                'max:500',
                 'regex:/^[\pL0-9\s,.\-#()]*$/u',
             ],
         ], [
@@ -101,6 +101,8 @@ class TurnoController extends Controller
             'observaciones.string' => 'Las observaciones deben ser una cadena de texto.',
             'observaciones.max' => 'Las observaciones no deben exceder los :max caracteres.',
             'observaciones.regex' => 'Las observaciones contienen caracteres no permitidos.',
+            'observaciones.required' => 'Las observaciones son obligatorias.',
+
         ]);
 
         $turno = new Turno($validated);

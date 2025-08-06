@@ -29,9 +29,6 @@
         #servicioForm {
             font-size: 0.85rem; /* 85% tamaño base */
         }
-
-
-
     </style>
 </head>
 <body>
@@ -79,8 +76,8 @@
             @csrf
             <div class="row g-3">
 
-                <!-- Nombre y Costo en la misma fila -->
-                <div class="col-md-6">
+                <!-- Nombre del servicio (col-md-6) -->
+                <div class="col-12 col-md-6">
                     <label for="nombreServicio" class="form-label fs-6 mb-2">Nombre del servicio</label>
                     <div class="input-group input-group-md">
                         <span class="input-group-text"><i class="bi bi-card-text"></i></span>
@@ -93,24 +90,40 @@
                     </div>
                 </div>
 
-                <div class="col-md-6">
-                    <label class="form-label fs-6 mb-2">Costo estimado</label>
+                <!-- Costo Diurno (col-md-2) -->
+                <div class="col-12 col-md-2">
+                    <label for="costo_diurno" class="form-label fs-6 mb-2">Costo diurno</label>
                     <div class="input-group input-group-md">
-                        <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
-                        <input type="number" class="form-control form-control-md" id="costoCantidad" name="costo_cantidad"
-                               min="1" max="9999" placeholder="Cantidad" required />
-                        <select class="form-select form-select-md" id="costoTipo" name="costo_tipo" required>
-                            <option value="">Tipo</option>
-                            <option value="Diurno">Diurno</option>
-                            <option value="Nocturno">Nocturno</option>
-                            <option value="Mixto">Mixto</option>
-                            <option value="24 horas">24 horas</option>
-                        </select>
-                        <div class="invalid-feedback" style="font-size: 0.85rem;">Ingrese un costo válido.</div>
+                        <span class="input-group-text"><i class="bi bi-sun"></i></span>
+                        <input type="number" step="0.01" class="form-control form-control-md" id="costo_diurno" name="costo_diurno"
+                               min="0" max="9999" oninput="limitarDigitos(this, 4)" required />
+                        <div class="invalid-feedback" style="font-size: 0.85rem;">Ingrese un costo diurno válido.</div>
                     </div>
                 </div>
 
-                <!-- Descripción (fila completa) -->
+                <!-- Costo Nocturno (col-md-2) -->
+                <div class="col-12 col-md-2">
+                    <label for="costo_nocturno" class="form-label fs-6 mb-2">Costo nocturno</label>
+                    <div class="input-group input-group-md">
+                        <span class="input-group-text"><i class="bi bi-moon"></i></span>
+                        <input type="number" step="0.01" class="form-control form-control-md" id="costo_nocturno" name="costo_nocturno"
+                               min="0" max="9999" oninput="limitarDigitos(this, 4)" required />
+                        <div class="invalid-feedback" style="font-size: 0.85rem;">Ingrese un costo nocturno válido.</div>
+                    </div>
+                </div>
+
+                <!-- Costo 24 Horas (col-md-2) -->
+                <div class="col-12 col-md-2">
+                    <label for="costo_24_horas" class="form-label fs-6 mb-2">Costo 24 horas</label>
+                    <div class="input-group input-group-md">
+                        <span class="input-group-text"><i class="bi bi-clock"></i></span>
+                        <input type="number" step="0.01" class="form-control form-control-md" id="costo_24_horas" name="costo_24_horas"
+                               min="0" max="9999" oninput="limitarDigitos(this, 4)" required />
+                        <div class="invalid-feedback" style="font-size: 0.85rem;">Ingrese un costo de 24 horas válido.</div>
+                    </div>
+                </div>
+
+                <!-- Descripción (ocupa todo el ancho) -->
                 <div class="col-12">
                     <label for="descripcionServicio" class="form-label fs-6 mb-2">Descripción</label>
                     <div class="input-group input-group-md">
@@ -220,11 +233,24 @@
         const textarea = document.getElementById('descripcionServicio');
         autoExpand(textarea);
     });
+
+    // Nueva función para limitar los dígitos antes del punto decimal
+    function limitarDigitos(input, maxDigits) {
+        let value = input.value;
+        // Permite números, el punto decimal y hasta dos decimales
+        let parts = value.split('.');
+        if (parts[0].length > maxDigits) {
+            parts[0] = parts[0].substring(0, maxDigits);
+        }
+        if (parts[1] && parts[1].length > 2) {
+            parts[1] = parts[1].substring(0, 2);
+        }
+        input.value = parts.join('.');
+    }
 </script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const categoriaSelect = document.getElementById('categoria');
-        const tipoPersonalSelect = document.getElementById('tipo_personal');
         const productosCategoriaSelect = document.getElementById('productosCategoria');
         const vigilanciaDiv = document.getElementById('productos_vigilancia');
         const tecnicoDiv = document.getElementById('productos_tecnico');
@@ -263,20 +289,6 @@
             validarInput(e, '[A-Za-zÁÉÍÓÚáéíóúÑñ\\s]', 125);
         });
 
-        // Costo: solo números, máx 4 cifras, sin iniciar con 0
-        document.getElementById('costoCantidad').addEventListener('input', function () {
-            let valor = this.value.replace(/\D/g, '');
-            valor = valor.replace(/^0+/, '');
-            this.value = valor.slice(0, 4);
-        });
-
-        // Duración cantidad: solo 2 cifras, sin ceros al inicio
-        document.getElementById('duracionCantidad').addEventListener('input', function () {
-            let valor = this.value.replace(/\D/g, '');
-            valor = valor.replace(/^0+/, '');
-            this.value = valor.slice(0, 2);
-        });
-
         // Evitar espacio al inicio
         function bloquearEspacioAlInicio(e, input) {
             if (e.key === ' ' && input.selectionStart === 0) {
@@ -303,30 +315,8 @@
             const checks = form.querySelectorAll('input[type="checkbox"]');
             checks.forEach(cb => cb.checked = false);
 
-            // Resetear selects dependientes
-            tipoPersonalSelect.selectedIndex = 0;
-            productosCategoriaSelect.selectedIndex = 0;
         });
 
-        // Cambiar tipo_personal y productos_categoria cuando se elige categoría
-        categoriaSelect.addEventListener('change', function () {
-            const categoria = this.value;
-
-            // Ajustar tipo de personal
-            tipoPersonalSelect.value = categoria;
-            for (let i = 0; i < tipoPersonalSelect.options.length; i++) {
-                tipoPersonalSelect.options[i].disabled = tipoPersonalSelect.options[i].value !== categoria;
-            }
-
-            // Ajustar productos_categoria
-            productosCategoriaSelect.value = categoria;
-            for (let i = 0; i < productosCategoriaSelect.options.length; i++) {
-                productosCategoriaSelect.options[i].disabled = productosCategoriaSelect.options[i].value !== categoria;
-            }
-
-            // Mostrar productos según categoría
-            productosCategoriaSelect.dispatchEvent(new Event('change'));
-        });
 
         // Al cargar la página, sincroniza todo si ya hay una selección previa
         const selectedCategoria = categoriaSelect.value;
@@ -337,8 +327,6 @@
         }
     });
 </script>
-
-
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>

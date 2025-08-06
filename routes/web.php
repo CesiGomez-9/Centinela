@@ -6,6 +6,7 @@ use App\Http\Controllers\FacturaCompraController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\ServicioController;
+use App\Http\Controllers\TurnoController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -45,7 +46,6 @@ Route::put('/Proveedores/{id}', [ProveedorController::class, 'update'])->name('P
 
 
 
-
 Route::controller(ProductoController::class)->group(function () {
     Route::get('/productos', 'index')->name('productos.index');
     Route::get('/productos/{id}', 'show')->name('productos.show')->whereNumber('id');
@@ -80,6 +80,15 @@ Route::controller(FacturaCompraController::class)->group(function () {
     Route::get('/facturas_compras/{id}/editar', 'edit')->name('facturas_compras.edit')->whereNumber('id');
     Route::put('/facturas_compras/{id}/editar', 'update')->name('facturas_compras.update')->whereNumber('id');
 });
+
+Route::controller(TurnoController::class)->group(function () {
+    Route::get('/turnos', 'index')->name('turnos.index');
+    Route::get('/turnos/{id}', 'show')->name('facturas_compras.show')->whereNumber('id');
+    Route::get('/turnos/crear', 'create')->name('turnos.create');
+    Route::post('/turnos/crear', 'store')->name('turnos.store');
+    Route::get('/turnos/empleados-por-servicio/{servicio_id}', [TurnoController::class, 'getEmpleadosPorServicio'])->name('turnos.empleadosPorServicio');
+});
+
 
 Route::get('/Clientes/crear', [\App\Http\Controllers\ClienteController::class, 'create'])->name('Clientes.create');
 Route::post('/Clientes/crear', [\App\Http\Controllers\ClienteController::class, 'store'])->name('Clientes.store');

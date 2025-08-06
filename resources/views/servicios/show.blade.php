@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Información del Servicio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -94,6 +95,19 @@
             list-style-type: disc;
         }
 
+        /* Estilos para los items de costo */
+        .cost-item {
+            margin-bottom: 0.5rem;
+            border-left: 4px solid #cda34f;
+            padding-left: 0.6rem;
+        }
+        .cost-item strong {
+            display: inline-block;
+            min-width: 70px; /* Ajusta este valor si necesitas más espacio para la etiqueta */
+            text-align: left;
+            margin-right: 5px;
+        }
+
         @media (max-width: 767.98px) {
             .card-body {
                 padding: 0.8rem;
@@ -133,7 +147,7 @@
             <div class="card">
                 <div class="card-header">
                     <h5 class="mb-0"><i class="bi bi-info-circle-fill me-2"></i>Información del Servicio</h5>
-                    <small class="position-absolute top-50 end-0 translate-middle-y me-3">
+                    <small class="position-absolute top-50 end-0 translate-middle-y me-3 text-white-50">
                         Creado {{ \Carbon\Carbon::parse($servicio->created_at)->diffForHumans() }}
                     </small>
                 </div>
@@ -143,17 +157,25 @@
                         <div class="col-md-6">
                             <p><i class="bi bi-card-text me-2"></i><strong>Nombre:</strong> {{ $servicio->nombre }}</p>
                             <p><i class="bi bi-paragraph me-2"></i><strong>Descripción:</strong> {{ $servicio->descripcion }}</p>
-                            <p>
-                                <i class="bi bi-cash-coin me-2"></i><strong>Costo estimado:</strong>
-                                L {{ number_format($servicio->costo_cantidad, 2) }} <small>({{ $servicio->costo_tipo }})</small>
+
+                            <!-- Mostrar la etiqueta "Costos:" y luego los tres costos -->
+                            <p class="mb-1">
+                                <i class="bi bi-cash-coin me-1"></i>
+                                <strong>Costos:</strong>
                             </p>
+                            <div class="cost-item">
+                                <i class="bi bi-sun me-2"></i><strong>Diurno:</strong> L. {{ number_format($servicio->costo_diurno, 2) }}
+                            </div>
+                            <div class="cost-item">
+                                <i class="bi bi-moon me-2"></i><strong>Nocturno:</strong> L. {{ number_format($servicio->costo_nocturno, 2) }}
+                            </div>
+                            <div class="cost-item">
+                                <i class="bi bi-clock me-2"></i><strong>24 Horas:</strong> L. {{ number_format($servicio->costo_24_horas, 2) }}
+                            </div>
                         </div>
 
                         <!-- Columna Derecha -->
                         <div class="col-md-6">
-                            <!-- Duración estimada (descomentar si usas) -->
-                            {{-- <p><i class="bi bi-clock-history me-2"></i><strong>Duración estimada:</strong> {{ $servicio->duracion_cantidad }} {{ $servicio->duracion_tipo }}</p> --}}
-
                             <p class="mb-1">
                                 <i class="bi bi-diagram-3-fill me-1"></i>
                                 <strong>Categoría:</strong> {{ ucfirst($servicio->categoria) }}
@@ -188,7 +210,7 @@
                 </div>
 
                 <div class="card-footer text-end">
-                    <small>Última actualización: {{ $servicio->updated_at ? $servicio->updated_at->diffForHumans() : 'Fecha no disponible' }}</small>
+                    <small class="text-white-50">Última actualización: {{ $servicio->updated_at ? $servicio->updated_at->diffForHumans() : 'Fecha no disponible' }}</small>
                 </div>
             </div>
 

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Catálogo de Servicios</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
@@ -31,6 +32,17 @@
             background-color: #000 !important;
             border-color: #000 !important;
             color: #fff !important;
+        }
+        /* Ajuste para la columna de costos */
+        .cost-details {
+            font-size: 0.9em; /* Ligeramente más pequeño para caber mejor */
+            line-height: 1.3; /* Espaciado entre líneas */
+        }
+        .cost-details strong {
+            display: inline-block; /* Asegura que la etiqueta y el valor estén en la misma línea */
+            min-width: 45px; /* Alinea las etiquetas */
+            text-align: right;
+            margin-right: 5px;
         }
     </style>
 </head>
@@ -101,7 +113,7 @@
             <tr>
                 <th style="width: 50px;">#</th>
                 <th style="width: 280px;">Nombre</th>
-                <th style="width: 200px;">Costo estimado</th>
+                <th style="width: 200px;">Costos</th> {{-- Cambiado de "Costo estimado" a "Costos" --}}
                 <th style="width: 130px;">Categoría</th>
                 <th style="width: 160px;">Acciones</th>
             </tr>
@@ -111,9 +123,10 @@
                 <tr>
                     <td class="text-center">{{ $loop->iteration }}</td>
                     <td class="text-start text-truncate" style="max-width: 280px;">{{ $servicio->nombre }}</td>
-                    <td class="text-center">
-                        L. {{ number_format($servicio->costo_cantidad, 2) }}
-                        <br><small class="text-muted">({{ $servicio->costo_tipo }})</small>
+                    <td class="text-start cost-details"> {{-- Alineación a la izquierda para los detalles de costo --}}
+                        <div><strong>Diurno:</strong> L. {{ number_format($servicio->costo_diurno, 2) }}</div>
+                        <div><strong>Nocturno:</strong> L. {{ number_format($servicio->costo_nocturno, 2) }}</div>
+                        <div><strong>24 horas:</strong> L. {{ number_format($servicio->costo_24_horas, 2) }}</div>
                     </td>
                     <td class="text-start">{{ ucfirst($servicio->categoria) }}</td>
                     <td class="text-center">
