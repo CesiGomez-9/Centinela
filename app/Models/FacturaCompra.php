@@ -20,7 +20,6 @@ class FacturaCompra extends Model
         'subtotal',
         'impuestos',
         'totalF',
-        // Nuevos campos para el desglose de la factura
         'importe_gravado',
         'importe_exento',
         'importe_exonerado',

@@ -17,7 +17,6 @@ return new class extends Migration
             $table->date('fecha');
             $table->enum('forma_pago', ['Efectivo', 'Cheque', 'Transferencia'])->default('Efectivo');
 
-            // Nuevas columnas para el resumen de la factura
             $table->decimal('importe_gravado', 10, 2)->default(0); // Suma de bases imponibles con IVA > 0
             $table->decimal('importe_exento', 10, 2)->default(0);  // Suma de bases imponibles con IVA = 0
             $table->decimal('importe_exonerado', 10, 2)->default(0); // Para casos especiales de exención, inicialmente 0

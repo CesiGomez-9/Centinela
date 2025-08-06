@@ -7,7 +7,7 @@ use App\Models\Impuesto;
 use App\Models\PrecioCompra;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use Illuminate\Pagination\LengthAwarePaginator; // Importar esto
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class ProductoController extends Controller
 {

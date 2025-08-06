@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('detalles_facturas_ventas', function (Blueprint $table) {
-            $table->renameColumn('facturas_ventas_id', 'factura_venta_id');
-        });
+        if (Schema::hasColumn('detalles_facturas_ventas', 'facturas_ventas_id')) {
+            Schema::table('detalles_facturas_ventas', function (Blueprint $table) {
+                $table->renameColumn('facturas_ventas_id', 'factura_venta_id');
+            });
+        }
     }
 
     public function down()
