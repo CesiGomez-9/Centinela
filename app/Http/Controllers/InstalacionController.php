@@ -62,8 +62,8 @@ class InstalacionController extends Controller
     public function create()
     {
         $clientes = Cliente::all();
-        $tecnicos = Empleado::where('categoria', 'tecnico')->get(); // Filtrar empleados por categoría 'tecnico'
-        $servicios = Servicio::where('categoria', 'tecnico')->get(); // Filtrar servicios por categoría 'tecnico'
+        $tecnicos = Empleado::where('categoria', 'Tecnico')->get(); // Filtrar empleados por categoría 'tecnico'
+        $servicios = Servicio::where('categoria', 'Tecnico')->get(); // Filtrar servicios por categoría 'tecnico'
         $facturas = FacturaVenta::all();
 
         return view('instalaciones.formulario', compact('clientes', 'tecnicos', 'servicios', 'facturas'));

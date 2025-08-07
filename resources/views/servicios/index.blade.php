@@ -7,10 +7,14 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
     <style>
-        body {
-            background-color: #e6f0ff;
-            font-size: 1.1rem;
-        }
+
+            body{
+
+                height: 100vh;
+                margin: 0;
+                background-color: #e6f0ff;
+            }
+
         .form-contenedor {
             max-width: 1000px;
             margin: auto;
@@ -30,6 +34,8 @@
             font-size: 0.85rem; /* 85% tamaño base */
         }
     </style>
+
+
 </head>
 <body>
 <nav class="navbar navbar-expand-lg" style="background-color: #0A1F44; padding-top: 1.2rem; padding-bottom: 1.2rem; font-family: 'Courier New', sans-serif;">

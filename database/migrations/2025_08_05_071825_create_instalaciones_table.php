@@ -22,7 +22,7 @@ return new class extends Migration
             $table->unsignedBigInteger('servicio_id');
             $table->foreign('servicio_id')->references('id')->on('servicios')->onDelete('cascade');
             $table->unsignedBigInteger('factura_id')->nullable();
-            $table->foreign('factura_id')->references('id')->on('facturas')->onDelete('set null');
+            $table->foreign('factura_id')->references('id')->on('facturas_ventas')->onDelete('set null');
             $table->date('fecha_instalacion');
             $table->decimal('costo_instalacion', 10, 2);
             $table->string('descripcion', 255);
