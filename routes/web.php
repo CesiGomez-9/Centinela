@@ -86,8 +86,8 @@ Route::post('/Clientes/crear', [\App\Http\Controllers\ClienteController::class, 
 Route::get('/Clientes/crear', [\App\Http\Controllers\ClienteController::class, 'create'])->name('Clientes.formulariocliente');
 Route::get('/Clientes', [\App\Http\Controllers\ClienteController::class, 'index'])->name('Clientes.indexCliente');
 
-
 Route::get('/instalaciones/formulario', [\App\Http\Controllers\InstalacionController::class, 'create'])->name('instalaciones.formulario');
 Route::post('/instalaciones', [\App\Http\Controllers\InstalacionController::class, 'store'])->name('instalaciones.store');
 Route::get('/instalaciones', [\App\Http\Controllers\InstalacionController::class, 'index'])->name('instalaciones.index');
-Route::get('/eventos', [\App\Http\Controllers\InstalacionController::class, 'obtenerEventos']);
+// routes/web.php
+Route::get('/instalaciones/eventos', [\App\Http\Controllers\InstalacionController::class, 'eventos'])->name('instalaciones.eventos');

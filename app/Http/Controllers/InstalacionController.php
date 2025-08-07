@@ -4,44 +4,48 @@ namespace App\Http\Controllers;
 
 use App\Models\Cliente;
 use App\Models\Empleado;
+use App\Models\FacturaVenta;
 use App\Models\Instalacion;
 use App\Models\Servicio;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class InstalacionController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+    // Muestra la vista del calendario
     public function index()
     {
-        $clientes = Cliente::all();
-        $tecnicos = Empleado::all();
-        $servicios = Servicio::all();
-
-        return view('instalaciones.formulario', compact('clientes', 'tecnicos', 'servicios'));
+        return view('instalaciones.index');
     }
 
-
-    /**
-     * Endpoint para cargar eventos en el calendario.
-     */
-    public function obtenerEventos()
+// Devuelve eventos para FullCalendar
+    public function eventos(Request $request)
     {
-        $instalaciones = Instalacion::with(['cliente', 'empleado', 'servicio'])->get();
+        $start = $request->input('start');
+        $end = $request->input('end');
 
-        $eventos = $instalaciones->map(function ($i) {
+        $instalaciones = Instalacion::with(['cliente', 'servicio', 'factura', 'tecnicos'])
+            ->whereBetween('fecha_instalacion', [$start, $end])
+            ->get();
+
+        $eventos = $instalaciones->map(function ($instalacion) {
             return [
-                'title' => $i->cliente->nombre,
-                'start' => $i->fecha_instalacion,
+                'id' => $instalacion->id,
+                'title' => $instalacion->cliente->nombre . ' - ' . $instalacion->servicio->nombre,
+                'start' => $instalacion->fecha_instalacion,
                 'extendedProps' => [
-                    'cliente' => $i->cliente->nombre,
-                    'tecnico' => $i->empleado->nombre,
-                    'servicio' => $i->servicio->nombre,
-                    'estado' => ucfirst($i->estado),
-                    'descripcion' => $i->descripcion,
-                    'direccion' => $i->direccion,
+                    'cliente' => $instalacion->cliente->nombre,
+                    'servicio' => $instalacion->servicio->nombre,
+                    'descripcion' => $instalacion->descripcion,
+                    'direccion' => $instalacion->direccion,
+                    'costo' => $instalacion->costo_instalacion,
+                    'factura' => $instalacion->factura?->numero ?? 'No aplica',
+                    'tecnicos' => $instalacion->tecnicos->pluck('nombre')->toArray(),
                 ]
             ];
         });
@@ -53,81 +57,91 @@ class InstalacionController extends Controller
 
 
     /**
-     * Elimina instalaciones vencidas.
-     * Vencidas = fecha_instalacion + 5 horas < ahora.
-     */
-    private function eliminarInstalacionesVencidas()
-    {
-        Instalacion::where('fecha_instalacion', '<', Carbon::now()->subHours(5))->delete();
-    }
-
-    /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
         $clientes = Cliente::all();
-        $tecnicos = Empleado::all();
-        $servicios = Servicio::all();
+        $tecnicos = Empleado::where('categoria', 'tecnico')->get(); // Filtrar empleados por categoría 'tecnico'
+        $servicios = Servicio::where('categoria', 'tecnico')->get(); // Filtrar servicios por categoría 'tecnico'
+        $facturas = FacturaVenta::all();
 
-        return view('instalaciones.formulario', compact('clientes', 'tecnicos', 'servicios'));
+        return view('instalaciones.formulario', compact('clientes', 'tecnicos', 'servicios', 'facturas'));
     }
 
-    // Guardar instalación
+
+    /**
+     * Guardar instalación
+     */
+
     public function store(Request $request)
     {
-        // Validaciones
         $request->validate([
             'cliente_id' => 'required|exists:clientes,id',
-            'tecnico_id' => 'required|exists:empleados,id',
-            'servicio_id' => 'required|exists:servicios,id',
-            'descripcion' => [
+            'empleado_id' => [
                 'required',
-                'string',
-                'max:255',
+                'array',
                 function ($attribute, $value, $fail) {
-                    if (preg_match('/^\s+/', $value)) {
-                        $fail('La descripción no puede comenzar con espacios.');
+                    foreach ($value as $id) {
+                        if (!Empleado::where('id', $id)->where('categoria', 'tecnico')->exists()) {
+                            $fail('Uno o más empleados seleccionados no son técnicos.');
+                        }
                     }
-                },
+                }
             ],
-            'direccion' => [
+            'servicio_id' => [
                 'required',
-                'string',
-                'max:255',
-                function ($attribute, $value, $fail) {
-                    if (preg_match('/^\s+/', $value)) {
-                        $fail('La dirección no puede comenzar con espacios.');
-                    }
-                },
+                Rule::exists('servicios', 'id')->where(function ($query) {
+                    $query->where('categoria', 'tecnico');
+                })
             ],
-            'fecha_instalacion' => [
+            'fecha_instalacion' => 'required|date|after_or_equal:today',
+            'costo_instalacion' => [
                 'required',
-                'date',
-                function ($attribute, $value, $fail) {
-                    $fecha = strtotime($value);
-                    $inicio = strtotime('2025-07-01');
-                    $fin = strtotime('2025-08-31');
-                    if ($fecha < $inicio || $fecha > $fin) {
-                        $fail('La fecha debe estar entre julio y agosto.');
-                    }
-                },
+                'numeric',
+                'min:1',
+                'regex:/^\d{1,4}(\.\d{1,2})?$/' // 1 a 4 cifras con decimales opcionales
             ],
-            'estado' => 'required|in:pendiente,terminado',
+            'descripcion' => 'required|string|max:255',
+            'direccion' => 'required|string|max:255',
+            'factura_id' => 'nullable|exists:facturas,id'
+        ], [
+            'cliente_id.required' => 'Debe seleccionar un cliente.',
+            'empleado_id.required' => 'Debe seleccionar al menos un técnico.',
+            'servicio_id.required' => 'Debe seleccionar un servicio.',
+            'fecha_instalacion.required' => 'Debe ingresar una fecha de instalación.',
+            'costo_instalacion.required' => 'El costo de instalación es obligatorio.',
+            'costo_instalacion.min' => 'El costo debe ser mayor a 0.',
+            'costo_instalacion.regex' => 'El costo debe tener como máximo 4 cifras.',
+            'descripcion.required' => 'Debe ingresar una descripción.',
+            'direccion.required' => 'Debe ingresar una dirección.'
         ]);
 
-        // Crear registro
-        Instalacion::create($request->all());
+        DB::transaction(function () use ($request) {
+            $instalacion = Instalacion::create([
+                'cliente_id' => $request->cliente_id,
+                'servicio_id' => $request->servicio_id,
+                'descripcion' => $request->descripcion,
+                'direccion' => $request->direccion,
+                'fecha_instalacion' => $request->fecha_instalacion,
+                'costo_instalacion' => $request->costo_instalacion,
+                'factura_id' => $request->factura_id,
+            ]);
+
+            $instalacion->tecnicos()->attach($request->empleado_id);
+        });
 
         return redirect()->route('instalaciones.index')->with('success', 'Instalación registrada correctamente.');
     }
 
+
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        $instalacion = Instalacion::with(['cliente', 'servicio', 'empleado'])->findOrFail($id);
+        return view('instalaciones.detalle', compact('instalacion'));
     }
 
     /**

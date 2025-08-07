@@ -11,28 +11,30 @@ return new class extends Migration
      */
     public function up(): void
     {
+
+
         Schema::create('instalaciones', function (Blueprint $table) {
             $table->id();
-
-            // Relaciones con clientes, empleados y servicios
-            $table->foreignId('cliente_id')->constrained('clientes')->onDelete('cascade');
-            $table->foreignId('tecnico_id')->constrained('empleados')->onDelete('cascade');
-            $table->foreignId('servicio_id')->constrained('servicios')->onDelete('cascade');
-
-            // Campos del formulario
-            $table->text('descripcion');
+            $table->unsignedBigInteger('cliente_id');
+            $table->foreign('cliente_id')->references('id')->on('clientes')->onDelete('cascade');
+            $table->unsignedBigInteger('empleado_id');
+            $table->foreign('empleado_id')->references('id')->on('empleados')->onDelete('cascade');
+            $table->unsignedBigInteger('servicio_id');
+            $table->foreign('servicio_id')->references('id')->on('servicios')->onDelete('cascade');
+            $table->unsignedBigInteger('factura_id')->nullable();
+            $table->foreign('factura_id')->references('id')->on('facturas')->onDelete('set null');
             $table->date('fecha_instalacion');
-            $table->enum('estado', ['pendiente', 'terminado'])->default('pendiente');
-            $table->string('direccion');
-
+            $table->decimal('costo_instalacion', 10, 2);
+            $table->string('descripcion', 255);
+            $table->string('direccion', 255);
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+        /**
+         * Reverse the migrations.
+         */
+        public function down(): void
     {
         Schema::dropIfExists('instalaciones');
     }
