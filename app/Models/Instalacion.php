@@ -12,12 +12,12 @@ class Instalacion extends Model
 
     protected $fillable = [
         'cliente_id',
-        'tecnico_id',
         'servicio_id',
         'descripcion',
+        'direccion',
         'fecha_instalacion',
-        'estado',
-        'direccion'
+        'costo_instalacion',
+        'factura_id'
     ];
 
     // Relaciones
@@ -35,4 +35,15 @@ class Instalacion extends Model
     {
         return $this->belongsTo(Servicio::class);
     }
+    public function tecnicos()
+    {
+        return $this->belongsToMany(Empleado::class, 'instalacion_tecnico', 'instalacion_id', 'empleado_id');
+    }
+
+    public function factura()
+    {
+        return $this->belongsTo(FacturaVenta::class, 'factura_id');
+    }
+
+
 }

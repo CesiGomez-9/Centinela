@@ -12,14 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('facturas_compras', function (Blueprint $table) {
-            // Eliminar la columna 'proveedor' (string) porque ya existe 'proveedor_id'
             if (Schema::hasColumn('facturas_compras', 'proveedor')) {
                 $table->dropColumn('proveedor');
             }
 
-            // Eliminar la columna 'producto_id' (es un error de diseño si los productos se manejan vía 'detalles')
+
             if (Schema::hasColumn('facturas_compras', 'producto_id')) {
-                // Primero, eliminar la clave foránea si existe
                 $table->dropForeign(['producto_id']);
                 $table->dropColumn('producto_id');
             }

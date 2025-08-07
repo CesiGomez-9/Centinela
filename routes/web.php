@@ -6,6 +6,7 @@ use App\Http\Controllers\FacturaCompraController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\ServicioController;
+use App\Http\Controllers\TurnoController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -45,7 +46,6 @@ Route::put('/Proveedores/{id}', [ProveedorController::class, 'update'])->name('P
 
 
 
-
 Route::controller(ProductoController::class)->group(function () {
     Route::get('/productos', 'index')->name('productos.index');
     Route::get('/productos/{id}', 'show')->name('productos.show')->whereNumber('id');
@@ -81,6 +81,17 @@ Route::controller(FacturaCompraController::class)->group(function () {
     Route::put('/facturas_compras/{id}/editar', 'update')->name('facturas_compras.update')->whereNumber('id');
 });
 
+Route::controller(TurnoController::class)->group(function () {
+    Route::get('/turnos', 'index')->name('turnos.index');
+    Route::get('/turnos/{id}', 'show')->name('turnos.show')->whereNumber('id');
+    Route::get('/turnos/crear', 'create')->name('turnos.create');
+    Route::post('/turnos/crear', 'store')->name('turnos.store');
+    Route::get('/turnos/empleados-por-servicio/{servicio_id}', [TurnoController::class, 'getEmpleadosPorServicio'])->name('turnos.empleadosPorServicio');
+    Route::get('/turnos/{id}/editar', 'edit')->name('turnos.edit')->whereNumber('id');
+    Route::put('/turnos/{id}/editar', 'update')->name('turnos.update')->whereNumber('id');
+});
+
+
 Route::get('/Clientes/crear', [\App\Http\Controllers\ClienteController::class, 'create'])->name('Clientes.create');
 Route::post('/Clientes/crear', [\App\Http\Controllers\ClienteController::class, 'store'])->name('Clientes.store');
 Route::get('/Clientes/crear', [\App\Http\Controllers\ClienteController::class, 'create'])->name('Clientes.formulariocliente');
@@ -89,8 +100,8 @@ Route::get('/Clientes/{id}', [\App\Http\Controllers\ClienteController::class, 's
 Route::get('/Clientes/{id}/editar', [\App\Http\Controllers\ClienteController::class, 'edit'])->name('Clientes.edit');
 Route::put('/Clientes/{id}', [\App\Http\Controllers\ClienteController::class, 'update'])->name('Clientes.update');
 
-
 Route::get('/instalaciones/formulario', [\App\Http\Controllers\InstalacionController::class, 'create'])->name('instalaciones.formulario');
 Route::post('/instalaciones', [\App\Http\Controllers\InstalacionController::class, 'store'])->name('instalaciones.store');
 Route::get('/instalaciones', [\App\Http\Controllers\InstalacionController::class, 'index'])->name('instalaciones.index');
-Route::get('/eventos', [\App\Http\Controllers\InstalacionController::class, 'obtenerEventos']);
+// routes/web.php
+Route::get('/instalaciones/eventos', [\App\Http\Controllers\InstalacionController::class, 'eventos'])->name('instalaciones.eventos');

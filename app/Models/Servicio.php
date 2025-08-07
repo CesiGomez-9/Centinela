@@ -13,8 +13,9 @@ class Servicio extends Model
         'nombre',
         'descripcion',
         'categoria',
-        'costo',
-        'duracion_estimada',
+        'costo_diurno', // Nuevo campo para el costo diurno
+        'costo_nocturno', // Nuevo campo para el costo nocturno
+        'costo_24_horas', // Nuevo campo para el costo de 24 horas
         'productos',
     ];
 
@@ -22,4 +23,3 @@ class Servicio extends Model
         'productos' => 'array',
     ];
 }
-

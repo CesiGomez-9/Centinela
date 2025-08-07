@@ -1,5 +1,5 @@
 @extends('plantilla')
-@section('titulo', 'Factura de Compra')
+@section('titulo', 'Detalle de Turno')
 @section('content')
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
@@ -314,39 +314,36 @@
                 <div class="card">
                     <div class="card-header position-relative">
                         <h5 class="mb-0">
-                            <i class="bi bi-receipt-cutoff me-2"></i>Factura de Compra
+                            <i class="bi bi-calendar-check me-2"></i>Detalle del Turno
                         </h5>
                         <small class="position-absolute top-50 end-0 translate-middle-y me-3">
-                            Creado {{ $factura->created_at->diffForHumans() }}
+                            Creado {{ $turno->created_at->diffForHumans() }}
                         </small>
                     </div>
                     <div class="card-body">
                         <div class="invoice-header-info">
                             <div class="supplier-details">
                                 <div class="logo-and-name">
-                                    <strong>Proveedor: {{ $factura->proveedor->nombreEmpresa ?? 'N/A' }}</strong>                                </div>
+                                    <strong>Cliente: {{ $turno->cliente->nombre ?? 'N/A' }} {{ $turno->cliente->apellido ?? 'N/A' }}</strong>
+                                </div>
                                 <div class="supplier-address-contact">
-                                    <p><strong>Dirección:</strong> {{ $factura->proveedor->direccion ?? 'N/A' }}.</p>
-                                    <p><strong>Teléfono de la empresa:</strong> {{ $factura->proveedor->telefonodeempresa ?? 'N/A' }}.</p>
-                                    <p><strong>Email:</strong> {{ $factura->proveedor->correoempresa ?? 'N/A' }}.</p>
-                                    <p><strong>Representante:</strong> {{ $factura->proveedor->nombrerepresentante ?? 'N/A' }}.</p>
-                                    <p><strong>Teléfono Representante:</strong> {{ $factura->proveedor->telefonoderepresentante ?? 'N/A' }}.</p>
+                                    <p><strong>Dirección:</strong> {{ $turno->cliente->direccion ?? 'N/A' }}.</p>
+                                    <p><strong>Teléfono:</strong> {{ $turno->cliente->telefono ?? 'N/A' }}.</p>
+                                    <p><strong>Email:</strong> {{ $turno->cliente->correo ?? 'N/A' }}.</p>
                                 </div>
                             </div>
                             <div class="invoice-details">
                                 <div class="invoice-details-grid">
-                                    <div><strong>Factura de compra N°:</strong> {{ $factura->numero_factura ?? 'N/A' }}.</div>
-                                    <div><strong>Fecha de la factura:</strong> {{ \Carbon\Carbon::parse($factura->fecha ?? now())->format('d/m/Y') }}.</div>
-                                    {{-- La siguiente línea ya incluye la frase "Proveedor" como solicitaste --}}
-                                    <div><strong>Proveedor:</strong> {{ $factura->proveedor->nombreEmpresa ?? 'N/A' }}</div>
-                                    <div><strong>Forma de pago:</strong> {{ $factura->forma_pago ?? 'N/A' }}.</div>
-                                    <div><strong>Responsable:</strong> {{ $factura->empleado->nombre ?? 'N/A' }} {{ $factura->empleado->apellido ?? 'N/A' }}.</div>
+                                    <div><strong>Servicio:</strong> {{ $turno->servicio->nombre ?? 'N/A' }}.</div>
+                                    <div><strong>Fecha de inicio:</strong> {{ \Carbon\Carbon::parse($turno->fecha_inicio ?? now())->format('d/m/Y') }}.</div>
+                                    <div><strong>Fecha de fin:</strong> {{ \Carbon\Carbon::parse($turno->fecha_fin ?? now())->format('d/m/Y') }}.</div>
+                                    <div><strong>Observaciones:</strong> {{ $turno->observaciones ?? 'N/A' }}.</div>
                                 </div>
                             </div>
                         </div>
 
                         <h6 class="section-header">
-                            Productos comprados
+                            Empleados Asignados
                         </h6>
 
                         <div class="table-responsive product-table-container">
@@ -354,69 +351,46 @@
                                 <thead>
                                 <tr>
                                     <th>N°</th>
-                                    <th>Descripción</th>
-                                    <th>Precio(Lps)</th>
-                                    <th>Cantidad</th>
-                                    <th>IVA%</th> {{-- Ahora se calcula dinámicamente --}}
-                                    <th>Subtotal(Lps)</th> {{-- Ahora se calcula dinámicamente --}}
+                                    <th>Nombre del Empleado</th>
+                                    <th>Tipo de Turno</th>
+                                    <th>Hora de Inicio</th>
+                                    <th>Hora de Fin</th>
+                                    <th>Costo (Lps)</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                @forelse ($factura->detalles ?? [] as $index => $detalle)
-                                    @php
-                                        // Calcula el IVA y el subtotal por línea dinámicamente
-                                        $ivaPorcentaje = $detalle->productoInventario->impuesto->porcentaje ?? 0;
-                                        $subtotalLinea = $detalle->precio_compra * $detalle->cantidad;
-                                    @endphp
+                                @forelse ($turno->empleados_asignados ?? [] as $index => $detalle)
                                     <tr>
                                         <td>{{ $index + 1 }}</td>
-                                        <td>{{ $detalle->productoInventario->nombre ?? 'Producto Desconocido' }}</td>
-                                        <td>{{ number_format($detalle->precio_compra, 2) }}</td>
-                                        <td>{{ $detalle->cantidad }}</td>
-                                        <td>{{ number_format($ivaPorcentaje, 0) }}%</td> {{-- Muestra el IVA del producto --}}
-                                        <td>{{ number_format($subtotalLinea, 2) }}</td> {{-- Muestra el subtotal calculado --}}
+                                        {{-- Corregido: implode une el array de nombres en una cadena --}}
+                                        <td>{{ is_array($detalle['empleado_nombres']) ? implode(', ', $detalle['empleado_nombres']) : $detalle['empleado_nombres'] }}</td>
+                                        <td>{{ $detalle['tipo_turno'] ?? 'N/A' }}</td>
+                                        <td>{{ $detalle['hora_inicio'] ?? 'N/A' }}</td>
+                                        <td>{{ $detalle['hora_fin'] ?? 'N/A' }}</td>
+                                        <td>{{ number_format($detalle['costo'] ?? 0, 2) }}</td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6" class="text-muted fst-italic py-3">No hay productos agregados a esta factura.</td>
+                                        <td colspan="6" class="text-muted fst-italic py-3">No hay empleados asignados para este servicio.</td>
                                     </tr>
                                 @endforelse
                                 </tbody>
                             </table>
                         </div>
 
-                        {{-- Contenedor para los totales: ajustado para que sea más pequeño y a la derecha --}}
                         <div class="row justify-content-end">
                             <div class="col-md-6 col-lg-5">
                                 <div class="invoice-summary-totals">
                                     <div class="summary-box">
-                                        <div class="summary-item">
-                                            <strong>Importe Gravado (Lps):</strong>
-                                            <span>{{ number_format($factura->importe_gravado ?? 0, 2) }}</span>
-                                        </div>
-                                        <div class="summary-item">
-                                            <strong>Importe Exento (Lps):</strong>
-                                            <span>{{ number_format($factura->importe_exento ?? 0, 2) }}</span>
-                                        </div>
-                                        <div class="summary-item">
-                                            <strong>Importe Exonerado (Lps):</strong>
-                                            <span>{{ number_format($factura->importe_exonerado ?? 0, 2) }}</span>
-                                        </div>
-                                        <div class="summary-item">
-                                            <strong>Subtotal (Lps):</strong>
-                                            <span>{{ number_format($factura->subtotal ?? 0, 2) }}</span>
-                                        </div>
-                                        <div class="summary-item">
-                                            <strong>ISV 15% (Lps):</strong>
-                                            <span>{{ number_format($factura->isv_15 ?? 0, 2) }}</span>
-                                        </div>
-                                        <div class="summary-item">
-                                            <strong>ISV 18% (Lps):</strong>
-                                            <span>{{ number_format($factura->isv_18 ?? 0, 2) }}</span>
-                                        </div>
                                         <div class="summary-item total">
-                                            <strong>Total Final (Lps):</strong>
-                                            <span>{{ number_format($factura->totalF ?? 0, 2) }}</span>
+                                            <strong>Costo Total del Servicio (Lps):</strong>
+                                            @php
+                                                $total_costo = 0;
+                                                foreach ($turno->empleados_asignados ?? [] as $detalle) {
+                                                    $total_costo += $detalle['costo'] ?? 0;
+                                                }
+                                            @endphp
+                                            <span>{{ number_format($total_costo, 2) }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -425,12 +399,12 @@
 
                     </div>
                     <div class="card-footer text-end">
-                        <small>Última actualización: {{ $factura->updated_at->diffForHumans() }}</small>
+                        <small>Última actualización: {{ $turno->updated_at->diffForHumans() }}</small>
                     </div>
                 </div>
 
                 <div class="d-flex justify-content-center align-items-center gap-3 mt-4 flex-wrap">
-                    <a href="{{ route('facturas_compras.index') }}" class="btn-return">
+                    <a href="{{ route('turnos.index') }}" class="btn-return">
                         <i class="bi bi-arrow-left me-2"></i>Volver a la lista
                     </a>
                 </div>

@@ -11,10 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('detalles_facturas_ventas', function (Blueprint $table) {
-            $table->unsignedBigInteger('responsable_id')->after('producto_id');
-            $table->foreign('responsable_id')->references('id')->on('empleados')->onDelete('cascade');
-        });
+        if (!Schema::hasColumn('detalles_facturas_ventas', 'responsable_id')) {
+            Schema::table('detalles_facturas_ventas', function (Blueprint $table) {
+                $table->unsignedBigInteger('responsable_id')->after('producto_id');
+                $table->foreign('responsable_id')->references('id')->on('empleados')->onDelete('cascade');
+            });
+        }
     }
 
     public function down(): void

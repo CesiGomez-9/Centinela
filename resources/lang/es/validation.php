@@ -29,6 +29,6 @@ return [
         'proveedor' => 'Proveedor',
         'forma_pago' => 'Forma de pago',
         'responsable' => 'Responsable',
-
+        'observaciones' => 'Observaciones',
     ],
 ];

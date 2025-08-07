@@ -12,18 +12,24 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('servicios', function (Blueprint $table) {
-
             $table->id();
             $table->string('nombre');
             $table->string('descripcion');
             $table->enum('categoria', ['vigilancia', 'tecnico']); // Categoría del servicio
-            $table->integer('costo_cantidad'); // Hasta 4 cifras, sin decimales (según validación)}
-            $table->enum('costo_tipo', ['Diurno', 'Nocturno', 'Mixto', '24 horas']); // Unidad de tiempo
+
+            // Eliminamos las columnas antiguas de costo
+            // $table->integer('costo_cantidad');
+            // $table->enum('costo_tipo', ['Diurno', 'Nocturno', 'Mixto', '24 horas']);
+
+            // Añadimos las nuevas columnas para los costos de cada turno
+            $table->decimal('costo_diurno', 8, 2)->nullable()->comment('Costo para el turno diurno');
+            $table->decimal('costo_nocturno', 8, 2)->nullable()->comment('Costo para el turno nocturno');
+            $table->decimal('costo_24_horas', 8, 2)->nullable()->comment('Costo para el turno de 24 horas');
+
             $table->json('productos')->nullable(); // Guardamos array de IDs de productos
             $table->unsignedBigInteger('producto_id')->nullable();
             $table->foreign('producto_id')->references('id')->on('productos')->onDelete('cascade');
             $table->timestamps();
-
         });
     }
 
@@ -33,6 +39,5 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('servicios');
-
     }
 };
