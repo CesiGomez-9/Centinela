@@ -142,7 +142,7 @@ class EmpleadoController extends Controller
             'telefonodeemergencia.regex' => 'El teléfono de emergencia debe tener 8 dígitos y comenzar con 2, 3, 8 o 9.',
             'telefonodeemergencia.unique' => 'Este número de teléfono ya está registrado',
             'telefonodeemergencia.max' => 'El teléfono de emergencia no debe tener más de 8 dígitos.',
-            'categoria.required' => 'Debe seleccionar una categoria'
+            'categoria.required' => 'Debe seleccionar un puesto'
         ];
 
         $validated = $request->validate($rules, $messages);
@@ -298,7 +298,7 @@ class EmpleadoController extends Controller
             'alergiaOtros.regex' => 'Solo letras y espacios en el campo de alergia',
             'alergiaAlimentos.regex' => 'Solo letras y espacios en el campo de alimentos',
             'alergiaMedicamentos.regex' => 'Solo letras y espacios en el campo de medicamentos',
-            'categoria.required' => 'Debe seleccionar una categoria'
+            'categoria.required' => 'Debe seleccionar un puesto'
             ];
 
         $validated = $request->validate($rules, $messages);

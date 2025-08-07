@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
 use App\Models\Cliente;
 use Illuminate\Http\Request;
@@ -114,6 +115,7 @@ class ClienteController extends Controller
             'correo.required' => 'Debe ingresar el correo electrónico.',
             'correo.email' => 'Debe ingresar un correo electrónico válido.',
             'correo.unique' => 'Este correo ya está registrado.',
+            'correo.regex' => 'Debe ingresar un correo electrónico válido.',
 
             'departamento.required' => 'Debe seleccionar un departamento.',
             'apellido.required' => 'Debe ingresar el apellido.',
@@ -167,7 +169,9 @@ class ClienteController extends Controller
     public function edit(string $id)
     {
         //
-        
+        $cliente = Cliente::findOrFail($id);
+        return view('Clientes.edit', compact('cliente'));
+
     }
 
     /**
@@ -250,6 +254,7 @@ class ClienteController extends Controller
             'correo.required' => 'Debe ingresar el correo electrónico.',
             'correo.email' => 'Debe ingresar un correo electrónico válido.',
             'correo.unique' => 'Este correo ya está registrado.',
+            'correo.regex' => 'Debe ingresar un correo electrónico válido.',
 
             'departamento.required' => 'Debe seleccionar un departamento.',
             'apellido.required' => 'Debe ingresar el apellido.',

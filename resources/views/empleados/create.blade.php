@@ -15,7 +15,7 @@
 <nav class="navbar navbar-expand-lg" style="background-color: #0A1F44; padding:1.2rem; font-family:'Courier New', monospace;">
     <div class="container" style="max-width:1600px;">
         <a class="navbar-brand text-white fw-bold" href="#">
-            <img src="{{ asset('seguridad/logo.jpg') }}" style="height:80px; margin-right:10px;"/>
+            <img src="{{ asset('centinela.jpg') }}" style="height:80px; margin-right:10px;"/>
             Grupo Centinela
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -226,7 +226,7 @@
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label fw-bold">Categoría</label>
+                        <label class="form-label fw-bold">Puesto de trabajo</label>
                         <div class="input-group">
             <span class="input-group-text">
                 @php
@@ -241,7 +241,7 @@
                 <i class="bi bi-ui-checks"></i>
             </span>
                             <select name="categoria" id="categoria" class="form-select @error('categoria') is-invalid @enderror" required>
-                                <option value=""> Seleccione una categoría...</option>
+                                <option value=""> Seleccione un puesto...</option>
                                 <option value="Administracion" {{ old('categoria') == 'Administracion' ? 'selected' : '' }}>Administración</option>
                                 <option value="Tecnico" {{ old('categoria') == 'Tecnico' ? 'selected' : '' }}>Técnico</option>
                                 <option value="Vigilancia" {{ old('categoria') == 'Vigilancia' ? 'selected' : '' }}>Vigilancia</option>
@@ -580,7 +580,7 @@
         permitirSoloTelefonosValidos(document.getElementById('telefono'));
         permitirSoloTelefonosValidos(document.getElementById('telefonodeemergencia'));
 
-        const formulario = document.getElementById('formulario'); // Asegúrate de que tu formulario tenga este ID
+        const formulario = document.getElementById('formulario');
         const telefono = document.getElementById('telefono');
         const telefonoEmergencia = document.getElementById('telefonodeemergencia');
 

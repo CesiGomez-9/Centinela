@@ -30,7 +30,7 @@ return new class extends Migration
     {
         Schema::table('detalles_facturas_ventas', function (Blueprint $table) {
 
-                $table->dropForeign(['detalle_factura_id']);
+            $table->dropForeign(['detalle_factura_id']);
 
         });
     }

@@ -52,7 +52,7 @@ class FacturaVentaController extends Controller
             $query->whereDate('fecha', '<=', $request->fecha_fin);
         }
 
-        $facturas = $query->orderBy('fecha', 'asc')->paginate(5);
+        $facturas = $query->orderBy('fecha', 'asc')->paginate(10);
 
         return view('facturas_ventas.index', compact('facturas', 'fechaMinima'));
     }
@@ -146,7 +146,7 @@ class FacturaVentaController extends Controller
 
             foreach ($productosValidos as $productoData) {
                 DetalleFacturaVenta::create([
-                    'facturas_ventas_id' => $factura->id,
+                    'factura_venta_id' => $factura->id,
                     'producto_id' => $productoData['producto_id'],
                     'nombre' => $productoData['nombre'],
                     'categoria' => $productoData['categoria'] ?? null,
@@ -223,7 +223,7 @@ class FacturaVentaController extends Controller
 
     public function edit($id)
     {
-       //
+        //
     }
 
     public function update(Request $request, $id)

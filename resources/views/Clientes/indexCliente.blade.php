@@ -87,6 +87,9 @@
                             <a href="{{ route('Clientes.detalleCliente', $cliente->id) }}" class="btn btn-sm btn-outline-info">
                                 <i class="bi bi-eye"></i> Ver
                             </a>
+                            <a href="{{ route('Clientes.edit', $cliente->id) }}" class="btn btn-sm btn-outline-warning" title="Editar">
+                                <i class="bi bi-pencil-square"></i>Editar
+                            </a>
 
                         </td>
 

@@ -11,7 +11,7 @@
 <nav class="navbar navbar-expand-lg" style="background-color: #0A1F44; padding-top: 1.2rem; padding-bottom: 1.2rem; font-family: 'Courier New', sans-serif;">
     <div class="container" style="max-width: 1600px;">
         <a class="navbar-brand text-white fw-bold" href="#">
-            <img src="{{ asset('seguridad/logo.jpg') }}" style="height:80px; margin-right: 10px;">
+            <img src="{{ asset('centinela.jpg') }}" style="height:80px; margin-right: 10px;">
             Grupo Centinela
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -37,11 +37,11 @@
     .modal:not(.show), .modal-backdrop:not(.show) { display: none !important; opacity: 0 !important; }
 
 
-     body {
-         font-family: 'Inter', sans-serif;
-         background: url('https://www.transparenttextures.com/patterns/beige-paper.png') repeat fixed #f8f4ec;
-         font-size: 16px;
-     }
+    body {
+        font-family: 'Inter', sans-serif;
+        background: url('https://www.transparenttextures.com/patterns/beige-paper.png') repeat fixed #f8f4ec;
+        font-size: 16px;
+    }
 
     .card {
         border: none;
@@ -398,7 +398,7 @@
                             @endphp
                             <tr>
                             <tr data-id="{{ $producto->id }}">
-                            <td>{{ $producto->nombre }}</td>
+                                <td>{{ $producto->nombre }}</td>
                                 <td>{{ $producto->categoria }}</td>
                                 <td>{{ number_format($producto->precio_venta, 2) }}</td> <!-- Precio venta -->
                                 <td class="celda-cantidad">{{ $producto->cantidad }}</td>
@@ -830,7 +830,7 @@
             }
         });
     });
-            // ------------------ Funciones auxiliares ------------------//
+    // ------------------ Funciones auxiliares ------------------//
 
     function agregarProductoAFactura(producto, cantidad = 1) {
         const tablaFactura = document.getElementById('tablaFacturaBody');
