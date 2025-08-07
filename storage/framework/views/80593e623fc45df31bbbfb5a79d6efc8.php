@@ -103,7 +103,7 @@
             </h3>
 
             
-            <form method="GET" action="<?php echo e(route('turnos.index')); ?>" id="filterForm">
+            <form method="GET" action="<?php echo e(route('turnos.index')); ?>" id="filterForm" autocomplete="off">
                 <div class="row mb-4 g-2 d-flex flex-wrap align-items-start">
                     <div class="col-md-4">
                         <div class="input-group input-group-sm">
@@ -113,18 +113,19 @@
                                 name="search"
                                 class="form-control"
                                 maxlength="30"
-                                placeholder="Buscar por cliente o servicio...">
+                                placeholder="Buscar por cliente o servicio..."
+                                value="<?php echo e(request('search')); ?>">
                             <span class="input-group-text"><i class="bi bi-search"></i></span>
                         </div>
                     </div>
                     <div class="col-md-2 ms-4 d-flex flex-column gap-2">
                         <div class="input-group input-group-sm">
                             <span class="input-group-text">Desde</span>
-                            <input type="date" name="fecha_inicio" id="fechaInicio" class="form-control">
+                            <input type="date" name="fecha_inicio" id="fechaInicio" class="form-control" value="<?php echo e(request('fecha_inicio')); ?>">
                         </div>
                         <div class="input-group input-group-sm">
                             <span class="input-group-text">Hasta</span>
-                            <input type="date" name="fecha_fin" id="fechaFin" class="form-control">
+                            <input type="date" name="fecha_fin" id="fechaFin" class="form-control" value="<?php echo e(request('fecha_fin')); ?>">
                         </div>
                     </div>
                     <div class="col-md-2 ms-3 d-flex flex-column gap-2">
@@ -213,7 +214,6 @@
             const filterForm = document.querySelector('form[action="<?php echo e(route('turnos.index')); ?>"]');
             let timeout = null;
 
-            // Evento para el input de búsqueda con un pequeño retraso para evitar recargas excesivas
             searchInput.addEventListener('input', function () {
                 clearTimeout(timeout);
                 timeout = setTimeout(() => {
