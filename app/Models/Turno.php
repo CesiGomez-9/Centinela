@@ -12,9 +12,9 @@ class Turno extends Model
     protected $table = 'turnos';
 
     protected $fillable = [
-        'empleado_id',
         'servicio_id',
         'cliente_id',
+        'empleados_asignados',
         'fecha_inicio',
         'fecha_fin',
         'hora_inicio',
@@ -24,6 +24,7 @@ class Turno extends Model
     ];
 
     protected $casts = [
+        'empleados_asignados' => 'array',
         'fecha_inicio' => 'date',
         'fecha_fin' => 'date',
         'hora_inicio' => 'datetime',

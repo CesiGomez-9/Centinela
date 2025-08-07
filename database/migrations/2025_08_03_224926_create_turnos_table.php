@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('empleado_id')->constrained('empleados')->onDelete('cascade');
             $table->foreignId('servicio_id')->constrained('servicios')->onDelete('cascade');
             $table->foreignId('cliente_id')->constrained('clientes')->onDelete('cascade');
+            $table->date('fecha_inicio');
             $table->date('fecha_fin');
             $table->time('hora_inicio');
             $table->time('hora_fin');
