@@ -1,6 +1,5 @@
-@extends('plantilla')
-@section('titulo', 'Asignación de servicio')
-@section('content')
+<?php $__env->startSection('titulo', 'Asignación de servicio'); ?>
+<?php $__env->startSection('content'); ?>
     <style>
         body {
             background-color: #e6f0ff;
@@ -131,37 +130,53 @@
                         Asignación de servicio
                     </h3>
 
-                    @if (session('success'))
+                    <?php if(session('success')): ?>
                         <div class="alert alert-success">
-                            {{ session('success') }}
-                        </div>
-                    @endif
+                            <?php echo e(session('success')); ?>
 
-                    <form method="POST" action="{{ route('turnos.store') }}" novalidate id="mainForm">
-                        @csrf
+                        </div>
+                    <?php endif; ?>
+
+                    <form method="POST" action="<?php echo e(route('turnos.store')); ?>" novalidate id="mainForm">
+                        <?php echo csrf_field(); ?>
                         <div class="row g-4">
                             <div class="col-md-6">
                                 <label for="cliente_id" class="form-label">Cliente</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-person-check-fill"></i></span>
                                     <select name="cliente_id" id="cliente_id"
-                                            class="form-select @error('cliente_id') is-invalid @enderror" required>
+                                            class="form-select <?php $__errorArgs = ['cliente_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" required>
                                         <option value="">Seleccione un cliente</option>
-                                        @foreach ($clientes as $cliente)
-                                            <option value="{{ $cliente->id }}"
-                                                {{ old('cliente_id') == $cliente->id ? 'selected' : '' }}>
-                                                {{ $cliente->nombre }} {{ $cliente->apellido }}
+                                        <?php $__currentLoopData = $clientes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cliente): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($cliente->id); ?>"
+                                                <?php echo e(old('cliente_id') == $cliente->id ? 'selected' : ''); ?>>
+                                                <?php echo e($cliente->nombre); ?> <?php echo e($cliente->apellido); ?>
+
                                             </option>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
                                 </div>
-                                @error('cliente_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @else
+                                <?php $__errorArgs = ['cliente_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                <?php else: ?>
                                     <div class="invalid-feedback" id="cliente_id-error-message" style="display:none;">
                                         El cliente es obligatorio.
                                     </div>
-                                    @enderror
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
 
                             <div class="col-md-6">
@@ -169,26 +184,41 @@
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi-shield-check"></i></span>
                                     <select name="servicio_id" id="servicio_id"
-                                            class="form-select @error('servicio_id') is-invalid @enderror" required>
+                                            class="form-select <?php $__errorArgs = ['servicio_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" required>
                                         <option value="">Seleccione un servicio</option>
-                                        @foreach ($servicios as $servicio)
-                                            <option value="{{ $servicio->id }}"
-                                                    data-costo-diurno="{{ number_format($servicio->costo_diurno, 2, '.', '') }}"
-                                                    data-costo-nocturno="{{ number_format($servicio->costo_nocturno, 2, '.', '') }}"
-                                                    data-costo-24-horas="{{ number_format($servicio->costo_24_horas, 2, '.', '') }}"
-                                                {{ old('servicio_id') == $servicio->id ? 'selected' : '' }}>
-                                                {{ $servicio->nombre }}
+                                        <?php $__currentLoopData = $servicios; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $servicio): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($servicio->id); ?>"
+                                                    data-costo-diurno="<?php echo e(number_format($servicio->costo_diurno, 2, '.', '')); ?>"
+                                                    data-costo-nocturno="<?php echo e(number_format($servicio->costo_nocturno, 2, '.', '')); ?>"
+                                                    data-costo-24-horas="<?php echo e(number_format($servicio->costo_24_horas, 2, '.', '')); ?>"
+                                                <?php echo e(old('servicio_id') == $servicio->id ? 'selected' : ''); ?>>
+                                                <?php echo e($servicio->nombre); ?>
+
                                             </option>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
                                 </div>
-                                @error('servicio_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @else
+                                <?php $__errorArgs = ['servicio_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                <?php else: ?>
                                     <div class="invalid-feedback" id="servicio_id-error-message" style="display:none;">
                                         El tipo de servicio es obligatorio.
                                     </div>
-                                    @enderror
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
 
                             <div class="col-md-12">
@@ -204,17 +234,31 @@
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="bi bi-calendar-date"></i></span>
                                             <input type="date" name="fecha_inicio" id="fecha_inicio"
-                                                   class="form-control @error('fecha') is-invalid @enderror"
-                                                   value="{{ old('fecha', isset($factura) ? $factura->fecha : \Carbon\Carbon::now()->format('Y-m-d')) }}"
+                                                   class="form-control <?php $__errorArgs = ['fecha'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                                   value="<?php echo e(old('fecha', isset($factura) ? $factura->fecha : \Carbon\Carbon::now()->format('Y-m-d'))); ?>"
                                                    required>
                                         </div>
-                                        @error('fecha_inicio')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                        @else
+                                        <?php $__errorArgs = ['fecha_inicio'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                        <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                        <?php else: ?>
                                             <div class="invalid-feedback" id="fecha_inicio-error-message" style="display:none;">
                                                 La fecha de inicio es obligatoria.
                                             </div>
-                                            @enderror
+                                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                     </div>
 
                                     <div class="col-md-4">
@@ -222,16 +266,30 @@
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="bi bi-calendar-date-fill"></i></span>
                                             <input type="date" name="fecha_fin" id="fecha_fin"
-                                                   class="form-control @error('fecha_fin') is-invalid @enderror"
-                                                   value="{{ old('fecha_fin') }}" required>
+                                                   class="form-control <?php $__errorArgs = ['fecha_fin'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                                   value="<?php echo e(old('fecha_fin')); ?>" required>
                                         </div>
-                                        @error('fecha_fin')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                        @else
+                                        <?php $__errorArgs = ['fecha_fin'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                        <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                        <?php else: ?>
                                             <div class="invalid-feedback" id="fecha_fin-error-message" style="display:none;">
                                                 La fecha de fin es obligatoria.
                                             </div>
-                                            @enderror
+                                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                     </div>
                                 </div>
                             </div>
@@ -272,21 +330,35 @@
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-journal-text"></i></span>
                                     <textarea name="observaciones" id="observaciones" rows="1"
-                                              class="form-control @error('observaciones') is-invalid @enderror" maxlength="255"
-                                              oninput="autoResizeTextarea(this);" required>{{ old('observaciones') }}</textarea>
+                                              class="form-control <?php $__errorArgs = ['observaciones'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" maxlength="255"
+                                              oninput="autoResizeTextarea(this);" required><?php echo e(old('observaciones')); ?></textarea>
                                 </div>
-                                @error('observaciones')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @else
+                                <?php $__errorArgs = ['observaciones'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                <?php else: ?>
                                     <div class="invalid-feedback" id="observaciones-error-message" style="display:none;">
                                         Las observaciones son obligatorias.
                                     </div>
-                                    @enderror
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
                         <div class="text-center mt-5">
-                            <a href="{{ route('turnos.index') }}" class="btn btn-danger me-2">
+                            <a href="<?php echo e(route('turnos.index')); ?>" class="btn btn-danger me-2">
                                 <i class="bi bi-x-circle me-2"></i> Cancelar
                             </a>
 
@@ -418,7 +490,7 @@
             // Variables y estado
             let turnosAsignados = [];
             let currentServiceCosts = { diurno: 0, nocturno: 0, '24 horas': 0 };
-            const empleadosPorServicioUrl = "{{ route('turnos.empleadosPorServicio', ['servicio_id' => ':id']) }}";
+            const empleadosPorServicioUrl = "<?php echo e(route('turnos.empleadosPorServicio', ['servicio_id' => ':id'])); ?>";
             let asignarTurnoModal;
 
             // Elementos del DOM
@@ -474,7 +546,7 @@
             }
 
             function loadOldTurnosData() {
-                const oldTurnosData = @json(old('turnos_data', '[]'));
+                const oldTurnosData = <?php echo json_encode(old('turnos_data', '[]'), 512) ?>;
                 try {
                     const parsedOldTurnos = JSON.parse(oldTurnosData);
                     if (Array.isArray(parsedOldTurnos) && parsedOldTurnos.length > 0) {
@@ -916,4 +988,6 @@
         });
     </script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\ardon\PhpstormProjects\Centinela\resources\views/turnos/formulario.blade.php ENDPATH**/ ?>

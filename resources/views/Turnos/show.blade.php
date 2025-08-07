@@ -6,7 +6,6 @@
 
     <style>
         body {
-            font-family: 'Inter', sans-serif;
             background: url('https://www.transparenttextures.com/patterns/beige-paper.png') repeat fixed #f8f4ec;
             font-size: 16px;
         }
@@ -202,6 +201,13 @@
             display: none;
         }
 
+        .supplier-details span {
+            font-size: 0.9rem;
+            display: block;
+            margin-bottom: 0;
+            font-weight: 600;
+        }
+
         .supplier-details strong {
             font-size: 0.9rem;
             display: block;
@@ -276,7 +282,7 @@
         .invoice-summary-totals .summary-box {
             border: 1px solid #e0e0e0;
             border-radius: 8px;
-            padding: 15px;
+            padding: 1px 35px;
             background-color: #fdfdfd;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
@@ -303,7 +309,7 @@
             font-size: 1rem;
             font-weight: 700;
             border-top: 2px solid #cda34f;
-            padding-top: 10px;
+            padding-top: 6px;
             margin-top: 15px;
         }
     </style>
@@ -314,7 +320,7 @@
                 <div class="card">
                     <div class="card-header position-relative">
                         <h5 class="mb-0">
-                            <i class="bi bi-calendar-check me-2"></i>Detalle del Turno
+                            <i class="bi bi-calendar-check me-2"></i>Detalle de la asignación de servicio
                         </h5>
                         <small class="position-absolute top-50 end-0 translate-middle-y me-3">
                             Creado {{ $turno->created_at->diffForHumans() }}
@@ -324,16 +330,16 @@
                         <div class="invoice-header-info">
                             <div class="supplier-details">
                                 <div class="logo-and-name">
-                                    <strong>Cliente: {{ $turno->cliente->nombre ?? 'N/A' }} {{ $turno->cliente->apellido ?? 'N/A' }}</strong>
+                                    <strong>Servicio: {{ $turno->servicio->nombre ?? 'N/A' }}</strong>
                                 </div>
                                 <div class="supplier-address-contact">
-                                    <p><strong>Dirección:</strong> {{ $turno->cliente->direccion ?? 'N/A' }}.</p>
-                                    <p><strong>Teléfono:</strong> {{ $turno->cliente->telefono ?? 'N/A' }}.</p>
-                                    <p><strong>Email:</strong> {{ $turno->cliente->correo ?? 'N/A' }}.</p>
+                                    <p><strong>Descripción:</strong> {{ Str::ucfirst($turno->servicio->descripcion ?? 'N/A') }}.</p>
+                                    <p><strong>Categoría:</strong> {{ Str::ucfirst($turno->servicio->categoria ?? 'N/A') }}.</p>
                                 </div>
                             </div>
                             <div class="invoice-details">
                                 <div class="invoice-details-grid">
+                                    <div><strong>Cliente: </strong>{{ $turno->cliente->nombre ?? 'N/A' }} {{ $turno->cliente->apellido ?? 'N/A' }}</div>
                                     <div><strong>Servicio:</strong> {{ $turno->servicio->nombre ?? 'N/A' }}.</div>
                                     <div><strong>Fecha de inicio:</strong> {{ \Carbon\Carbon::parse($turno->fecha_inicio ?? now())->format('d/m/Y') }}.</div>
                                     <div><strong>Fecha de fin:</strong> {{ \Carbon\Carbon::parse($turno->fecha_fin ?? now())->format('d/m/Y') }}.</div>
@@ -362,9 +368,8 @@
                                 @forelse ($turno->empleados_asignados ?? [] as $index => $detalle)
                                     <tr>
                                         <td>{{ $index + 1 }}</td>
-                                        {{-- Corregido: implode une el array de nombres en una cadena --}}
                                         <td>{{ is_array($detalle['empleado_nombres']) ? implode(', ', $detalle['empleado_nombres']) : $detalle['empleado_nombres'] }}</td>
-                                        <td>{{ $detalle['tipo_turno'] ?? 'N/A' }}</td>
+                                        <td>{{ Str::ucfirst($detalle['tipo_turno'] ?? 'N/A') }}</td>
                                         <td>{{ $detalle['hora_inicio'] ?? 'N/A' }}</td>
                                         <td>{{ $detalle['hora_fin'] ?? 'N/A' }}</td>
                                         <td>{{ number_format($detalle['costo'] ?? 0, 2) }}</td>
@@ -383,7 +388,7 @@
                                 <div class="invoice-summary-totals">
                                     <div class="summary-box">
                                         <div class="summary-item total">
-                                            <strong>Costo Total del Servicio (Lps):</strong>
+                                            <strong>Costo total(Lps):</strong>
                                             @php
                                                 $total_costo = 0;
                                                 foreach ($turno->empleados_asignados ?? [] as $detalle) {
