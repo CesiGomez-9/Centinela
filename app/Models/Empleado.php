@@ -32,4 +32,10 @@ class Empleado extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+    public function instalaciones()
+    {
+        return $this->belongsToMany(Instalacion::class, 'instalacion_tecnico');
+    }
+
+
 }
