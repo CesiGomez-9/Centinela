@@ -21,8 +21,7 @@ class TurnoController extends Controller
         if ($request->has('search') && !empty($request->search)) {
             $searchTerm = $request->search;
             $query->where(function ($q) use ($searchTerm) {
-                // Búsqueda por nombre/apellido del empleado (usando el JSON)
-                $q->where('empleados_asignados', 'like', '%' . $searchTerm . '%');
+
                 // Búsqueda por nombre del servicio
                 $q->orWhereHas('servicio', function ($sq) use ($searchTerm) {
                     $sq->where('nombre', 'LIKE', '%' . $searchTerm . '%');
@@ -31,13 +30,20 @@ class TurnoController extends Controller
                     ->orWhereHas('cliente', function ($sq) use ($searchTerm) {
                         $sq->where('nombre', 'LIKE', '%' . $searchTerm . '%')
                             ->orWhere('apellido', 'LIKE', '%' . $searchTerm . '%');
-                    })
-                    // Búsqueda por fecha de inicio (si el formato de búsqueda es compatible)
-                    ->orWhere('fecha_inicio', 'LIKE', '%' . $searchTerm . '%');
+                    });
             });
         }
 
-        $turnos = $query->latest()->paginate(10); // Ordena por los más recientes
+        // Filtra solo por el rango de fechas de inicio
+        if ($request->filled('fecha_inicio') && $request->filled('fecha_fin')) {
+            $query->whereBetween('fecha_inicio', [$request->input('fecha_inicio'), $request->input('fecha_fin')]);
+        } elseif ($request->filled('fecha_inicio')) {
+            $query->where('fecha_inicio', '>=', $request->input('fecha_inicio'));
+        }elseif ($request->filled('fecha_fin')) {
+            $query->where('fecha_inicio', '<=', $request->input('fecha_fin'));
+        }
+
+        $turnos = $query->oldest()->paginate(10);
 
         return view('turnos.index', compact('turnos'));
     }
@@ -50,6 +56,7 @@ class TurnoController extends Controller
         $empleados = Empleado::all();
         $servicios = Servicio::all();
         $clientes = Cliente::all();
+
         return view('turnos.formulario', compact('empleados', 'servicios', 'clientes'));
     }
 

@@ -17,10 +17,6 @@ return new class extends Migration
             $table->string('descripcion');
             $table->enum('categoria', ['vigilancia', 'tecnico']); // Categoría del servicio
 
-            // Eliminamos las columnas antiguas de costo
-            // $table->integer('costo_cantidad');
-            // $table->enum('costo_tipo', ['Diurno', 'Nocturno', 'Mixto', '24 horas']);
-
             // Añadimos las nuevas columnas para los costos de cada turno
             $table->decimal('costo_diurno', 8, 2)->nullable()->comment('Costo para el turno diurno');
             $table->decimal('costo_nocturno', 8, 2)->nullable()->comment('Costo para el turno nocturno');
