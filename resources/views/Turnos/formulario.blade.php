@@ -111,6 +111,12 @@
             background-color: #f8d7da;
             border-color: #f5c2c7;
         }
+
+        .input-group:not(.has-validation) .form-control:valid,
+        .input-group:not(.has-validation) .form-select:valid {
+            border-color: #dee2e6 !important;
+            padding-right: 0.75rem;
+        }
     </style>
 
     <div class="container my-5">
@@ -138,7 +144,7 @@
                         <div class="row g-4">
                             <div class="col-md-6">
                                 <label for="cliente_id" class="form-label">Cliente</label>
-                                <div class="input-group has-validation">
+                                <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-person-check-fill"></i></span>
                                     <select name="cliente_id" id="cliente_id"
                                             class="form-select @error('cliente_id') is-invalid @enderror" required>
@@ -150,15 +156,19 @@
                                             </option>
                                         @endforeach
                                     </select>
-                                    @error('cliente_id')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
                                 </div>
+                                @error('cliente_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @else
+                                    <div class="invalid-feedback" id="cliente_id-error-message" style="display:none;">
+                                        El cliente es obligatorio.
+                                    </div>
+                                    @enderror
                             </div>
 
                             <div class="col-md-6">
                                 <label for="servicio_id" class="form-label">Tipo de servicio</label>
-                                <div class="input-group has-validation">
+                                <div class="input-group">
                                     <span class="input-group-text"><i class="bi-shield-check"></i></span>
                                     <select name="servicio_id" id="servicio_id"
                                             class="form-select @error('servicio_id') is-invalid @enderror" required>
@@ -173,44 +183,57 @@
                                             </option>
                                         @endforeach
                                     </select>
-                                    @error('servicio_id')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
                                 </div>
+                                @error('servicio_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @else
+                                    <div class="invalid-feedback" id="servicio_id-error-message" style="display:none;">
+                                        El tipo de servicio es obligatorio.
+                                    </div>
+                                    @enderror
                             </div>
 
                             <div class="col-md-12">
                                 <div class="row g-4 align-items-end">
                                     <div class="col-md-4">
-                                        <button type="button" class="btn btn-primary w-100" data-bs-toggle="modal"
-                                                data-bs-target="#asignarTurnoModal">
+                                        <button type="button" class="btn btn-success" id="add-empleado-btn" disabled>
                                             <i class="bi bi-plus-circle me-1"></i> Agregar Empleado(s)
                                         </button>
                                     </div>
+
                                     <div class="col-md-4">
                                         <label for="fecha_inicio" class="form-label">Fecha inicio</label>
-                                        <div class="input-group has-validation">
+                                        <div class="input-group">
                                             <span class="input-group-text"><i class="bi bi-calendar-date"></i></span>
                                             <input type="date" name="fecha_inicio" id="fecha_inicio"
-                                                   class="form-control @error('fecha_inicio') is-invalid @enderror"
-                                                   value="{{ old('fecha_inicio') }}" required>
-                                            @error('fecha_inicio')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
+                                                   class="form-control @error('fecha') is-invalid @enderror"
+                                                   value="{{ old('fecha', isset($factura) ? $factura->fecha : \Carbon\Carbon::now()->format('Y-m-d')) }}"
+                                                   required>
                                         </div>
+                                        @error('fecha_inicio')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @else
+                                            <div class="invalid-feedback" id="fecha_inicio-error-message" style="display:none;">
+                                                La fecha de inicio es obligatoria.
+                                            </div>
+                                            @enderror
                                     </div>
 
                                     <div class="col-md-4">
                                         <label for="fecha_fin" class="form-label">Fecha fin</label>
-                                        <div class="input-group has-validation">
+                                        <div class="input-group">
                                             <span class="input-group-text"><i class="bi bi-calendar-date-fill"></i></span>
                                             <input type="date" name="fecha_fin" id="fecha_fin"
                                                    class="form-control @error('fecha_fin') is-invalid @enderror"
                                                    value="{{ old('fecha_fin') }}" required>
-                                            @error('fecha_fin')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
                                         </div>
+                                        @error('fecha_fin')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @else
+                                            <div class="invalid-feedback" id="fecha_fin-error-message" style="display:none;">
+                                                La fecha de fin es obligatoria.
+                                            </div>
+                                            @enderror
                                     </div>
                                 </div>
                             </div>
@@ -232,10 +255,10 @@
                                         </thead>
                                         <tbody id="turnosTableBody">
                                         </tbody>
-                                        <tfoot id="turnosTableFooter">
-                                        <tr>
-                                            <td colspan="5" class="text-end fw-bold">Subtotal (Lps):</td>
-                                            <td id="subtotalTurnosCosto" class="fw-bold">0.00</td>
+                                        <tfoot>
+                                        <tr class="table-light fw-bold">
+                                            <td colspan="5" class="text-end">Costo Total:</td>
+                                            <td id="total-costo-display">0.00</td>
                                             <td></td>
                                         </tr>
                                         </tfoot>
@@ -243,22 +266,26 @@
                                 </div>
                                 <input type="hidden" name="turnos_data" id="turnos_data">
                                 <div id="turnos-data-error" class="invalid-feedback mt-1 small" style="display: none;">
-                                    Debe agregar al menos un turno a la tabla.</div>
+                                    Debe agregar al menos un turno a la tabla.
+                                </div>
                             </div>
 
                             <div class="col-md-12">
                                 <label for="observaciones" class="form-label">Observaciones o instrucciones
                                     especiales</label>
-                                <div class="input-group has-validation">
+                                <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-journal-text"></i></span>
                                     <textarea name="observaciones" id="observaciones" rows="1"
                                               class="form-control @error('observaciones') is-invalid @enderror" maxlength="255"
-                                              onkeypress="return validarDescripcion(event)"
-                                              oninput="validarTexto(event); autoResizeTextarea(this);">{{ old('observaciones') }}</textarea>
-                                    @error('observaciones')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
+                                              oninput="autoResizeTextarea(this);" required>{{ old('observaciones') }}</textarea>
                                 </div>
+                                @error('observaciones')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @else
+                                    <div class="invalid-feedback" id="observaciones-error-message" style="display:none;">
+                                        Las observaciones son obligatorias.
+                                    </div>
+                                    @enderror
                             </div>
                         </div>
 
@@ -291,25 +318,26 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <div id="modal-error-message" class="alert alert-danger" role="alert"></div>
+                    <div id="modal-error-message" class="alert alert-danger" role="alert" style="display: none;"></div>
 
                     <div class="row g-3">
                         <div class="col-md-12">
-                            <label class="form-label">Empleado(s) asignado(s)</label>
-                            <div id="modal-empleado-checkbox-container">
-                                <p class="text-muted m-0">Seleccione un servicio en el formulario principal primero</p>
-                            </div>
-                            <div id="empleado-ids-error" class="invalid-feedback mt-1 small" style="display: none;">Debe
-                                seleccionar al menos un empleado.</div>
-                        </div>
-
-                        <div class="col-md-12">
-                            <div class="row g-3">
-                                <div class="col-md-3">
+                            <div class="row g-3 align-items-end">
+                                <div class="col-md-8">
+                                    <label class="form-label">Empleado(s) asignado(s)</label>
+                                    <div id="modal-empleado-checkbox-container" class="form-control">
+                                        <p class="text-muted m-0">Seleccione un servicio en el formulario principal primero</p>
+                                    </div>
+                                    <div id="empleado-ids-error" class="invalid-feedback mt-1 small" style="display: none;">
+                                        Debe seleccionar al menos un empleado.
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
                                     <label for="modal_tipo_turno" class="form-label">Tipo de turno</label>
-                                    <div class="input-group has-validation">
+                                    <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-calendar-week"></i></span>
-                                        <select name="modal_tipo_turno" id="modal_tipo_turno" class="form-select" required>
+                                        <select name="modal_tipo_turno" id="modal_tipo_turno" class="form-select"
+                                                required>
                                             <option value="">Seleccione</option>
                                             <option value="diurno">Diurno</option>
                                             <option value="nocturno">Nocturno</option>
@@ -317,40 +345,54 @@
                                         </select>
                                     </div>
                                     <div id="tipo-turno-error" class="invalid-feedback mt-1 small" style="display: none;">
-                                        Tipo de turno es obligatorio.</div>
+                                        Tipo de turno es obligatorio.
+                                    </div>
                                 </div>
+                            </div>
+                        </div>
 
-                                <div class="col-md-3">
+                        <div class="col-md-12">
+                            <div class="row g-3">
+                                <div class="col-md-4">
                                     <label for="modal_costo" class="form-label">Costo (Lps)</label>
-                                    <div class="input-group has-validation">
+                                    <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
                                         <input type="number" step="0.01" name="modal_costo" id="modal_costo"
                                                class="form-control" readonly>
                                     </div>
                                     <div id="costo-error" class="invalid-feedback mt-1 small" style="display: none;">El
-                                        costo es obligatorio.</div>
+                                        costo es obligatorio.
+                                    </div>
                                 </div>
-
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <label for="modal_hora_inicio" class="form-label">Hora inicio</label>
-                                    <div class="input-group has-validation">
+                                    <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-clock"></i></span>
                                         <input type="time" name="modal_hora_inicio" id="modal_hora_inicio"
                                                class="form-control" required>
+                                        <select class="form-select" id="modal_hora_inicio_ampm">
+                                            <option value="am">a.m.</option>
+                                            <option value="pm">p.m.</option>
+                                        </select>
                                     </div>
-                                    <div id="hora-inicio-error" class="invalid-feedback mt-1 small"
-                                         style="display: none;">Hora inicio es obligatorio.</div>
+                                    <div id="hora-inicio-error" class="invalid-feedback mt-1 small" style="display: none;">
+                                        Hora inicio es obligatoria.
+                                    </div>
                                 </div>
-
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <label for="modal_hora_fin" class="form-label">Hora fin</label>
-                                    <div class="input-group has-validation">
+                                    <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-clock-fill"></i></span>
                                         <input type="time" name="modal_hora_fin" id="modal_hora_fin"
                                                class="form-control" required>
+                                        <select class="form-select" id="modal_hora_fin_ampm">
+                                            <option value="am">a.m.</option>
+                                            <option value="pm">p.m.</option>
+                                        </select>
                                     </div>
                                     <div id="hora-fin-error" class="invalid-feedback mt-1 small" style="display: none;">
-                                        Hora fin es obligatorio.</div>
+                                        Hora fin es obligatoria.
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -360,7 +402,10 @@
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
                         <i class="bi bi-x-circle"></i> Cancelar
                     </button>
-                    <button type="button" class="btn btn-primary" id="addTurnoBtn">
+                    <button type="button" class="btn btn-warning" id="limpiarModalBtn">
+                        <i class="bi bi-eraser"></i> Limpiar
+                    </button>
+                    <button type="button" class="btn btn-success" id="addTurnoBtn">
                         <i class="bi bi-plus-circle"></i> Agregar Empleado
                     </button>
                 </div>
@@ -369,551 +414,491 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
-        // Variables globales
-        let turnosAsignados = [];
-        let currentServiceCosts = {
-            diurno: 0,
-            nocturno: 0,
-            '24 horas': 0
-        };
-
-        // Elementos del DOM
-        const mainForm = document.getElementById('mainForm');
-        const clienteSelect = document.getElementById('cliente_id');
-        const servicioSelect = document.getElementById('servicio_id');
-        const fechaInicioInput = document.getElementById('fecha_inicio');
-        const fechaFinInput = document.getElementById('fecha_fin');
-        const observacionesTextarea = document.getElementById('observaciones');
-        const resetBtn = document.getElementById('resetBtn');
-        const turnosTableBody = document.getElementById('turnosTableBody');
-        const turnosDataInput = document.getElementById('turnos_data');
-        const subtotalTurnosCostoElement = document.getElementById('subtotalTurnosCosto');
-        const turnosDataError = document.getElementById('turnos-data-error');
-
-        // Elementos del modal
-        let asignarTurnoModal;
-        const modalEmpleadoContainer = document.getElementById('modal-empleado-checkbox-container');
-        const modalTipoTurnoSelect = document.getElementById('modal_tipo_turno');
-        const modalHoraInicioInput = document.getElementById('modal_hora_inicio');
-        const modalHoraFinInput = document.getElementById('modal_hora_fin');
-        const modalCostoInput = document.getElementById('modal_costo');
-        const addTurnoBtn = document.getElementById('addTurnoBtn');
-        const empleadoIdsError = document.getElementById('empleado-ids-error');
-        const tipoTurnoError = document.getElementById('tipo-turno-error');
-        const horaInicioError = document.getElementById('hora-inicio-error');
-        const horaFinError = document.getElementById('hora-fin-error');
-        const costoError = document.getElementById('costo-error');
-        const modalErrorMessage = document.getElementById('modal-error-message');
-
-        const empleadosPorServicioUrl = "{{ route('turnos.empleadosPorServicio', ['servicio_id' => ':id']) }}";
-
-        // Inicializar modal después de cargar Bootstrap
-        document.addEventListener('DOMContentLoaded', function() {
-            const modalElement = document.getElementById('asignarTurnoModal');
-            if (modalElement) {
-                asignarTurnoModal = new bootstrap.Modal(modalElement, {
-                    backdrop: 'static',
-                    keyboard: false
-                });
-            }
-
-            // Cargar datos antiguos si existen
-            const oldTurnosData = @json(old('turnos_data', '[]'));
-            try {
-                const parsedOldTurnos = JSON.parse(oldTurnosData);
-                if (Array.isArray(parsedOldTurnos) && parsedOldTurnos.length > 0) {
-                    turnosAsignados = parsedOldTurnos;
-                }
-            } catch (e) {
-                console.error("Error al parsear datos antiguos de turnos:", e);
-            }
-
-            renderTurnosTable();
-        });
-
-        // --- Funciones de Utilidad ---
         function autoResizeTextarea(textarea) {
             textarea.style.height = 'auto';
             textarea.style.height = textarea.scrollHeight + 'px';
         }
 
-        if (observacionesTextarea) {
-            autoResizeTextarea(observacionesTextarea);
-            observacionesTextarea.addEventListener('input', function() {
-                autoResizeTextarea(this);
-            });
-        }
+        document.addEventListener('DOMContentLoaded', function() {
+            // Variables y estado
+            let turnosAsignados = [];
+            let currentServiceCosts = { diurno: 0, nocturno: 0, '24 horas': 0 };
+            const empleadosPorServicioUrl = "{{ route('turnos.empleadosPorServicio', ['servicio_id' => ':id']) }}";
+            let asignarTurnoModal;
 
-        function showModalError(message) {
-            modalErrorMessage.textContent = message;
-            modalErrorMessage.style.display = 'block';
-            setTimeout(() => {
-                modalErrorMessage.style.display = 'none';
-            }, 5000);
-        }
+            // Elementos del DOM
+            const mainForm = document.getElementById('mainForm');
+            const clienteSelect = document.getElementById('cliente_id');
+            const servicioSelect = document.getElementById('servicio_id');
+            const fechaInicioInput = document.getElementById('fecha_inicio');
+            const fechaFinInput = document.getElementById('fecha_fin');
+            const observacionesTextarea = document.getElementById('observaciones');
+            const addEmpleadoBtnPrincipal = document.getElementById('add-empleado-btn');
+            const turnosTableBody = document.getElementById('turnosTableBody');
+            const turnosDataInput = document.getElementById('turnos_data');
+            const turnosDataError = document.getElementById('turnos-data-error');
+            const resetBtn = document.getElementById('resetBtn');
 
-        function clearModalErrors() {
-            modalErrorMessage.style.display = 'none';
-            empleadoIdsError.style.display = 'none';
-            modalTipoTurnoSelect.classList.remove('is-invalid');
-            tipoTurnoError.style.display = 'none';
-            modalHoraInicioInput.classList.remove('is-invalid');
-            horaInicioError.style.display = 'none';
-            modalHoraFinInput.classList.remove('is-invalid');
-            horaFinError.style.display = 'none';
-            modalCostoInput.classList.remove('is-invalid');
-            costoError.style.display = 'none';
-            modalEmpleadoContainer.classList.remove('is-invalid');
-        }
+            // Elementos del modal
+            const modalElement = document.getElementById('asignarTurnoModal');
+            const modalEmpleadoContainer = document.getElementById('modal-empleado-checkbox-container');
+            const modalTipoTurnoSelect = document.getElementById('modal_tipo_turno');
+            const modalHoraInicioInput = document.getElementById('modal_hora_inicio');
+            const modalHoraFinInput = document.getElementById('modal_hora_fin');
+            const modalCostoInput = document.getElementById('modal_costo');
+            const addTurnoBtn = document.getElementById('addTurnoBtn');
+            const limpiarModalBtn = document.getElementById('limpiarModalBtn');
+            const modalErrorMessage = document.getElementById('modal-error-message');
 
-        // --- Lógica de la Tabla de Turnos ---
-        function renderTurnosTable() {
-            let tableHtml = '';
-            let totalCosto = 0;
+            const modalHoraInicioAmPmSelect = document.getElementById('modal_hora_inicio_ampm');
+            const modalHoraFinAmPmSelect = document.getElementById('modal_hora_fin_ampm');
 
-            if (turnosAsignados.length === 0) {
-                tableHtml = `
-                <tr>
-                    <td colspan="7" class="text-center text-muted py-4 fila-vacia-estilo">
-                        <i class="bi bi-person-x" style="font-size: 2rem; opacity: 0.5;"></i>
-                        <br>
-                        <span style="font-size: 0.9rem;">No hay empleados agregados</span>
-                        <br>
-                        <small style="font-size: 0.8rem; opacity: 0.7;">Haga clic en "Agregar Empleado(s)" para asignar un empleado al servicio</small>
-                    </td>
-                </tr>
-            `;
-            } else {
-                turnosAsignados.forEach((turno, index) => {
-                    tableHtml += `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td>${turno.empleado_nombres.join(', ')}</td>
-                        <td>${turno.tipo_turno}</td>
-                        <td>${turno.hora_inicio}</td>
-                        <td>${turno.hora_fin}</td>
-                        <td>${parseFloat(turno.costo).toFixed(2)}</td>
-                        <td>
-                            <button type="button" class="btn btn-danger btn-sm" onclick="removeTurnoFromTable(${index})">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `;
-                    totalCosto += parseFloat(turno.costo);
+            const empleadoIdsError = document.getElementById('empleado-ids-error');
+            const tipoTurnoError = document.getElementById('tipo-turno-error');
+            const horaInicioError = document.getElementById('hora-inicio-error');
+            const horaFinError = document.getElementById('hora-fin-error');
+            const costoError = document.getElementById('costo-error');
+
+
+            // Inicialización de la lógica
+            function init() {
+                if (modalElement) {
+                    asignarTurnoModal = new bootstrap.Modal(modalElement, {
+                        backdrop: 'static',
+                        keyboard: false
+                    });
+                }
+
+                const today = new Date().toISOString().split('T')[0];
+                fechaInicioInput.setAttribute('min', today);
+
+                loadOldTurnosData();
+                renderTurnosTable();
+                setupEventListeners();
+                toggleAddEmpleadoBtn();
+                if (observacionesTextarea) autoResizeTextarea(observacionesTextarea);
+            }
+
+            function loadOldTurnosData() {
+                const oldTurnosData = @json(old('turnos_data', '[]'));
+                try {
+                    const parsedOldTurnos = JSON.parse(oldTurnosData);
+                    if (Array.isArray(parsedOldTurnos) && parsedOldTurnos.length > 0) {
+                        turnosAsignados = parsedOldTurnos;
+                    }
+                } catch (e) {
+                    console.error("Error al parsear datos antiguos de turnos:", e);
+                }
+            }
+
+            function setupEventListeners() {
+                servicioSelect.addEventListener('change', handleServiceChange);
+                addEmpleadoBtnPrincipal.addEventListener('click', handleAddEmpleadoClick);
+                mainForm.addEventListener('submit', handleFormSubmit);
+                resetBtn.addEventListener('click', handleFormReset);
+                fechaInicioInput.addEventListener('change', handleDateChange);
+                fechaFinInput.addEventListener('change', handleDateChange);
+
+                const fields = [clienteSelect, servicioSelect, fechaInicioInput, fechaFinInput, observacionesTextarea];
+                fields.forEach(field => {
+                    field.addEventListener('input', () => {
+                        if (field.value.trim() !== '') {
+                            field.classList.remove('is-invalid');
+                            const feedback = document.getElementById(field.id + '-error-message');
+                            if (feedback) feedback.style.display = 'none';
+                        }
+                    });
+                });
+
+                addTurnoBtn.addEventListener('click', handleAddTurnoModalClick);
+                limpiarModalBtn.addEventListener('click', clearModalInputs);
+                modalTipoTurnoSelect.addEventListener('change', updateModalBaseCostDisplay);
+                modalElement.addEventListener('hidden.bs.modal', clearModalInputs);
+
+                turnosTableBody.addEventListener('click', function(e) {
+                    if (e.target.closest('.btn-danger')) {
+                        const row = e.target.closest('tr');
+                        const index = Array.from(turnosTableBody.children).indexOf(row);
+                        removeTurnoFromTable(index);
+                    }
                 });
             }
 
-            turnosTableBody.innerHTML = tableHtml;
-            subtotalTurnosCostoElement.textContent = totalCosto.toFixed(2);
-            turnosDataInput.value = JSON.stringify(turnosAsignados);
-        }
+            function handleDateChange(event) {
+                const changedField = event.target;
+                const value = changedField.value;
 
-        window.removeTurnoFromTable = function(index) {
-            turnosAsignados.splice(index, 1);
-            renderTurnosTable();
-        };
-
-        // --- Lógica del Modal ---
-        function updateModalBaseCostDisplay() {
-            const tipoTurno = modalTipoTurnoSelect.value;
-            let costoUnitario = 0;
-
-            if (tipoTurno in currentServiceCosts) {
-                costoUnitario = currentServiceCosts[tipoTurno];
-            }
-
-            modalCostoInput.value = parseFloat(costoUnitario).toFixed(2);
-        }
-
-        modalTipoTurnoSelect.addEventListener('change', updateModalBaseCostDisplay);
-        modalEmpleadoContainer.addEventListener('change', updateModalBaseCostDisplay);
-
-        // --- Carga Dinámica de Empleados ---
-        async function cargarEmpleadosParaModal(servicioId) {
-            modalEmpleadoContainer.innerHTML = '<p class="text-muted m-0">Cargando empleados...</p>';
-
-            if (!servicioId) {
-                modalEmpleadoContainer.innerHTML =
-                    '<p class="text-muted m-0">Seleccione un servicio en el formulario principal primero</p>';
-                currentServiceCosts = {
-                    diurno: 0,
-                    nocturno: 0,
-                    '24 horas': 0
-                };
-                modalCostoInput.value = '0.00';
-                return;
-            }
-
-            try {
-                const url = empleadosPorServicioUrl.replace(':id', servicioId);
-                const response = await fetch(url);
-
-                if (!response.ok) {
-                    throw new Error('Error en la red o en el servidor al cargar empleados.');
+                if (value.trim() !== '') {
+                    changedField.classList.remove('is-invalid');
+                    const feedback = document.getElementById(changedField.id + '-error-message');
+                    if (feedback) feedback.style.display = 'none';
                 }
 
-                const empleados = await response.json();
-                const empleadosAsignadosIds = turnosAsignados.map(t => t.empleado_id);
+                if (changedField.id === 'fecha_inicio') {
+                    fechaFinInput.min = value;
+                }
+            }
 
+            function toggleAddEmpleadoBtn() {
+                addEmpleadoBtnPrincipal.disabled = !servicioSelect.value;
+            }
+
+            function handleServiceChange() {
+                toggleAddEmpleadoBtn();
+                const selectedOption = servicioSelect.options[servicioSelect.selectedIndex];
+                currentServiceCosts = selectedOption ? {
+                    diurno: parseFloat(selectedOption.dataset.costoDiurno || 0),
+                    nocturno: parseFloat(selectedOption.dataset.costoNocturno || 0),
+                    '24 horas': parseFloat(selectedOption.dataset.costo24Horas || 0)
+                } : { diurno: 0, nocturno: 0, '24 horas': 0 };
+            }
+
+            function handleAddEmpleadoClick() {
+                const currentServicioId = servicioSelect.value;
+                if (currentServicioId) {
+                    clearModalInputs();
+                    cargarEmpleadosParaModal(currentServicioId);
+                    asignarTurnoModal.show();
+                }
+            }
+
+            function handleFormSubmit(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                let formIsValid = true;
+
+                const allFormControls = mainForm.querySelectorAll('.form-control, .form-select');
+                allFormControls.forEach(el => el.classList.remove('is-invalid'));
+                const allInvalidFeedback = mainForm.querySelectorAll('.invalid-feedback');
+                allInvalidFeedback.forEach(el => el.style.display = 'none');
+
+                const requiredFields = [clienteSelect, servicioSelect, fechaInicioInput, fechaFinInput, observacionesTextarea];
+                requiredFields.forEach(field => {
+                    const feedback = document.getElementById(field.id + '-error-message');
+                    if (!field.value.trim()) {
+                        field.classList.add('is-invalid');
+                        if (feedback) feedback.style.display = 'block';
+                        formIsValid = false;
+                    }
+                });
+
+                if (fechaInicioInput.value && fechaFinInput.value && new Date(fechaFinInput.value) < new Date(fechaInicioInput.value)) {
+                    fechaFinInput.classList.add('is-invalid');
+                    document.getElementById('fecha_fin-error-message').textContent = 'La fecha de fin no puede ser anterior a la de inicio.';
+                    document.getElementById('fecha_fin-error-message').style.display = 'block';
+                    formIsValid = false;
+                }
+
+                if (turnosAsignados.length === 0) {
+                    turnosDataError.style.display = 'block';
+                    formIsValid = false;
+                } else {
+                    turnosDataInput.value = JSON.stringify(turnosAsignados);
+                }
+
+                if (formIsValid) {
+                    mainForm.submit();
+                } else {
+                    const firstInvalid = mainForm.querySelector('.is-invalid, #turnos-data-error');
+                    if (firstInvalid) {
+                        firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+            }
+
+            function handleFormReset() {
+                turnosAsignados = [];
+                renderTurnosTable();
+                mainForm.classList.remove('was-validated');
+                if (observacionesTextarea) {
+                    observacionesTextarea.value = '';
+                    autoResizeTextarea(observacionesTextarea);
+                }
+                clearModalInputs();
+                currentServiceCosts = { diurno: 0, nocturno: 0, '24 horas': 0 };
+                toggleAddEmpleadoBtn();
+
+                const allFormControls = mainForm.querySelectorAll('.form-control, .form-select');
+                allFormControls.forEach(el => el.classList.remove('is-invalid'));
+                const allInvalidFeedback = mainForm.querySelectorAll('.invalid-feedback');
+                allInvalidFeedback.forEach(el => el.style.display = 'none');
+            }
+
+            function renderTurnosTable() {
+                let tableHtml = '';
+
+                if (turnosAsignados.length === 0) {
+                    tableHtml = `
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4 fila-vacia-estilo">
+                                <i class="bi bi-person-x" style="font-size: 2rem; opacity: 0.5;"></i>
+                                <br>
+                                <span style="font-size: 0.9rem;">No hay empleados agregados</span>
+                                <br>
+                                <small style="font-size: 0.8rem; opacity: 0.7;">Haga clic en "Agregar Empleado(s)" para asignar un empleado al servicio</small>
+                            </td>
+                        </tr>
+                    `;
+                } else {
+                    turnosAsignados.forEach((turno, index) => {
+                        const tipoTurnoCapitalizado = turno.tipo_turno.charAt(0).toUpperCase() + turno.tipo_turno.slice(1);
+
+                        tableHtml += `
+                            <tr>
+                                <td>${index + 1}</td>
+                                <td>${turno.empleado_nombres.join(', ')}</td>
+                                <td>${tipoTurnoCapitalizado}</td>
+                                <td>${turno.hora_inicio}</td>
+                                <td>${turno.hora_fin}</td>
+                                <td>${parseFloat(turno.costo).toFixed(2)}</td>
+                                <td>
+                                    <button type="button" class="btn btn-danger btn-sm" data-index="${index}">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }
+
+                turnosTableBody.innerHTML = tableHtml;
+                turnosDataInput.value = JSON.stringify(turnosAsignados);
+
+                if (turnosAsignados.length > 0) {
+                    turnosDataError.style.display = 'none';
+                }
+
+                calculateTotalCost();
+            }
+
+            function calculateTotalCost() {
+                let total = 0;
+                turnosAsignados.forEach(turno => {
+                    total += parseFloat(turno.costo) || 0;
+                });
+                const totalCostDisplay = document.getElementById('total-costo-display');
+                if (totalCostDisplay) {
+                    totalCostDisplay.textContent = total.toFixed(2);
+                }
+            }
+
+            function removeTurnoFromTable(index) {
+                turnosAsignados.splice(index, 1);
+                renderTurnosTable();
+            }
+
+            async function cargarEmpleadosParaModal(servicioId) {
+                modalEmpleadoContainer.innerHTML = '<p class="text-muted m-0">Cargando empleados...</p>';
+                if (!servicioId) {
+                    modalEmpleadoContainer.innerHTML = '<p class="text-muted m-0">Seleccione un servicio en el formulario principal primero</p>';
+                    return;
+                }
+                try {
+                    const url = empleadosPorServicioUrl.replace(':id', servicioId);
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error('Error al cargar empleados.');
+                    const empleados = await response.json();
+                    const empleadosAsignadosIds = turnosAsignados.map(t => t.empleado_id);
+                    renderEmpleadosCheckboxes(empleados, empleadosAsignadosIds);
+                } catch (error) {
+                    console.error('Error al cargar empleados:', error);
+                    modalEmpleadoContainer.innerHTML = '<p class="text-muted m-0">Error al cargar empleados.</p>';
+                }
+            }
+
+            function renderEmpleadosCheckboxes(empleados, empleadosAsignadosIds) {
                 modalEmpleadoContainer.innerHTML = '';
-
                 if (empleados.length > 0) {
                     empleados.forEach(empleado => {
                         const isAssigned = empleadosAsignadosIds.includes(empleado.id);
                         const div = document.createElement('div');
                         div.classList.add('form-check');
                         div.innerHTML = `
-                        <input class="form-check-input" type="radio" name="modal_empleado_ids" value="${empleado.id}" id="modal_empleado_${empleado.id}" ${isAssigned ? 'disabled' : ''}>
-                        <label class="form-check-label" for="modal_empleado_${empleado.id}">
-                            ${empleado.nombre} ${empleado.apellido} ${isAssigned ? ' (ya asignado)' : ''}
-                        </label>
-                    `;
+                            <input class="form-check-input" type="radio" name="modal_empleado_ids" value="${empleado.id}" id="modal_empleado_${empleado.id}" ${isAssigned ? 'disabled' : ''}>
+                            <label class="form-check-label" for="modal_empleado_${empleado.id}">
+                                ${empleado.nombre} ${empleado.apellido} ${isAssigned ? ' (ya asignado)' : ''}
+                            </label>
+                        `;
                         modalEmpleadoContainer.appendChild(div);
                     });
-
                     modalEmpleadoContainer.querySelectorAll('input[name="modal_empleado_ids"]').forEach(radio => {
                         radio.addEventListener('change', updateModalBaseCostDisplay);
                     });
                 } else {
-                    modalEmpleadoContainer.innerHTML =
-                        '<p class="text-muted m-0">No hay empleados disponibles para este servicio.</p>';
-                }
-
-                const selectedOption = servicioSelect.options[servicioSelect.selectedIndex];
-                if (selectedOption) {
-                    currentServiceCosts = {
-                        diurno: parseFloat(selectedOption.dataset.costoDiurno || 0),
-                        nocturno: parseFloat(selectedOption.dataset.costoNocturno || 0),
-                        '24 horas': parseFloat(selectedOption.dataset.costo24Horas || 0)
-                    };
-                } else {
-                    currentServiceCosts = {
-                        diurno: 0,
-                        nocturno: 0,
-                        '24 horas': 0
-                    };
-                }
-
-                updateModalBaseCostDisplay();
-
-            } catch (error) {
-                console.error('Error al cargar empleados o costo del servicio:', error);
-                modalEmpleadoContainer.innerHTML = '<p class="text-muted m-0">Error al cargar empleados.</p>';
-                currentServiceCosts = {
-                    diurno: 0,
-                    nocturno: 0,
-                    '24 horas': 0
-                };
-                modalCostoInput.value = '0.00';
-            }
-        }
-
-        // --- Eventos del Modal (CORREGIDO) ---
-        document.getElementById('asignarTurnoModal').addEventListener('show.bs.modal', function(e) {
-            const currentServicioId = servicioSelect.value;
-            if (!currentServicioId) {
-                e.preventDefault(); // Evita que el modal se muestre
-                alert('Debe seleccionar un tipo de servicio primero.');
-                return;
-            }
-
-            // Si el servicio está seleccionado, limpia y carga los datos
-            clearModalInputs();
-            cargarEmpleadosParaModal(currentServicioId);
-        });
-
-        document.getElementById('asignarTurnoModal').addEventListener('hidden.bs.modal', function() {
-            clearModalInputs();
-        });
-
-        // --- Event Listener del Select de Servicio ---
-        servicioSelect.addEventListener('change', function() {
-            const selectedOption = this.options[this.selectedIndex];
-            if (selectedOption && selectedOption.value) {
-                currentServiceCosts = {
-                    diurno: parseFloat(selectedOption.dataset.costoDiurno || 0),
-                    nocturno: parseFloat(selectedOption.dataset.costoNocturno || 0),
-                    '24 horas': parseFloat(selectedOption.dataset.costo24Horas || 0)
-                };
-            } else {
-                currentServiceCosts = {
-                    diurno: 0,
-                    nocturno: 0,
-                    '24 horas': 0
-                };
-            }
-            updateModalBaseCostDisplay();
-        });
-
-        // --- Validación del Modal ---
-        function validateModalInputs() {
-            let isValid = true;
-            clearModalErrors();
-
-            const selectedEmployeeRadio = modalEmpleadoContainer.querySelector(
-                'input[name="modal_empleado_ids"]:checked');
-            if (!selectedEmployeeRadio) {
-                empleadoIdsError.style.display = 'block';
-                modalEmpleadoContainer.classList.add('is-invalid');
-                isValid = false;
-            }
-
-            if (!modalTipoTurnoSelect.value) {
-                tipoTurnoError.style.display = 'block';
-                modalTipoTurnoSelect.classList.add('is-invalid');
-                isValid = false;
-            }
-
-            if (!modalHoraInicioInput.value) {
-                horaInicioError.style.display = 'block';
-                modalHoraInicioInput.classList.add('is-invalid');
-                isValid = false;
-            }
-
-            if (!modalHoraFinInput.value) {
-                horaFinError.style.display = 'block';
-                modalHoraFinInput.classList.add('is-invalid');
-                isValid = false;
-            } else if (modalHoraInicioInput.value && modalHoraFinInput.value) {
-                const [hInicio, mInicio] = modalHoraInicioInput.value.split(':').map(Number);
-                const [hFin, mFin] = modalHoraFinInput.value.split(':').map(Number);
-
-                if (modalTipoTurnoSelect.value !== '24 horas' && (hFin * 60 + mFin) <= (hInicio * 60 + mInicio)) {
-                    horaFinError.textContent = 'La hora de fin debe ser posterior a la hora de inicio.';
-                    horaFinError.style.display = 'block';
-                    modalHoraFinInput.classList.add('is-invalid');
-                    isValid = false;
-                } else if (modalTipoTurnoSelect.value === '24 horas' && (hFin * 60 + mFin) !== (hInicio * 60 + mInicio)) {
-                    horaFinError.textContent = 'Para un turno de 24 horas, la hora de fin debe ser igual a la de inicio.';
-                    horaFinError.style.display = 'block';
-                    modalHoraFinInput.classList.add('is-invalid');
-                    isValid = false;
+                    modalEmpleadoContainer.innerHTML = '<p class="text-muted m-0">No hay empleados disponibles para este servicio.</p>';
                 }
             }
 
-            const costoValue = parseFloat(modalCostoInput.value);
-            if (isNaN(costoValue) || costoValue <= 0) {
-                costoError.textContent = 'El costo es obligatorio y debe ser un número positivo.';
-                costoError.style.display = 'block';
-                modalCostoInput.classList.add('is-invalid');
-                isValid = false;
+            function updateModalBaseCostDisplay() {
+                const tipoTurno = modalTipoTurnoSelect.value;
+                const costoUnitario = currentServiceCosts[tipoTurno] || 0;
+                modalCostoInput.value = parseFloat(costoUnitario).toFixed(2);
             }
 
-            return isValid;
-        }
-
-        function clearModalInputs() {
-            const selectedRadio = modalEmpleadoContainer.querySelector('input[name="modal_empleado_ids"]:checked');
-            if (selectedRadio) {
-                selectedRadio.checked = false;
-            }
-            modalTipoTurnoSelect.value = '';
-            modalHoraInicioInput.value = '';
-            modalHoraFinInput.value = '';
-            modalCostoInput.value = '';
-            clearModalErrors();
-        }
-
-        addTurnoBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            agregarTurno();
-        });
-
-        async function agregarTurno() {
-            if (!validateModalInputs()) {
-                showModalError("Por favor, complete todos los campos requeridos y corrija los errores.");
-                return;
-            }
-
-            const selectedEmployeeRadio = modalEmpleadoContainer.querySelector(
-                'input[name="modal_empleado_ids"]:checked');
-            const empleadoId = parseInt(selectedEmployeeRadio.value);
-            const empleadoNombre = selectedEmployeeRadio.nextElementSibling.textContent.trim();
-
-            const isAlreadyAssigned = turnosAsignados.some(existingTurno =>
-                existingTurno.empleado_id === empleadoId
-            );
-
-            if (isAlreadyAssigned) {
-                showModalError(`El empleado ${empleadoNombre} ya está asignado a un turno.`);
-                return;
-            }
-
-            const tipoTurno = modalTipoTurnoSelect.value;
-            const horaInicio = modalHoraInicioInput.value;
-            const horaFin = modalHoraFinInput.value;
-
-            // Lógica de cálculo del costo por turno
-            let costo = 0;
-            const costoBaseTurno = currentServiceCosts[tipoTurno];
-
-            if (costoBaseTurno > 0) {
-                const [hInicio, mInicio] = horaInicio.split(':').map(Number);
-                const [hFin, mFin] = horaFin.split(':').map(Number);
-                const totalMinutosInicio = hInicio * 60 + mInicio;
-                let totalMinutosFin = hFin * 60 + mFin;
-
-                if (totalMinutosFin < totalMinutosInicio) {
-                    totalMinutosFin += 24 * 60; // Ajusta si el turno cruza la medianoche
-                }
-
-                const duracionMinutos = totalMinutosFin - totalMinutosInicio;
-                const duracionHoras = duracionMinutos / 60;
-
-                let duracionEstandar = 0;
-                if (tipoTurno === 'diurno' || tipoTurno === 'nocturno') {
-                    duracionEstandar = 12;
-                } else if (tipoTurno === '24 horas') {
-                    duracionEstandar = 24;
-                }
-
-                if (duracionEstandar > 0) {
-                    const costoPorHora = costoBaseTurno / duracionEstandar;
-                    costo = costoPorHora * duracionHoras;
-                }
-            }
-
-            const newTurno = {
-                empleado_id: empleadoId,
-                empleado_nombres: [empleadoNombre],
-                tipo_turno: tipoTurno,
-                hora_inicio: horaInicio,
-                hora_fin: horaFin,
-                costo: costo
-            };
-
-            turnosAsignados.push(newTurno);
-            renderTurnosTable();
-            clearModalInputs();
-            asignarTurnoModal.hide();
-        }
-
-        // --- Validación del Formulario Principal ---
-        mainForm.addEventListener('submit', function(e) {
-            let formIsValid = true;
-            mainForm.querySelectorAll('.is-invalid, .is-valid').forEach(el => {
-                el.classList.remove('is-invalid', 'is-valid');
-            });
-            mainForm.querySelectorAll('.invalid-feedback').forEach(el => {
-                el.style.display = 'none';
-            });
-
-            if (!clienteSelect.value) {
-                clienteSelect.classList.add('is-invalid');
-                formIsValid = false;
-            }
-
-            if (!servicioSelect.value) {
-                servicioSelect.classList.add('is-invalid');
-                formIsValid = false;
-            }
-
-            if (!fechaInicioInput.value) {
-                fechaInicioInput.classList.add('is-invalid');
-                formIsValid = false;
-            }
-
-            if (!fechaFinInput.value) {
-                fechaFinInput.classList.add('is-invalid');
-                formIsValid = false;
-            } else if (fechaInicioInput.value && fechaFinInput.value) {
-                const fechaInicio = new Date(fechaInicioInput.value);
-                const fechaFin = new Date(fechaFinInput.value);
-                if (fechaFin < fechaInicio) {
-                    fechaFinInput.classList.add('is-invalid');
-                    fechaFinInput.closest('.has-validation').querySelector('.invalid-feedback').textContent =
-                        'La fecha de fin debe ser igual o posterior a la fecha de inicio.';
-                    formIsValid = false;
-                }
-            }
-
-            if (turnosAsignados.length === 0) {
-                turnosDataError.style.display = 'block';
-                formIsValid = false;
-            }
-
-            // Aplicar 'is-invalid' y mostrar feedback para los campos inválidos
-            mainForm.querySelectorAll('input:required, select:required').forEach(input => {
-                if (!input.value) {
-                    input.classList.add('is-invalid');
-                    const feedback = input.closest('.has-validation').querySelector('.invalid-feedback');
-                    if (feedback) feedback.style.display = 'block';
-                    formIsValid = false;
-                }
-            });
-
-            if (!formIsValid) {
+            function handleAddTurnoModalClick(e) {
                 e.preventDefault();
-                mainForm.classList.add('was-validated');
-                const firstInvalid = mainForm.querySelector('.is-invalid');
-                if (firstInvalid) {
-                    firstInvalid.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'center'
-                    });
+                if (validateModalInputs()) {
+                    agregarTurno();
                 }
-            } else {
-                turnosDataInput.value = JSON.stringify(turnosAsignados);
-                mainForm.classList.remove('was-validated');
             }
-        });
 
-        // --- Lógica de Reset del Formulario ---
-        if (resetBtn) {
-            resetBtn.addEventListener('click', function(e) {
-                // e.preventDefault(); ya no es necesario con type="reset"
+            function agregarTurno() {
+                const selectedEmployeeRadio = modalEmpleadoContainer.querySelector('input[name="modal_empleado_ids"]:checked');
+                const empleadoId = parseInt(selectedEmployeeRadio.value);
+                const empleadoNombre = selectedEmployeeRadio.labels[0].textContent.replace(/\s*\(ya asignado\)/, '').trim();
+                const tipoTurno = modalTipoTurnoSelect.value;
+                const horaInicio = modalHoraInicioInput.value;
+                const horaFin = modalHoraFinInput.value;
+                const inicioAmPm = modalHoraInicioAmPmSelect.value;
+                const finAmPm = modalHoraFinAmPmSelect.value;
 
-                turnosAsignados = [];
-                renderTurnosTable();
+                let costo = 0;
+                const costoBaseTurno = currentServiceCosts[tipoTurno];
 
-                mainForm.querySelectorAll('.is-valid, .is-invalid').forEach(el => {
-                    el.classList.remove('is-valid', 'is-invalid');
-                });
+                if (costoBaseTurno > 0) {
+                    if (tipoTurno === '24 horas') {
+                        costo = costoBaseTurno;
+                    } else {
+                        let [hInicio, mInicio] = horaInicio.split(':').map(Number);
+                        let [hFin, mFin] = horaFin.split(':').map(Number);
 
-                mainForm.querySelectorAll('.invalid-feedback').forEach(el => {
-                    el.style.display = 'none';
-                });
+                        if (inicioAmPm === 'pm' && hInicio < 12) hInicio += 12;
+                        if (inicioAmPm === 'am' && hInicio === 12) hInicio = 0;
 
-                mainForm.classList.remove('was-validated');
+                        if (finAmPm === 'pm' && hFin < 12) hFin += 12;
+                        if (finAmPm === 'am' && hFin === 12) hFin = 0;
 
-                // Asegurar que el textarea se resetee y cambie de tamaño
-                if (observacionesTextarea) {
-                    observacionesTextarea.value = '';
-                    autoResizeTextarea(observacionesTextarea);
+                        const totalMinutosInicio = hInicio * 60 + mInicio;
+                        let totalMinutosFin = hFin * 60 + mFin;
+                        if (totalMinutosFin < totalMinutosInicio) totalMinutosFin += 24 * 60;
+
+                        const duracionHoras = (totalMinutosFin - totalMinutosInicio) / 60;
+                        const duracionEstandar = 12;
+
+                        costo = (costoBaseTurno / duracionEstandar) * duracionHoras;
+                    }
                 }
 
-                clearModalInputs();
-
-                currentServiceCosts = {
-                    diurno: 0,
-                    nocturno: 0,
-                    '24 horas': 0
+                const newTurno = {
+                    empleado_id: empleadoId,
+                    empleado_nombres: [empleadoNombre],
+                    tipo_turno: tipoTurno,
+                    hora_inicio: `${horaInicio} ${inicioAmPm.toUpperCase()}`,
+                    hora_fin: `${horaFin} ${finAmPm.toUpperCase()}`,
+                    costo: parseFloat(costo).toFixed(2)
                 };
-            });
-        }
 
-        // --- Funciones de Validación de Texto ---
-        function validarDescripcion(event) {
-            const charCode = event.which ? event.which : event.keyCode;
-            const pattern = /^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s,.\-#()]+$/;
-            const char = String.fromCharCode(charCode);
-
-            if (!pattern.test(char) && charCode !== 8 && charCode !== 0) {
-                event.preventDefault();
-                return false;
+                turnosAsignados.push(newTurno);
+                renderTurnosTable();
+                asignarTurnoModal.hide();
             }
-            return true;
-        }
 
-        function validarTexto(event) {
-            const input = event.target;
-            const originalValue = input.value;
-            const cleanedValue = originalValue.replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s,.\-#()]/g, '');
-            if (cleanedValue !== originalValue) {
-                input.value = cleanedValue;
+            function validateModalInputs() {
+                let isValid = true;
+                clearModalErrors();
+                const selectedEmployeeRadio = modalEmpleadoContainer.querySelector('input[name="modal_empleado_ids"]:checked');
+
+                if (!selectedEmployeeRadio) {
+                    empleadoIdsError.style.display = 'block';
+                    modalEmpleadoContainer.classList.add('is-invalid');
+                    isValid = false;
+                }
+
+                if (!modalTipoTurnoSelect.value) {
+                    tipoTurnoError.style.display = 'block';
+                    modalTipoTurnoSelect.classList.add('is-invalid');
+                    isValid = false;
+                }
+
+                if (!modalHoraInicioInput.value) {
+                    horaInicioError.style.display = 'block';
+                    modalHoraInicioInput.classList.add('is-invalid');
+                    isValid = false;
+                }
+
+                if (!modalHoraFinInput.value) {
+                    horaFinError.style.display = 'block';
+                    modalHoraFinInput.classList.add('is-invalid');
+                    isValid = false;
+                }
+
+                if (!modalCostoInput.value || parseFloat(modalCostoInput.value) <= 0) {
+                    costoError.style.display = 'block';
+                    modalCostoInput.classList.add('is-invalid');
+                    isValid = false;
+                }
+
+                if (isValid) {
+                    const tipoTurno = modalTipoTurnoSelect.value;
+                    const inicioValue = modalHoraInicioInput.value;
+                    const finValue = modalHoraFinInput.value;
+                    const inicioAmPm = modalHoraInicioAmPmSelect.value;
+                    const finAmPm = modalHoraFinAmPmSelect.value;
+
+                    let [hInicio, mInicio] = inicioValue.split(':').map(Number);
+                    let [hFin, mFin] = finValue.split(':').map(Number);
+
+                    if (inicioAmPm === 'pm' && hInicio < 12) hInicio += 12;
+                    if (inicioAmPm === 'am' && hInicio === 12) hInicio = 0;
+
+                    if (finAmPm === 'pm' && hFin < 12) hFin += 12;
+                    if (finAmPm === 'am' && hFin === 12) hFin = 0;
+
+                    const totalMinutosInicio = hInicio * 60 + mInicio;
+                    const totalMinutosFin = hFin * 60 + mFin;
+
+                    if (totalMinutosFin < totalMinutosInicio && tipoTurno !== 'nocturno') {
+                        horaFinError.textContent = 'La hora de fin debe ser posterior a la de inicio.';
+                        horaFinError.style.display = 'block';
+                        modalHoraFinInput.classList.add('is-invalid');
+                        isValid = false;
+                    } else if (totalMinutosFin === totalMinutosInicio && tipoTurno !== '24 horas') {
+                        horaFinError.textContent = 'La hora de fin no puede ser igual a la de inicio.';
+                        horaFinError.style.display = 'block';
+                        modalHoraFinInput.classList.add('is-invalid');
+                        isValid = false;
+                    } else if (tipoTurno === '24 horas' && totalMinutosFin !== totalMinutosInicio) {
+                        horaFinError.textContent = 'Para un turno de 24 horas, la hora de fin debe ser igual a la de inicio.';
+                        horaFinError.style.display = 'block';
+                        modalHoraFinInput.classList.add('is-invalid');
+                        isValid = false;
+                    }
+                }
+
+                return isValid;
             }
-        }
+
+            function clearModalInputs() {
+                const selectedRadio = modalEmpleadoContainer.querySelector('input[name="modal_empleado_ids"]:checked');
+                if (selectedRadio) selectedRadio.checked = false;
+                modalTipoTurnoSelect.value = '';
+                modalHoraInicioInput.value = '';
+                modalHoraFinInput.value = '';
+                modalCostoInput.value = '';
+                modalHoraInicioAmPmSelect.value = 'am';
+                modalHoraFinAmPmSelect.value = 'am';
+                clearModalErrors();
+            }
+
+            function clearModalErrors() {
+                modalErrorMessage.style.display = 'none';
+                modalEmpleadoContainer.classList.remove('is-invalid');
+                empleadoIdsError.style.display = 'none';
+                modalTipoTurnoSelect.classList.remove('is-invalid');
+                tipoTurnoError.style.display = 'none';
+                modalHoraInicioInput.classList.remove('is-invalid');
+                horaInicioError.style.display = 'none';
+                modalHoraFinInput.classList.remove('is-invalid');
+                horaFinError.style.display = 'none';
+                modalCostoInput.classList.remove('is-invalid');
+                costoError.style.display = 'none';
+            }
+
+            init();
+            calculateTotalCost();
+        });
     </script>
 @endsection
