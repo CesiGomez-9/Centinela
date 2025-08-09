@@ -52,7 +52,7 @@ class FacturaVentaController extends Controller
             $query->whereDate('fecha', '<=', $request->fecha_fin);
         }
 
-        $facturas = $query->orderBy('fecha', 'asc')->paginate(5);
+        $facturas = $query->orderBy('fecha', 'asc')->paginate(10);
 
         return view('facturas_ventas.index', compact('facturas', 'fechaMinima'));
     }

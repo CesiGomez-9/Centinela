@@ -22,4 +22,5 @@ class Servicio extends Model
     protected $casts = [
         'productos' => 'array',
     ];
+
 }

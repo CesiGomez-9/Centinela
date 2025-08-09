@@ -147,108 +147,111 @@
         </div>
     </div>
 </nav>
+
 <div class="card position-relative">
-    <div class="card-header">
-        <h5>
-            <i class="bi bi-file-earmark-text"></i> Factura de venta
-        </h5>
+    <div class="card-header text-center">
+        <h5><i class="bi bi-file-earmark-text"></i> Factura de venta</h5>
         <small>Creada hace {{ $factura->created_at->diffForHumans() }}</small>
     </div>
+
     <div class="card-body">
-        <div class="row mb-4">
-            <div class="col-md-6 mb-3 mb-md-0">
-                <div class="card-interno h-100">
-                    <div class="d-flex align-items-center mb-3">
-                        <img src="{{ asset('centinela.jpg') }}" alt="Logo Centinela" width="70" class="me-3" />
-                        <div>
-                            <strong>GRUPO CENTINELA</strong>
+        <div class="container px-4"> <!-- Contenedor para padding horizontal -->
+            <img src="{{ asset('centinela.jpg') }}" alt="Logo Centinela" width="90" />
+            <div class="text-center mb-4" style="margin-top: -20px;">
+                <div class="d-flex justify-content-center align-items-center mb-3 gap-3">
+                    <h4 class="fw-bold mb-0">GRUPO CENTINELA</h4>
+                </div>
+                <p class="mb-1"><strong>RTN:</strong> 06021999123456</p>
+                <p class="mb-1"><strong>Teléfono fijo: </strong>+504 2763-3585</p>
+                <p class="mb-1"><strong>Celular:</strong> +504 9322-5352</p>
+                <p class="mb-1"><strong>Email: </strong>grupocentinela.hn@gmail.com</p>
+                <p class="mb-1"><strong>Dirección:</strong> Barrio Oriental, cuatro cuadras al sur del parque central, Danlí, El Paraíso, Honduras.</p>
+
+            </div>
+
+            <div class="mb-5 mt-5">
+                <div class="d-flex mb-2 gap-4">
+                    <p class="mb-0"><strong>Factura de venta N°:</strong> {{ $factura->numero }}</p>
+                    <p class="mb-0"><strong>Fecha:</strong> {{ \Carbon\Carbon::parse($factura->fecha)->format('d/m/Y') }}</p>
+                    <p class="mb-0"><strong>Cliente:</strong> {{ $factura->cliente->nombre ?? '' }} {{ $factura->cliente->apellido ?? '' }}</p>
+                </div>
+                <div class="d-flex gap-4">
+                    <p class="mb-0"><strong>Forma de pago:</strong> {{ $factura->forma_pago }}</p>
+                    <p class="mb-0"><strong>Responsable:</strong> {{ $factura->responsable->nombre ?? '' }} {{ $factura->responsable->apellido ?? '' }}</p>
+                </div>
+            </div>
+
+            <h6 class="section-header"><i class="bi bi-box-seam"></i> Productos vendidos</h6>
+            <div class="table-responsive product-table-container">
+                <table class="table table-bordered table-striped text-center align-middle">
+                    <thead class="table-light">
+                    <tr>
+                        <th>N°</th>
+                        <th>Descripción</th>
+                        <th>Categoría</th>
+                        <th>Precio (Lps)</th>
+                        <th>Cantidad</th>
+                        <th>IVA%</th>
+                        <th>Subtotal (Lps)</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @forelse ($factura->detalles as $index => $detalle)
+                        <tr>
+                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $detalle->nombre }}</td>
+                            <td>{{ $detalle->categoria ?? 'N/A' }}</td>
+                            <td>{{ number_format($detalle->precio_venta, 2) }}</td>
+                            <td>{{ $detalle->cantidad }}</td>
+                            <td>{{ $detalle->iva }}%</td>
+                            <td>{{ number_format($detalle->subtotal, 2) }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7" class="text-muted fst-italic py-3">No hay productos registrados en esta factura.</td>
+                        </tr>
+                    @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="row justify-content-end mt-4">
+                <div class="col-md-6 col-lg-5">
+                    <div class="totales-card">
+                        <div class="totales-row">
+                            <span>Importe Gravado (Lps):</span>
+                            <span>{{ number_format($factura->importe_gravado, 2) }}</span>
                         </div>
-                    </div>
-                    <p><strong>RTN: </strong>06021999123456</p>
-                    <p><strong>Dirección:</strong> Barrio Oriental, cuatro cuadras al sur del parque central, Danlí, El Paraíso, Honduras.</p>
-                    <p><strong>Teléfono fijo:</strong> +504 2763-3585</p>
-                    <p><strong>Celular: </strong>+504 9322-5352</p>
-                    <p><strong>Email:</strong> grupocentinela.hn@gmail.com</p>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card-interno h-100">
-                    <p><strong>Factura de venta N°:</strong> {{ $factura->numero }}</p>
-                    <p><strong>Fecha:</strong> {{ \Carbon\Carbon::parse($factura->fecha)->format('d/m/Y') }}</p>
-                    <p><strong>Cliente:</strong> {{ $factura->cliente->nombre ?? 'N/A' }}</p>
-                    <p><strong>Forma de pago:</strong> {{ $factura->forma_pago }}</p>
-                    <p><strong>Responsable:</strong> {{ $factura->responsable->nombre ?? '' }} {{ $factura->responsable->apellido ?? '' }}</p>
-                </div>
-            </div>
-        </div>
-        <h6 class="section-header"><i class="bi bi-box-seam"></i> Productos vendidos</h6>
-        <div class="table-responsive product-table-container">
-            <table class="table table-bordered table-striped text-center align-middle">
-                <thead class="table-light">
-                <tr>
-                    <th>N°</th>
-                    <th>Descripción</th>
-                    <th>Categoría</th>
-                    <th>Precio (Lps)</th>
-                    <th>Cantidad</th>
-                    <th>IVA%</th>
-                    <th>Subtotal (Lps)</th>
-                </tr>
-                </thead>
-                <tbody>
-                @forelse ($factura->detalles as $index => $detalle)
-                    <tr>
-                        <td>{{ $index + 1 }}</td>
-                        <td>{{ $detalle->nombre }}</td>
-                        <td>{{ $detalle->categoria ?? 'N/A' }}</td>
-                        <td>{{ number_format($detalle->precio_venta, 2) }}</td>
-                        <td>{{ $detalle->cantidad }}</td>
-                        <td>{{ $detalle->iva }}%</td>
-                        <td>{{ number_format($detalle->subtotal, 2) }}</td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="7" class="text-muted fst-italic py-3">No hay productos registrados en esta factura.</td>
-                    </tr>
-                @endforelse
-                </tbody>
-            </table>
-        </div>
-        <div class="row justify-content-end mt-4">
-            <div class="col-md-6 col-lg-5">
-                <div class="totales-card">
-                    <div class="totales-row">
-                        <span>Importe Gravado (Lps):</span>
-                        <span>{{ number_format($factura->importe_gravado, 2) }}</span>
-                    </div>
-                    <div class="totales-row">
-                        <span>Importe Exento (Lps):</span>
-                        <span>{{ number_format($factura->importe_exento, 2) }}</span>
-                    </div>
-                    <div class="totales-row">
-                        <span>Importe Exonerado (Lps):</span>
-                        <span>{{ number_format($factura->importe_exonerado, 2) }}</span>
-                    </div>
-                    <div class="totales-row">
-                        <span>Subtotal (Lps):</span>
-                        <span>{{ number_format($factura->subtotal, 2) }}</span>
-                    </div>
-                    <div class="totales-row">
-                        <span>ISV 15% (Lps):</span>
-                        <span>{{ number_format($factura->isv_15, 2) }}</span>
-                    </div>
-                    <div class="totales-row mb-3">
-                        <span>ISV 18% (Lps):</span>
-                        <span>{{ number_format($factura->isv_18, 2) }}</span>
-                    </div>
-                    <div class="totales-row total">
-                        <span>Total Final (Lps):</span>
-                        <span>{{ number_format($factura->totalF, 2) }}</span>
+                        <div class="totales-row">
+                            <span>Importe Exento (Lps):</span>
+                            <span>{{ number_format($factura->importe_exento, 2) }}</span>
+                        </div>
+                        <div class="totales-row">
+                            <span>Importe Exonerado (Lps):</span>
+                            <span>{{ number_format($factura->importe_exonerado, 2) }}</span>
+                        </div>
+                        <div class="totales-row">
+                            <span>Subtotal (Lps):</span>
+                            <span>{{ number_format($factura->subtotal, 2) }}</span>
+                        </div>
+                        <div class="totales-row">
+                            <span>ISV 15% (Lps):</span>
+                            <span>{{ number_format($factura->isv_15, 2) }}</span>
+                        </div>
+                        <div class="totales-row mb-3">
+                            <span>ISV 18% (Lps):</span>
+                            <span>{{ number_format($factura->isv_18, 2) }}</span>
+                        </div>
+                        <div class="totales-row total">
+                            <span>Total Final (Lps):</span>
+                            <span>{{ number_format($factura->totalF, 2) }}</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
     <div class="card-footer">
         Última actualización: {{ $factura->updated_at->diffForHumans() }}
     </div>
@@ -258,6 +261,7 @@
         <i class="bi bi-arrow-left me-1"></i> Volver a la lista
     </a>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
