@@ -25,4 +25,5 @@ class Servicio extends Model
         'costo_nocturno' => 'float',
         'costo_24_horas' => 'float',
     ];
+
 }

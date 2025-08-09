@@ -76,9 +76,11 @@ class InstalacionController extends Controller
 
     public function store(Request $request)
     {
+
+
         $request->validate([
             'cliente_id' => 'required|exists:clientes,id',
-            'empleado_id' => [
+            'tecnico_id' => [ // CAMBIADO
                 'required',
                 'array',
                 function ($attribute, $value, $fail) {
@@ -104,10 +106,11 @@ class InstalacionController extends Controller
             ],
             'descripcion' => 'required|string|max:255',
             'direccion' => 'required|string|max:255',
-            'factura_id' => 'nullable|exists:facturas,id'
+            'factura_id' => 'nullable|exists:facturas_ventas,id'
+
         ], [
             'cliente_id.required' => 'Debe seleccionar un cliente.',
-            'empleado_id.required' => 'Debe seleccionar al menos un técnico.',
+            'tecnico_id.required' => 'Debe seleccionar al menos un técnico.', // CAMBIADO
             'servicio_id.required' => 'Debe seleccionar un servicio.',
             'fecha_instalacion.required' => 'Debe ingresar una fecha de instalación.',
             'costo_instalacion.required' => 'El costo de instalación es obligatorio.',
@@ -128,11 +131,13 @@ class InstalacionController extends Controller
                 'factura_id' => $request->factura_id,
             ]);
 
-            $instalacion->tecnicos()->attach($request->empleado_id);
+            // CAMBIADO a tecnico_id
+            $instalacion->tecnicos()->attach($request->tecnico_id);
         });
 
         return redirect()->route('instalaciones.index')->with('success', 'Instalación registrada correctamente.');
     }
+
 
 
     /**

@@ -400,9 +400,9 @@
                             <tr data-id="{{ $producto->id }}">
                                 <td>{{ $producto->nombre }}</td>
                                 <td>{{ $producto->categoria }}</td>
-                                <td>{{ number_format($producto->precio_venta, 2) }}</td> <!-- Precio venta -->
+                                <td>{{ number_format($producto->precio_venta, 2) }}</td>
                                 <td class="celda-cantidad">{{ $producto->cantidad }}</td>
-                                <td>{{ $producto->impuesto ? $producto->impuesto->porcentaje . '%' : 'N/A' }}</td> <!-- IVA -->
+                                <td>{{ $producto->impuesto ? $producto->impuesto->porcentaje . '%' : 'N/A' }}</td>
                                 <td>
                                     <div class="d-flex gap-2 align-items-center">
                                         <button type="button" class="btn btn-sm btn-info btnSeleccionarProducto d-inline-flex align-items-center"
@@ -497,7 +497,6 @@
         const searchProducto = document.getElementById("searchProductoInput");
 
         if (searchCliente) soloLetras(searchCliente);
-        if (searchProducto) soloLetras(searchProducto);
 
         const tabla = document.getElementById('tablaProductosBody');
 
@@ -616,16 +615,29 @@
 
             filaCantidad.innerHTML = `
     <td colspan="6">
-        <div class="d-flex flex-column align-items-center justify-content-center gap-1">
-            <div class="d-flex gap-2 align-items-center justify-content-center">
-                <label class="me-2">Cantidad:</label>
-                <input type="number" min="1" max="${productoSeleccionado.cantidadDisponible}" step="1" class="form-control w-auto cantidad-input" required placeholder="Ej. 1">
-                <button class="btn btn-primary btn-sm btnAgregarCantidad"><i class="bi bi-plus-circle"></i> Agregar</button>
-                <button class="btn btn-warning btn-sm btnCancelarCantidad"><i class="bi bi-x-circle"></i> Limpiar</button>
-                <div class="error-message text-danger ms-2"></div>
-            </div>
-            <small class="text-muted">cantidad disponible: ${productoSeleccionado.cantidadDisponible}</small>
-        </div>
+       <div class="d-flex flex-column align-items-center justify-content-center gap-1">
+    <div class="d-flex gap-2 align-items-center justify-content-center">
+        <label class="me-2">Cantidad:</label>
+        <input
+            type="number"
+            min="1"
+            max="${productoSeleccionado.cantidadDisponible}"
+           step="1"
+           class="form-control w-auto cantidad-input"
+            required
+             placeholder="Ej. 1"
+        >
+        <button class="btn btn-primary btn-sm btnAgregarCantidad">
+            <i class="bi bi-plus-circle"></i> Agregar
+        </button>
+        <button class="btn btn-warning btn-sm btnCancelarCantidad">
+            <i class="bi bi-x-circle"></i> Limpiar
+        </button>
+        <div class="error-message text-danger ms-2"></div>
+    </div>
+<small class="text-muted">Cantidad disponible: ${productoSeleccionado.cantidadDisponible}</small>
+</div>
+
     </td>
 `;
             filaProducto.parentNode.insertBefore(filaCantidad, filaProducto.nextSibling);
@@ -765,7 +777,7 @@
                 }, 50);
             });
         }
-// ------------------ Validacion final ------------------//
+        // ------------------ Validacion final ------------------//
         const form = document.getElementById('formFacturaVenta');
         const btnGuardar = form.querySelector('button[type="submit"]');
         const errorProductos = document.getElementById('errorProductos');
@@ -949,6 +961,26 @@
         document.getElementById('isv18Label').textContent = impuesto18.toFixed(2);
         document.getElementById('totalGeneralLabel').textContent = total.toFixed(2);
     }
+
+    document.getElementById('tablaProductosBody').addEventListener('input', function(e) {
+        if (e.target.classList.contains('cantidad-input')) {
+            const input = e.target;
+            const filaCantidad = input.closest('tr');
+            const cantidadDisponibleElem = filaCantidad.querySelector('small.text-muted');
+            const cantidadDisponible = parseInt(cantidadDisponibleElem.textContent.replace(/\D/g, ''), 10);
+            const cantidadIngresada = parseInt(input.value, 10);
+
+            if (isNaN(cantidadIngresada) || cantidadIngresada <= 0) {
+                cantidadDisponibleElem.innerHTML = `<span style="color:#dc3545;">Cantidad disponible: ${cantidadDisponible}. La cantidad debe ser mayor que cero.</span>`;
+            } else if (cantidadIngresada > cantidadDisponible) {
+                cantidadDisponibleElem.innerHTML = `<span style="color:#dc3545;">Cantidad disponible: ${cantidadDisponible}. La cantidad ingresada no está disponible.</span>`;
+            } else {
+                cantidadDisponibleElem.textContent = `Cantidad disponible: ${cantidadDisponible}`;
+                cantidadDisponibleElem.style.color = '';
+            }
+        }
+    });
+
 </script>
 <script src="{{ asset('js/tu-script.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

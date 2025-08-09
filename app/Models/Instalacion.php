@@ -28,22 +28,24 @@ class Instalacion extends Model
 
     public function empleado()
     {
-        return $this->belongsTo(Empleado::class, 'empleado_id');
+        return $this->belongsToMany(Empleado::class, 'empleado_id');
     }
 
     public function servicio()
     {
         return $this->belongsTo(Servicio::class);
     }
-    public function tecnicos()
-    {
-        return $this->belongsToMany(Empleado::class, 'instalacion_tecnico', 'instalacion_id', 'empleado_id');
-    }
+
 
     public function factura()
     {
         return $this->belongsTo(FacturaVenta::class, 'factura_id');
     }
+    public function tecnicos()
+    {
+        return $this->belongsToMany(Empleado::class);
+    }
+
 
 
 }

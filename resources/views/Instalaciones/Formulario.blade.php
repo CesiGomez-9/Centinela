@@ -95,16 +95,24 @@
                             <label for="empleado_id" class="form-label">Técnicos</label>
                             <div class="border rounded p-2" id="tecnicos-container" style="max-height: 200px; overflow-y: auto;">
                                 <div class="row">
-                                    @foreach($tecnicos as $tecnico)
-                                        <div class="col-6">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="empleado_id[]" value="{{ $tecnico->id }}" id="tecnico_{{ $tecnico->id }}">
-                                                <label class="form-check-label" for="tecnico_{{ $tecnico->id }}">
-                                                    {{ $tecnico->nombre }}
-                                                </label>
-                                            </div>
+                                    @foreach ($tecnicos as $tecnico)
+                                        <div class="form-check">
+                                            <input
+                                                class="form-check-input"
+                                                type="checkbox"
+                                                name="tecnico_id[]"
+                                                value="{{ $tecnico->id }}"
+                                                id="tecnico_{{ $tecnico->id }}"
+                                                {{-- Si estamos editando, o hay old input, marcar el checkbox --}}
+                                                {{ (collect(old('tecnico_id'))->contains($tecnico->id) || (isset($instalacion) && $instalacion->tecnicos->contains($tecnico->id))) ? 'checked' : '' }}
+                                            >
+                                            <label class="form-check-label" for="tecnico_{{ $tecnico->id }}">
+                                                {{ $tecnico->nombre }}
+                                            </label>
                                         </div>
                                     @endforeach
+
+
                                 </div>
                             </div>
                             <small class="text-muted">Seleccione uno o más técnicos.</small>
@@ -328,11 +336,12 @@
                             }
 
                             // Técnicos
-                            const tecnicosMarcados = document.querySelectorAll('input[name="empleado_id[]"]:checked');
+                            const tecnicosMarcados = document.querySelectorAll('input[name="tecnico_id[]"]:checked');
                             if (tecnicosMarcados.length === 0) {
                                 setGroupError(tecnicosContainer, "Debe seleccionar al menos un técnico.");
                                 isValid = false;
                             }
+
 
                             // Servicio
                             if (!fields.servicio.value) {

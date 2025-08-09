@@ -34,8 +34,9 @@ class Empleado extends Model
     ];
     public function instalaciones()
     {
-        return $this->belongsToMany(Instalacion::class, 'instalacion_tecnico');
+        return $this->belongsToMany(Instalacion::class);
     }
+
 
 
 }
