@@ -7,14 +7,10 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
     <style>
-
-            body{
-
-                height: 100vh;
-                margin: 0;
-                background-color: #e6f0ff;
-            }
-
+        body {
+            background-color: #e6f0ff;
+            font-size: 1.1rem;
+        }
         .form-contenedor {
             max-width: 1000px;
             margin: auto;
@@ -34,14 +30,12 @@
             font-size: 0.85rem; /* 85% tamaño base */
         }
     </style>
-
-
 </head>
 <body>
 <nav class="navbar navbar-expand-lg" style="background-color: #0A1F44; padding-top: 1.2rem; padding-bottom: 1.2rem; font-family: 'Courier New', sans-serif;">
     <div class="container" style="max-width: 1600px;">
         <a class="navbar-brand text-white fw-bold" href="#">
-            <img src="{{ asset('centinela.jpg') }}" style="height:80px; margin-right: 10px;" />
+            <img src="<?php echo e(asset('centinela.jpg')); ?>" style="height:80px; margin-right: 10px;" />
             Grupo Centinela
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -70,16 +64,17 @@
             <i class="bi bi-shield-lock"></i> <!-- o bi-tools -->
         </div>
 
-        @if(session('success'))
+        <?php if(session('success')): ?>
             <div class="alert alert-success alert-dismissible fade show py-2" role="alert" style="font-size: 0.85rem;">
-                {{ session('success') }}
+                <?php echo e(session('success')); ?>
+
                 <button type="button" class="btn-close btn-close-sm" data-bs-dismiss="alert" aria-label="Cerrar"></button>
             </div>
-        @endif
+        <?php endif; ?>
 
 
-        <form id="servicioForm" action="{{ route('servicios.store') }}" method="POST" class="needs-validation" novalidate>
-            @csrf
+        <form id="servicioForm" action="<?php echo e(route('servicios.store')); ?>" method="POST" class="needs-validation" novalidate>
+            <?php echo csrf_field(); ?>
             <div class="row g-3">
 
                 <!-- Nombre del servicio (col-md-6) -->
@@ -176,16 +171,17 @@
                 <div class="col-12 d-none" id="productos_vigilancia">
                     <label class="form-label fs-6 mb-2">Productos de vigilancia</label>
                     <div class="row g-2" style="font-size: 0.85rem;">
-                        @foreach($productosVigilancia as $producto)
+                        <?php $__currentLoopData = $productosVigilancia; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $producto): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div class="col-md-6">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="productos[]" value="{{ $producto->id }}" id="vig_{{ Str::slug($producto->nombre, '_') }}">
-                                    <label class="form-check-label" for="vig_{{ Str::slug($producto->nombre, '_') }}">
-                                        {{ $producto->nombre }}
+                                    <input class="form-check-input" type="checkbox" name="productos[]" value="<?php echo e($producto->id); ?>" id="vig_<?php echo e(Str::slug($producto->nombre, '_')); ?>">
+                                    <label class="form-check-label" for="vig_<?php echo e(Str::slug($producto->nombre, '_')); ?>">
+                                        <?php echo e($producto->nombre); ?>
+
                                     </label>
                                 </div>
                             </div>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
                 </div>
 
@@ -193,22 +189,23 @@
                 <div class="col-12 d-none" id="productos_tecnico">
                     <label class="form-label fs-6 mb-2">Productos técnicos</label>
                     <div class="row g-2" style="font-size: 0.85rem;">
-                        @foreach($productosTecnico as $producto)
+                        <?php $__currentLoopData = $productosTecnico; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $producto): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div class="col-md-6">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="productos[]" value="{{ $producto->id }}" id="tec_{{ Str::slug($producto->nombre, '_') }}">
-                                    <label class="form-check-label" for="tec_{{ Str::slug($producto->nombre, '_') }}">
-                                        {{ $producto->nombre }}
+                                    <input class="form-check-input" type="checkbox" name="productos[]" value="<?php echo e($producto->id); ?>" id="tec_<?php echo e(Str::slug($producto->nombre, '_')); ?>">
+                                    <label class="form-check-label" for="tec_<?php echo e(Str::slug($producto->nombre, '_')); ?>">
+                                        <?php echo e($producto->nombre); ?>
+
                                     </label>
                                 </div>
                             </div>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
                 </div>
 
                 <!-- Botones -->
                 <div class="text-center mt-4">
-                    <a href="{{ route('servicios.catalogo') }}" class="btn btn-danger me-2" style="font-size: 0.85rem;">
+                    <a href="<?php echo e(route('servicios.catalogo')); ?>" class="btn btn-danger me-2" style="font-size: 0.85rem;">
                         <i class="bi bi-x-circle me-2"></i> Cancelar
                     </a>
 
@@ -340,3 +337,4 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+<?php /**PATH C:\Users\Admin\PhpstormProjects\Centinela\resources\views/servicios/index.blade.php ENDPATH**/ ?>

@@ -1,5 +1,4 @@
-@extends('plantilla')
-@section('content')
+<?php $__env->startSection('content'); ?>
 
     <!DOCTYPE html>
 <html lang="es">
@@ -112,8 +111,8 @@
                     <i class="bi bi-gear-fill me-2"></i> Programar instalación
                 </h3>
 
-                <form action="{{ route('instalaciones.store') }}" method="POST" id="form-instalacion" novalidate>
-                    @csrf
+                <form action="<?php echo e(route('instalaciones.store')); ?>" method="POST" id="form-instalacion" novalidate>
+                    <?php echo csrf_field(); ?>
 
                     <div class="row g-4">
                         <!-- Cliente -->
@@ -122,13 +121,27 @@
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
                                 <select id="cliente_id" name="cliente_id"
-                                        class="form-select @error('cliente_id') is-invalid @enderror" required>
+                                        class="form-select <?php $__errorArgs = ['cliente_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" required>
                                     <option value="">Seleccione un cliente</option>
-                                    @foreach($clientes as $cliente)
-                                        <option value="{{ $cliente->id }}">{{ $cliente->nombre }}</option>
-                                    @endforeach
+                                    <?php $__currentLoopData = $clientes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cliente): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <option value="<?php echo e($cliente->id); ?>"><?php echo e($cliente->nombre); ?></option>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </select>
-                                @error('cliente_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                <?php $__errorArgs = ['cliente_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?><div class="invalid-feedback"><?php echo e($message); ?></div><?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
@@ -138,10 +151,24 @@
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-calendar-date"></i></span>
                                 <input type="date" id="fecha_instalacion" name="fecha_instalacion"
-                                       class="form-control @error('fecha_instalacion') is-invalid @enderror"
-                                       value="{{ now()->format('Y-m-d') }}"
-                                       min="{{ now()->format('Y-m-d') }}" max="2025-10-31" required>
-                                @error('fecha_instalacion')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                       class="form-control <?php $__errorArgs = ['fecha_instalacion'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                       value="<?php echo e(now()->format('Y-m-d')); ?>"
+                                       min="<?php echo e(now()->format('Y-m-d')); ?>" max="2025-10-31" required>
+                                <?php $__errorArgs = ['fecha_instalacion'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?><div class="invalid-feedback"><?php echo e($message); ?></div><?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                 <!-- No poner el div error-tecnicos aquí -->
                             </div>
                         </div>
@@ -151,24 +178,17 @@
                             <label for="empleado_id" class="form-label">Técnicos</label>
                             <div class="border rounded p-2" id="tecnicos-container" style="max-height: 200px; overflow-y: auto;">
                                 <div class="row">
-                                    @foreach ($tecnicos as $tecnico)
-                                        <div class="form-check">
-                                            <input
-                                                class="form-check-input"
-                                                type="checkbox"
-                                                name="tecnico_id[]"
-                                                value="{{ $tecnico->id }}"
-                                                id="tecnico_{{ $tecnico->id }}"
-                                                {{-- Si estamos editando, o hay old input, marcar el checkbox --}}
-                                                {{ (collect(old('tecnico_id'))->contains($tecnico->id) || (isset($instalacion) && $instalacion->tecnicos->contains($tecnico->id))) ? 'checked' : '' }}
-                                            >
-                                            <label class="form-check-label" for="tecnico_{{ $tecnico->id }}">
-                                                {{ $tecnico->nombre }}
-                                            </label>
+                                    <?php $__currentLoopData = $tecnicos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $tecnico): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <div class="col-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="empleado_id[]" value="<?php echo e($tecnico->id); ?>" id="tecnico_<?php echo e($tecnico->id); ?>">
+                                                <label class="form-check-label" for="tecnico_<?php echo e($tecnico->id); ?>">
+                                                    <?php echo e($tecnico->nombre); ?>
+
+                                                </label>
+                                            </div>
                                         </div>
-                                    @endforeach
-
-
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </div>
                             </div>
                             <!-- Aquí SI debe ir el div para mostrar el error -->
@@ -183,13 +203,27 @@
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-list-task"></i></span>
                                 <select id="servicio_id" name="servicio_id"
-                                        class="form-select @error('servicio_id') is-invalid @enderror" required>
+                                        class="form-select <?php $__errorArgs = ['servicio_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" required>
                                     <option value="">Seleccione un servicio</option>
-                                    @foreach($servicios as $servicio)
-                                        <option value="{{ $servicio->id }}">{{ $servicio->nombre }}</option>
-                                    @endforeach
+                                    <?php $__currentLoopData = $servicios; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $servicio): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <option value="<?php echo e($servicio->id); ?>"><?php echo e($servicio->nombre); ?></option>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </select>
-                                @error('servicio_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                <?php $__errorArgs = ['servicio_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?><div class="invalid-feedback"><?php echo e($message); ?></div><?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
@@ -202,11 +236,25 @@
                                     <span class="moneda-lempira">L.</span>
                                   </span>
                                 <input type="number" id="costo_instalacion" name="costo_instalacion"
-                                       class="form-control @error('costo_instalacion') is-invalid @enderror"
+                                       class="form-control <?php $__errorArgs = ['costo_instalacion'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                        min="1" max="9999" step="0.01" placeholder="Ej: 500.00" required>
-                                @error('costo_instalacion')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                <?php $__errorArgs = ['costo_instalacion'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
@@ -218,11 +266,12 @@
                                 <span class="input-group-text"><i class="bi bi-receipt"></i></span>
                                 <select id="factura_id" name="factura_id" class="form-select">
                                     <option value="">Seleccione una factura</option>
-                                    @foreach($facturas as $factura)
-                                        <option value="{{ $factura->id }}" data-total="{{ $factura->total }}">
-                                            Factura #{{ $factura->id }} - L. {{ number_format($factura->total, 2) }}
+                                    <?php $__currentLoopData = $facturas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $factura): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <option value="<?php echo e($factura->id); ?>" data-total="<?php echo e($factura->total); ?>">
+                                            Factura #<?php echo e($factura->id); ?> - L. <?php echo e(number_format($factura->total, 2)); ?>
+
                                         </option>
-                                    @endforeach
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </select>
                             </div>
                         </div>
@@ -233,9 +282,23 @@
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-card-text"></i></span>
                                 <textarea  id="descripcion" name="descripcion" maxlength="255"
-                                          class="form-control auto-expand @error('descripcion') is-invalid @enderror"
+                                          class="form-control auto-expand <?php $__errorArgs = ['descripcion'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                           rows="2" required></textarea>
-                                @error('descripcion')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                <?php $__errorArgs = ['descripcion'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?><div class="invalid-feedback"><?php echo e($message); ?></div><?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
@@ -245,9 +308,23 @@
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
                                 <textarea id="direccion" name="direccion" maxlength="255"
-                                          class="form-control auto-expand @error('direccion') is-invalid @enderror"
+                                          class="form-control auto-expand <?php $__errorArgs = ['direccion'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                           rows="2" required></textarea>
-                                @error('direccion')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                <?php $__errorArgs = ['direccion'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?><div class="invalid-feedback"><?php echo e($message); ?></div><?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
                     </div>
@@ -273,7 +350,7 @@
 
                     <!-- Botones -->
                     <div class="text-center mt-4 d-flex justify-content-center gap-3">
-                        <a href="{{ route('instalaciones.index') }}" class="btn btn-danger" type="button">
+                        <a href="<?php echo e(route('instalaciones.index')); ?>" class="btn btn-danger" type="button">
                             <i class="bi bi-x-circle me-2"></i> Cancelar
                         </a>
 
@@ -439,12 +516,11 @@
                             }
 
                             // Técnicos
-                            const tecnicosMarcados = document.querySelectorAll('input[name="tecnico_id[]"]:checked');
+                            const tecnicosMarcados = document.querySelectorAll('input[name="empleado_id[]"]:checked');
                             if (tecnicosMarcados.length === 0) {
                                 setGroupError(tecnicosContainer, "Debe seleccionar al menos un técnico.");
                                 isValid = false;
                             }
-
 
                             // Servicio
                             if (!fields.servicio.value) {
@@ -624,4 +700,6 @@
                 </script>
 
 
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Admin\PhpstormProjects\Centinela\resources\views/instalaciones/formulario.blade.php ENDPATH**/ ?>
