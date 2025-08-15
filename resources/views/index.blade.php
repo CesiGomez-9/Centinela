@@ -49,7 +49,21 @@
         </div>
     </div>
 
-    <footer class="bg-dark text-center text-light py-3">
-        <p class="mb-0">© 2025 Grupo Centinela. Todos los derechos reservados.</p>
-    </footer>
-@endsection
+    <footer class="bg-dark text-light py-4 text-center">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6 mb-4 mb-md-0 text-md-start">
+                    <h3 class="mb-2" style="color: #DAA520;">Grupo Centinela</h3>
+                    <p class="mb-0"><strong>Dirección:</strong> Barrio Oriental, cuatro cuadras al sur del parque central.</p>
+                    <p class="mb-1">Danlí, El Paraíso, Honduras.</p>
+                    <p class="mb-1"><strong>Email:</strong> grupocentinela.hn@gmail.com</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-1"><strong>Teléfono fijo:</strong> +504 2763-3585</p>
+                    <p class="mb-1"><strong>Celular:</strong> +504 9322-5352</p>
+                </div>
+            </div>
+            <hr class="my-3">
+            <p class="mb-0">© 2025 Grupo Centinela. Todos los derechos reservados.</p>
+        </div>
+    </footer>@endsection

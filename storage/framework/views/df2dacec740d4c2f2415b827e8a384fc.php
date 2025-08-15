@@ -1,5 +1,6 @@
-<?php $__env->startSection('titulo', 'Asignación de servicio'); ?>
+<?php $__env->startSection('titulo', 'Venta de servicio'); ?>
 <?php $__env->startSection('content'); ?>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         body {
             background-color: #e6f0ff;
@@ -114,6 +115,90 @@
             border-color: #dee2e6 !important;
             padding-right: 0.75rem;
         }
+
+        /* Estilos para el buscador de cliente */
+        .autocomplete-container {
+            position: relative;
+        }
+
+        /* Corrección para que el cuadro de resultados se ajuste al ancho del campo de búsqueda */
+        .autocomplete-results {
+            position: absolute;
+            z-index: 1050;
+            width: 100%;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1.5px solid #ced4da;
+            border-top: none;
+            background-color: white;
+            border-radius: 0 0 .25rem .25rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .autocomplete-results a {
+            display: block;
+            padding: .5rem 1rem;
+            text-decoration: none;
+            color: #212529;
+        }
+
+        .autocomplete-results a:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* El input-group debe tener un position: relative para que el autocomplete funcione correctamente */
+        .input-group.search-icon-right {
+            position: relative;
+        }
+
+        .search-icon-right .input-group-text:first-child {
+            border-right: 0;
+        }
+
+        .search-icon-right .form-control {
+            border-radius: 0;
+        }
+
+        .search-icon-right .input-group-text:last-child {
+            border-left: 0;
+            border-radius: 0 .25rem .25rem 0;
+        }
+
+        .search-icon-right .form-control:focus {
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 .25rem rgba(13, 110, 253, .25);
+        }
+
+        .search-icon-right .form-control:focus+.input-group-text {
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 .25rem rgba(13, 110, 253, .25);
+        }
+
+        /* Nuevo estilo para el botón deshabilitado */
+        .btn-faded {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-faded:hover {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background-color: #198754;
+            border-color: #198754;
+        }
+
+        .input-group .invalid-feedback {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            z-index: 5;
+            display: none;
+            width: 100%;
+            margin-top: 0.25rem;
+            font-size: 0.875em;
+            color: #dc3545;
+        }
     </style>
 
     <div class="container my-5">
@@ -126,8 +211,7 @@
                     </div>
 
                     <h3 class="text-center mb-4">
-                        <i class="bi bi-calendar-plus me-2"></i>
-                        Asignación de servicio
+                        <i class="bi bi-calendar-plus me-2"></i>Venta de servicio
                     </h3>
 
                     <?php if(session('success')): ?>
@@ -141,44 +225,19 @@
                         <?php echo csrf_field(); ?>
                         <div class="row g-4">
                             <div class="col-md-6">
-                                <label for="cliente_id" class="form-label">Cliente</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="bi bi-person-check-fill"></i></span>
-                                    <select name="cliente_id" id="cliente_id"
-                                            class="form-select <?php $__errorArgs = ['cliente_id'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>" required>
-                                        <option value="">Seleccione un cliente</option>
-                                        <?php $__currentLoopData = $clientes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cliente): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <option value="<?php echo e($cliente->id); ?>"
-                                                <?php echo e(old('cliente_id') == $cliente->id ? 'selected' : ''); ?>>
-                                                <?php echo e($cliente->nombre); ?> <?php echo e($cliente->apellido); ?>
-
-                                            </option>
-                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                    </select>
+                                <label for="cliente_search" class="form-label">Cliente</label>
+                                <div class="input-group search-icon-right">
+                                    <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                                    <input type="text" id="cliente_search" class="form-control"
+                                           placeholder="Buscar cliente por nombre..." autocomplete="off"
+                                           value="<?php echo e(old('cliente_id', isset($venta) ? $venta->cliente->nombre . ' ' . $venta->cliente->apellido : '')); ?>">
+                                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                    <input type="hidden" name="cliente_id" id="cliente_id"
+                                           value="<?php echo e(old('cliente_id', isset($venta) ? $venta->cliente_id : '')); ?>">
+                                    <div id="cliente_results" class="autocomplete-results"></div>
                                 </div>
-                                <?php $__errorArgs = ['cliente_id'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-                                <div class="invalid-feedback"><?php echo e($message); ?></div>
-                                <?php else: ?>
-                                    <div class="invalid-feedback" id="cliente_id-error-message" style="display:none;">
-                                        El cliente es obligatorio.
-                                    </div>
-                                    <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
+                                <div class="invalid-feedback text-danger mt-1 small" id="cliente_search-error-message" style="display:none;">El cliente es obligatorio.</div>
                             </div>
-
                             <div class="col-md-6">
                                 <label for="servicio_id" class="form-label">Tipo de servicio</label>
                                 <div class="input-group">
@@ -193,11 +252,8 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" required>
                                         <option value="">Seleccione un servicio</option>
-                                        <?php $__currentLoopData = $servicios; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $servicio): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <?php $__currentLoopData = $servicios->sortBy('nombre'); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $servicio): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <option value="<?php echo e($servicio->id); ?>"
-                                                    data-costo-diurno="<?php echo e(number_format($servicio->costo_diurno, 2, '.', '')); ?>"
-                                                    data-costo-nocturno="<?php echo e(number_format($servicio->costo_nocturno, 2, '.', '')); ?>"
-                                                    data-costo-24-horas="<?php echo e(number_format($servicio->costo_24_horas, 2, '.', '')); ?>"
                                                 <?php echo e(old('servicio_id') == $servicio->id ? 'selected' : ''); ?>>
                                                 <?php echo e($servicio->nombre); ?>
 
@@ -224,7 +280,7 @@ unset($__errorArgs, $__bag); ?>
                             <div class="col-md-12">
                                 <div class="row g-4 align-items-end">
                                     <div class="col-md-4">
-                                        <button type="button" class="btn btn-success" id="add-empleado-btn" disabled>
+                                        <button type="button" class="btn btn-success btn-faded" id="add-empleado-btn" disabled>
                                             <i class="bi bi-plus-circle me-1"></i> Agregar Empleado(s)
                                         </button>
                                     </div>
@@ -252,7 +308,8 @@ if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
                                         <div class="invalid-feedback"><?php echo e($message); ?></div>
                                         <?php else: ?>
-                                            <div class="invalid-feedback" id="fecha_inicio-error-message" style="display:none;">
+                                            <div class="invalid-feedback" id="fecha_inicio-error-message"
+                                                 style="display:none;">
                                                 La fecha de inicio es obligatoria.
                                             </div>
                                             <?php unset($message);
@@ -263,7 +320,7 @@ unset($__errorArgs, $__bag); ?>
 
                                     <div class="col-md-4">
                                         <label for="fecha_fin" class="form-label">Fecha fin</label>
-                                        <div class="input-group">
+                                        <div class="input-group has-validation">
                                             <span class="input-group-text"><i class="bi bi-calendar-date-fill"></i></span>
                                             <input type="date" name="fecha_fin" id="fecha_fin"
                                                    class="form-control <?php $__errorArgs = ['fecha_fin'];
@@ -275,28 +332,30 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
                                                    value="<?php echo e(old('fecha_fin')); ?>" required>
-                                        </div>
-                                        <?php $__errorArgs = ['fecha_fin'];
+                                            <?php $__errorArgs = ['fecha_fin'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
-                                        <div class="invalid-feedback"><?php echo e($message); ?></div>
-                                        <?php else: ?>
-                                            <div class="invalid-feedback" id="fecha_fin-error-message" style="display:none;">
-                                                La fecha de fin es obligatoria.
-                                            </div>
-                                            <?php unset($message);
+                                            <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                            <?php else: ?>
+                                                <div class="invalid-feedback" id="fecha_fin-error-message"
+                                                     style="display:none;">
+                                                    La fecha de fin es obligatoria.
+                                                </div>
+                                                <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="col-md-12">
-                                <div class="table-responsive mt-2">
-                                    <table class="table table-bordered table-hover table-striped text-center" id="mainTurnosTable">
+                                <div class="table-responsive mt-4">
+                                    <table class="table table-bordered table-hover table-striped text-center"
+                                           id="mainTurnosTable">
                                         <thead class="table-light">
                                         <tr>
                                             <th>No.</th>
@@ -315,7 +374,9 @@ unset($__errorArgs, $__bag); ?>
                                 <div class="d-flex justify-content-end align-items-center mt-2">
                                     <label class="form-label mb-0 me-2" style="font-size: 0.875rem;">Costo Total:</label>
                                     <div class="input-group" style="width: auto;">
-                                        <input type="text" class="form-control text-end fw-bold" id="total-costo-display" value="0.00" readonly style="font-size: 0.875rem; min-width: 100px;">
+                                        <input type="text" class="form-control text-end fw-bold"
+                                               id="total-costo-display" value="0.00" readonly
+                                               style="font-size: 0.875rem; min-width: 100px;">
                                     </div>
                                 </div>
                                 <input type="hidden" name="turnos_data" id="turnos_data">
@@ -337,8 +398,8 @@ if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>" maxlength="255"
-                                              oninput="autoResizeTextarea(this);" required><?php echo e(old('observaciones')); ?></textarea>
+unset($__errorArgs, $__bag); ?>" maxlength="300"
+                                              oninput="autoResizeTextarea(this);" onkeypress="return validarTexto(event)" required><?php echo e(old('observaciones')); ?></textarea>
                                 </div>
                                 <?php $__errorArgs = ['observaciones'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -412,8 +473,8 @@ unset($__errorArgs, $__bag); ?>
                                             <option value="24 horas">24 horas</option>
                                         </select>
                                     </div>
-                                    <div id="tipo-turno-error" class="invalid-feedback mt-1 small" style="display: none;">
-                                        Tipo de turno es obligatorio.
+                                    <div id="tipo-turno-error" class="invalid-feedback mt-1 small" style="display:none;">
+                                        El tipo de turno es obligatorio.
                                     </div>
                                 </div>
                             </div>
@@ -424,42 +485,31 @@ unset($__errorArgs, $__bag); ?>
                                 <div class="col-md-4">
                                     <label for="modal_costo" class="form-label">Costo (Lps)</label>
                                     <div class="input-group">
-                                        <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
+                                        <span class="input-group-text"><i class="bi bi-cash-coin"></i></span>
                                         <input type="number" step="0.01" name="modal_costo" id="modal_costo"
                                                class="form-control" readonly>
                                     </div>
-                                    <div id="costo-error" class="invalid-feedback mt-1 small" style="display: none;">El
+                                    <div id="costo-error" class="invalid-feedback mt-1 small" style="display:none;">El
                                         costo es obligatorio.
                                     </div>
                                 </div>
+
                                 <div class="col-md-4">
                                     <label for="modal_hora_inicio" class="form-label">Hora inicio</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text"><i class="bi bi-clock"></i></span>
-                                        <input type="time" name="modal_hora_inicio" id="modal_hora_inicio"
-                                               class="form-control" required>
-                                        <select class="form-select" id="modal_hora_inicio_ampm">
-                                            <option value="am">a.m.</option>
-                                            <option value="pm">p.m.</option>
-                                        </select>
-                                    </div>
-                                    <div id="hora-inicio-error" class="invalid-feedback mt-1 small" style="display: none;">
-                                        Hora inicio es obligatoria.
+                                    <input type="text" name="modal_hora_inicio" id="modal_hora_inicio"
+                                           class="form-control" required maxlength="10"
+                                           oninput="validarHoraFormato12(this)" onkeypress="return isTimeKey(event)">
+                                    <div id="hora-inicio-error" class="invalid-feedback mt-1 small" style="display:none;">
+                                        Hora de inicio es obligatoria.
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <label for="modal_hora_fin" class="form-label">Hora fin</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text"><i class="bi bi-clock-fill"></i></span>
-                                        <input type="time" name="modal_hora_fin" id="modal_hora_fin"
-                                               class="form-control" required>
-                                        <select class="form-select" id="modal_hora_fin_ampm">
-                                            <option value="am">a.m.</option>
-                                            <option value="pm">p.m.</option>
-                                        </select>
-                                    </div>
-                                    <div id="hora-fin-error" class="invalid-feedback mt-1 small" style="display: none;">
-                                        Hora fin es obligatoria.
+                                    <input type="text" name="modal_hora_fin" id="modal_hora_fin" class="form-control"
+                                           required maxlength="10"
+                                           oninput="validarHoraFormato12(this)" onkeypress="return isTimeKey(event)">
+                                    <div id="hora-fin-error" class="invalid-feedback mt-1 small" style="display:none;">
+                                        Hora de fin es obligatoria.
                                     </div>
                                 </div>
                             </div>
@@ -480,22 +530,140 @@ unset($__errorArgs, $__bag); ?>
             </div>
         </div>
     </div>
+
     <script>
+        const clientes = <?php echo json_encode($clientes, 15, 512) ?>;
+        const servicios = <?php echo json_encode($servicios->keyBy('id'), 15, 512) ?>;
+
+        function validarTexto(e) {
+            const key = e.keyCode || e.which;
+            const char = String.fromCharCode(key);
+            const input = e.target;
+            const pos = input.selectionStart;
+            if (pos === 0 && !/^[A-Za-zÁÉÍÓÚáéíóúÑñ]$/.test(char)) {
+                e.preventDefault();
+                return false;
+            }
+            if (key === 32 && input.selectionStart === 0) {
+                e.preventDefault();
+                return false;
+            }
+            if (key === 32) {
+                const pos = input.selectionStart;
+                if (input.value.charAt(pos - 1) === ' ') {
+                    e.preventDefault();
+                    return false;
+                }
+            }
+            return true;
+        }
+
         function autoResizeTextarea(textarea) {
             textarea.style.height = 'auto';
             textarea.style.height = textarea.scrollHeight + 'px';
         }
 
+        function configurarAutocomplete(inputId, resultsId, hiddenInputId, data) {
+            const searchInput = document.getElementById(inputId);
+            const resultsContainer = document.getElementById(resultsId);
+            const hiddenInput = document.getElementById(hiddenInputId);
+            const feedback = document.getElementById(inputId + '-error-message');
+
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                resultsContainer.innerHTML = '';
+                if (searchTerm.length > 0) {
+                    const filteredData = data.filter(item => {
+                        const fullName = (item.nombre + ' ' + (item.apellido || '')).toLowerCase();
+                        return fullName.includes(searchTerm);
+                    });
+
+                    filteredData.sort((a, b) => {
+                        const nameA = (a.nombre + ' ' + (a.apellido || '')).toLowerCase();
+                        const nameB = (b.nombre + ' ' + (b.apellido || '')).toLowerCase();
+                        return nameA.localeCompare(nameB);
+                    });
+
+                    if (filteredData.length > 0) {
+                        filteredData.forEach(item => {
+                            const resultItem = document.createElement('a');
+                            resultItem.href = '#';
+                            const fullName = item.nombre + ' ' + (item.apellido || '');
+                            resultItem.textContent = fullName;
+                            resultItem.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                searchInput.value = fullName;
+                                hiddenInput.value = item.id;
+                                resultsContainer.style.display = 'none';
+                                searchInput.classList.remove('is-invalid');
+                                if (feedback) feedback.style.display = 'none';
+                            });
+                            resultsContainer.appendChild(resultItem);
+                        });
+                        resultsContainer.style.display = 'block';
+                    } else {
+                        resultsContainer.style.display = 'none';
+                    }
+                } else {
+                    resultsContainer.style.display = 'none';
+                    hiddenInput.value = '';
+                }
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!resultsContainer.contains(e.target) && e.target !== searchInput) {
+                    resultsContainer.style.display = 'none';
+                }
+            });
+        }
+
+        function isTimeKey(event) {
+            const key = event.key;
+            const allowedKeys = /[0-9: ap.m]/;
+
+            if (event.ctrlKey || event.metaKey || event.keyCode === 8 || event.keyCode === 46 || event.keyCode === 37 || event.keyCode === 39 || event.keyCode === 9) {
+                return true;
+            }
+
+            if (!allowedKeys.test(key)) {
+                event.preventDefault();
+                return false;
+            }
+
+            const input = event.target;
+            const inputValue = input.value;
+            const selectionStart = input.selectionStart;
+
+            if (inputValue.length >= 8 && selectionStart === inputValue.length) {
+                if (!['a', 'p', '.', 'm', ' '].includes(key)) {
+                    event.preventDefault();
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        function validarHoraFormato12(input) {
+            const feedback = document.getElementById(input.id + '-error');
+
+            input.addEventListener('input', () => {
+                input.classList.remove('is-invalid');
+                if (feedback) feedback.style.display = 'none';
+            });
+        }
+
+
         document.addEventListener('DOMContentLoaded', function() {
-            // Variables y estado
+            configurarAutocomplete('cliente_search', 'cliente_results', 'cliente_id', clientes);
+
             let turnosAsignados = [];
-            let currentServiceCosts = { diurno: 0, nocturno: 0, '24 horas': 0 };
             const empleadosPorServicioUrl = "<?php echo e(route('turnos.empleadosPorServicio', ['servicio_id' => ':id'])); ?>";
             let asignarTurnoModal;
 
-            // Elementos del DOM
             const mainForm = document.getElementById('mainForm');
-            const clienteSelect = document.getElementById('cliente_id');
+            const clienteSearchInput = document.getElementById('cliente_search');
+            const clienteError = document.getElementById('cliente_search-error-message');
             const servicioSelect = document.getElementById('servicio_id');
             const fechaInicioInput = document.getElementById('fecha_inicio');
             const fechaFinInput = document.getElementById('fecha_fin');
@@ -506,7 +674,6 @@ unset($__errorArgs, $__bag); ?>
             const turnosDataError = document.getElementById('turnos-data-error');
             const resetBtn = document.getElementById('resetBtn');
 
-            // Elementos del modal
             const modalElement = document.getElementById('asignarTurnoModal');
             const modalEmpleadoContainer = document.getElementById('modal-empleado-checkbox-container');
             const modalTipoTurnoSelect = document.getElementById('modal_tipo_turno');
@@ -517,16 +684,12 @@ unset($__errorArgs, $__bag); ?>
             const limpiarModalBtn = document.getElementById('limpiarModalBtn');
             const modalErrorMessage = document.getElementById('modal-error-message');
 
-            const modalHoraInicioAmPmSelect = document.getElementById('modal_hora_inicio_ampm');
-            const modalHoraFinAmPmSelect = document.getElementById('modal_hora_fin_ampm');
-
             const empleadoIdsError = document.getElementById('empleado-ids-error');
             const tipoTurnoError = document.getElementById('tipo-turno-error');
             const horaInicioError = document.getElementById('hora-inicio-error');
             const horaFinError = document.getElementById('hora-fin-error');
             const costoError = document.getElementById('costo-error');
 
-            // Inicialización de la lógica
             function init() {
                 if (modalElement) {
                     asignarTurnoModal = new bootstrap.Modal(modalElement, {
@@ -534,10 +697,8 @@ unset($__errorArgs, $__bag); ?>
                         keyboard: false
                     });
                 }
-
                 const today = new Date().toISOString().split('T')[0];
                 fechaInicioInput.setAttribute('min', today);
-
                 loadOldTurnosData();
                 renderTurnosTable();
                 setupEventListeners();
@@ -565,27 +726,53 @@ unset($__errorArgs, $__bag); ?>
                 fechaInicioInput.addEventListener('change', handleDateChange);
                 fechaFinInput.addEventListener('change', handleDateChange);
 
-                const fields = [clienteSelect, servicioSelect, fechaInicioInput, fechaFinInput, observacionesTextarea];
+                modalTipoTurnoSelect.addEventListener('change', () => {
+                    modalTipoTurnoSelect.classList.remove('is-invalid');
+                    tipoTurnoError.style.display = 'none';
+
+                    modalCostoInput.classList.remove('is-invalid');
+                    costoError.style.display = 'none';
+                    modalHoraInicioInput.classList.remove('is-invalid');
+                    horaInicioError.style.display = 'none';
+                    modalHoraFinInput.classList.remove('is-invalid');
+                    horaFinError.style.display = 'none';
+
+                    updateModalCost();
+                    updateModalHourInputs();
+                });
+
+                modalHoraInicioInput.addEventListener('input', () => {
+                    modalHoraInicioInput.classList.remove('is-invalid');
+                    horaInicioError.style.display = 'none';
+                });
+                modalHoraFinInput.addEventListener('input', () => {
+                    modalHoraFinInput.classList.remove('is-invalid');
+                    horaFinError.style.display = 'none';
+                });
+
+                modalCostoInput.addEventListener('input', () => {
+                    modalCostoInput.classList.remove('is-invalid');
+                    costoError.style.display = 'none';
+                });
+
+                const fields = [
+                    clienteSearchInput,
+                    servicioSelect,
+                    fechaInicioInput,
+                    fechaFinInput,
+                    observacionesTextarea
+                ];
                 fields.forEach(field => {
                     field.addEventListener('input', () => {
-                        if (field.value.trim() !== '') {
-                            field.classList.remove('is-invalid');
-                            const feedback = document.getElementById(field.id + '-error-message');
-                            if (feedback) feedback.style.display = 'none';
-                        }
+                        field.classList.remove('is-invalid');
+                        const feedback = document.getElementById(field.id + '-error-message');
+                        if (feedback) feedback.style.display = 'none';
                     });
                 });
 
                 addTurnoBtn.addEventListener('click', handleAddTurnoModalClick);
                 limpiarModalBtn.addEventListener('click', clearModalInputs);
-
-                // Reemplaza el antiguo evento 'change' con la nueva función
-                modalTipoTurnoSelect.addEventListener('change', updateModalCost);
                 modalElement.addEventListener('hidden.bs.modal', clearModalInputs);
-
-                // Nuevo evento para actualizar el costo al seleccionar un empleado
-                modalEmpleadoContainer.addEventListener('change', updateModalCost);
-
 
                 turnosTableBody.addEventListener('click', function(e) {
                     if (e.target.closest('.btn-danger')) {
@@ -598,17 +785,6 @@ unset($__errorArgs, $__bag); ?>
 
             function handleServiceChange() {
                 toggleAddEmpleadoBtn();
-                const selectedOption = servicioSelect.options[servicioSelect.selectedIndex];
-
-                console.log('Valor crudo del atributo data-costo-24-horas:', selectedOption.dataset.costo24Horas);
-
-                currentServiceCosts = selectedOption ? {
-                    diurno: parseFloat(selectedOption.dataset.costoDiurno) || 0,
-                    nocturno: parseFloat(selectedOption.dataset.costoNocturno) || 0,
-                    '24 horas': parseFloat(selectedOption.dataset.costo24Horas) || 0
-                } : { diurno: 0, nocturno: 0, '24 horas': 0 };
-
-                console.log('Costos del servicio actual (procesado):', currentServiceCosts);
             }
 
             function handleAddEmpleadoClick() {
@@ -626,12 +802,17 @@ unset($__errorArgs, $__bag); ?>
 
                 let formIsValid = true;
 
-                const allFormControls = mainForm.querySelectorAll('.form-control, .form-select');
-                allFormControls.forEach(el => el.classList.remove('is-invalid'));
-                const allInvalidFeedback = mainForm.querySelectorAll('.invalid-feedback');
-                allInvalidFeedback.forEach(el => el.style.display = 'none');
+                document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+                document.querySelectorAll('.invalid-feedback').forEach(el => el.style.display = 'none');
 
-                const requiredFields = [clienteSelect, servicioSelect, fechaInicioInput, fechaFinInput, observacionesTextarea];
+                const clienteIdInput = document.getElementById('cliente_id');
+                if (!clienteIdInput.value) {
+                    clienteSearchInput.classList.add('is-invalid');
+                    if (clienteError) clienteError.style.display = 'block';
+                    formIsValid = false;
+                }
+
+                const requiredFields = [servicioSelect, fechaInicioInput, fechaFinInput, observacionesTextarea];
                 requiredFields.forEach(field => {
                     const feedback = document.getElementById(field.id + '-error-message');
                     if (!field.value.trim()) {
@@ -641,9 +822,11 @@ unset($__errorArgs, $__bag); ?>
                     }
                 });
 
-                if (fechaInicioInput.value && fechaFinInput.value && new Date(fechaFinInput.value) < new Date(fechaInicioInput.value)) {
+                if (fechaInicioInput.value && fechaFinInput.value && new Date(fechaFinInput.value) < new Date(
+                    fechaInicioInput.value)) {
                     fechaFinInput.classList.add('is-invalid');
-                    document.getElementById('fecha_fin-error-message').textContent = 'La fecha de fin no puede ser anterior a la de inicio.';
+                    document.getElementById('fecha_fin-error-message').textContent =
+                        'La fecha de fin no puede ser anterior a la de inicio.';
                     document.getElementById('fecha_fin-error-message').style.display = 'block';
                     formIsValid = false;
                 }
@@ -660,7 +843,10 @@ unset($__errorArgs, $__bag); ?>
                 } else {
                     const firstInvalid = mainForm.querySelector('.is-invalid, #turnos-data-error');
                     if (firstInvalid) {
-                        firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        firstInvalid.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
                     }
                 }
             }
@@ -673,14 +859,15 @@ unset($__errorArgs, $__bag); ?>
                     observacionesTextarea.value = '';
                     autoResizeTextarea(observacionesTextarea);
                 }
-                clearModalInputs();
-                currentServiceCosts = { diurno: 0, nocturno: 0, '24 horas': 0 };
+
+                servicioSelect.value = '';
                 toggleAddEmpleadoBtn();
 
-                const allFormControls = mainForm.querySelectorAll('.form-control, .form-select');
-                allFormControls.forEach(el => el.classList.remove('is-invalid'));
-                const allInvalidFeedback = mainForm.querySelectorAll('.invalid-feedback');
-                allInvalidFeedback.forEach(el => el.style.display = 'none');
+                document.getElementById('cliente_search').value = '';
+                document.getElementById('cliente_id').value = '';
+
+                document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+                document.querySelectorAll('.invalid-feedback').forEach(el => el.style.display = 'none');
             }
 
             function handleDateChange(event) {
@@ -699,7 +886,13 @@ unset($__errorArgs, $__bag); ?>
             }
 
             function toggleAddEmpleadoBtn() {
-                addEmpleadoBtnPrincipal.disabled = !servicioSelect.value;
+                const isServiceSelected = !!servicioSelect.value;
+                addEmpleadoBtnPrincipal.disabled = !isServiceSelected;
+                if (isServiceSelected) {
+                    addEmpleadoBtnPrincipal.classList.remove('btn-faded');
+                } else {
+                    addEmpleadoBtnPrincipal.classList.add('btn-faded');
+                }
             }
 
             function renderTurnosTable() {
@@ -720,14 +913,13 @@ unset($__errorArgs, $__bag); ?>
                 } else {
                     turnosAsignados.forEach((turno, index) => {
                         const tipoTurnoCapitalizado = turno.tipo_turno.charAt(0).toUpperCase() + turno.tipo_turno.slice(1);
-
                         tableHtml += `
                         <tr>
                             <td>${index + 1}</td>
                             <td>${turno.empleado_nombres.join(', ')}</td>
                             <td>${tipoTurnoCapitalizado}</td>
-                            <td>${turno.hora_inicio}</td>
-                            <td>${turno.hora_fin}</td>
+                            <td>${convertirHora12(turno.hora_inicio)}</td>
+                            <td>${convertirHora12(turno.hora_fin)}</td>
                             <td>${parseFloat(turno.costo).toFixed(2)}</td>
                             <td>
                                 <button type="button" class="btn btn-danger btn-sm" data-index="${index}">
@@ -749,6 +941,14 @@ unset($__errorArgs, $__bag); ?>
                 calculateTotalCost();
             }
 
+            function convertirHora12(hora24) {
+                const [horas, minutos] = hora24.split(':');
+                const horasNum = parseInt(horas, 10);
+                const ampm = horasNum >= 12 ? 'p.m.' : 'a.m.';
+                const horas12 = horasNum % 12 || 12;
+                return `${horas12.toString().padStart(2, '0')}:${minutos} ${ampm}`;
+            }
+
             function calculateTotalCost() {
                 let total = 0;
                 turnosAsignados.forEach(turno => {
@@ -768,7 +968,8 @@ unset($__errorArgs, $__bag); ?>
             async function cargarEmpleadosParaModal(servicioId) {
                 modalEmpleadoContainer.innerHTML = '<p class="text-muted m-0">Cargando empleados...</p>';
                 if (!servicioId) {
-                    modalEmpleadoContainer.innerHTML = '<p class="text-muted m-0">Seleccione un servicio en el formulario principal primero</p>';
+                    modalEmpleadoContainer.innerHTML =
+                        '<p class="text-muted m-0">Seleccione un servicio en el formulario principal primero</p>';
                     return;
                 }
                 try {
@@ -777,46 +978,86 @@ unset($__errorArgs, $__bag); ?>
                     if (!response.ok) throw new Error('Error al cargar empleados.');
                     const empleados = await response.json();
                     const empleadosAsignadosIds = turnosAsignados.map(t => t.empleado_id);
-                    renderEmpleadosCheckboxes(empleados, empleadosAsignadosIds);
+                    renderEmpleadosRadiobuttons(empleados, empleadosAsignadosIds);
                 } catch (error) {
                     console.error('Error al cargar empleados:', error);
                     modalEmpleadoContainer.innerHTML = '<p class="text-muted m-0">Error al cargar empleados.</p>';
                 }
             }
 
-            function renderEmpleadosCheckboxes(empleados, empleadosAsignadosIds) {
+            function renderEmpleadosRadiobuttons(empleados, empleadosAsignadosIds) {
                 modalEmpleadoContainer.innerHTML = '';
+
+                // CAMBIO APLICADO: Ordenar los empleados alfabéticamente por nombre y apellido
+                empleados.sort((a, b) => {
+                    const nombreCompletoA = (a.nombre + ' ' + a.apellido).toLowerCase();
+                    const nombreCompletoB = (b.nombre + ' ' + b.apellido).toLowerCase();
+                    return nombreCompletoA.localeCompare(nombreCompletoB);
+                });
+
                 if (empleados.length > 0) {
                     empleados.forEach(empleado => {
                         const isAssigned = empleadosAsignadosIds.includes(empleado.id);
                         const div = document.createElement('div');
                         div.classList.add('form-check');
                         div.innerHTML = `
-                        <input class="form-check-input" type="radio" name="modal_empleado_ids" value="${empleado.id}" id="modal_empleado_${empleado.id}" ${isAssigned ? 'disabled' : ''}>
+                        <input class="form-check-input" type="radio" name="modal_empleado_id" value="${empleado.id}" id="modal_empleado_${empleado.id}" ${isAssigned ? 'disabled' : ''}>
                         <label class="form-check-label" for="modal_empleado_${empleado.id}">
                             ${empleado.nombre} ${empleado.apellido} ${isAssigned ? ' (ya asignado)' : ''}
                         </label>
                     `;
                         modalEmpleadoContainer.appendChild(div);
                     });
+
+                    const radioInputs = modalEmpleadoContainer.querySelectorAll('input[type="radio"]');
+                    radioInputs.forEach(radio => {
+                        radio.addEventListener('change', () => {
+                            if (radio.checked) {
+                                empleadoIdsError.style.display = 'none';
+                                modalEmpleadoContainer.classList.remove('is-invalid');
+                            }
+                        });
+                    });
                 } else {
-                    modalEmpleadoContainer.innerHTML = '<p class="text-muted m-0">No hay empleados disponibles para este servicio.</p>';
+                    modalEmpleadoContainer.innerHTML =
+                        '<p class="text-muted m-0">No hay empleados disponibles para este servicio.</p>';
                 }
             }
 
-            // Nueva función para actualizar el costo del modal.
+            function updateModalHourInputs() {
+                const tipoTurno = modalTipoTurnoSelect.value;
+                if (tipoTurno === 'diurno') {
+                    modalHoraInicioInput.value = '06:00 a.m.';
+                    modalHoraFinInput.value = '09:00 p.m.';
+                } else if (tipoTurno === 'nocturno') {
+                    modalHoraInicioInput.value = '09:00 p.m.';
+                    modalHoraFinInput.value = '06:00 a.m.';
+                } else if (tipoTurno === '24 horas') {
+                    modalHoraInicioInput.value = '06:00 a.m.';
+                    modalHoraFinInput.value = '06:00 a.m.';
+                } else {
+                    modalHoraInicioInput.value = '';
+                    modalHoraFinInput.value = '';
+                }
+            }
+
             function updateModalCost() {
                 const tipoTurno = modalTipoTurnoSelect.value;
-                const selectedEmployeeRadio = modalEmpleadoContainer.querySelector('input[name="modal_empleado_ids"]:checked');
+                const servicioId = servicioSelect.value;
 
-                // Solo actualiza el costo si se ha seleccionado un tipo de turno y un empleado
-                if (tipoTurno && selectedEmployeeRadio) {
-                    const costoUnitario = currentServiceCosts[tipoTurno] || 0;
-                    modalCostoInput.value = parseFloat(costoUnitario).toFixed(2);
-                } else {
-                    // Si no se ha seleccionado alguno, el costo debe estar vacío para la validación
-                    modalCostoInput.value = '';
+                let costoUnitario = 0;
+                const servicioData = servicios[servicioId];
+                if (servicioData) {
+                    if (tipoTurno === 'diurno') {
+                        costoUnitario = servicioData.costo_diurno;
+                    } else if (tipoTurno === 'nocturno') {
+                        costoUnitario = servicioData.costo_nocturno;
+                    } else if (tipoTurno === '24 horas') {
+                        costoUnitario = servicioData.costo_24_horas;
+                    }
                 }
+
+                modalCostoInput.value = parseFloat(costoUnitario || 0).toFixed(2);
             }
 
             function handleAddTurnoModalClick(e) {
@@ -827,44 +1068,44 @@ unset($__errorArgs, $__bag); ?>
             }
 
             function agregarTurno() {
-                const selectedEmployeeRadio = modalEmpleadoContainer.querySelector('input[name="modal_empleado_ids"]:checked');
+                const selectedEmployeeRadio = modalEmpleadoContainer.querySelector(
+                    'input[name="modal_empleado_id"]:checked');
                 if (!selectedEmployeeRadio) {
                     console.error('No se ha seleccionado un empleado.');
                     return;
                 }
                 const empleadoId = parseInt(selectedEmployeeRadio.value);
-                const empleadoNombre = selectedEmployeeRadio.labels[0].textContent.replace(/\s*\(ya asignado\)/, '').trim();
+                const empleadoNombre = selectedEmployeeRadio.labels[0].textContent.replace(/\s*\(ya asignado\)/, '')
+                    .trim();
                 const tipoTurno = modalTipoTurnoSelect.value;
-                const horaInicio = modalHoraInicioInput.value;
-                const horaFin = modalHoraFinInput.value;
-                const inicioAmPm = modalHoraInicioAmPmSelect.value;
-                const finAmPm = modalHoraFinAmPmSelect.value;
+                const horaInicio = convertirHora24(modalHoraInicioInput.value.trim());
+                const horaFin = convertirHora24(modalHoraFinInput.value.trim());
 
                 let costo = 0;
-                const costoBaseTurno = currentServiceCosts[tipoTurno];
+                const servicioId = servicioSelect.value;
+                const servicioData = servicios[servicioId];
 
-                if (costoBaseTurno > 0) {
-                    if (tipoTurno === '24 horas') {
-                        // Lógica corregida para asignar el costo fijo
-                        costo = costoBaseTurno;
-                    } else {
-                        let [hInicio, mInicio] = horaInicio.split(':').map(Number);
-                        let [hFin, mFin] = horaFin.split(':').map(Number);
-
-                        if (inicioAmPm === 'pm' && hInicio < 12) hInicio += 12;
-                        if (inicioAmPm === 'am' && hInicio === 12) hInicio = 0;
-
-                        if (finAmPm === 'pm' && hFin < 12) hFin += 12;
-                        if (finAmPm === 'am' && hFin === 12) hFin = 0;
-
-                        const totalMinutosInicio = hInicio * 60 + mInicio;
-                        let totalMinutosFin = hFin * 60 + mFin;
-                        if (totalMinutosFin < totalMinutosInicio) totalMinutosFin += 24 * 60;
-
+                if (servicioData) {
+                    if (tipoTurno === 'diurno') {
+                        const duracionEstandarDiurno = 15;
+                        const totalMinutosInicio = convertirAMinutos(horaInicio);
+                        let totalMinutosFin = convertirAMinutos(horaFin);
+                        if (totalMinutosFin <= totalMinutosInicio) {
+                            totalMinutosFin += 24 * 60;
+                        }
                         const duracionHoras = (totalMinutosFin - totalMinutosInicio) / 60;
-                        const duracionEstandar = 12;
-
-                        costo = (costoBaseTurno / duracionEstandar) * duracionHoras;
+                        costo = (servicioData.costo_diurno / duracionEstandarDiurno) * duracionHoras;
+                    } else if (tipoTurno === 'nocturno') {
+                        const duracionEstandarNocturno = 9;
+                        const totalMinutosInicio = convertirAMinutos(horaInicio);
+                        let totalMinutosFin = convertirAMinutos(horaFin);
+                        if (totalMinutosFin <= totalMinutosInicio) {
+                            totalMinutosFin += 24 * 60;
+                        }
+                        const duracionHoras = (totalMinutosFin - totalMinutosInicio) / 60;
+                        costo = (servicioData.costo_nocturno / duracionEstandarNocturno) * duracionHoras;
+                    } else if (tipoTurno === '24 horas') {
+                        costo = servicioData.costo_24_horas;
                     }
                 }
 
@@ -872,8 +1113,8 @@ unset($__errorArgs, $__bag); ?>
                     empleado_id: empleadoId,
                     empleado_nombres: [empleadoNombre],
                     tipo_turno: tipoTurno,
-                    hora_inicio: `${horaInicio} ${inicioAmPm.toUpperCase()}`,
-                    hora_fin: `${horaFin} ${finAmPm.toUpperCase()}`,
+                    hora_inicio: horaInicio,
+                    hora_fin: horaFin,
                     costo: parseFloat(costo).toFixed(2)
                 };
 
@@ -882,10 +1123,13 @@ unset($__errorArgs, $__bag); ?>
                 asignarTurnoModal.hide();
             }
 
+
             function validateModalInputs() {
                 let isValid = true;
                 clearModalErrors();
-                const selectedEmployeeRadio = modalEmpleadoContainer.querySelector('input[name="modal_empleado_ids"]:checked');
+
+                const selectedEmployeeRadio = modalEmpleadoContainer.querySelector(
+                    'input[name="modal_empleado_id"]:checked');
 
                 if (!selectedEmployeeRadio) {
                     empleadoIdsError.style.display = 'block';
@@ -899,13 +1143,18 @@ unset($__errorArgs, $__bag); ?>
                     isValid = false;
                 }
 
-                if (!modalHoraInicioInput.value) {
+                const horaInicioValue = modalHoraInicioInput.value.trim();
+                const horaFinValue = modalHoraFinInput.value.trim();
+
+                if (!horaInicioValue) {
+                    horaInicioError.textContent = 'Hora de inicio es obligatoria.';
                     horaInicioError.style.display = 'block';
                     modalHoraInicioInput.classList.add('is-invalid');
                     isValid = false;
                 }
 
-                if (!modalHoraFinInput.value) {
+                if (!horaFinValue) {
+                    horaFinError.textContent = 'Hora de fin es obligatoria.';
                     horaFinError.style.display = 'block';
                     modalHoraFinInput.classList.add('is-invalid');
                     isValid = false;
@@ -919,53 +1168,99 @@ unset($__errorArgs, $__bag); ?>
 
                 if (isValid) {
                     const tipoTurno = modalTipoTurnoSelect.value;
-                    const inicioValue = modalHoraInicioInput.value;
-                    const finValue = modalHoraFinInput.value;
-                    const inicioAmPm = modalHoraInicioAmPmSelect.value;
-                    const finAmPm = modalHoraFinAmPmSelect.value;
+                    const pattern = /^(0?[1-9]|1[0-2]):[0-5][0-9]\s(a|p)\.m\.?$/;
 
-                    let [hInicio, mInicio] = inicioValue.split(':').map(Number);
-                    let [hFin, mFin] = finValue.split(':').map(Number);
-
-                    if (inicioAmPm === 'pm' && hInicio < 12) hInicio += 12;
-                    if (inicioAmPm === 'am' && hInicio === 12) hInicio = 0;
-
-                    if (finAmPm === 'pm' && hFin < 12) hFin += 12;
-                    if (finAmPm === 'am' && hFin === 12) hFin = 0;
-
-                    const totalMinutosInicio = hInicio * 60 + mInicio;
-                    const totalMinutosFin = hFin * 60 + mFin;
-
-                    if (totalMinutosFin < totalMinutosInicio && tipoTurno !== 'nocturno') {
-                        horaFinError.textContent = 'La hora de fin debe ser posterior a la de inicio.';
-                        horaFinError.style.display = 'block';
-                        modalHoraFinInput.classList.add('is-invalid');
+                    if (!pattern.test(horaInicioValue.toLowerCase())) {
+                        horaInicioError.textContent = 'Formato de hora incorrecto.';
+                        horaInicioError.style.display = 'block';
+                        modalHoraInicioInput.classList.add('is-invalid');
                         isValid = false;
-                    } else if (totalMinutosFin === totalMinutosInicio && tipoTurno !== '24 horas') {
-                        horaFinError.textContent = 'La hora de fin no puede ser igual a la de inicio.';
-                        horaFinError.style.display = 'block';
-                        modalHoraFinInput.classList.add('is-invalid');
-                        isValid = false;
-                    } else if (tipoTurno === '24 horas' && totalMinutosFin !== totalMinutosInicio) {
-                        horaFinError.textContent = 'Para un turno de 24 horas, la hora de fin debe ser igual a la de inicio.';
+                    }
+                    if (!pattern.test(horaFinValue.toLowerCase())) {
+                        horaFinError.textContent = 'Formato de hora incorrecto.';
                         horaFinError.style.display = 'block';
                         modalHoraFinInput.classList.add('is-invalid');
                         isValid = false;
                     }
-                }
 
+                    if (isValid) {
+                        const horaInicio24 = convertirHora24(horaInicioValue);
+                        const horaFin24 = convertirHora24(horaFinValue);
+                        const totalMinutosInicio = convertirAMinutos(horaInicio24);
+                        const totalMinutosFin = convertirAMinutos(horaFin24);
+
+                        if (tipoTurno === 'diurno') {
+                            const diurnoInicio = convertirAMinutos('06:00');
+                            const diurnoFin = convertirAMinutos('21:00');
+                            if (totalMinutosInicio < diurnoInicio) {
+                                horaInicioError.textContent = 'La hora de inicio no debe ser anterior a las 6:00 a.m.';
+                                horaInicioError.style.display = 'block';
+                                modalHoraInicioInput.classList.add('is-invalid');
+                                isValid = false;
+                            }
+                            if (totalMinutosFin > diurnoFin) {
+                                horaFinError.textContent = 'La hora de fin no debe ser posterior a las 9:00 p.m.';
+                                horaFinError.style.display = 'block';
+                                modalHoraFinInput.classList.add('is-invalid');
+                                isValid = false;
+                            }
+                        } else if (tipoTurno === 'nocturno') {
+                            const nocturnoInicio = convertirAMinutos('21:00');
+                            const nocturnoFin = convertirAMinutos('06:00');
+
+                            if (totalMinutosInicio < nocturnoInicio && totalMinutosInicio > nocturnoFin) {
+                                horaInicioError.textContent = 'La hora de inicio no debe ser anterior a las 9:00 p.m.';
+                                horaInicioError.style.display = 'block';
+                                modalHoraInicioInput.classList.add('is-invalid');
+                                isValid = false;
+                            }
+
+                            if (totalMinutosFin < nocturnoInicio && totalMinutosFin > nocturnoFin) {
+                                horaFinError.textContent = 'La hora de fin no debe ser posterior a las 6:00 a.m.';
+                                horaFinError.style.display = 'block';
+                                modalHoraFinInput.classList.add('is-invalid');
+                                isValid = false;
+                            }
+                        } else if (tipoTurno === '24 horas') {
+                            if (horaInicio24 !== '06:00' || horaFin24 !== '06:00') {
+                                horaInicioError.textContent =
+                                    'Para un turno de 24 horas, la hora de inicio y fin deben ser las 06:00 a.m.';
+                                horaInicioError.style.display = 'block';
+                                modalHoraInicioInput.classList.add('is-invalid');
+                                modalHoraFinInput.classList.add('is-invalid');
+                                isValid = false;
+                            }
+                        }
+                    }
+                }
                 return isValid;
             }
 
+            function convertirAMinutos(hora) {
+                const [h, m] = hora.split(':').map(Number);
+                return h * 60 + m;
+            }
+
+            function convertirHora24(hora12) {
+                const [time, ampm] = hora12.split(' ');
+                let [hours, minutes] = time.split(':');
+                hours = parseInt(hours);
+                if (ampm.startsWith('p') && hours !== 12) {
+                    hours += 12;
+                } else if (ampm.startsWith('a') && hours === 12) {
+                    hours = 0;
+                }
+                return `${hours.toString().padStart(2, '0')}:${minutes}`;
+            }
+
             function clearModalInputs() {
-                const selectedRadio = modalEmpleadoContainer.querySelector('input[name="modal_empleado_ids"]:checked');
+                const selectedRadio = modalEmpleadoContainer.querySelector(
+                    'input[name="modal_empleado_id"]:checked');
                 if (selectedRadio) selectedRadio.checked = false;
                 modalTipoTurnoSelect.value = '';
                 modalHoraInicioInput.value = '';
                 modalHoraFinInput.value = '';
                 modalCostoInput.value = '';
-                modalHoraInicioAmPmSelect.value = 'am';
-                modalHoraFinAmPmSelect.value = 'am';
                 clearModalErrors();
             }
 
@@ -987,7 +1282,6 @@ unset($__errorArgs, $__bag); ?>
             calculateTotalCost();
         });
     </script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\ardon\PhpstormProjects\Centinela\resources\views/turnos/formulario.blade.php ENDPATH**/ ?>

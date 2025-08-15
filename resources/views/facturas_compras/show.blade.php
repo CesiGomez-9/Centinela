@@ -324,7 +324,7 @@
                         <div class="invoice-header-info">
                             <div class="supplier-details">
                                 <div class="logo-and-name">
-                                    <strong>Proveedor: {{ $factura->proveedor->nombreEmpresa ?? 'N/A' }}</strong>                                </div>
+                                    <strong>Proveedor: {{ $factura->proveedor->nombreEmpresa ?? 'N/A' }}</strong></div>
                                 <div class="supplier-address-contact">
                                     <p><strong>Dirección:</strong> {{ $factura->proveedor->direccion ?? 'N/A' }}.</p>
                                     <p><strong>Teléfono de la empresa:</strong> {{ $factura->proveedor->telefonodeempresa ?? 'N/A' }}.</p>
@@ -337,7 +337,6 @@
                                 <div class="invoice-details-grid">
                                     <div><strong>Factura de compra N°:</strong> {{ $factura->numero_factura ?? 'N/A' }}.</div>
                                     <div><strong>Fecha de la factura:</strong> {{ \Carbon\Carbon::parse($factura->fecha ?? now())->format('d/m/Y') }}.</div>
-                                    {{-- La siguiente línea ya incluye la frase "Proveedor" como solicitaste --}}
                                     <div><strong>Proveedor:</strong> {{ $factura->proveedor->nombreEmpresa ?? 'N/A' }}</div>
                                     <div><strong>Forma de pago:</strong> {{ $factura->forma_pago ?? 'N/A' }}.</div>
                                     <div><strong>Responsable:</strong> {{ $factura->empleado->nombre ?? 'N/A' }} {{ $factura->empleado->apellido ?? 'N/A' }}.</div>
@@ -357,14 +356,13 @@
                                     <th>Descripción</th>
                                     <th>Precio(Lps)</th>
                                     <th>Cantidad</th>
-                                    <th>IVA%</th> {{-- Ahora se calcula dinámicamente --}}
-                                    <th>Subtotal(Lps)</th> {{-- Ahora se calcula dinámicamente --}}
+                                    <th>IVA%</th>
+                                    <th>Subtotal(Lps)</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 @forelse ($factura->detalles ?? [] as $index => $detalle)
                                     @php
-                                        // Calcula el IVA y el subtotal por línea dinámicamente
                                         $ivaPorcentaje = $detalle->productoInventario->impuesto->porcentaje ?? 0;
                                         $subtotalLinea = $detalle->precio_compra * $detalle->cantidad;
                                     @endphp
@@ -373,8 +371,8 @@
                                         <td>{{ $detalle->productoInventario->nombre ?? 'Producto Desconocido' }}</td>
                                         <td>{{ number_format($detalle->precio_compra, 2) }}</td>
                                         <td>{{ $detalle->cantidad }}</td>
-                                        <td>{{ number_format($ivaPorcentaje, 0) }}%</td> {{-- Muestra el IVA del producto --}}
-                                        <td>{{ number_format($subtotalLinea, 2) }}</td> {{-- Muestra el subtotal calculado --}}
+                                        <td>{{ number_format($ivaPorcentaje, 0) }}%</td>
+                                        <td>{{ number_format($subtotalLinea, 2) }}</td>
                                     </tr>
                                 @empty
                                     <tr>
@@ -385,7 +383,6 @@
                             </table>
                         </div>
 
-                        {{-- Contenedor para los totales: ajustado para que sea más pequeño y a la derecha --}}
                         <div class="row justify-content-end">
                             <div class="col-md-6 col-lg-5">
                                 <div class="invoice-summary-totals">

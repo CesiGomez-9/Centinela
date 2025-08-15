@@ -15,17 +15,17 @@ return new class extends Migration
             $table->id();
             $table->string('numero_factura')->unique();
             $table->date('fecha');
-            $table->enum('forma_pago', ['Efectivo', 'Cheque', 'Transferencia'])->default('Efectivo');
+            $table->enum('forma_pago', [ 'Cheque', 'Efectivo', 'Transferencia'])->default('Efectivo');
 
-            $table->decimal('importe_gravado', 10, 2)->default(0); // Suma de bases imponibles con IVA > 0
-            $table->decimal('importe_exento', 10, 2)->default(0);  // Suma de bases imponibles con IVA = 0
-            $table->decimal('importe_exonerado', 10, 2)->default(0); // Para casos especiales de exención, inicialmente 0
-            $table->decimal('isv_15', 10, 2)->default(0);          // Suma del IVA 15%
-            $table->decimal('isv_18', 10, 2)->default(0);          // Suma del IVA 18%
+            $table->decimal('importe_gravado', 10, 2)->default(0);
+            $table->decimal('importe_exento', 10, 2)->default(0);
+            $table->decimal('importe_exonerado', 10, 2)->default(0);
+            $table->decimal('isv_15', 10, 2)->default(0);
+            $table->decimal('isv_18', 10, 2)->default(0);
 
-            $table->decimal('subtotal', 10, 2)->default(0); // Este podría ser la suma de gravado + exento + exonerado
-            $table->decimal('impuestos', 10, 2)->default(0); // Este podría ser la suma de isv_15 + isv_18
-            $table->decimal('totalF', 10, 2)->default(0);   // Este debería ser la suma de todo
+            $table->decimal('subtotal', 10, 2)->default(0);
+            $table->decimal('impuestos', 10, 2)->default(0);
+            $table->decimal('totalF', 10, 2)->default(0);
 
             $table->unsignedBigInteger('responsable_id');
             $table->foreign('responsable_id')->references('id')->on('empleados')->onDelete('cascade');

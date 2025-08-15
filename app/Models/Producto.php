@@ -32,18 +32,12 @@ class Producto extends Model
         'precio_venta' => 'decimal:2'
     ];
 
-    /**
-     * Define la relación uno a muchos con Detalle.
-     */
+
     public function detalles()
     {
         return $this->hasMany(Detalle::class);
     }
 
-    /**
-     * Define la relación muchos a uno con Impuesto.
-     * Un producto pertenece a un tipo de impuesto.
-     */
     public function impuesto()
     {
         return $this->belongsTo(Impuesto::class);
@@ -64,7 +58,6 @@ class Producto extends Model
         return $this->hasMany(DetalleFacturaVenta::class);
     }
 
-    // En App\Models\Producto.php
 
     public function scopeBuscar($query, $termino)
     {

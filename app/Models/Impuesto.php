@@ -14,9 +14,6 @@ class Impuesto extends Model
         'porcentaje',
     ];
 
-    /**
-     * Get the products for the Impuesto.
-     */
     public function productos()
     {
         return $this->hasMany(Producto::class);

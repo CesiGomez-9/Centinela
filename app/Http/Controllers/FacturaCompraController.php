@@ -41,7 +41,7 @@ class FacturaCompraController extends Controller
     {
         $proveedores = Proveedor::orderBy('nombreEmpresa')->get();
         $empleados = Empleado::orderBy('nombre')->get();
-        $formasPago = ['Efectivo', 'Cheque', 'Transferencia'];
+        $formasPago = [ 'Cheque', 'Efectivo', 'Transferencia'];
 
         return view('facturas_compras.formulario', compact('proveedores', 'formasPago', 'empleados'));
     }
@@ -58,12 +58,12 @@ class FacturaCompraController extends Controller
                 'before_or_equal:today'
             ],
             'proveedor_id' => ['required', 'exists:proveedores,id'],
-            'forma_pago' => ['required', 'in:Efectivo,Cheque,Transferencia'],
+            'forma_pago' => ['required', 'in:Cheque, Efectivo,Transferencia'],
             'responsable_id' => ['required', 'exists:empleados,id'],
             'productos' => ['required', 'array', 'min:1'],
             'productos.*.product_id' => ['required', 'exists:productos,id'],
-            'productos.*.nombre' => ['required', 'string', 'max:255'], // Se mantiene para lógica de negocio
-            'productos.*.categoria' => ['required', 'string', 'max:255'], // Se mantiene para lógica de negocio
+            'productos.*.nombre' => ['required', 'string', 'max:255'],
+            'productos.*.categoria' => ['required', 'string', 'max:255'],
             'productos.*.precioCompra' => [
                 'required',
                 'integer',
@@ -230,7 +230,9 @@ class FacturaCompraController extends Controller
     public function edit(string $id)
     {
         $factura = FacturaCompra::with(['detalles.productoInventario.impuesto', 'proveedor', 'empleado'])->findOrFail($id);
+        // Proveedores ordenados alfabéticamente por nombreEmpresa
         $proveedores = Proveedor::orderBy('nombreEmpresa')->get();
+        // Empleados ordenados alfabéticamente por nombre
         $empleados = Empleado::orderBy('nombre')->get();
         $formasPago = ['Efectivo', 'Cheque', 'Transferencia'];
 
@@ -252,7 +254,7 @@ class FacturaCompraController extends Controller
                 'before_or_equal:today'
             ],
             'proveedor_id' => ['required', 'exists:proveedores,id'],
-            'forma_pago' => ['required', 'in:Efectivo,Cheque,Transferencia'],
+            'forma_pago' => ['required', 'in:Cheque, Efectivo, Transferencia'],
             'responsable_id' => ['required', 'exists:empleados,id'],
             'productos' => ['required', 'array', 'min:1'],
             'productos.*.product_id' => ['required', 'exists:productos,id'],

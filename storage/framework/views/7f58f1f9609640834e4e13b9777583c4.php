@@ -57,6 +57,9 @@
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="<?php echo e(route('servicios.catalogo')); ?>">Listado de servicios</a></li>
                         <li><a class="dropdown-item" href="<?php echo e(route('servicios.index')); ?>">Registrar un nuevo servicio</a></li>
+                        <li><hr class="dropdown-divider"></li> 
+                        <li><a class="dropdown-item" href="<?php echo e(route('turnos.create')); ?>">Venta de servicios</a></li>
+                        <li><a class="dropdown-item" href="<?php echo e(route('turnos.index')); ?>">Listado de venta de servicios</a></li>
                     </ul>
                 </li>
                 <li class="nav-item"><a class="nav-link text-white" href="#">Registrate</a></li>
