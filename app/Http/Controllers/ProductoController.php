@@ -126,22 +126,17 @@ class ProductoController extends Controller
     {
         $producto = Producto::with('impuesto')->findOrFail($id);
 
-        // Obtener todo el historial de precios de compra, ordenado de más antiguo a más reciente
         $allPrecioCompras = $producto->precioCompras()->orderBy('created_at', 'asc')->get();
 
-        // Procesar la colección para añadir el 'previous_price' a cada elemento
         $processedPrecioCompras = $allPrecioCompras->map(function ($precioHistorial, $key) use ($allPrecioCompras) {
             $previousPrice = null;
             if ($key > 0) {
-                // Si no es el primer elemento, el precio anterior es el del índice anterior
                 $previousPrice = $allPrecioCompras->get($key - 1)->precio_compra;
             }
-            // Añadir el previous_price como un atributo temporal al objeto
             $precioHistorial->previous_price = $previousPrice;
             return $precioHistorial;
         });
 
-        // Paginación manual de la colección procesada
         $perPage = 10;
         $currentPage = LengthAwarePaginator::resolveCurrentPage();
         $currentPageItems = $processedPrecioCompras->slice(($currentPage - 1) * $perPage, $perPage)->values();

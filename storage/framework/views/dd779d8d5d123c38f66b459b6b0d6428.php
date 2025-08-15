@@ -1,6 +1,5 @@
-@extends('plantilla')
-@section('titulo','Registrar una factura')
-@section('content')
+<?php $__env->startSection('titulo','Registrar una factura'); ?>
+<?php $__env->startSection('content'); ?>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
@@ -188,35 +187,49 @@
 
                     <h3 class="text-center mb-4" style="color: #09457f;">
                         <i class="bi bi-file-text"></i>
-                        @isset($factura)
+                        <?php if(isset($factura)): ?>
                             Editar una factura de compra
-                        @else
+                        <?php else: ?>
                             Registrar una nueva factura de compra
-                        @endisset
+                        <?php endif; ?>
                     </h3>
 
                     <form method="POST" id="facturaForm"
-                          action="{{ isset($factura) ? route('facturas_compras.update', $factura->id) : route('facturas_compras.store') }}"
+                          action="<?php echo e(isset($factura) ? route('facturas_compras.update', $factura->id) : route('facturas_compras.store')); ?>"
                           novalidate>
-                        @csrf
-                        @isset($factura)
-                            @method('PUT')
-                        @endisset
+                        <?php echo csrf_field(); ?>
+                        <?php if(isset($factura)): ?>
+                            <?php echo method_field('PUT'); ?>
+                        <?php endif; ?>
                         <div class="row g-4">
                             <div class="col-md-6">
                                 <label for="numeroFactura" class="form-label">Número de Factura</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-hash"></i></span>
                                     <input type="text" name="numero_factura" id="numeroFactura"
-                                           class="form-control @error('numero_factura') is-invalid @enderror"
+                                           class="form-control <?php $__errorArgs = ['numero_factura'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                            maxlength="20"
-                                           value="{{ old('numero_factura', isset($factura) ? $factura->numero_factura : '') }}"
+                                           value="<?php echo e(old('numero_factura', isset($factura) ? $factura->numero_factura : '')); ?>"
                                            onkeypress="validarTexto(event)" required>
                                 </div>
                                 <div class="text-danger mt-1 small error-mensaje-js"></div>
-                                @error('numero_factura')
-                                <div class="text-danger mt-1 small">{{ $message }}</div>
-                                @enderror
+                                <?php $__errorArgs = ['numero_factura'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <div class="text-danger mt-1 small"><?php echo e($message); ?></div>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
 
                             <div class="col-md-6">
@@ -224,14 +237,28 @@
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
                                     <input type="date" name="fecha" id="fecha"
-                                           class="form-control @error('fecha') is-invalid @enderror"
-                                           value="{{ old('fecha', isset($factura) ? $factura->fecha : \Carbon\Carbon::now()->format('Y-m-d')) }}"
+                                           class="form-control <?php $__errorArgs = ['fecha'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                           value="<?php echo e(old('fecha', isset($factura) ? $factura->fecha : \Carbon\Carbon::now()->format('Y-m-d'))); ?>"
                                            required>
                                 </div>
                                 <div class="text-danger mt-1 small error-mensaje-js"></div>
-                                @error('fecha')
-                                <div class="text-danger mt-1 small">{{ $message }}</div>
-                                @enderror
+                                <?php $__errorArgs = ['fecha'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <div class="text-danger mt-1 small"><?php echo e($message); ?></div>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
 
                             <div class="col-md-6">
@@ -239,20 +266,35 @@
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-building"></i></span>
                                     <select name="proveedor_id" id="proveedorId"
-                                            class="form-select @error('proveedor_id') is-invalid @enderror" required>
+                                            class="form-select <?php $__errorArgs = ['proveedor_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" required>
                                         <option value="">Seleccione un proveedor</option>
-                                        @foreach ($proveedores as $proveedor)
-                                            <option value="{{ $proveedor->id }}"
-                                                {{ (old('proveedor_id', isset($factura) ? $factura->proveedor_id : '') == $proveedor->id) ? 'selected' : '' }}>
-                                                {{ $proveedor->nombreEmpresa }}
+                                        <?php $__currentLoopData = $proveedores; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $proveedor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($proveedor->id); ?>"
+                                                <?php echo e((old('proveedor_id', isset($factura) ? $factura->proveedor_id : '') == $proveedor->id) ? 'selected' : ''); ?>>
+                                                <?php echo e($proveedor->nombreEmpresa); ?>
+
                                             </option>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
                                 </div>
                                 <div class="text-danger mt-1 small error-mensaje-js"></div>
-                                @error('proveedor_id')
-                                <div class="text-danger mt-1 small">{{ $message }}</div>
-                                @enderror
+                                <?php $__errorArgs = ['proveedor_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <div class="text-danger mt-1 small"><?php echo e($message); ?></div>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
 
                             <div class="col-md-6">
@@ -260,20 +302,35 @@
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-wallet-fill"></i></span>
                                     <select name="forma_pago" id="formaPago"
-                                            class="form-select @error('forma_pago') is-invalid @enderror" required>
+                                            class="form-select <?php $__errorArgs = ['forma_pago'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" required>
                                         <option value="">Seleccione una opción</option>
-                                        @foreach ($formasPago as $forma)
-                                            <option value="{{ $forma }}"
-                                                {{ (old('forma_pago', isset($factura) ? $factura->forma_pago : '') === $forma) ? 'selected' : '' }}>
-                                                {{ $forma }}
+                                        <?php $__currentLoopData = $formasPago; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $forma): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($forma); ?>"
+                                                <?php echo e((old('forma_pago', isset($factura) ? $factura->forma_pago : '') === $forma) ? 'selected' : ''); ?>>
+                                                <?php echo e($forma); ?>
+
                                             </option>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
                                 </div>
                                 <div class="text-danger mt-1 small error-mensaje-js"></div>
-                                @error('forma_pago')
-                                <div class="text-danger mt-1 small">{{ $message }}</div>
-                                @enderror
+                                <?php $__errorArgs = ['forma_pago'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <div class="text-danger mt-1 small"><?php echo e($message); ?></div>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
 
                             <div class="col-12">
@@ -397,20 +454,27 @@
                                     <span class="input-group-text"><i class="bi bi-person-check-fill"></i></span>
                                     <input type="text" id="responsable_search" class="form-control"
                                            placeholder="Buscar por nombre del empleado..." autocomplete="off"
-                                           value="{{ old('responsable_id', isset($factura) ? ($factura->responsable->nombre . ' ' . $factura->responsable->apellido) : '') }}">
+                                           value="<?php echo e(old('responsable_id', isset($factura) ? ($factura->responsable->nombre . ' ' . $factura->responsable->apellido) : '')); ?>">
                                     <span class="input-group-text"><i class="bi bi-search"></i></span>
                                     <input type="hidden" name="responsable_id" id="responsable_id"
-                                           value="{{ old('responsable_id', isset($factura) ? $factura->responsable_id : '') }}">
+                                           value="<?php echo e(old('responsable_id', isset($factura) ? $factura->responsable_id : '')); ?>">
                                 </div>
                                 <div id="responsable_results" class="autocomplete-results"></div>
                                 <div class="text-danger mt-1 small error-mensaje-js"></div>
-                                @error('responsable_id')
-                                <div class="text-danger mt-1 small">{{ $message }}</div>
-                                @enderror
+                                <?php $__errorArgs = ['responsable_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <div class="text-danger mt-1 small"><?php echo e($message); ?></div>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
 
                             <div class="text-center mt-5">
-                                <a href="{{ route('facturas_compras.index') }}" class="btn btn-danger me-2">
+                                <a href="<?php echo e(route('facturas_compras.index')); ?>" class="btn btn-danger me-2">
                                     <i class="bi bi-x-circle"></i> Cancelar
                                 </a>
 
@@ -1380,7 +1444,7 @@
 
 
         document.addEventListener('DOMContentLoaded', function() {
-            const empleados = @json($empleados ?? []);
+            const empleados = <?php echo json_encode($empleados ?? [], 15, 512) ?>;
             configurarAutocomplete('responsable_search', 'responsable_results', 'responsable_id', empleados);
 
             const hoy = new Date().toISOString().split('T')[0];
@@ -1400,7 +1464,7 @@
             const productosModal = new bootstrap.Modal(document.getElementById('productosModal'));
 
             // Pre-llenar la tabla de productos si hay datos antiguos
-            const productosAntiguos = @json(old('productos', isset($factura) ? $factura->productos : []));
+            const productosAntiguos = <?php echo json_encode(old('productos', isset($factura) ? $factura->productos : []), 512) ?>;
             if (productosAntiguos && productosAntiguos.length > 0) {
                 const tablaFacturaBody = document.getElementById('tablaFacturaBody');
                 productosAntiguos.forEach((producto, index) => {
@@ -1449,4 +1513,6 @@
 
         });
     </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\ardon\PhpstormProjects\Centinela\resources\views/facturas_compras/formulario.blade.php ENDPATH**/ ?>

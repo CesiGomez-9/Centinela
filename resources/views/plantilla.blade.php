@@ -44,10 +44,10 @@
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="{{route('productos.index')}}">Inventario de productos</a></li>
                         <li><a class="dropdown-item" href="{{route('productos.create')}}">Registrar un nuevo producto</a></li>
-                        <li><hr class="dropdown-divider"></li> {{-- Separador opcional --}}
+                        <li><hr class="dropdown-divider"></li> {{-- Separador--}}
                         <li><a class="dropdown-item" href="{{route('facturas_compras.index')}}">Listado de facturas de compra</a></li>
                         <li><a class="dropdown-item" href="{{route('facturas_compras.create')}}">Registrar una factura de compra</a></li>
-                        <li><hr class="dropdown-divider"></li> {{-- Separador opcional --}}
+                        <li><hr class="dropdown-divider"></li> {{-- Separador --}}
                         <li><a class="dropdown-item" href="{{route('facturas_ventas.index')}}">Listado de facturas de venta</a></li>
                         <li><a class="dropdown-item" href="{{route('facturas_ventas.create')}}">Registrar una factura de venta</a></li>
                     </ul>
@@ -57,6 +57,9 @@
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="{{route('servicios.catalogo')}}">Listado de servicios</a></li>
                         <li><a class="dropdown-item" href="{{route('servicios.index')}}">Registrar un nuevo servicio</a></li>
+                        <li><hr class="dropdown-divider"></li> {{-- Separador--}}
+                        <li><a class="dropdown-item" href="{{route('turnos.create')}}">Venta de servicios</a></li>
+                        <li><a class="dropdown-item" href="{{route('turnos.index')}}">Listado de venta de servicios</a></li>
                     </ul>
                 </li>
                 <li class="nav-item"><a class="nav-link text-white" href="#">Registrate</a></li>

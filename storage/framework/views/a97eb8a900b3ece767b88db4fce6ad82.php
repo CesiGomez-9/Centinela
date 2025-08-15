@@ -1,6 +1,5 @@
-@extends('plantilla')
-@section('titulo', 'Detalle de Venta')
-@section('content')
+<?php $__env->startSection('titulo', 'Detalle de Venta'); ?>
+<?php $__env->startSection('content'); ?>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
@@ -294,22 +293,24 @@
                             <div class="header-title"><i class="bi bi-calendar-check me-2"></i>Detalle de la venta de servicio</div>
                         </h5>
                         <small class="position-absolute top-50 end-0 translate-middle-y me-3">
-                            Creado {{ $turno->created_at->diffForHumans() }}
+                            Creado <?php echo e($turno->created_at->diffForHumans()); ?>
+
                         </small>
                     </div>
                     <div class="card-body">
                         <h6 class="section-header">
-                            Servicio: {{ $turno->servicio->nombre ?? 'N/A' }}
+                            Servicio: <?php echo e($turno->servicio->nombre ?? 'N/A'); ?>
+
                         </h6>
                         <div class="single-detail-box">
-                            <p><b>Cliente:</b> {{ $turno->cliente->nombre ?? 'N/A' }} {{ $turno->cliente->apellido ?? 'N/A' }}</p>
-                            <p><b>Servicio:</b> {{ $turno->servicio->nombre ?? 'N/A' }}</p>
-                            <p><b>Fecha de inicio:</b> {{ \Carbon\Carbon::parse($turno->fecha_inicio ?? now())->format('d/m/Y') }}.</p>
-                            <p><b>Fecha de fin:</b> {{ \Carbon\Carbon::parse($turno->fecha_fin ?? now())->format('d/m/Y') }}.</p>
-                            <p><b>Categoría:</b> {{ Str::ucfirst($turno->servicio->categoria ?? 'N/A') }}.</p>
+                            <p><b>Cliente:</b> <?php echo e($turno->cliente->nombre ?? 'N/A'); ?> <?php echo e($turno->cliente->apellido ?? 'N/A'); ?></p>
+                            <p><b>Servicio:</b> <?php echo e($turno->servicio->nombre ?? 'N/A'); ?></p>
+                            <p><b>Fecha de inicio:</b> <?php echo e(\Carbon\Carbon::parse($turno->fecha_inicio ?? now())->format('d/m/Y')); ?>.</p>
+                            <p><b>Fecha de fin:</b> <?php echo e(\Carbon\Carbon::parse($turno->fecha_fin ?? now())->format('d/m/Y')); ?>.</p>
+                            <p><b>Categoría:</b> <?php echo e(Str::ucfirst($turno->servicio->categoria ?? 'N/A')); ?>.</p>
                             <div class="full-width-item d-flex gap-4">
-                                <p class="w-50"><b>Descripción:</b> {{ Str::ucfirst($turno->servicio->descripcion ?? 'N/A') }}.</p>
-                                <p class="w-50"><b>Observaciones:</b> {{ $turno->observaciones ?? 'N/A' }}.</p>
+                                <p class="w-50"><b>Descripción:</b> <?php echo e(Str::ucfirst($turno->servicio->descripcion ?? 'N/A')); ?>.</p>
+                                <p class="w-50"><b>Observaciones:</b> <?php echo e($turno->observaciones ?? 'N/A'); ?>.</p>
                             </div>
                         </div>
 
@@ -330,20 +331,20 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                @forelse ($turno->empleados_asignados ?? [] as $index => $detalle)
+                                <?php $__empty_1 = true; $__currentLoopData = $turno->empleados_asignados ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $detalle): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                                     <tr>
-                                        <td>{{ $index + 1 }}</td>
-                                        <td>{{ is_array($detalle['empleado_nombres']) ? implode(', ', $detalle['empleado_nombres']) : $detalle['empleado_nombres'] }}</td>
-                                        <td>{{ Str::ucfirst($detalle['tipo_turno'] ?? 'N/A') }}</td>
-                                        <td>{{ $detalle['hora_inicio'] ?? 'N/A' }}</td>
-                                        <td>{{ $detalle['hora_fin'] ?? 'N/A' }}</td>
-                                        <td>{{ number_format($detalle['costo'] ?? 0, 2) }}</td>
+                                        <td><?php echo e($index + 1); ?></td>
+                                        <td><?php echo e(is_array($detalle['empleado_nombres']) ? implode(', ', $detalle['empleado_nombres']) : $detalle['empleado_nombres']); ?></td>
+                                        <td><?php echo e(Str::ucfirst($detalle['tipo_turno'] ?? 'N/A')); ?></td>
+                                        <td><?php echo e($detalle['hora_inicio'] ?? 'N/A'); ?></td>
+                                        <td><?php echo e($detalle['hora_fin'] ?? 'N/A'); ?></td>
+                                        <td><?php echo e(number_format($detalle['costo'] ?? 0, 2)); ?></td>
                                     </tr>
-                                @empty
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                                     <tr>
                                         <td colspan="6" class="text-muted fst-italic py-3">No hay empleados asignados para este servicio.</td>
                                     </tr>
-                                @endforelse
+                                <?php endif; ?>
                                 </tbody>
                             </table>
                         </div>
@@ -354,13 +355,13 @@
                                     <div class="summary-box">
                                         <div class="summary-item total">
                                             <strong>Costo total(Lps):</strong>
-                                            @php
+                                            <?php
                                                 $total_costo = 0;
                                                 foreach ($turno->empleados_asignados ?? [] as $detalle) {
                                                     $total_costo += $detalle['costo'] ?? 0;
                                                 }
-                                            @endphp
-                                            <span>{{ number_format($total_costo, 2) }}</span>
+                                            ?>
+                                            <span><?php echo e(number_format($total_costo, 2)); ?></span>
                                         </div>
                                     </div>
                                 </div>
@@ -368,16 +369,18 @@
                         </div>
                     </div>
                     <div class="card-footer text-end">
-                        <small>Última actualización: {{ $turno->updated_at->diffForHumans() }}</small>
+                        <small>Última actualización: <?php echo e($turno->updated_at->diffForHumans()); ?></small>
                     </div>
                 </div>
 
                 <div class="d-flex justify-content-center align-items-center gap-3 mt-4 flex-wrap">
-                    <a href="{{ route('turnos.index') }}" class="btn-return">
+                    <a href="<?php echo e(route('turnos.index')); ?>" class="btn-return">
                         <i class="bi bi-arrow-left me-2"></i>Volver a la lista
                     </a>
                 </div>
             </div>
         </div>
     </div>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\ardon\PhpstormProjects\Centinela\resources\views/turnos/show.blade.php ENDPATH**/ ?>

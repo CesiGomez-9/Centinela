@@ -7,12 +7,11 @@
             background-color: #e6f0ff;
             margin: 0;
         }
-        /* Ajuste para hacer la letra más pequeña en el formulario */
         .form-label, .form-control, .form-select, .input-group-text, .text-danger, .small {
-            font-size: 0.875rem; /* 14px, un poco más pequeño que el tamaño por defecto */
+            font-size: 0.875rem;
         }
         h3 {
-            font-size: 1.5rem; /* Ajustar el tamaño del título si es necesario */
+            font-size: 1.5rem;
         }
     </style>
 
@@ -38,7 +37,7 @@
                     <form method="POST" action="{{ isset($producto) ? route('productos.update', $producto->id) : route('productos.store') }}" novalidate>
                         @csrf
                         @isset($producto)
-                            @method('PUT') {{-- Importante para las actualizaciones --}}
+                            @method('PUT')
                         @endisset
 
                         <div class="row g-4">
@@ -93,7 +92,8 @@
                                 <label for="modelo" class="form-label">Modelo del producto</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi-cpu"></i></span>
-                                    <input type="text" name="modelo" id="modelo" class="form-control @error('modelo') is-invalid @enderror" maxlength="30" value="{{ old('modelo', $producto->modelo ?? '') }}" onkeypress="return validarDescripcion(event)" required>
+                                    <input type="text" name="modelo" id="modelo" class="form-control @error('modelo') is-invalid @enderror" maxlength="30" value="{{ old('modelo', $producto->modelo ?? '') }}"
+                                           onkeypress="return validarDescripcion(event)" required>
                                 </div>
                                 @error('modelo')
                                 <div class="text-danger mt-1 small">{{ $message }}</div>
@@ -131,7 +131,6 @@
                                 </div>
                             </div>
 
-                            {{-- Campo de selección de Impuesto --}}
                             <div class="col-md-6">
                                 <label for="impuesto_id" class="form-label">Tipo de Impuesto</label>
                                 <div class="input-group has-validation">
@@ -142,7 +141,7 @@
                                         @foreach($impuestos as $impuesto)
                                             <option value="{{ $impuesto->id }}"
                                                 {{ old('impuesto_id', $producto->impuesto_id ?? '') == $impuesto->id ? 'selected' : '' }}>
-                                                {{ $impuesto->nombre }} ({{ $impuesto->porcentaje }}%) {{-- ¡Cambiado aquí! --}}
+                                                {{ $impuesto->nombre }} ({{ $impuesto->porcentaje }}%)
                                             </option>
                                         @endforeach
                                     </select>
@@ -185,45 +184,33 @@
         </div>
     </div>
 
-    <!-- Boton Limpiar -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const resetBtn = document.querySelector('button[type="reset"]');
 
             if (resetBtn) {
                 resetBtn.addEventListener('click', function (e) {
-                    e.preventDefault(); // evita el comportamiento por defecto del botón reset
+                    e.preventDefault();
 
                     const form = this.closest('form');
                     if (!form) return;
-
-                    // Limpiar manualmente cada campo
                     form.querySelectorAll('input[type="text"], input[type="number"], textarea').forEach(el => {
                         el.value = '';
                     });
-
                     form.querySelectorAll('select').forEach(el => {
                         el.selectedIndex = 0;
                     });
-
-                    // Remover clases de validación
                     form.querySelectorAll('.is-valid, .is-invalid').forEach(el => {
                         el.classList.remove('is-valid', 'is-invalid');
                     });
-
-                    // Limpiar mensajes de error si hay
                     form.querySelectorAll('.text-danger, .invalid-feedback').forEach(el => {
                         el.innerText = '';
                     });
-
-                    // El campo de cantidad ya no está en el formulario, así que no necesita ser reiniciado aquí.
                 });
             }
         });
     </script>
 
-
-    <!-- Validaciones JS -->
     <script>
         function soloLetras(e) {
             let key = e.keyCode || e.which;
@@ -257,14 +244,10 @@
             const key = e.keyCode || e.which;
             const tecla = String.fromCharCode(key);
             const input = e.target;
-
-            // Evitar espacio al inicio
             if (key === 32 && input.selectionStart === 0) {
                 e.preventDefault();
                 return false;
             }
-
-            // Evitar múltiples espacios seguidos
             const pos = input.selectionStart;
             if (key === 32 && input.value.charAt(pos - 1) === ' ') {
                 e.preventDefault();
@@ -286,26 +269,19 @@
             }
         });
 
-
         function validarDescripcion(e) {
             const key   = e.keyCode || e.which;
             const char  = String.fromCharCode(key);
             const input = e.target;
             const pos   = input.selectionStart;
-
-            // 1. Bloquear si primer carácter no es letra (solo letras al inicio)
             if (pos === 0 && !/^[A-Za-zÁÉÍÓÚáéíóúÑñ]$/.test(char)) {
                 e.preventDefault();
                 return false;
             }
-
-            // 2. Bloquear espacio al inicio
             if (key === 32 && input.selectionStart === 0) {
                 e.preventDefault();
                 return false;
             }
-
-            // 3. Bloquear espacios dobles
             if (key === 32) {
                 const pos = input.selectionStart;
                 if (input.value.charAt(pos - 1) === ' ') {
@@ -313,13 +289,8 @@
                     return false;
                 }
             }
-
-            // Permitir resto de caracteres
             return true;
         }
-
-
     </script>
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 @endsection

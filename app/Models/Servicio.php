@@ -13,9 +13,9 @@ class Servicio extends Model
         'nombre',
         'descripcion',
         'categoria',
-        'costo_diurno', // Nuevo campo para el costo diurno
-        'costo_nocturno', // Nuevo campo para el costo nocturno
-        'costo_24_horas', // Nuevo campo para el costo de 24 horas
+        'costo_diurno',
+        'costo_nocturno',
+        'costo_24_horas',
         'productos',
     ];
 

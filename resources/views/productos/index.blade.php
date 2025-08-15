@@ -18,7 +18,6 @@
             </h3>
 
 
-
     <!-- Botón de buscador -->
     <div class="row mb-5 align-items-center">
         <div class="col d-flex justify-content-start">
@@ -56,13 +55,11 @@
         </div>
     @endif
 
-    <!-- Mensaje de resultados -->
-
     <div class="table-responsive">
         <table class="table table-bordered table-striped">
             <thead class="table-dark">
             <tr>
-                <th>N°</th> {{-- Enumeración --}}
+                <th>N°</th>
                 <th>Serie</th>
                 <th>Código</th>
                 <th>Nombre</th>
@@ -76,7 +73,7 @@
             <tbody id="productosTableBody">
             @forelse($productos as $producto)
                 <tr class="producto-row">
-                    <td>{{ $loop->iteration }}</td> {{-- Enumeración automática --}}
+                    <td>{{ $loop->iteration }}</td>
                     <td>{{ $producto->serie }}</td>
                     <td>{{ $producto->codigo }}</td>
                     <td class="producto-nombre">{{ $producto->nombre }}</td>

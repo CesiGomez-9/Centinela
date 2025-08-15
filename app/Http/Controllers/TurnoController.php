@@ -11,9 +11,6 @@ use Illuminate\Validation\ValidationException;
 
 class TurnoController extends Controller
 {
-    /**
-     * Muestra una lista de todos los turnos con funcionalidad de búsqueda.
-     */
     public function index(Request $request)
     {
         $query = Turno::with(['servicio', 'cliente']);
@@ -22,19 +19,15 @@ class TurnoController extends Controller
             $searchTerm = $request->search;
             $query->where(function ($q) use ($searchTerm) {
 
-                // Búsqueda por nombre del servicio
                 $q->orWhereHas('servicio', function ($sq) use ($searchTerm) {
                     $sq->where('nombre', 'LIKE', '%' . $searchTerm . '%');
                 })
-                    // Búsqueda por nombre/apellido del cliente
                     ->orWhereHas('cliente', function ($sq) use ($searchTerm) {
                         $sq->where('nombre', 'LIKE', '%' . $searchTerm . '%')
                             ->orWhere('apellido', 'LIKE', '%' . $searchTerm . '%');
                     });
             });
         }
-
-        // Filtra solo por el rango de fechas de inicio
         if ($request->filled('fecha_inicio') && $request->filled('fecha_fin')) {
             $query->whereBetween('fecha_inicio', [$request->input('fecha_inicio'), $request->input('fecha_fin')]);
         } elseif ($request->filled('fecha_inicio')) {
@@ -44,28 +37,18 @@ class TurnoController extends Controller
         }
 
         $turnos = $query->oldest()->paginate(10);
-
         return view('turnos.index', compact('turnos'));
     }
-
-    /**
-     * Muestra el formulario para crear un nuevo turno.
-     */
     public function create()
     {
         $empleados = Empleado::all();
         $servicios = Servicio::all();
         $clientes = Cliente::all();
-
         return view('turnos.formulario', compact('empleados', 'servicios', 'clientes'));
     }
 
-    /**
-     * Almacena un nuevo turno en la base de datos con validaciones robustas.
-     */
     public function store(Request $request)
     {
-        // 1. Validar los campos del formulario principal
         $validated = $request->validate([
             'cliente_id' => 'required|exists:clientes,id',
             'servicio_id' => 'required|exists:servicios,id',
@@ -74,16 +57,14 @@ class TurnoController extends Controller
             'observaciones' => [
                 'required',
                 'string',
-                'max:255',
+                'max:300',
                 'regex:/^[\pL0-9\s,.\-#()]*$/u',
             ],
             'turnos_data' => 'required|json',
         ], [
             'turnos_data.required' => 'Debe agregar al menos un empleado a la tabla.',
-            // ... (otros mensajes de validación)
         ]);
 
-        // 2. Decodificar los datos del formulario de la tabla
         $turnosData = json_decode($validated['turnos_data'], true);
 
         if (empty($turnosData)) {
@@ -92,7 +73,6 @@ class TurnoController extends Controller
             ]);
         }
 
-        // 3. Validar cada item del array de turnos
         foreach ($turnosData as $turnoData) {
             $requestData = new Request($turnoData);
             $requestData->validate([
@@ -104,28 +84,22 @@ class TurnoController extends Controller
             ]);
         }
 
-        // 4. Crear un único registro de turno con el array de empleados completo
         $turno = Turno::create([
             'cliente_id' => $validated['cliente_id'],
             'servicio_id' => $validated['servicio_id'],
             'fecha_inicio' => $validated['fecha_inicio'],
             'fecha_fin' => $validated['fecha_fin'],
             'observaciones' => $validated['observaciones'],
-            'empleados_asignados' => $turnosData, // Guardamos el array completo de detalles
+            'empleados_asignados' => $turnosData,
         ]);
 
         return redirect()->route('turnos.index')->with('success', 'Turno asignado exitosamente.');
     }
 
-    /**
-     * Muestra los detalles de un turno específico.
-     */
     public function show($id)
     {
-        // Se carga el turno y sus relaciones
         $turno = Turno::with(['cliente', 'servicio'])->findOrFail($id);
 
-        // Se obtienen los IDs de los empleados asignados desde la columna JSON
         $empleadoIds = collect($turno->empleados_asignados)->pluck('empleado_id')->toArray();
         $empleados = Empleado::whereIn('id', $empleadoIds)->get()->keyBy('id');
 
@@ -139,9 +113,6 @@ class TurnoController extends Controller
         return view('turnos.show', compact('turno', 'detallesEmpleados'));
     }
 
-    /**
-     * Devuelve los empleados que coinciden con la categoría de un servicio.
-     */
     public function getEmpleadosPorServicio($servicio_id)
     {
         $servicio = Servicio::find($servicio_id);

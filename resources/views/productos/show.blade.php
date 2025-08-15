@@ -7,7 +7,7 @@
         body {
             font-family: 'Inter', sans-serif;
             background: url('https://www.transparenttextures.com/patterns/beige-paper.png') repeat fixed #f8f4ec;
-            font-size: 0.9rem;
+            font-size: 16px;
         }
 
         .card {
@@ -28,12 +28,12 @@
 
         .card-header {
             background-color: #0d1b2a;
-            padding: 1rem 1rem;
-            border-bottom: 3px solid #cda34f;
+            padding: 1.75rem 1.75rem;
+            border-bottom: 4px solid #cda34f;
             display: flex;
-            justify-content: center; /* Centra el contenido principal (header-title) */
-            align-items: center; /* Centra verticalmente los elementos */
-            position: relative; /* Necesario para posicionar 'small' absolutamente */
+            justify-content: center;
+            align-items: center;
+            position: relative;
         }
 
         .card-header .header-title {
@@ -41,9 +41,8 @@
             font-weight: 700;
             font-size: 1.1rem;
             margin-bottom: 0;
-            display: flex; /* Para alinear el icono y el texto dentro del título */
-            align-items: center; /* Alinea verticalmente el icono y el texto */
-            /* Eliminado flex-grow y margin-left/right auto aquí, el padre lo centra */
+            display: flex;
+            align-items: center;
         }
 
         .card-header .header-title i {
@@ -54,12 +53,11 @@
             color: #ffffff;
             font-weight: 700;
             font-size: 0.8rem;
-            /* Posiciona absolutamente para sacarlo del flujo y colocarlo a la derecha */
             position: absolute;
-            right: 1rem; /* Alinea a la derecha, ajusta según el padding del card-header */
-            top: 50%; /* Centra verticalmente */
-            transform: translateY(-50%); /* Ajuste fino para el centrado vertical */
-            flex-shrink: 0; /* Mantenido, aunque absolute lo saca del flujo flex */
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            flex-shrink: 0;
         }
 
         .card-body {
@@ -89,14 +87,14 @@
             background-color: #1b263b;
             padding: 0.9rem 1.5rem;
             border-top: 1px solid #cda34f;
+            font-size: 0.9rem;
         }
 
         .card-footer small {
             color: #f5f5f5;
-            font-size: 0.8rem;
         }
 
-        .btn-return, .btn-edit {
+        .btn-return{
             background-color: #cda34f;
             color: #ffffff;
             border: none;
@@ -109,8 +107,8 @@
             margin: 0 0.5rem;
         }
 
-        .btn-return:hover, .btn-edit:hover,
-        .btn-return:focus, .btn-edit:focus {
+        .btn-return:hover,
+        .btn-return:focus{
             background-color: #0d1b2a;
             color: #ffffff;
         }
@@ -121,7 +119,7 @@
                 font-size: 0.9rem;
             }
 
-            .btn-return, .btn-edit {
+            .btn-return {
                 display: block;
                 width: 100%;
                 margin: 0.5rem 0;
@@ -145,65 +143,63 @@
             margin-right: 0.5rem;
         }
 
-        /* Estilos mejorados para la tabla de historial de precios */
         .table-price-history {
             width: 100%;
-            border-collapse: separate; /* Usar separate para border-spacing */
-            border-spacing: 0; /* Eliminar espacio entre celdas */
+            border-collapse: separate;
+            border-spacing: 0;
             margin-top: 1rem;
             font-size: 0.9rem;
-            border: 1px solid #dee2e6; /* Borde exterior de la tabla */
-            border-radius: 0.5rem; /* Bordes redondeados para la tabla */
-            overflow: hidden; /* Asegura que los bordes redondeados se apliquen */
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); /* Sombra sutil para la tabla */
+            border: 1px solid #dee2e6;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
         }
 
         .table-price-history th,
         .table-price-history td {
-            padding: 0.9rem 1.2rem; /* Aumentar padding para más espacio */
+            padding: 0.9rem 1.2rem;
             text-align: left;
-            border-bottom: 1px solid #e9ecef; /* Líneas de separación suaves */
-            border-right: 1px solid #e9ecef; /* Líneas verticales */
+            border-bottom: 1px solid #e9ecef;
+            border-right: 1px solid #e9ecef;
             font-size: 0.9rem;
         }
 
         .table-price-history th:last-child,
         .table-price-history td:last-child {
-            border-right: none; /* Eliminar borde derecho de la última columna */
+            border-right: none;
         }
 
         .table-price-history thead th {
-            background-color: #f8f9fa; /* Fondo claro para el encabezado */
+            background-color: #f8f9fa;
             font-weight: 600;
-            color: #343a40; /* Color de texto más oscuro */
-            border-bottom: 2px solid #dee2e6; /* Borde inferior más pronunciado para el thead */
+            color: #343a40;
+            border-bottom: 2px solid #dee2e6;
         }
 
         .table-price-history tbody tr:nth-child(even) {
-            background-color: #fdfdfd; /* Color de fila par */
+            background-color: #fdfdfd;
         }
 
         .table-price-history tbody tr:nth-child(odd) {
-            background-color: #ffffff; /* Color de fila impar */
+            background-color: #ffffff;
         }
 
         .table-price-history tbody tr:hover {
-            background-color: #eef5ff; /* Color al pasar el ratón */
+            background-color: #eef5ff;
         }
 
-        /* Estilos para los indicadores de cambio de precio */
         .price-change-up {
-            color: #28a745; /* Verde para subida de precio */
+            color: #28a745;
             font-weight: bold;
         }
 
         .price-change-down {
-            color: #dc3545; /* Rojo para bajada de precio */
+            color: #dc3545;
             font-weight: bold;
         }
 
         .price-change-neutral {
-            color: #6c757d; /* Gris para sin cambio / precio inicial */
+            color: #6c757d;
             font-weight: normal;
         }
         .pagination {
@@ -273,7 +269,7 @@
                                 <table class="table table-price-history">
                                     <thead>
                                     <tr>
-                                        <th>N°</th> {{-- Nueva columna de numeración --}}
+                                        <th>N°</th>
                                         <th>Fecha</th>
                                         <th>Precio</th>
                                         <th>Cambio</th>
@@ -282,7 +278,7 @@
                                     <tbody>
                                     @foreach ($precioComprasPaginadas as $index => $precioHistorial)
                                         <tr>
-                                            <td>{{ ($precioComprasPaginadas->currentPage() - 1) * $precioComprasPaginadas->perPage() + $loop->iteration }}</td> {{-- Numeración dinámica --}}
+                                            <td>{{ ($precioComprasPaginadas->currentPage() - 1) * $precioComprasPaginadas->perPage() + $loop->iteration }}</td>
                                             <td>{{ $precioHistorial->created_at->format('d/m/Y H:i') }}</td>
                                             <td>Lps. {{ number_format($precioHistorial->precio_compra, 2) }}</td>
                                             <td>

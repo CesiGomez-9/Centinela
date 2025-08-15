@@ -31,17 +31,13 @@ class Turno extends Model
         'hora_fin' => 'datetime',
     ];
 
-    /**
-     * Relación: Un turno pertenece a un empleado.
-     */
+
     public function empleado()
     {
         return $this->belongsTo(Empleado::class);
     }
 
-    /**
-     * Relación: Un turno pertenece a un servicio.
-     */
+
     public function servicio()
     {
         return $this->belongsTo(Servicio::class);
