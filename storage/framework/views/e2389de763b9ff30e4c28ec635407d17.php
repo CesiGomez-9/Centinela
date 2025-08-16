@@ -173,8 +173,8 @@
                             <td><?php echo e($turno->servicio->nombre); ?></td>
                             <td><?php echo e(\Carbon\Carbon::parse($turno->fecha_inicio)->format('d/m/Y')); ?></td>
                             <td class="text-center">
-                                <a href="<?php echo e(route('turnos.show', $turno->id)); ?>" class="btn btn-sm btn-outline-info">
-                                    <i class="bi bi-eye"> Ver </i>
+                                <a href="<?php echo e(route('turnos.show', $turno->id)); ?>" class="btn btn-sm btn-outline-info" title="Ver detalle">
+                                    <i class="bi bi-eye"> Ver</i>
                                 </a>
                             </td>
                         </tr>

@@ -104,7 +104,7 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
                                        value="<?php echo e(now()->format('Y-m-d')); ?>"
-                                       min="2025-07-01" max="2025-08-31" required>
+                                       min="2025-07-01" max="2025-08-31" >
                                 <?php $__errorArgs = ['fecha_instalacion'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :

@@ -84,7 +84,7 @@
                                 <input type="date" id="fecha_instalacion" name="fecha_instalacion"
                                        class="form-control @error('fecha_instalacion') is-invalid @enderror"
                                        value="{{ now()->format('Y-m-d') }}"
-                                       min="2025-07-01" max="2025-08-31" required>
+                                       min="2025-07-01" max="2025-08-31" >
                                 @error('fecha_instalacion')<div class="invalid-feedback">{{ $message }}</div>@enderror
                             </div>
                         </div>
