@@ -293,7 +293,9 @@
 
         document.getElementById('descripcionServicio').addEventListener('input', e => {
             validarInput(e, '[A-Za-zÁÉÍÓÚáéíóúÑñ\\s]', 125);
+            autoExpand(e.target); // Asegura que se expanda al escribir
         });
+
 
         // Evitar espacio al inicio
         function bloquearEspacioAlInicio(e, input) {

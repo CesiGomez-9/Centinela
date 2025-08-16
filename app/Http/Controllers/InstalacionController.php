@@ -18,19 +18,58 @@ class InstalacionController extends Controller
      * Display a listing of the resource.
      */
     // Muestra la vista del calendario
-    public function index()
+    public function index(Request $request)
     {
-        return view('instalaciones.index');
+        // Consulta base con relaciones necesarias para el calendario
+        $query = Instalacion::with(['cliente', 'servicio'])
+            ->select('id', 'cliente_id', 'servicio_id', 'direccion', 'fecha_instalacion');
+
+        // Si hay búsqueda, aplicar filtro
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('cliente', function ($q) use ($search) {
+                $q->where('nombre', 'like', "%{$search}%")
+                    ->orWhere('apellido', 'like', "%{$search}%");
+            })
+                ->orWhereHas('servicio', function ($q) use ($search) {
+                    $q->where('nombre', 'like', "%{$search}%");
+                })
+                ->orWhere('direccion', 'like', "%{$search}%");
+        }
+
+        // Obtener instalaciones filtradas o no
+        $instalaciones = $query->get();
+
+        // Si la petición es AJAX (para el calendario o buscador)
+        if ($request->ajax()) {
+            return response()->json($instalaciones);
+        }
+
+        // Cargar la vista con los datos
+        return view('instalaciones.index', compact('instalaciones'));
     }
+
 
 // Devuelve eventos para FullCalendar
     public function eventos(Request $request)
     {
         $start = $request->input('start');
         $end = $request->input('end');
+        $q = $request->input('q');
 
         $instalaciones = Instalacion::with(['cliente', 'servicio', 'factura', 'tecnicos'])
             ->whereBetween('fecha_instalacion', [$start, $end])
+            ->when($q, function($query) use ($q) {
+                $query->where(function($sub) use ($q) {
+                    $sub->whereHas('cliente', function($q1) use ($q) {
+                        $q1->where('nombre', 'like', "%{$q}%");
+                    })
+                        ->orWhereHas('servicio', function($q2) use ($q) {
+                            $q2->where('nombre', 'like', "%{$q}%");
+                        })
+                        ->orWhere('direccion', 'like', "%{$q}%");
+                });
+            })
             ->get();
 
         $eventos = $instalaciones->map(function ($instalacion) {
@@ -55,7 +94,6 @@ class InstalacionController extends Controller
 
 
 
-
     /**
      * Show the form for creating a new resource.
      */
@@ -63,7 +101,7 @@ class InstalacionController extends Controller
     {
         $clientes = Cliente::all();
         $tecnicos = Empleado::where('categoria', 'Tecnico')->get(); // Filtrar empleados por categoría 'tecnico'
-        $servicios = Servicio::where('categoria', 'Tecnico')->get(); // Filtrar servicios por categoría 'tecnico'
+        $servicios = Servicio::where('categoria', 'tecnico')->get(); // Filtrar servicios por categoría 'tecnico'
         $facturas = FacturaVenta::all();
 
         return view('instalaciones.formulario', compact('clientes', 'tecnicos', 'servicios', 'facturas'));
@@ -83,7 +121,7 @@ class InstalacionController extends Controller
                 'array',
                 function ($attribute, $value, $fail) {
                     foreach ($value as $id) {
-                        if (!Empleado::where('id', $id)->where('categoria', 'tecnico')->exists()) {
+                        if (!Empleado::where('id', $id)->where('categoria', 'Tecnico')->exists()) {
                             $fail('Uno o más empleados seleccionados no son técnicos.');
                         }
                     }
@@ -100,7 +138,7 @@ class InstalacionController extends Controller
                 'required',
                 'numeric',
                 'min:1',
-                'regex:/^\d{1,4}(\.\d{1,2})?$/' // 1 a 4 cifras con decimales opcionales
+                'regex:/^\d{1,4}(\.\d{1,2})?$/'
             ],
             'descripcion' => 'required|string|max:255',
             'direccion' => 'required|string|max:255',
@@ -116,6 +154,21 @@ class InstalacionController extends Controller
             'descripcion.required' => 'Debe ingresar una descripción.',
             'direccion.required' => 'Debe ingresar una dirección.'
         ]);
+
+        // 🔹 Verificar que el técnico no tenga otra instalación ese mismo día
+        foreach ($request->empleado_id as $tecnicoId) {
+            $existe = Instalacion::whereDate('fecha_instalacion', $request->fecha_instalacion)
+                ->whereHas('tecnicos', function ($q) use ($tecnicoId) {
+                    $q->where('empleado_id', $tecnicoId);
+                })
+                ->exists();
+
+            if ($existe) {
+                return back()
+                    ->withErrors(['empleado_id' => "El técnico con ID {$tecnicoId} ya tiene una instalación en esa fecha."])
+                    ->withInput();
+            }
+        }
 
         DB::transaction(function () use ($request) {
             $instalacion = Instalacion::create([
@@ -133,7 +186,6 @@ class InstalacionController extends Controller
 
         return redirect()->route('instalaciones.index')->with('success', 'Instalación registrada correctamente.');
     }
-
 
     /**
      * Display the specified resource.

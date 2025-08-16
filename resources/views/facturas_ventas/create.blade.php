@@ -400,9 +400,9 @@
                             <tr data-id="{{ $producto->id }}">
                                 <td>{{ $producto->nombre }}</td>
                                 <td>{{ $producto->categoria }}</td>
-                                <td>{{ number_format($producto->precio_venta, 2) }}</td> <!-- Precio venta -->
+                                <td>{{ number_format($producto->precio_venta, 2) }}</td>
                                 <td class="celda-cantidad">{{ $producto->cantidad }}</td>
-                                <td>{{ $producto->impuesto ? $producto->impuesto->porcentaje . '%' : 'N/A' }}</td> <!-- IVA -->
+                                <td>{{ $producto->impuesto ? $producto->impuesto->porcentaje . '%' : 'N/A' }}</td>
                                 <td>
                                     <div class="d-flex gap-2 align-items-center">
                                         <button type="button" class="btn btn-sm btn-info btnSeleccionarProducto d-inline-flex align-items-center"
@@ -479,6 +479,7 @@
         </div>
     </div>
 </div>
+@verbatim
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -497,7 +498,6 @@
         const searchProducto = document.getElementById("searchProductoInput");
 
         if (searchCliente) soloLetras(searchCliente);
-        if (searchProducto) soloLetras(searchProducto);
 
         const tabla = document.getElementById('tablaProductosBody');
 
@@ -542,10 +542,10 @@
                             const item = document.createElement('button');
                             item.type = 'button';
                             item.classList.add('list-group-item', 'list-group-item-action');
-                            item.textContent = `${cliente.nombre} ${cliente.apellido} - ${cliente.identidad}`;
+                            item.textContent = ${cliente.nombre} ${cliente.apellido} - ${cliente.identidad};
                             item.dataset.id = cliente.id;
                             item.addEventListener('click', () => {
-                                inputCliente.value = `${cliente.nombre} ${cliente.apellido}`;
+                                inputCliente.value = ${cliente.nombre} ${cliente.apellido};
                                 clienteIdInput.value = cliente.id;
                                 resultsContainer.innerHTML = '';
                                 inputCliente.classList.remove('is-invalid');
@@ -616,16 +616,29 @@
 
             filaCantidad.innerHTML = `
     <td colspan="6">
-        <div class="d-flex flex-column align-items-center justify-content-center gap-1">
-            <div class="d-flex gap-2 align-items-center justify-content-center">
-                <label class="me-2">Cantidad:</label>
-                <input type="number" min="1" max="${productoSeleccionado.cantidadDisponible}" step="1" class="form-control w-auto cantidad-input" required placeholder="Ej. 1">
-                <button class="btn btn-primary btn-sm btnAgregarCantidad"><i class="bi bi-plus-circle"></i> Agregar</button>
-                <button class="btn btn-warning btn-sm btnCancelarCantidad"><i class="bi bi-x-circle"></i> Limpiar</button>
-                <div class="error-message text-danger ms-2"></div>
-            </div>
-            <small class="text-muted">cantidad disponible: ${productoSeleccionado.cantidadDisponible}</small>
-        </div>
+       <div class="d-flex flex-column align-items-center justify-content-center gap-1">
+    <div class="d-flex gap-2 align-items-center justify-content-center">
+        <label class="me-2">Cantidad:</label>
+        <input
+            type="number"
+            min="1"
+            max="${productoSeleccionado.cantidadDisponible}"
+           step="1"
+           class="form-control w-auto cantidad-input"
+            required
+             placeholder="Ej. 1"
+        >
+        <button class="btn btn-primary btn-sm btnAgregarCantidad">
+            <i class="bi bi-plus-circle"></i> Agregar
+        </button>
+        <button class="btn btn-warning btn-sm btnCancelarCantidad">
+            <i class="bi bi-x-circle"></i> Limpiar
+        </button>
+        <div class="error-message text-danger ms-2"></div>
+    </div>
+<small class="text-muted">Cantidad disponible: ${productoSeleccionado.cantidadDisponible}</small>
+</div>
+
     </td>
 `;
             filaProducto.parentNode.insertBefore(filaCantidad, filaProducto.nextSibling);
@@ -638,10 +651,9 @@
                 const input = filaCantidad.querySelector('.cantidad-input');
                 const cantidad = parseInt(input.value);
                 const errorDiv = filaCantidad.querySelector('.error-message');
-
                 if (!cantidad || cantidad < 1 || cantidad > productoSeleccionado.cantidadDisponible) {
                     errorDiv.textContent = `Ingrese una cantidad válida (1 - ${productoSeleccionado.cantidadDisponible}).`;
-                    input.classList.add('is-invalid');
+ input.classList.add('is-invalid');
                     return;
                 }
 
@@ -653,7 +665,7 @@
                     if (agregado) {
                         filaCantidad.remove();
 
-                        const btnSeleccionado = document.querySelector(`.btnSeleccionarProducto[data-id="${productoSeleccionado.id}"]`);
+                        const btnSeleccionado = document.querySelector(.btnSeleccionarProducto[data-id="${productoSeleccionado.id}"]);
                         if (btnSeleccionado) {
                             btnSeleccionado.classList.remove('btn-success');
                             btnSeleccionado.classList.add('btn-info');
@@ -665,6 +677,7 @@
                     } else {
                         errorDiv.textContent = 'No se pudo agregar el producto a la factura.';
                     }
+
                 }
             }
 
@@ -714,7 +727,7 @@
             });
             mensaje.textContent = coincidencias === 0
                 ? 'No se encontraron productos.'
-                : `Se encontraron ${coincidencias} producto(s).`;
+                : Se encontraron ${coincidencias} producto(s).;
         }
         inputBuscar?.addEventListener('input', filtrarProductos);
         selectCategoria?.addEventListener('change', filtrarProductos);
@@ -765,7 +778,7 @@
                 }, 50);
             });
         }
-// ------------------ Validacion final ------------------//
+        // ------------------ Validacion final ------------------//
         const form = document.getElementById('formFacturaVenta');
         const btnGuardar = form.querySelector('button[type="submit"]');
         const errorProductos = document.getElementById('errorProductos');
@@ -826,7 +839,7 @@
             } else {
                 console.log('Sin errores. Enviando formulario...');
                 btnGuardar.disabled = true;
-                btnGuardar.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Guardando...`;
+                btnGuardar.innerHTML = <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Guardando...;
             }
         });
     });
@@ -898,7 +911,7 @@
             fila.cells[0].textContent = i + 1;
             fila.dataset.index = i;
             fila.querySelectorAll('input').forEach(input => {
-                input.name = input.name.replace(/productos\[\d+\]/, `productos[${i}]`);
+                input.name = input.name.replace(/productos\[\d+\]/, productos[${i}]);
             });
         });
     }
@@ -910,7 +923,7 @@
             if (!filaVacia) {
                 const row = document.createElement('tr');
                 row.id = 'filaVacia';
-                row.innerHTML = `<td colspan="8" class="text-center text-muted">No hay productos agregados</td>`;
+                row.innerHTML = <td colspan="8" class="text-center text-muted">No hay productos agregados</td>;
                 body.appendChild(row);
             } else {
                 filaVacia.style.display = 'table-row';
@@ -949,7 +962,28 @@
         document.getElementById('isv18Label').textContent = impuesto18.toFixed(2);
         document.getElementById('totalGeneralLabel').textContent = total.toFixed(2);
     }
+
+    document.getElementById('tablaProductosBody').addEventListener('input', function(e) {
+        if (e.target.classList.contains('cantidad-input')) {
+            const input = e.target;
+            const filaCantidad = input.closest('tr');
+            const cantidadDisponibleElem = filaCantidad.querySelector('small.text-muted');
+            const cantidadDisponible = parseInt(cantidadDisponibleElem.textContent.replace(/\D/g, ''), 10);
+            const cantidadIngresada = parseInt(input.value, 10);
+
+            if (isNaN(cantidadIngresada) || cantidadIngresada <= 0) {
+                cantidadDisponibleElem.innerHTML = `<span style="color:#dc3545;">Cantidad disponible: ${cantidadDisponible}. La cantidad debe ser mayor que cero.</span>`;
+            } else if (cantidadIngresada > cantidadDisponible) {
+                cantidadDisponibleElem.innerHTML = `<span style="color:#dc3545;">Cantidad disponible: ${cantidadDisponible}. La cantidad ingresada no está disponible.</span>`;
+            } else {
+                cantidadDisponibleElem.textContent = `Cantidad disponible: ${cantidadDisponible}`;
+                cantidadDisponibleElem.style.color = '';
+            }
+        }
+    });
+
 </script>
+@endverbatim
 <script src="{{ asset('js/tu-script.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
