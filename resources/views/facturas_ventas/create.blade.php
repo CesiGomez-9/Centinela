@@ -11,7 +11,7 @@
 <nav class="navbar navbar-expand-lg" style="background-color: #0A1F44; padding-top: 1.2rem; padding-bottom: 1.2rem; font-family: 'Courier New', sans-serif;">
     <div class="container" style="max-width: 1600px;">
         <a class="navbar-brand text-white fw-bold" href="#">
-            <img src="{{ asset('seguridad/logo.jpg') }}" style="height:80px; margin-right: 10px;">
+            <img src="{{ asset('centinela.jpg') }}" style="height:80px; margin-right: 10px;">
             Grupo Centinela
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -37,11 +37,11 @@
     .modal:not(.show), .modal-backdrop:not(.show) { display: none !important; opacity: 0 !important; }
 
 
-     body {
-         font-family: 'Inter', sans-serif;
-         background: url('https://www.transparenttextures.com/patterns/beige-paper.png') repeat fixed #f8f4ec;
-         font-size: 16px;
-     }
+    body {
+        font-family: 'Inter', sans-serif;
+        background: url('https://www.transparenttextures.com/patterns/beige-paper.png') repeat fixed #f8f4ec;
+        font-size: 16px;
+    }
 
     .card {
         border: none;
@@ -398,7 +398,7 @@
                             @endphp
                             <tr>
                             <tr data-id="{{ $producto->id }}">
-                            <td>{{ $producto->nombre }}</td>
+                                <td>{{ $producto->nombre }}</td>
                                 <td>{{ $producto->categoria }}</td>
                                 <td>{{ number_format($producto->precio_venta, 2) }}</td>
                                 <td class="celda-cantidad">{{ $producto->cantidad }}</td>
@@ -479,6 +479,7 @@
         </div>
     </div>
 </div>
+@verbatim
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -541,10 +542,10 @@
                             const item = document.createElement('button');
                             item.type = 'button';
                             item.classList.add('list-group-item', 'list-group-item-action');
-                            item.textContent = `${cliente.nombre} ${cliente.apellido} - ${cliente.identidad}`;
+                            item.textContent = ${cliente.nombre} ${cliente.apellido} - ${cliente.identidad};
                             item.dataset.id = cliente.id;
                             item.addEventListener('click', () => {
-                                inputCliente.value = `${cliente.nombre} ${cliente.apellido}`;
+                                inputCliente.value = ${cliente.nombre} ${cliente.apellido};
                                 clienteIdInput.value = cliente.id;
                                 resultsContainer.innerHTML = '';
                                 inputCliente.classList.remove('is-invalid');
@@ -650,10 +651,9 @@
                 const input = filaCantidad.querySelector('.cantidad-input');
                 const cantidad = parseInt(input.value);
                 const errorDiv = filaCantidad.querySelector('.error-message');
-
                 if (!cantidad || cantidad < 1 || cantidad > productoSeleccionado.cantidadDisponible) {
                     errorDiv.textContent = `Ingrese una cantidad válida (1 - ${productoSeleccionado.cantidadDisponible}).`;
-                    input.classList.add('is-invalid');
+ input.classList.add('is-invalid');
                     return;
                 }
 
@@ -665,7 +665,7 @@
                     if (agregado) {
                         filaCantidad.remove();
 
-                        const btnSeleccionado = document.querySelector(`.btnSeleccionarProducto[data-id="${productoSeleccionado.id}"]`);
+                        const btnSeleccionado = document.querySelector(.btnSeleccionarProducto[data-id="${productoSeleccionado.id}"]);
                         if (btnSeleccionado) {
                             btnSeleccionado.classList.remove('btn-success');
                             btnSeleccionado.classList.add('btn-info');
@@ -677,6 +677,7 @@
                     } else {
                         errorDiv.textContent = 'No se pudo agregar el producto a la factura.';
                     }
+
                 }
             }
 
@@ -726,7 +727,7 @@
             });
             mensaje.textContent = coincidencias === 0
                 ? 'No se encontraron productos.'
-                : `Se encontraron ${coincidencias} producto(s).`;
+                : Se encontraron ${coincidencias} producto(s).;
         }
         inputBuscar?.addEventListener('input', filtrarProductos);
         selectCategoria?.addEventListener('change', filtrarProductos);
@@ -838,7 +839,7 @@
             } else {
                 console.log('Sin errores. Enviando formulario...');
                 btnGuardar.disabled = true;
-                btnGuardar.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Guardando...`;
+                btnGuardar.innerHTML = <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Guardando...;
             }
         });
     });
@@ -910,7 +911,7 @@
             fila.cells[0].textContent = i + 1;
             fila.dataset.index = i;
             fila.querySelectorAll('input').forEach(input => {
-                input.name = input.name.replace(/productos\[\d+\]/, `productos[${i}]`);
+                input.name = input.name.replace(/productos\[\d+\]/, productos[${i}]);
             });
         });
     }
@@ -922,7 +923,7 @@
             if (!filaVacia) {
                 const row = document.createElement('tr');
                 row.id = 'filaVacia';
-                row.innerHTML = `<td colspan="8" class="text-center text-muted">No hay productos agregados</td>`;
+                row.innerHTML = <td colspan="8" class="text-center text-muted">No hay productos agregados</td>;
                 body.appendChild(row);
             } else {
                 filaVacia.style.display = 'table-row';
@@ -982,6 +983,7 @@
     });
 
 </script>
+@endverbatim
 <script src="{{ asset('js/tu-script.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

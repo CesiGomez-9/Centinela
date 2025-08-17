@@ -21,6 +21,9 @@ class Servicio extends Model
 
     protected $casts = [
         'productos' => 'array',
+        'costo_diurno' => 'float',
+        'costo_nocturno' => 'float',
+        'costo_24_horas' => 'float',
     ];
 
 }

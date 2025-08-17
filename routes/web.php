@@ -83,10 +83,12 @@ Route::controller(FacturaCompraController::class)->group(function () {
 
 Route::controller(TurnoController::class)->group(function () {
     Route::get('/turnos', 'index')->name('turnos.index');
-    Route::get('/turnos/{id}', 'show')->name('facturas_compras.show')->whereNumber('id');
+    Route::get('/turnos/{id}', 'show')->name('turnos.show')->whereNumber('id');
     Route::get('/turnos/crear', 'create')->name('turnos.create');
     Route::post('/turnos/crear', 'store')->name('turnos.store');
     Route::get('/turnos/empleados-por-servicio/{servicio_id}', [TurnoController::class, 'getEmpleadosPorServicio'])->name('turnos.empleadosPorServicio');
+    Route::get('/turnos/{id}/editar', 'edit')->name('turnos.edit')->whereNumber('id');
+    Route::put('/turnos/{id}/editar', 'update')->name('turnos.update')->whereNumber('id');
 });
 
 
@@ -95,4 +97,6 @@ Route::post('/Clientes/crear', [\App\Http\Controllers\ClienteController::class, 
 Route::get('/Clientes/crear', [\App\Http\Controllers\ClienteController::class, 'create'])->name('Clientes.formulariocliente');
 Route::get('/Clientes', [\App\Http\Controllers\ClienteController::class, 'index'])->name('Clientes.indexCliente');
 Route::get('/Clientes/{id}', [\App\Http\Controllers\ClienteController::class, 'show'])->name('Clientes.detalleCliente')->whereNumber('id');
+Route::get('/Clientes/{id}/editar', [\App\Http\Controllers\ClienteController::class, 'edit'])->name('Clientes.edit');
+Route::put('/Clientes/{id}', [\App\Http\Controllers\ClienteController::class, 'update'])->name('Clientes.update');
 

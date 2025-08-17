@@ -217,9 +217,13 @@
                             <a href="{{ route('Clientes.indexCliente') }}" class="btn btn-danger">
                                 <i class="bi bi-x-circle me-2"></i> Cancelar
                             </a>
+                            <a href="{{ route('Clientes.edit', $cliente->id) }}"
+                               class="btn btn-warning">
+                                <i class="bi bi-arrow-counterclockwise me-2"></i> Restablecer
+                            </a>
 
                             <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-save-fill me-2"></i> Actualizar
+                                <i class="bi bi-save-fill me-2"></i> Guardar cambios
                             </button>
                         </div>
                     </div>
