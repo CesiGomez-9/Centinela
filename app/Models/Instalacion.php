@@ -26,11 +26,6 @@ class Instalacion extends Model
         return $this->belongsTo(Cliente::class);
     }
 
-    public function empleado()
-    {
-        return $this->belongsToMany(Empleado::class, 'empleado_id');
-    }
-
     public function servicio()
     {
         return $this->belongsTo(Servicio::class);
@@ -43,8 +38,10 @@ class Instalacion extends Model
     }
     public function tecnicos()
     {
-        return $this->belongsToMany(Empleado::class);
+        return $this->belongsToMany(Empleado::class, 'instalacion_tecnico', 'instalacion_id', 'empleado_id');
     }
+
+
 
 
 

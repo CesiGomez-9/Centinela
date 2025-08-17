@@ -143,6 +143,56 @@
                 margin-bottom: 0.5rem;
             }
         }
+        .modal-header {
+            background-color: #0d1b2a; /* azul oscuro corporativo */
+            color: #fff;
+            border-top-left-radius: 0.5rem;
+            border-top-right-radius: 0.5rem;
+            border-bottom: 3px solid #cda34f; /* línea dorada debajo */
+        }
+
+        .modal-header .btn-close {
+            filter: invert(1); /* hace la X blanca */
+        }
+
+        /* Estilo para cada fila de detalle */
+        .detalle-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.9rem;
+            font-size: 1rem;
+        }
+
+        .detalle-item .icono {
+            font-size: 1.3rem;
+            color: #0d1b2a;
+            margin-right: 0.5rem;
+            position: relative;
+            padding-right: 0.6rem;
+        }
+
+        /* Barra dorada al lado del ícono */
+        .detalle-item .icono::after {
+            content: "";
+            position: absolute;
+            right: 0;
+            top: 10%;
+            height: 80%;
+            width: 3px;
+            background-color: #cda34f;
+            border-radius: 2px;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #0d1b2a;
+            margin-left: 0.5rem;
+        }
+
+        .info-value {
+            margin-left: 0.4rem;
+            color: #1b263b;
+        }
 
         /* Modal y demás estilos mantienen igual (omito para brevedad, se agregan igual al final) */
 
@@ -180,62 +230,93 @@
     </div>
 
     <!-- Modal Detalle Mejorado -->
+    <!-- Modal Detalle Mejorado -->
     <div class="modal fade" id="detalleEventoModal" tabindex="-1" aria-labelledby="detalleEventoLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header d-flex align-items-center justify-content-between">
-                    <img src="<?php echo e(asset('centinela.jpg')); ?>" alt="Logo" style="height: 40px; width: 40px; object-fit: cover;">
-                    <h5 class="modal-title flex-grow-1 text-center" id="detalleEventoLabel" style="margin: 0;">
+
+                <!-- Encabezado -->
+                <div class="modal-header d-flex align-items-center" style="background-color:#0d1b2a; color:#fff; border-bottom:3px solid #cda34f;">
+
+                    <!-- Imagen al inicio -->
+                    <img src="<?php echo e(asset('centinela.jpg')); ?>" alt="Logo" style="height: 40px; width: 40px; object-fit: cover; margin-right: 10px; border-radius: 5px;">
+
+                    <!-- Título -->
+                    <h5 class="modal-title flex-grow-1 text-center mb-0" id="detalleEventoLabel">
                         Detalle de Instalación
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+
+                    <!-- Botón cerrar -->
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
+
+                <!-- Body -->
                 <div class="modal-body">
                     <div class="row g-3">
+
                         <div class="col-md-6">
-                            <div class="detalle-item">
-                                <i class="bi bi-person-circle icono"></i>
-                                <span class="info-label">Cliente:</span>
+                            <div class="detalle-item d-flex align-items-center">
+                                <div style="width:4px; background-color:#cda34f; height:24px; margin-right:10px;"></div>
+                                <i class="bi bi-person-circle fs-5 me-2"></i>
+                                <span class="info-label me-1">Cliente:</span>
                                 <span class="info-value" id="modal-cliente"></span>
                             </div>
-                            <div class="detalle-item">
-                                <i class="bi bi-gear icono"></i>
-                                <span class="info-label">Servicio:</span>
+
+                            <div class="detalle-item d-flex align-items-center">
+                                <div style="width:4px; background-color:#cda34f; height:24px; margin-right:10px;"></div>
+                                <i class="bi bi-gear fs-5 me-2"></i>
+                                <span class="info-label me-1">Servicio:</span>
                                 <span class="info-value" id="modal-servicio"></span>
                             </div>
-                            <div class="detalle-item">
-                                <i class="bi bi-cash-stack icono"></i>
-                                <span class="info-label">Costo:</span>
+
+                            <div class="detalle-item d-flex align-items-center">
+                                <div style="width:4px; background-color:#cda34f; height:24px; margin-right:10px;"></div>
+                                <i class="bi bi-cash-stack fs-5 me-2"></i>
+                                <span class="info-label me-1">Costo:</span>
                                 <span class="info-value">L. <span id="modal-costo"></span></span>
                             </div>
-                            <div class="detalle-item">
-                                <i class="bi bi-receipt icono"></i>
-                                <span class="info-label">Factura:</span>
+
+                            <div class="detalle-item d-flex align-items-center">
+                                <div style="width:4px; background-color:#cda34f; height:24px; margin-right:10px;"></div>
+                                <i class="bi bi-receipt fs-5 me-2"></i>
+                                <span class="info-label me-1">Factura:</span>
                                 <span class="info-value" id="modal-factura"></span>
                             </div>
                         </div>
+
                         <div class="col-md-6">
-                            <div class="detalle-item">
-                                <i class="bi bi-geo-alt icono"></i>
-                                <span class="info-label">Dirección:</span>
+                            <div class="detalle-item d-flex align-items-center">
+                                <div style="width:4px; background-color:#cda34f; height:24px; margin-right:10px;"></div>
+                                <i class="bi bi-geo-alt fs-5 me-2"></i>
+                                <span class="info-label me-1">Dirección:</span>
                                 <span class="info-value" id="modal-direccion"></span>
                             </div>
-                            <div class="detalle-item">
-                                <i class="bi bi-card-text icono"></i>
-                                <span class="info-label">Descripción:</span>
+
+                            <div class="detalle-item d-flex align-items-center">
+                                <div style="width:4px; background-color:#cda34f; height:24px; margin-right:10px;"></div>
+                                <i class="bi bi-card-text fs-5 me-2"></i>
+                                <span class="info-label me-1">Descripción:</span>
                                 <span class="info-value" id="modal-descripcion"></span>
                             </div>
-                            <div class="detalle-item">
-                                <i class="bi bi-people icono"></i>
-                                <span class="info-label">Técnicos:</span>
+
+                            <div class="detalle-item d-flex align-items-center">
+                                <div style="width:4px; background-color:#cda34f; height:24px; margin-right:10px;"></div>
+                                <i class="bi bi-people fs-5 me-2"></i>
+                                <span class="info-label me-1">Técnicos:</span>
                                 <span class="info-value" id="modal-tecnicos"></span>
                             </div>
                         </div>
+
                     </div>
                 </div>
+
+                <!-- Línea azul al final -->
+                <div style="height:6px; background-color:#0d1b2a; border-radius:3px; margin-top:-1px;"></div>
+
             </div>
         </div>
     </div>
+
 
     <!-- FullCalendar CSS & JS -->
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet">

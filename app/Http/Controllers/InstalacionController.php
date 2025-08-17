@@ -142,7 +142,7 @@ class InstalacionController extends Controller
             ],
             'descripcion' => 'required|string|max:255',
             'direccion' => 'required|string|max:255',
-            'factura_id' => 'nullable|exists:facturas,id'
+            'factura_id' => 'nullable|exists:facturas_ventas,id'
         ], [
             'cliente_id.required' => 'Debe seleccionar un cliente.',
             'empleado_id.required' => 'Debe seleccionar al menos un técnico.',
@@ -158,9 +158,7 @@ class InstalacionController extends Controller
         // 🔹 Verificar que el técnico no tenga otra instalación ese mismo día
         foreach ($request->empleado_id as $tecnicoId) {
             $existe = Instalacion::whereDate('fecha_instalacion', $request->fecha_instalacion)
-                ->whereHas('tecnicos', function ($q) use ($tecnicoId) {
-                    $q->where('empleado_id', $tecnicoId);
-                })
+                ->whereHas('tecnicos', fn($q) => $q->where('empleados.id', $tecnicoId))
                 ->exists();
 
             if ($existe) {
@@ -171,29 +169,29 @@ class InstalacionController extends Controller
         }
 
         DB::transaction(function () use ($request) {
-            $instalacion = Instalacion::create([
-                'cliente_id' => $request->cliente_id,
-                'servicio_id' => $request->servicio_id,
-                'descripcion' => $request->descripcion,
-                'direccion' => $request->direccion,
-                'fecha_instalacion' => $request->fecha_instalacion,
-                'costo_instalacion' => $request->costo_instalacion,
-                'factura_id' => $request->factura_id,
-            ]);
+            $instalacion = Instalacion::create($request->only([
+                'cliente_id',
+                'servicio_id',
+                'descripcion',
+                'direccion',
+                'fecha_instalacion',
+                'costo_instalacion',
+                'factura_id'
+            ]));
 
-            $instalacion->tecnicos()->attach($request->empleado_id);
+            $instalacion->tecnicos()->sync($request->empleado_id);
         });
 
         return redirect()->route('instalaciones.index')->with('success', 'Instalación registrada correctamente.');
     }
+
 
     /**
      * Display the specified resource.
      */
     public function show($id)
     {
-        $instalacion = Instalacion::with(['cliente', 'servicio', 'empleado'])->findOrFail($id);
-        return view('instalaciones.detalle', compact('instalacion'));
+
     }
 
     /**

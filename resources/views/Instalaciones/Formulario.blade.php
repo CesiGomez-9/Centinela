@@ -154,19 +154,19 @@
                                     @foreach ($tecnicos as $tecnico)
                                         <div class="form-check">
                                             <input
-                                                class="form-check-input"
-                                                type="checkbox"
-                                                name="tecnico_id[]"
-                                                value="{{ $tecnico->id }}"
-                                                id="tecnico_{{ $tecnico->id }}"
-                                                {{-- Si estamos editando, o hay old input, marcar el checkbox --}}
-                                                {{ (collect(old('tecnico_id'))->contains($tecnico->id) || (isset($instalacion) && $instalacion->tecnicos->contains($tecnico->id))) ? 'checked' : '' }}
+                                                    class="form-check-input"
+                                                    type="checkbox"
+                                                    name="empleado_id[]"  {{-- debe coincidir con el sync() --}}
+                                                    value="{{ $tecnico->id }}"
+                                                    id="tecnico_{{ $tecnico->id }}"
+                                                    {{ (collect(old('empleado_id'))->contains($tecnico->id) || (isset($instalacion) && $instalacion->tecnicos->contains($tecnico->id))) ? 'checked' : '' }}
                                             >
                                             <label class="form-check-label" for="tecnico_{{ $tecnico->id }}">
                                                 {{ $tecnico->nombre }}
                                             </label>
                                         </div>
                                     @endforeach
+
 
 
                                 </div>
@@ -292,38 +292,25 @@
 
                 <script>
                     document.addEventListener('DOMContentLoaded', () => {
-                        new TomSelect('#cliente_id', {
-                            create: false,  // No permite crear opciones nuevas, solo buscar y seleccionar
-                            sortField: 'text',
-                            dropdownParent: 'body', // Para que se muestre bien el dropdown
-                            maxOptions: 1000,
-                            hideSelected: true,
-                            allowEmptyOption: true,
-                            render: {
-                                no_results: function(data, escape) {
-                                    return '<div class="no-results">No se encontraron resultados</div>';
+                        // === Inicializar TomSelect para cliente y factura ===
+                        ['#cliente_id', '#factura_id'].forEach(selector => {
+                            new TomSelect(selector, {
+                                create: false,
+                                sortField: 'text',
+                                dropdownParent: 'body',
+                                maxOptions: 1000,
+                                hideSelected: true,
+                                allowEmptyOption: true,
+                                render: {
+                                    no_results: function(data, escape) {
+                                        return '<div class="no-results">No se encontraron resultados</div>';
+                                    }
                                 }
-                            }
+                            });
                         });
 
-                        new TomSelect('#factura_id', {
-                            create: false,
-                            sortField: 'text',
-                            dropdownParent: 'body',
-                            maxOptions: 1000,
-                            hideSelected: true,
-                            allowEmptyOption: true,
-                            render: {
-                                no_results: function(data, escape) {
-                                    return '<div class="no-results">No se encontraron resultados</div>';
-                                }
-                            }
-                        });
-                    });
-
-                    document.addEventListener("DOMContentLoaded", function () {
+                        // === Variables del formulario ===
                         const form = document.getElementById("form-instalacion");
-
                         const fields = {
                             cliente: document.getElementById("cliente_id"),
                             servicio: document.getElementById("servicio_id"),
@@ -333,13 +320,13 @@
                             direccion: document.getElementById("direccion"),
                             factura: document.getElementById("factura_id")
                         };
-
                         const tecnicosContainer = document.getElementById("tecnicos-container");
-
                         const totalFacturaSpan = document.getElementById("total-factura");
                         const totalInstalacionSpan = document.getElementById("total-instalacion");
                         const totalGeneralSpan = document.getElementById("total-general");
+                        const errorTecnicos = document.getElementById('error-tecnicos');
 
+                        // === Actualizar totales ===
                         function actualizarTotales() {
                             const costo = parseFloat(fields.costo.value) || 0;
                             const facturaTotal = parseFloat(fields.factura.selectedOptions[0]?.dataset.total || 0);
@@ -347,38 +334,37 @@
                             totalInstalacionSpan.textContent = costo.toFixed(2);
                             totalGeneralSpan.textContent = (facturaTotal + costo).toFixed(2);
                         }
-
                         fields.costo.addEventListener("input", actualizarTotales);
                         fields.factura.addEventListener("change", actualizarTotales);
 
-                        document.getElementById("btn-limpiar").addEventListener("click", function () {
+                        // === Limpiar formulario ===
+                        document.getElementById("btn-limpiar").addEventListener("click", () => {
                             form.reset();
                             totalFacturaSpan.textContent = "0.00";
                             totalInstalacionSpan.textContent = "0.00";
                             totalGeneralSpan.textContent = "0.00";
                             limpiarErrores();
+                            errorTecnicos.textContent = '';
+                            desbloquearTecnicos();
                         });
 
-                        // ✅ Evitar espacios al inicio en tiempo real
+                        // === Evitar espacios al inicio ===
                         [fields.descripcion, fields.direccion].forEach(field => {
-                            field.addEventListener("input", function () {
-                                if (this.value.startsWith(" ")) {
-                                    this.value = this.value.trimStart();
-                                }
+                            field.addEventListener("input", () => {
+                                if (field.value.startsWith(" ")) field.value = field.value.trimStart();
                             });
                         });
-                        // ✅ Autoajuste dinámico de altura para textareas
+
+                        // === Auto-ajuste dinámico para textareas ===
                         document.querySelectorAll(".auto-expand").forEach(textarea => {
-                            textarea.style.overflow = "hidden"; // Sin scroll interno
-                            textarea.addEventListener("input", function () {
-                                this.style.height = "auto"; // Reinicia altura
-                                this.style.height = this.scrollHeight + "px"; // Ajusta a contenido
+                            textarea.style.overflow = "hidden";
+                            textarea.addEventListener("input", () => {
+                                textarea.style.height = "auto";
+                                textarea.style.height = textarea.scrollHeight + "px";
                             });
-
                         });
 
-
-                        // Función para mostrar error
+                        // === Funciones de error ===
                         function setError(element, message) {
                             element.classList.add("is-invalid");
                             let feedback = element.parentNode.querySelector(".invalid-feedback");
@@ -389,24 +375,7 @@
                             }
                             feedback.textContent = message;
                         }
-                        // Limitar costo a 4 cifras enteras (antes del punto)
-                        fields.costo.addEventListener("input", function () {
-                            let value = this.value;
 
-                            // Si hay decimales, separa la parte entera
-                            let [entero, decimal] = value.split(".");
-
-                            // Limitar la parte entera a 4 dígitos
-                            if (entero.length > 4) {
-                                entero = entero.slice(0, 4);
-                            }
-
-                            // Reconstruir valor
-                            this.value = decimal !== undefined ? `${entero}.${decimal}` : entero;
-                        });
-
-
-                        // Para el contenedor de técnicos
                         function setGroupError(container, message) {
                             container.classList.add("is-invalid");
                             let feedback = container.parentNode.querySelector(".invalid-feedback");
@@ -424,204 +393,124 @@
                             form.querySelectorAll(".invalid-feedback").forEach(fb => fb.remove());
                         }
 
-                        form.addEventListener("submit", function (e) {
+                        // === Limitar costo a 4 cifras enteras ===
+                        fields.costo.addEventListener("input", () => {
+                            let [entero, decimal] = fields.costo.value.split(".");
+                            if (entero.length > 4) entero = entero.slice(0,4);
+                            fields.costo.value = decimal !== undefined ? `${entero}.${decimal}` : entero;
+                        });
+
+                        // === Validar formulario ===
+                        form.addEventListener("submit", (e) => {
                             limpiarErrores();
                             let isValid = true;
 
-                            // ✅ Limpiar espacios al inicio antes de validar
+                            // Limpiar espacios
                             fields.descripcion.value = fields.descripcion.value.trimStart();
                             fields.direccion.value = fields.direccion.value.trimStart();
 
                             // Cliente
-                            if (!fields.cliente.value) {
-                                setError(fields.cliente, "Debe seleccionar un cliente.");
-                                isValid = false;
-                            }
+                            if (!fields.cliente.value) { setError(fields.cliente, "Debe seleccionar un cliente."); isValid = false; }
 
                             // Técnicos
-                            const tecnicosMarcados = document.querySelectorAll('input[name="tecnico_id[]"]:checked');
-                            if (tecnicosMarcados.length === 0) {
-                                setGroupError(tecnicosContainer, "Debe seleccionar al menos un técnico.");
-                                isValid = false;
-                            }
-
+                            const tecnicosSeleccionados = document.querySelectorAll('input[name="empleado_id[]"]:checked');
+                            if (tecnicosSeleccionados.length === 0) { setGroupError(tecnicosContainer, "Debe seleccionar al menos un técnico."); isValid = false; }
 
                             // Servicio
-                            if (!fields.servicio.value) {
-                                setError(fields.servicio, "Debe seleccionar un servicio.");
-                                isValid = false;
-                            }
+                            if (!fields.servicio.value) { setError(fields.servicio, "Debe seleccionar un servicio."); isValid = false; }
 
-                            // Fecha instalación
-                            if (!fields.fecha.value) {
-                                setError(fields.fecha, "Debe ingresar una fecha de instalación.");
-                                isValid = false;
-                            }
+                            // Fecha
+                            if (!fields.fecha.value) { setError(fields.fecha, "Debe ingresar una fecha de instalación."); isValid = false; }
 
-                            // Costo instalación
+                            // Costo
                             const costo = parseFloat(fields.costo.value);
-                            if (isNaN(costo) || costo <= 0) {
-                                setError(fields.costo, "El costo debe ser mayor a 0.");
-                                isValid = false;
-                            } else if (!/^\d{1,4}$/.test(fields.costo.value)) {
-                                setError(fields.costo, "El costo solo permite hasta 4 cifras (ej. 9999).");
-                                isValid = false;
-                            }
+                            if (isNaN(costo) || costo <= 0) { setError(fields.costo, "El costo debe ser mayor a 0."); isValid = false; }
+                            else if (!/^\d{1,4}$/.test(fields.costo.value)) { setError(fields.costo, "El costo solo permite hasta 4 cifras."); isValid = false; }
 
                             // Descripción
-                            if (!fields.descripcion.value.trim()) {
-                                setError(fields.descripcion, "Debe ingresar una descripción.");
-                                isValid = false;
-                            } else if (fields.descripcion.value.length > 255) {
-                                setError(fields.descripcion, "La descripción no puede superar los 255 caracteres.");
-                                isValid = false;
-                            }
+                            if (!fields.descripcion.value.trim()) { setError(fields.descripcion, "Debe ingresar una descripción."); isValid = false; }
+                            else if (fields.descripcion.value.length > 255) { setError(fields.descripcion, "La descripción no puede superar los 255 caracteres."); isValid = false; }
 
                             // Dirección
-                            if (!fields.direccion.value.trim()) {
-                                setError(fields.direccion, "Debe ingresar una dirección.");
-                                isValid = false;
-                            } else if (fields.direccion.value.length > 255) {
-                                setError(fields.direccion, "La dirección no puede superar los 255 caracteres.");
-                                isValid = false;
-                            }
+                            if (!fields.direccion.value.trim()) { setError(fields.direccion, "Debe ingresar una dirección."); isValid = false; }
+                            else if (fields.direccion.value.length > 255) { setError(fields.direccion, "La dirección no puede superar los 255 caracteres."); isValid = false; }
 
                             if (!isValid) e.preventDefault();
                         });
-                    });
-                    document.getElementById("fecha_instalacion").addEventListener("change", function () {
-                        const fecha = this.value;
-                        if (!fecha) return;
 
-                        fetch(`/api/tecnicos-ocupados?fecha=${fecha}`)
-                            .then(res => res.json())
-                            .then(data => {
-                                document.querySelectorAll('input[name="empleado_id[]"]').forEach(chk => {
-                                    if (data.includes(parseInt(chk.value))) {
-                                        chk.disabled = true;
-                                        chk.parentElement.classList.add("text-muted");
+                        // === Desbloquear todos los técnicos ===
+                        function desbloquearTecnicos() {
+                            document.querySelectorAll('input[name="empleado_id[]"]').forEach(chk => {
+                                chk.disabled = false;
+                                chk.parentElement.classList.remove("text-muted");
+                            });
+                        }
+
+                        // === Validar técnicos ocupados ===
+                        async function validarTecnicosOcupados() {
+                            const fecha = fields.fecha.value;
+                            if (!fecha) { errorTecnicos.textContent = ''; desbloquearTecnicos(); return; }
+
+                            // Obtener técnicos seleccionados
+                            const seleccionados = Array.from(document.querySelectorAll('input[name="empleado_id[]"]:checked')).map(cb => parseInt(cb.value));
+
+                            try {
+                                const res = await fetch(`/api/tecnicos-ocupados?fecha=${fecha}`);
+                                const ocupados = await res.json();
+
+                                document.querySelectorAll('input[name="empleado_id[]"]').forEach(cb => {
+                                    const id = parseInt(cb.value);
+                                    if (ocupados.includes(id)) {
+                                        cb.disabled = true;
+                                        cb.parentElement.classList.add("text-muted");
                                     } else {
-                                        chk.disabled = false;
-                                        chk.parentElement.classList.remove("text-muted");
+                                        cb.disabled = false;
+                                        cb.parentElement.classList.remove("text-muted");
                                     }
                                 });
-                            });
-                    });
-                    const fechaInput = document.getElementById('fecha_instalacion');
-                    const errorTecnicos = document.getElementById('error-tecnicos');
 
-                    function validarTecnicosOcupados() {
-                        const fechaSeleccionada = fechaInput.value;
-                        if (!fechaSeleccionada) {
-                            errorTecnicos.textContent = '';
-                            return;
-                        }
-
-                        // Obtiene los técnicos seleccionados
-                        const checkboxes = document.querySelectorAll('input[name="empleado_id[]"]:checked');
-                        if (checkboxes.length === 0) {
-                            errorTecnicos.textContent = '';
-                            return;
-                        }
-
-                        // Mapa id → nombre técnico
-                        const mapTecnicos = {};
-                        document.querySelectorAll('input[name="empleado_id[]"]').forEach(cb => {
-                            mapTecnicos[parseInt(cb.value)] = cb.nextElementSibling.textContent.trim();
-                        });
-
-                        const tecnicosSeleccionados = Array.from(checkboxes).map(cb => cb.value);
-
-                        fetch(`/api/tecnicos-ocupados?fecha=${fechaSeleccionada}`)
-                            .then(res => res.json())
-                            .then(tecnicosOcupados => {
-                                const ocupadosSeleccionados = tecnicosSeleccionados
-                                    .map(id => parseInt(id))
-                                    .filter(id => tecnicosOcupados.includes(id));
-
+                                // Mensaje de técnicos ocupados
+                                const ocupadosSeleccionados = seleccionados.filter(id => ocupados.includes(id));
                                 if (ocupadosSeleccionados.length > 0) {
-                                    const nombres = ocupadosSeleccionados.map(id => mapTecnicos[id] || id);
-
-                                    let mensaje = '';
-                                    if (nombres.length === 1) {
-                                        mensaje = `El técnico ${nombres[0]} está ocupado ese día.`;
-                                    } else {
-                                        // Para más de uno, unimos con ' y ' el último, y ', ' los demás
+                                    const nombres = ocupadosSeleccionados.map(id => {
+                                        const label = document.querySelector(`input[name="empleado_id[]"][value="${id}"]`).nextElementSibling;
+                                        return label ? label.textContent.trim() : id;
+                                    });
+                                    if (nombres.length === 1) errorTecnicos.textContent = `El técnico ${nombres[0]} está ocupado ese día.`;
+                                    else {
                                         const ultimo = nombres.pop();
-                                        mensaje = `Los técnicos ${nombres.join(', ')} y ${ultimo} están ocupados ese día.`;
+                                        errorTecnicos.textContent = `Los técnicos ${nombres.join(', ')} y ${ultimo} están ocupados ese día.`;
                                     }
+                                } else errorTecnicos.textContent = '';
 
-                                    errorTecnicos.textContent = mensaje;
-                                } else {
-                                    errorTecnicos.textContent = '';
-                                }
-                            })
-                            .catch(() => {
+                            } catch {
                                 errorTecnicos.textContent = 'Error al consultar técnicos ocupados.';
-                            });
-
-                    }
-
-                    // Validar al cambiar la fecha o al cambiar la selección de técnicos
-                    fechaInput.addEventListener('change', validarTecnicosOcupados);
-
-                    document.querySelectorAll('input[name="empleado_id[]"]').forEach(cb => {
-                        cb.addEventListener('change', validarTecnicosOcupados);
-                    });
-                    //descripcion y direccion
-                    [fields.descripcion, fields.direccion].forEach(field => {
-                        // Añadir maxlength a los textarea (por si no está en HTML)
-                        field.setAttribute('maxlength', '255');
-
-                        // Bloquear teclas que añadan texto cuando se alcanzó el máximo
-                        field.addEventListener('keydown', e => {
-                            const allowedKeys = [
-                                "Backspace", "Delete", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
-                                "Tab", "Home", "End"
-                            ];
-
-                            if (
-                                field.value.length >= 255 &&
-                                !allowedKeys.includes(e.key) &&
-                                !e.ctrlKey &&
-                                !e.metaKey
-                            ) {
-                                e.preventDefault();
                             }
+                        }
+
+                        fields.fecha.addEventListener('change', validarTecnicosOcupados);
+                        document.querySelectorAll('input[name="empleado_id[]"]').forEach(cb => cb.addEventListener('change', validarTecnicosOcupados));
+
+                        // === Limitar texto en descripción y dirección ===
+                        [fields.descripcion, fields.direccion].forEach(field => {
+                            field.setAttribute('maxlength', '255');
+                            field.addEventListener('keydown', e => {
+                                const allowedKeys = ["Backspace","Delete","ArrowLeft","ArrowRight","ArrowUp","ArrowDown","Tab","Home","End"];
+                                if (field.value.length >= 255 && !allowedKeys.includes(e.key) && !e.ctrlKey && !e.metaKey) e.preventDefault();
+                            });
+                            field.addEventListener('paste', e => {
+                                e.preventDefault();
+                                const pasteText = (e.clipboardData || window.clipboardData).getData('text').substring(0, 255 - field.value.length);
+                                const start = field.selectionStart, end = field.selectionEnd;
+                                field.value = field.value.slice(0,start) + pasteText + field.value.slice(end);
+                                field.setSelectionRange(start + pasteText.length, start + pasteText.length);
+                                field.dispatchEvent(new Event('input'));
+                            });
                         });
 
-                        // Limitar pegar texto
-                        field.addEventListener('paste', e => {
-                            e.preventDefault();
-                            const pasteText = (e.clipboardData || window.clipboardData).getData('text');
-                            const espacioDisponible = 255 - field.value.length;
-
-                            if (espacioDisponible <= 0) return; // No permitir pegar si ya está lleno
-
-                            const textoParaPegar = pasteText.substring(0, espacioDisponible);
-
-                            // Insertar texto pegado en la posición actual del cursor
-                            const start = field.selectionStart;
-                            const end = field.selectionEnd;
-                            const textoAntes = field.value.substring(0, start);
-                            const textoDespues = field.value.substring(end);
-
-                            field.value = textoAntes + textoParaPegar + textoDespues;
-
-                            // Ajustar posición del cursor después del texto pegado
-                            const cursorPos = start + textoParaPegar.length;
-                            field.setSelectionRange(cursorPos, cursorPos);
-
-                            // Disparar evento input para actualizaciones
-                            field.dispatchEvent(new Event('input'));
-                        });
                     });
-                    document.querySelectorAll('.ts-dropdown').forEach(dropdown => {
-                        dropdown.addEventListener('mousedown', e => e.preventDefault());
-                    });
-
-
                 </script>
+
 
 
 @endsection
