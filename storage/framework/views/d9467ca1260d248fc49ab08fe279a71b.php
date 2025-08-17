@@ -1,5 +1,7 @@
 <?php $__env->startSection('content'); ?>
 
+
+
     <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,6 +9,7 @@
     <title>Registrar Instalación</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet" />
 
     <style>
         body {
@@ -40,9 +43,79 @@
             z-index: 10 !important;
             white-space: normal !important;
         }
+        /* Para que el texto de los items en el dropdown se vea normal, sin cajas ni fondo */
+        .ts-dropdown .option {
+            background-color: transparent !important;
+            color: #000 !important; /* texto negro normal */
+            box-shadow: none !important;
+            border: none !important;
+            user-select: text !important; /* permitir selección normal */
+        }
+
+        /* Para quitar el hover que pinta el fondo */
+        .ts-dropdown .option:hover {
+            background-color: transparent !important;
+            color: #000 !important;
+        }
+
+        /* Para quitar el fondo azul o selección */
+        .ts-dropdown .option.active {
+            background-color: transparent !important;
+            color: #000 !important;
+        }
+
+        /* Evitar que el dropdown tenga sombras o bordes de color */
+        .ts-dropdown {
+            box-shadow: none !important;
+            border: 1px solid #ccc !important; /* borde tenue para que se vea caja */
+            background-color: white !important;
+        }
+        #cliente_id_ts-dropdown,
+        #factura_id_ts-dropdown {
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+            user-select: none !important;
+        }
+
+        .moneda-lempira {
+            font-size: 1.1rem;
+            color: #0a1f3a;
+            user-select: none;
+            font-weight: normal; /* Asegura que no sea negrita */
+        }
+        #cliente_id_ts-control input::selection,
+        #factura_id_ts-control input::selection {
+            background: transparent !important;
+            color: inherit !important;
+        }
+
+        #cliente_id_ts-control input::-moz-selection,
+        #factura_id_ts-control input::-moz-selection {
+            background: transparent !important;
+            color: inherit !important;
+        }
+
+
     </style>
+
+
 </head>
 <body>
+<?php if(session('success')): ?>
+    <div class="alert alert-success">
+        <?php echo e(session('success')); ?>
+
+    </div>
+<?php endif; ?>
+
+<?php if(session('error')): ?>
+    <div class="alert alert-danger">
+        <?php echo e(session('error')); ?>
+
+    </div>
+<?php endif; ?>
+
 <div class="container my-5">
     <div class="row justify-content-center">
         <div class="col-lg-10">
@@ -90,6 +163,7 @@ unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
+                        <!-- Campo Fecha (sin error-tecnicos aquí) -->
                         <div class="col-md-6">
                             <label for="fecha_instalacion" class="form-label">Fecha de instalación</label>
                             <div class="input-group has-validation">
@@ -104,7 +178,7 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
                                        value="<?php echo e(now()->format('Y-m-d')); ?>"
-                                       min="2025-07-01" max="2025-08-31" required>
+                                       min="<?php echo e(now()->format('Y-m-d')); ?>" max="2025-10-31" required>
                                 <?php $__errorArgs = ['fecha_instalacion'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -113,30 +187,42 @@ $message = $__bag->first($__errorArgs[0]); ?><div class="invalid-feedback"><?php
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
+                                <!-- No poner el div error-tecnicos aquí -->
                             </div>
                         </div>
 
-
-                        <!-- Técnicos (select múltiple en una línea) -->
+                        <!-- Campo Técnicos -->
                         <div class="col-md-6">
                             <label for="empleado_id" class="form-label">Técnicos</label>
                             <div class="border rounded p-2" id="tecnicos-container" style="max-height: 200px; overflow-y: auto;">
                                 <div class="row">
                                     <?php $__currentLoopData = $tecnicos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $tecnico): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <div class="col-6">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="empleado_id[]" value="<?php echo e($tecnico->id); ?>" id="tecnico_<?php echo e($tecnico->id); ?>">
-                                                <label class="form-check-label" for="tecnico_<?php echo e($tecnico->id); ?>">
-                                                    <?php echo e($tecnico->nombre); ?>
+                                        <div class="form-check">
+                                            <input
+                                                class="form-check-input"
+                                                type="checkbox"
+                                                name="tecnico_id[]"
+                                                value="<?php echo e($tecnico->id); ?>"
+                                                id="tecnico_<?php echo e($tecnico->id); ?>"
+                                                
+                                                <?php echo e((collect(old('tecnico_id'))->contains($tecnico->id) || (isset($instalacion) && $instalacion->tecnicos->contains($tecnico->id))) ? 'checked' : ''); ?>
 
-                                                </label>
-                                            </div>
+                                            >
+                                            <label class="form-check-label" for="tecnico_<?php echo e($tecnico->id); ?>">
+                                                <?php echo e($tecnico->nombre); ?>
+
+                                            </label>
                                         </div>
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+
+
                                 </div>
                             </div>
+                            <!-- Aquí SI debe ir el div para mostrar el error -->
+                            <div id="error-tecnicos" class="invalid-feedback d-block" style="margin-top:0.25rem;"></div>
                             <small class="text-muted">Seleccione uno o más técnicos.</small>
                         </div>
+
 
                         <!-- Servicio -->
                         <div class="col-md-6">
@@ -173,7 +259,9 @@ unset($__errorArgs, $__bag); ?>
                         <div class="col-md-6">
                             <label for="costo_instalacion" class="form-label">Costo de Instalación (L.)</label>
                             <div class="input-group has-validation">
-                                <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
+                                 <span class="input-group-text">
+                                    <span class="moneda-lempira">L.</span>
+                                  </span>
                                 <input type="number" id="costo_instalacion" name="costo_instalacion"
                                        class="form-control <?php $__errorArgs = ['costo_instalacion'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -184,17 +272,19 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
                                        min="1" max="9999" step="0.01" placeholder="Ej: 500.00" required>
-
                                 <?php $__errorArgs = ['costo_instalacion'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?><div class="invalid-feedback"><?php echo e($message); ?></div><?php unset($message);
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
+
 
                         <!-- Factura -->
                         <div class="col-md-6">
@@ -218,7 +308,7 @@ unset($__errorArgs, $__bag); ?>
                             <label for="descripcion" class="form-label">Descripción</label>
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-card-text"></i></span>
-                                <textarea id="descripcion" name="descripcion"
+                                <textarea  id="descripcion" name="descripcion" maxlength="255"
                                           class="form-control auto-expand <?php $__errorArgs = ['descripcion'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -244,7 +334,7 @@ unset($__errorArgs, $__bag); ?>
                             <label for="direccion" class="form-label">Dirección</label>
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
-                                <textarea id="direccion" name="direccion"
+                                <textarea id="direccion" name="direccion" maxlength="255"
                                           class="form-control auto-expand <?php $__errorArgs = ['direccion'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -266,14 +356,22 @@ unset($__errorArgs, $__bag); ?>
                         </div>
                     </div>
 
-                    <!-- Resumen de costos -->
                     <div class="d-flex justify-content-end mt-4">
                         <div class="bg-light p-3 rounded shadow-sm" style="width: 300px; font-size: 0.9rem;">
                             <h6 class="text-center mb-3">Costos totales</h6>
-                            <p class="mb-1"><strong>Costo Factura:</strong> L. <span id="total-factura">0.00</span></p>
-                            <p class="mb-1"><strong>Costo Instalación:</strong> L. <span id="total-instalacion">0.00</span></p>
+                            <p class="d-flex justify-content-between mb-1">
+                                <strong>Costo Factura:</strong>
+                                <span>L. <span id="total-factura">0.00</span></span>
+                            </p>
+                            <p class="d-flex justify-content-between mb-1">
+                                <strong>Costo Instalación:</strong>
+                                <span>L. <span id="total-instalacion">0.00</span></span>
+                            </p>
                             <hr>
-                            <p class="mb-1 fw-bold text-primary text-center">Total General: L. <span id="total-general">0.00</span></p>
+                            <p class="d-flex justify-content-between fw-bold text-primary mb-1">
+                                <span>Total General:</span>
+                                <span>L. <span id="total-general">0.00</span></span>
+                            </p>
                         </div>
                     </div>
 
@@ -294,8 +392,39 @@ unset($__errorArgs, $__bag); ?>
 
                     </div>
                 </form>
+                <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
 
                 <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        new TomSelect('#cliente_id', {
+                            create: false,  // No permite crear opciones nuevas, solo buscar y seleccionar
+                            sortField: 'text',
+                            dropdownParent: 'body', // Para que se muestre bien el dropdown
+                            maxOptions: 1000,
+                            hideSelected: true,
+                            allowEmptyOption: true,
+                            render: {
+                                no_results: function(data, escape) {
+                                    return '<div class="no-results">No se encontraron resultados</div>';
+                                }
+                            }
+                        });
+
+                        new TomSelect('#factura_id', {
+                            create: false,
+                            sortField: 'text',
+                            dropdownParent: 'body',
+                            maxOptions: 1000,
+                            hideSelected: true,
+                            allowEmptyOption: true,
+                            render: {
+                                no_results: function(data, escape) {
+                                    return '<div class="no-results">No se encontraron resultados</div>';
+                                }
+                            }
+                        });
+                    });
+
                     document.addEventListener("DOMContentLoaded", function () {
                         const form = document.getElementById("form-instalacion");
 
@@ -349,6 +478,7 @@ unset($__errorArgs, $__bag); ?>
                                 this.style.height = "auto"; // Reinicia altura
                                 this.style.height = this.scrollHeight + "px"; // Ajusta a contenido
                             });
+
                         });
 
 
@@ -413,11 +543,12 @@ unset($__errorArgs, $__bag); ?>
                             }
 
                             // Técnicos
-                            const tecnicosMarcados = document.querySelectorAll('input[name="empleado_id[]"]:checked');
+                            const tecnicosMarcados = document.querySelectorAll('input[name="tecnico_id[]"]:checked');
                             if (tecnicosMarcados.length === 0) {
                                 setGroupError(tecnicosContainer, "Debe seleccionar al menos un técnico.");
                                 isValid = false;
                             }
+
 
                             // Servicio
                             if (!fields.servicio.value) {
@@ -462,8 +593,140 @@ unset($__errorArgs, $__bag); ?>
                             if (!isValid) e.preventDefault();
                         });
                     });
+                    document.getElementById("fecha_instalacion").addEventListener("change", function () {
+                        const fecha = this.value;
+                        if (!fecha) return;
+
+                        fetch(`/api/tecnicos-ocupados?fecha=${fecha}`)
+                            .then(res => res.json())
+                            .then(data => {
+                                document.querySelectorAll('input[name="empleado_id[]"]').forEach(chk => {
+                                    if (data.includes(parseInt(chk.value))) {
+                                        chk.disabled = true;
+                                        chk.parentElement.classList.add("text-muted");
+                                    } else {
+                                        chk.disabled = false;
+                                        chk.parentElement.classList.remove("text-muted");
+                                    }
+                                });
+                            });
+                    });
+                    const fechaInput = document.getElementById('fecha_instalacion');
+                    const errorTecnicos = document.getElementById('error-tecnicos');
+
+                    function validarTecnicosOcupados() {
+                        const fechaSeleccionada = fechaInput.value;
+                        if (!fechaSeleccionada) {
+                            errorTecnicos.textContent = '';
+                            return;
+                        }
+
+                        // Obtiene los técnicos seleccionados
+                        const checkboxes = document.querySelectorAll('input[name="empleado_id[]"]:checked');
+                        if (checkboxes.length === 0) {
+                            errorTecnicos.textContent = '';
+                            return;
+                        }
+
+                        // Mapa id → nombre técnico
+                        const mapTecnicos = {};
+                        document.querySelectorAll('input[name="empleado_id[]"]').forEach(cb => {
+                            mapTecnicos[parseInt(cb.value)] = cb.nextElementSibling.textContent.trim();
+                        });
+
+                        const tecnicosSeleccionados = Array.from(checkboxes).map(cb => cb.value);
+
+                        fetch(`/api/tecnicos-ocupados?fecha=${fechaSeleccionada}`)
+                            .then(res => res.json())
+                            .then(tecnicosOcupados => {
+                                const ocupadosSeleccionados = tecnicosSeleccionados
+                                    .map(id => parseInt(id))
+                                    .filter(id => tecnicosOcupados.includes(id));
+
+                                if (ocupadosSeleccionados.length > 0) {
+                                    const nombres = ocupadosSeleccionados.map(id => mapTecnicos[id] || id);
+
+                                    let mensaje = '';
+                                    if (nombres.length === 1) {
+                                        mensaje = `El técnico ${nombres[0]} está ocupado ese día.`;
+                                    } else {
+                                        // Para más de uno, unimos con ' y ' el último, y ', ' los demás
+                                        const ultimo = nombres.pop();
+                                        mensaje = `Los técnicos ${nombres.join(', ')} y ${ultimo} están ocupados ese día.`;
+                                    }
+
+                                    errorTecnicos.textContent = mensaje;
+                                } else {
+                                    errorTecnicos.textContent = '';
+                                }
+                            })
+                            .catch(() => {
+                                errorTecnicos.textContent = 'Error al consultar técnicos ocupados.';
+                            });
+
+                    }
+
+                    // Validar al cambiar la fecha o al cambiar la selección de técnicos
+                    fechaInput.addEventListener('change', validarTecnicosOcupados);
+
+                    document.querySelectorAll('input[name="empleado_id[]"]').forEach(cb => {
+                        cb.addEventListener('change', validarTecnicosOcupados);
+                    });
+                    //descripcion y direccion
+                    [fields.descripcion, fields.direccion].forEach(field => {
+                        // Añadir maxlength a los textarea (por si no está en HTML)
+                        field.setAttribute('maxlength', '255');
+
+                        // Bloquear teclas que añadan texto cuando se alcanzó el máximo
+                        field.addEventListener('keydown', e => {
+                            const allowedKeys = [
+                                "Backspace", "Delete", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
+                                "Tab", "Home", "End"
+                            ];
+
+                            if (
+                                field.value.length >= 255 &&
+                                !allowedKeys.includes(e.key) &&
+                                !e.ctrlKey &&
+                                !e.metaKey
+                            ) {
+                                e.preventDefault();
+                            }
+                        });
+
+                        // Limitar pegar texto
+                        field.addEventListener('paste', e => {
+                            e.preventDefault();
+                            const pasteText = (e.clipboardData || window.clipboardData).getData('text');
+                            const espacioDisponible = 255 - field.value.length;
+
+                            if (espacioDisponible <= 0) return; // No permitir pegar si ya está lleno
+
+                            const textoParaPegar = pasteText.substring(0, espacioDisponible);
+
+                            // Insertar texto pegado en la posición actual del cursor
+                            const start = field.selectionStart;
+                            const end = field.selectionEnd;
+                            const textoAntes = field.value.substring(0, start);
+                            const textoDespues = field.value.substring(end);
+
+                            field.value = textoAntes + textoParaPegar + textoDespues;
+
+                            // Ajustar posición del cursor después del texto pegado
+                            const cursorPos = start + textoParaPegar.length;
+                            field.setSelectionRange(cursorPos, cursorPos);
+
+                            // Disparar evento input para actualizaciones
+                            field.dispatchEvent(new Event('input'));
+                        });
+                    });
+                    document.querySelectorAll('.ts-dropdown').forEach(dropdown => {
+                        dropdown.addEventListener('mousedown', e => e.preventDefault());
+                    });
+
 
                 </script>
+
 
 <?php $__env->stopSection(); ?>
 
