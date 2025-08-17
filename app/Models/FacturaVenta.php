@@ -17,7 +17,7 @@ class FacturaVenta extends Model
 
     public function detalles()
     {
-        return $this->hasMany(DetalleFacturaVenta::class, 'facturas_ventas_id');
+        return $this->hasMany(DetalleFacturaVenta::class, 'factura_venta_id');
     }
 
     public function cliente()
