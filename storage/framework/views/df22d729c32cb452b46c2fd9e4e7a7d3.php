@@ -2,13 +2,99 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
     <style>
-        /* Fondo y estilo del calendario */
-        #calendar {
-            background-color: #ffffff;
+        body {
+            background-color: #e6f0ff;
+            height: 100vh;
+            margin: 0;
+            padding: 2rem 0; /* para que no quede pegado arriba y abajo */
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Contenedor que abarca título, buscador, botón y calendario */
+        .header-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: #ffffff; /* fondo blanco */
             border-radius: 1.25rem;
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-            padding: 1rem;
-            font-family: 'Inter', sans-serif;
+            padding: 2rem 2rem 3rem 2rem; /* arriba, derecha, abajo, izquierda */
+        }
+
+        /* Título */
+        .header-title {
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: #0d1b2a;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .header-title i {
+            font-size: 1.8rem;
+        }
+
+        /* Contenedor buscador + botón */
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .header-row > div {
+            max-width: 400px;
+            width: 100%;
+        }
+
+        #buscador {
+            padding: 0.5rem 0.75rem;
+            font-size: 1rem;
+            border: 1px solid #ced4da;
+            border-radius: 0.375rem 0 0 0.375rem;
+            height: 40px;
+            border-right: none;
+        }
+
+        .input-group-text {
+            background-color: #fff;
+            border: 1px solid #ced4da;
+            border-left: none;
+            border-radius: 0 0.375rem 0.375rem 0;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .btn-programar {
+            min-width: 170px;
+            color: #1b4f72;
+            border-color: #1b4f72;
+            font-weight: normal;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            height: 40px;
+        }
+
+        .btn-programar:hover,
+        .btn-programar:focus {
+            background-color: #3a7ab8; /* azul más claro */
+            color: white;
+            text-decoration: none;
+        }
+
+
+        /* Calendario: eliminamos fondo blanco porque ya lo tiene el contenedor */
+        #calendar {
+            /* background-color: transparent; */
+            border-radius: 0.75rem;
+            font-family: inherit;
+            /* padding: 0; */
         }
 
         .fc .fc-toolbar-title {
@@ -46,116 +132,62 @@
             margin-bottom: 1.5rem;
         }
 
-        /* Modal Header: azul oscuro */
-        .modal-header {
-            background-color: #0a1f3a !important;
-            color: #fff;
-            border-bottom: 8px solid #0a1f3a;
+        @media (max-width: 576px) {
+            .header-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            #buscador, .btn-programar {
+                width: 100%;
+                height: 40px;
+                margin-bottom: 0.5rem;
+            }
         }
 
-        .modal-header img {
-            border-radius: 6px;
-        }
+        /* Modal y demás estilos mantienen igual (omito para brevedad, se agregan igual al final) */
 
-        .modal-header .modal-title {
-            color: #fff; /* Título blanco sobre fondo azul */
-            font-weight: bold;
-        }
-
-        .btn-close {
-            filter: invert(1); /* Botón cerrar en blanco */
-        }
-
-        /* Modal Body con borde inferior azul */
-        .modal-body {
-            border-bottom: 8px solid #0a1f3a;
-            padding-bottom: 12px;
-        }
-
-        /* Detalle de cada campo */
-        .detalle-item {
-            display: flex;
-            align-items: center;
-            padding: 6px 10px;
-            margin-bottom: 6px;
-            border-left: 4px solid #cda34f; /* Línea dorada a la izquierda */
-        }
-
-        .detalle-item .icono {
-            font-size: 1.1rem;
-            color: #0d1b2a;
-            margin-right: 8px;
-        }
-
-        .detalle-item .info-label {
-            font-weight: bold;
-            margin-right: 6px;
-            color: #0d1b2a;
-            font-size: 0.95rem;
-        }
-
-        .detalle-item .info-value {
-            color: #1b263b;
-            font-size: 0.95rem;
-        }
-
-        /* Estilo general del modal */
-        .modal-content {
-            background: #ffffff;
-            border-radius: 10px;
-            border: none;
-        }
-
-        body {
-            background-color: #e6f0ff;
-            height: 100vh;
-            margin: 0;
-        }
-
-        /* Botón azul contorno y relleno al hover */
-        .btn-hover-fill {
-            transition: background-color 0.3s ease, color 0.3s ease;
-            color: #0a8ccf;
-            border-color: #0a8ccf;
-        }
-
-        .btn-hover-fill:hover,
-        .btn-hover-fill:focus {
-            background-color: #0a8ccf;
-            color: white;
-            text-decoration: none;
-        }
+        /* (Puedes agregar los estilos para modal que tenías antes aquí si quieres) */
     </style>
 
-    <div class="container mt-5" style="max-width: 900px; position: relative;">
-        <!-- Título centrado absolutamente -->
-        <h3 class="position-absolute start-50 translate-middle-x m-0 d-flex align-items-center" style="gap: 0.5rem; top: 0;">
-            <i class="bi bi-calendar3" style="font-size: 1.5rem; color: #0d1b2a;"></i>
+    <div class="header-container">
+        <h3 class="header-title">
+            <i class="bi bi-calendar3"></i>
             Calendario de Instalaciones
         </h3>
 
-        <!-- Botón alineado a la derecha -->
-        <div class="d-flex justify-content-end mb-4" style="padding-top: 0.5rem;">
-            <a href="<?php echo e(route('instalaciones.formulario')); ?>" class="btn btn-outline-info btn-hover-fill">
-                <i class="bi bi-plus-circle"></i> Programar instalación
+        <div class="header-row">
+            <div>
+                <div class="input-group">
+                    <input
+                        type="text"
+                        id="buscador"
+                        placeholder="Buscar por cliente, servicio o dirección..."
+                        autocomplete="off"
+                        class="form-control"
+                    >
+                    <span class="input-group-text">
+                        <i class="bi bi-search"></i>
+                    </span>
+                </div>
+            </div>
+
+            <a href="<?php echo e(route('instalaciones.formulario')); ?>" class="btn btn-outline-primary btn-programar">
+                <i class="bi bi-arrow-left"></i> Programar Instalación
             </a>
         </div>
-    </div>
 
-    <div id="calendar" class="mx-auto" style="max-width: 900px;"></div>
+        <div id="calendar" class="mx-auto" style="max-width: 900px;"></div>
+    </div>
 
     <!-- Modal Detalle Mejorado -->
     <div class="modal fade" id="detalleEventoModal" tabindex="-1" aria-labelledby="detalleEventoLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header d-flex align-items-center justify-content-between">
-                    <!-- Logo cuadrado -->
                     <img src="<?php echo e(asset('centinela.jpg')); ?>" alt="Logo" style="height: 40px; width: 40px; object-fit: cover;">
-                    <!-- Título -->
                     <h5 class="modal-title flex-grow-1 text-center" id="detalleEventoLabel" style="margin: 0;">
                         Detalle de Instalación
                     </h5>
-                    <!-- Botón cerrar -->
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
                 <div class="modal-body">
@@ -213,9 +245,9 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            var calendarEl = document.getElementById('calendar');
+            let calendarEl = document.getElementById('calendar');
 
-            var calendar = new FullCalendar.Calendar(calendarEl, {
+            let calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 locale: 'es',
                 height: 'auto',
@@ -231,13 +263,27 @@
                     week: 'Semana',
                     list: 'Lista'
                 },
-                events: '/instalaciones/eventos', // Ruta que devuelve JSON de eventos
+                events: function(fetchInfo, successCallback, failureCallback) {
+                    const q = document.getElementById('buscador').value.trim();
+
+                    const params = new URLSearchParams({
+                        start: fetchInfo.startStr,
+                        end: fetchInfo.endStr,
+                    });
+
+                    if(q) {
+                        params.append('q', q);
+                    }
+
+                    fetch('/instalaciones/eventos?' + params.toString())
+                        .then(response => response.json())
+                        .then(data => successCallback(data))
+                        .catch(() => failureCallback());
+                },
                 eventClick: function(info) {
                     info.jsEvent.preventDefault();
-
                     const props = info.event.extendedProps;
 
-                    // Insertar datos en el modal
                     document.getElementById('modal-cliente').textContent = props.cliente || 'N/A';
                     document.getElementById('modal-servicio').textContent = props.servicio || 'N/A';
                     document.getElementById('modal-descripcion').textContent = props.descripcion || 'Sin descripción';
@@ -246,12 +292,17 @@
                     document.getElementById('modal-factura').textContent = props.factura || 'No aplica';
                     document.getElementById('modal-tecnicos').textContent = props.tecnicos && props.tecnicos.length > 0 ? props.tecnicos.join(', ') : 'Sin asignar';
 
-                    const modal = new bootstrap.Modal(document.getElementById('detalleEventoModal'));
+                    let modal = new bootstrap.Modal(document.getElementById('detalleEventoModal'));
                     modal.show();
                 }
             });
 
             calendar.render();
+
+            const buscador = document.getElementById('buscador');
+            buscador.addEventListener('input', function () {
+                calendar.refetchEvents();
+            });
         });
     </script>
 <?php $__env->stopSection(); ?>

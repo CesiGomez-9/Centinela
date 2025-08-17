@@ -1,82 +1,18 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Catálogo de Servicios</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-
+@extends('plantilla')
+@section('titulo', 'Listado de productos')
+@section('content')
 
     <style>
-        body {
+        body{
             background-color: #e6f0ff;
             height: 100vh;
             margin: 0;
-            background-color: #f2f4f8;
-            font-family: 'Segoe UI', sans-serif;
         }
-        .table thead th {
-            text-align: center;
-            vertical-align: middle;
-        }
-        .table tbody td {
-            vertical-align: middle;
-        }
-        .navbar-brand {
-            display: flex;
-            align-items: center;
-        }
-        .navbar-brand img {
-            margin-right: 12px;
-        }
-        .pagination .page-item.active .page-link {
-            background-color: #000 !important;
-            border-color: #000 !important;
-            color: #fff !important;
-        }
-        /* Ajuste para la columna de costos */
-        .cost-details {
-            font-size: 0.9em; /* Ligeramente más pequeño para caber mejor */
-            line-height: 1.3; /* Espaciado entre líneas */
-        }
-        .cost-details strong {
-            display: inline-block; /* Asegura que la etiqueta y el valor estén en la misma línea */
-            min-width: 45px; /* Alinea las etiquetas */
-            text-align: right;
-            margin-right: 5px;
-        }
+
     </style>
 
-</head>
 
-
-
-</style>
-<body class="bg-light p-4">
-
-<!-- NAVBAR -->
-<nav class="navbar navbar-expand-lg shadow-sm" style="background-color: #0A1F44;">
-    <div class="container" style="max-width: 1600px;">
-        <a class="navbar-brand text-white fw-bold" href="#">
-            <img src="{{ asset('centinela.jpg') }}" style="height:70px;">
-            Grupo Centinela
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon text-white"></span>
-        </button>
-        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link text-white" href="#">Registrate</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="#">Servicios</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="#">Nosotros</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="#">Contacto</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
-
-<!-- CONTENIDO -->
+    <!-- CONTENIDO -->
 <div class="container bg-white p-5 rounded shadow mt-5">
 
     <!-- Título -->
@@ -201,5 +137,5 @@
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+
+@endsection
