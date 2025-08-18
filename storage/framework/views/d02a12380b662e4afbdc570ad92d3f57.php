@@ -1,33 +1,5 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Facturas de Venta</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-</head>
-<body style="background-color: #e6f0ff;">
-<nav class="navbar navbar-expand-lg" style="background-color: #0A1F44; padding-top: 1.2rem; padding-bottom: 1.2rem; font-family: 'Courier New', sans-serif;">
-    <div class="container" style="max-width: 1600px;">
-        <a class="navbar-brand text-white fw-bold" href="#">
-            <img src="<?php echo e(asset('seguridad/logo.jpg')); ?>" style="height:80px; margin-right: 10px;">
-            Grupo Centinela
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link text-white" href="#">Registrate</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="#">Servicios</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="#">Nosotros</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="#">Contacto</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
-
+<?php $__env->startSection('titulo', 'Asignación de servicio'); ?>
+<?php $__env->startSection('content'); ?>
 <style>
     body { background-color: #e6f0ff; margin: 0; }
     .error-message { color: #dc3545; font-size: 0.875em; margin-top: 0.25rem; display: none; }
@@ -37,11 +9,11 @@
     .modal:not(.show), .modal-backdrop:not(.show) { display: none !important; opacity: 0 !important; }
 
 
-     body {
-         font-family: 'Inter', sans-serif;
-         background: url('https://www.transparenttextures.com/patterns/beige-paper.png') repeat fixed #f8f4ec;
-         font-size: 16px;
-     }
+    body {
+        font-family: 'Inter', sans-serif;
+        background: url('https://www.transparenttextures.com/patterns/beige-paper.png') repeat fixed #f8f4ec;
+        font-size: 16px;
+    }
 
     .card {
         border: none;
@@ -456,7 +428,7 @@ unset($__errorArgs, $__bag); ?>
                             ?>
                             <tr>
                             <tr data-id="<?php echo e($producto->id); ?>">
-                            <td><?php echo e($producto->nombre); ?></td>
+                                <td><?php echo e($producto->nombre); ?></td>
                                 <td><?php echo e($producto->categoria); ?></td>
                                 <td><?php echo e(number_format($producto->precio_venta, 2)); ?></td>
                                 <td class="celda-cantidad"><?php echo e($producto->cantidad); ?></td>
@@ -537,6 +509,7 @@ unset($__errorArgs, $__bag); ?>
         </div>
     </div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -550,6 +523,7 @@ unset($__errorArgs, $__bag); ?>
                 this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
             });
         };
+
 
         const searchCliente = document.getElementById("searchInput");
         const searchProducto = document.getElementById("searchProductoInput");
@@ -617,6 +591,8 @@ unset($__errorArgs, $__bag); ?>
         });
 
         // ------------------ Modal de los productos ------------------//
+
+
         const productosModalEl = document.getElementById('productosModal');
         const productosModal = bootstrap.Modal.getOrCreateInstance(productosModalEl);
         productosModalEl.addEventListener('hidden.bs.modal', function () {
@@ -672,43 +648,47 @@ unset($__errorArgs, $__bag); ?>
             filaCantidad.classList.add('fila-cantidad');
 
             filaCantidad.innerHTML = `
-    <td colspan="6">
-       <div class="d-flex flex-column align-items-center justify-content-center gap-1">
-    <div class="d-flex gap-2 align-items-center justify-content-center">
-        <label class="me-2">Cantidad:</label>
-        <input
-            type="number"
-            min="1"
-            max="${productoSeleccionado.cantidadDisponible}"
-           step="1"
-           class="form-control w-auto cantidad-input"
-            required
-             placeholder="Ej. 1"
-        >
-        <button class="btn btn-primary btn-sm btnAgregarCantidad">
-            <i class="bi bi-plus-circle"></i> Agregar
-        </button>
-        <button class="btn btn-warning btn-sm btnCancelarCantidad">
-            <i class="bi bi-x-circle"></i> Limpiar
-        </button>
-        <div class="error-message text-danger ms-2"></div>
-    </div>
-<small class="text-muted">Cantidad disponible: ${productoSeleccionado.cantidadDisponible}</small>
-</div>
-
-    </td>
-`;
+                <td colspan="6">
+                    <div class="d-flex flex-column align-items-center justify-content-center gap-1">
+                        <div class="d-flex gap-2 align-items-center justify-content-center">
+                            <label class="me-2">Cantidad:</label>
+                            <input
+                                type="number"
+                                min="1"
+                                max="${productoSeleccionado.cantidadDisponible}"
+                                step="1"
+                                class="form-control w-auto cantidad-input"
+                                required
+                                placeholder="Ej. 1"
+                            >
+                            <button class="btn btn-primary btn-sm btnAgregarCantidad">
+                                <i class="bi bi-plus-circle"></i> Agregar
+                            </button>
+                            <button class="btn btn-warning btn-sm btnCancelarCantidad">
+                                <i class="bi bi-x-circle"></i> Limpiar
+                            </button>
+                            <div class="error-message text-danger ms-2"></div>
+                        </div>
+                        <small class="text-muted">Cantidad disponible: ${productoSeleccionado.cantidadDisponible}</small>
+                    </div>
+                </td>
+            `;
             filaProducto.parentNode.insertBefore(filaCantidad, filaProducto.nextSibling);
         });
 
         tablaProductosBody.addEventListener('click', function (e) {
+            // ---------------- Agregar Cantidad ----------------
             if (e.target.closest('.btnAgregarCantidad')) {
-                e.preventDefault();
+                e.preventDefault(); // Evita que se envíe el formulario
+
+                if (!productoSeleccionado) return; // Evita errores si no hay producto seleccionado
+
                 const filaCantidad = e.target.closest('tr');
                 const input = filaCantidad.querySelector('.cantidad-input');
                 const cantidad = parseInt(input.value);
                 const errorDiv = filaCantidad.querySelector('.error-message');
 
+                // Validación de cantidad
                 if (!cantidad || cantidad < 1 || cantidad > productoSeleccionado.cantidadDisponible) {
                     errorDiv.textContent = `Ingrese una cantidad válida (1 - ${productoSeleccionado.cantidadDisponible}).`;
                     input.classList.add('is-invalid');
@@ -718,11 +698,14 @@ unset($__errorArgs, $__bag); ?>
                 input.classList.remove('is-invalid');
                 errorDiv.textContent = '';
 
+                // Intentar agregar el producto a la factura
                 if (typeof agregarProductoAFactura === 'function') {
                     const agregado = agregarProductoAFactura(productoSeleccionado, cantidad);
+
                     if (agregado) {
                         filaCantidad.remove();
 
+                        // Resetear botón de seleccionar producto
                         const btnSeleccionado = document.querySelector(`.btnSeleccionarProducto[data-id="${productoSeleccionado.id}"]`);
                         if (btnSeleccionado) {
                             btnSeleccionado.classList.remove('btn-success');
@@ -731,17 +714,24 @@ unset($__errorArgs, $__bag); ?>
                         }
 
                         productoSeleccionado = null;
-                        bootstrap.Modal.getInstance(document.getElementById('productosModal'))?.hide();
-                    } else {
-                        errorDiv.textContent = 'No se pudo agregar el producto a la factura.';
+
+
+                        // Cierra el modal
+                        productosModal.hide();
+
+                        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                        document.body.classList.remove('modal-open');
+                        document.body.style = '';
                     }
                 }
             }
 
+            // ---------------- Cancelar Cantidad ----------------
             if (e.target.closest('.btnCancelarCantidad')) {
                 e.preventDefault();
+
                 const filaCantidad = e.target.closest('tr');
-                filaCantidad.remove();
+                if (filaCantidad) filaCantidad.remove();
 
                 if (productoSeleccionado) {
                     const btn = document.querySelector(`.btnSeleccionarProducto[data-id="${productoSeleccionado.id}"]`);
@@ -751,10 +741,18 @@ unset($__errorArgs, $__bag); ?>
                         btn.querySelector('span').textContent = 'Seleccionar';
                     }
                 }
-
                 productoSeleccionado = null;
             }
         });
+
+        const btnAgregarProducto = document.getElementById('btnAgregarProducto');
+        if (btnAgregarProducto) {
+            btnAgregarProducto.addEventListener('click', function(e) {
+                e.preventDefault();
+                agregarProducto();
+            });
+        }
+
 
         // ------------------ Busqueda por categoria ------------------//
         const inputBuscar = document.getElementById('searchProductoInput');
@@ -916,21 +914,26 @@ unset($__errorArgs, $__bag); ?>
         document.getElementById('filaVacia')?.remove();
 
         const index = tablaFactura.querySelectorAll('tr').length;
-        const base = parseFloat(producto.precioVenta);
+        const precioVenta = parseFloat(producto.precioVenta);
         const iva = parseFloat(producto.iva);
-        const impuesto = (iva / 100) * base * cantidad;
-        const subtotal = base * cantidad + impuesto;
+
+        // El subtotal en la tabla debe ser el costo base por la cantidad, sin el impuesto.
+        const subtotalProducto = precioVenta * cantidad;
+
         const fila = document.createElement('tr');
         fila.innerHTML = `
-        <td>${index + 1}</td>
-        <td><input type="hidden" name="productos[${index}][producto_id]" value="${producto.id}"><input type="hidden" name="productos[${index}][nombre]" value="${producto.nombre}">${producto.nombre}</td>
-       <input type="hidden" name="productos[${index}][categoria]" value="${producto.categoria ?? ''}">
-        <td><input type="hidden" name="productos[${index}][precioVenta]" value="${base.toFixed(2)}">${base.toFixed(2)}</td>
-        <td><input type="hidden" name="productos[${index}][cantidad]" value="${cantidad}">${cantidad}</td>
-        <td><input type="hidden" name="productos[${index}][iva]" value="${iva}">${iva}%</td>
-        <td class="subtotal-producto">${subtotal.toFixed(2)}</td>
-        <td><button type="button" class="btn btn-danger btn-sm btn-eliminar-producto"><i class="bi bi-trash"></i></button></td>
-    `;
+            <td>${index + 1}</td>
+            <td>
+                <input type="hidden" name="productos[${index}][producto_id]" value="${producto.id}">
+                <input type="hidden" name="productos[${index}][nombre]" value="${producto.nombre}">${producto.nombre}
+            </td>
+            <input type="hidden" name="productos[${index}][categoria]" value="${producto.categoria ?? ''}">
+            <td><input type="hidden" name="productos[${index}][precioVenta]" value="${precioVenta.toFixed(2)}">${precioVenta.toFixed(2)}</td>
+            <td><input type="hidden" name="productos[${index}][cantidad]" value="${cantidad}">${cantidad}</td>
+            <td><input type="hidden" name="productos[${index}][iva]" value="${iva}">${iva}%</td>
+            <td class="subtotal-producto">${subtotalProducto.toFixed(2)}</td>
+            <td><button type="button" class="btn btn-danger btn-sm btn-eliminar-producto"><i class="bi bi-trash"></i></button></td>
+        `;
         tablaFactura.appendChild(fila);
 
         fila.querySelector('.btn-eliminar-producto').addEventListener('click', function () {
@@ -945,6 +948,7 @@ unset($__errorArgs, $__bag); ?>
         actualizarFilaVacia();
         return true;
     }
+
 
     function mostrarAlertaProductoDuplicado(mensaje) {
         const alerta = document.getElementById('alertaProductoDuplicado');
@@ -991,33 +995,35 @@ unset($__errorArgs, $__bag); ?>
     }
 
     function calcularTotalesGenerales() {
-        let subtotal = 0, impuesto15 = 0, impuesto18 = 0;
+        let subtotalGeneral = 0, impuesto15 = 0, impuesto18 = 0;
         const filas = document.querySelectorAll('#tablaFacturaBody tr');
 
         filas.forEach(fila => {
             const precio = parseFloat(fila.querySelector('input[name$="[precioVenta]"]')?.value || 0);
             const cantidad = parseFloat(fila.querySelector('input[name$="[cantidad]"]')?.value || 0);
             const iva = parseFloat(fila.querySelector('input[name$="[iva]"]')?.value || 0);
-            const base = precio * cantidad;
-            const impuesto = (iva / 100) * base;
+            const subtotalProducto = precio * cantidad;
+            const impuestoProducto = (iva / 100) * subtotalProducto;
 
-            subtotal += base;
-            if (iva === 15) impuesto15 += impuesto;
-            if (iva === 18) impuesto18 += impuesto;
+            subtotalGeneral += subtotalProducto;
+            if (iva === 15) impuesto15 += impuestoProducto;
+            if (iva === 18) impuesto18 += impuestoProducto;
 
-            fila.querySelector('.subtotal-producto').textContent = (base + impuesto).toFixed(2);
+            // Actualiza el subtotal en la fila de la tabla sin el impuesto
+            fila.querySelector('.subtotal-producto').textContent = subtotalProducto.toFixed(2);
         });
 
-        const total = subtotal + impuesto15 + impuesto18;
+        const totalGeneral = subtotalGeneral + impuesto15 + impuesto18;
+        const impuestosGeneral = impuesto15 + impuesto18;
 
-        document.getElementById('inputSubtotalGeneral').value = subtotal.toFixed(2);
-        document.getElementById('inputImpuestosGeneral').value = (impuesto15 + impuesto18).toFixed(2);
-        document.getElementById('inputTotalGeneral').value = total.toFixed(2);
+        document.getElementById('inputSubtotalGeneral').value = subtotalGeneral.toFixed(2);
+        document.getElementById('inputImpuestosGeneral').value = impuestosGeneral.toFixed(2);
+        document.getElementById('inputTotalGeneral').value = totalGeneral.toFixed(2);
 
-        document.getElementById('subtotalGeneralLabel').textContent = subtotal.toFixed(2);
+        document.getElementById('subtotalGeneralLabel').textContent = subtotalGeneral.toFixed(2);
         document.getElementById('isv15Label').textContent = impuesto15.toFixed(2);
         document.getElementById('isv18Label').textContent = impuesto18.toFixed(2);
-        document.getElementById('totalGeneralLabel').textContent = total.toFixed(2);
+        document.getElementById('totalGeneralLabel').textContent = totalGeneral.toFixed(2);
     }
 
     document.getElementById('tablaProductosBody').addEventListener('input', function(e) {
@@ -1038,10 +1044,10 @@ unset($__errorArgs, $__bag); ?>
             }
         }
     });
-
 </script>
+
 <script src="<?php echo e(asset('js/tu-script.js')); ?>"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
-<?php /**PATH C:\Users\cesig\Herd\sistemadeseguridadcentinela\resources\views/facturas_ventas/create.blade.php ENDPATH**/ ?>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\cesig\Herd\sistemadeseguridadcentinela\resources\views/facturas_ventas/create.blade.php ENDPATH**/ ?>
