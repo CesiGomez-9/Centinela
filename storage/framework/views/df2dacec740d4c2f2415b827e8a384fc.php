@@ -988,7 +988,6 @@ unset($__errorArgs, $__bag); ?>
             function renderEmpleadosRadiobuttons(empleados, empleadosAsignadosIds) {
                 modalEmpleadoContainer.innerHTML = '';
 
-                // CAMBIO APLICADO: Ordenar los empleados alfabéticamente por nombre y apellido
                 empleados.sort((a, b) => {
                     const nombreCompletoA = (a.nombre + ' ' + a.apellido).toLowerCase();
                     const nombreCompletoB = (b.nombre + ' ' + b.apellido).toLowerCase();
@@ -1188,6 +1187,16 @@ unset($__errorArgs, $__bag); ?>
                         const horaFin24 = convertirHora24(horaFinValue);
                         const totalMinutosInicio = convertirAMinutos(horaInicio24);
                         const totalMinutosFin = convertirAMinutos(horaFin24);
+
+                        // Nueva validación para que las horas de inicio y fin no sean iguales
+                        if ((tipoTurno === 'diurno' || tipoTurno === 'nocturno') && totalMinutosInicio === totalMinutosFin) {
+                            horaInicioError.textContent = 'Las horas de inicio y fin no pueden ser iguales para este tipo de turno.';
+                            horaInicioError.style.display = 'block';
+                            modalHoraInicioInput.classList.add('is-invalid');
+                            modalHoraFinInput.classList.add('is-invalid');
+                            isValid = false;
+                        }
+
 
                         if (tipoTurno === 'diurno') {
                             const diurnoInicio = convertirAMinutos('06:00');

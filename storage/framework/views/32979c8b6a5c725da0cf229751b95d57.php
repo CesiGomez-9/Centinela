@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+
     <style>
         body {
             background-color: #e6f0ff;
@@ -45,7 +47,12 @@
             margin-right: 5px;
         }
     </style>
+
 </head>
+
+
+
+</style>
 <body class="bg-light p-4">
 
 <!-- NAVBAR -->
@@ -114,7 +121,7 @@
             <tr>
                 <th style="width: 50px;">#</th>
                 <th style="width: 280px;">Nombre</th>
-                <th style="width: 200px;">Costos</th> 
+                <th style="width: 200px;">Costos</th>
                 <th style="width: 130px;">Categoría</th>
                 <th style="width: 160px;">Acciones</th>
             </tr>
@@ -124,7 +131,7 @@
                 <tr>
                     <td class="text-center"><?php echo e($loop->iteration); ?></td>
                     <td class="text-start text-truncate" style="max-width: 280px;"><?php echo e($servicio->nombre); ?></td>
-                    <td class="text-start cost-details"> 
+                    <td class="text-start cost-details">
                         <div><strong>Diurno:</strong> L. <?php echo e(number_format($servicio->costo_diurno, 2)); ?></div>
                         <div><strong>Nocturno:</strong> L. <?php echo e(number_format($servicio->costo_nocturno, 2)); ?></div>
                         <div><strong>24 horas:</strong> L. <?php echo e(number_format($servicio->costo_24_horas, 2)); ?></div>
@@ -198,4 +205,4 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-<?php /**PATH C:\Users\cesig\Herd\sistemadeseguridadcentinela\resources\views/servicios/catalogo.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\Users\ardon\PhpstormProjects\Centinela\resources\views/servicios/catalogo.blade.php ENDPATH**/ ?>

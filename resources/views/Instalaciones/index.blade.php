@@ -1,4 +1,6 @@
-<?php $__env->startSection('content'); ?>
+@extends('plantilla')
+
+@section('content')
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
     <style>
@@ -221,7 +223,7 @@
                 </div>
             </div>
 
-            <a href="<?php echo e(route('instalaciones.formulario')); ?>" class="btn btn-outline-primary btn-programar">
+            <a href="{{ route('instalaciones.formulario') }}" class="btn btn-outline-primary btn-programar">
                 <i class="bi bi-arrow-left"></i> Programar Instalación
             </a>
         </div>
@@ -239,7 +241,7 @@
                 <div class="modal-header d-flex align-items-center" style="background-color:#0d1b2a; color:#fff; border-bottom:3px solid #cda34f;">
 
                     <!-- Imagen al inicio -->
-                    <img src="<?php echo e(asset('centinela.jpg')); ?>" alt="Logo" style="height: 40px; width: 40px; object-fit: cover; margin-right: 10px; border-radius: 5px;">
+                    <img src="{{ asset('centinela.jpg') }}" alt="Logo" style="height: 40px; width: 40px; object-fit: cover; margin-right: 10px; border-radius: 5px;">
 
                     <!-- Título -->
                     <h5 class="modal-title flex-grow-1 text-center mb-0" id="detalleEventoLabel">
@@ -386,6 +388,4 @@
             });
         });
     </script>
-<?php $__env->stopSection(); ?>
-
-<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Admin\PhpstormProjects\Centinela\resources\views/instalaciones/index.blade.php ENDPATH**/ ?>
+@endsection

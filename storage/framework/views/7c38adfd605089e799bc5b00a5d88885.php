@@ -10,7 +10,7 @@
 <nav class="navbar navbar-expand-lg" style="background-color: #0A1F44; padding-top: 1.2rem; padding-bottom: 1.2rem; font-family: 'Courier New', sans-serif;">
     <div class="container" style="max-width: 1600px;">
         <a class="navbar-brand text-white fw-bold d-flex align-items-center" href="#">
-            <img src="<?php echo e(asset('seguridad/logo.jpg')); ?>" style="height:80px; margin-right: 10px;" alt="Logo Grupo Centinela">
+            <img src="<?php echo e(asset('centinela.jpg')); ?>" style="height:80px; margin-right: 10px;" alt="Logo Grupo Centinela">
             Grupo Centinela
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -90,7 +90,7 @@
                 </div>
             </div>
         </form>
-    <?php if(session()->has('status')): ?>
+        <?php if(session()->has('status')): ?>
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
                 <i class="bi bi-check-circle-fill me-2"></i>
                 <?php echo e(session('status')); ?>
@@ -99,7 +99,7 @@
             </div>
         <?php endif; ?>
         <table class="table table-bordered table-striped">
-        <thead class="table-dark">
+            <thead class="table-dark">
             <tr>
                 <th>#</th>
                 <th>Número de factura</th>
@@ -180,4 +180,4 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-<?php /**PATH C:\Users\Admin\PhpstormProjects\Centinela\resources\views/facturas_ventas/index.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\Users\ardon\PhpstormProjects\Centinela\resources\views/facturas_ventas/index.blade.php ENDPATH**/ ?>

@@ -17,7 +17,6 @@
             </h3>
 
 
-
     <!-- Botón de buscador -->
     <div class="row mb-5 align-items-center">
         <div class="col d-flex justify-content-start">
@@ -56,13 +55,11 @@
         </div>
     <?php endif; ?>
 
-    <!-- Mensaje de resultados -->
-
     <div class="table-responsive">
         <table class="table table-bordered table-striped">
             <thead class="table-dark">
             <tr>
-                <th>N°</th> 
+                <th>N°</th>
                 <th>Serie</th>
                 <th>Código</th>
                 <th>Nombre</th>
@@ -76,7 +73,7 @@
             <tbody id="productosTableBody">
             <?php $__empty_1 = true; $__currentLoopData = $productos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $producto): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                 <tr class="producto-row">
-                    <td><?php echo e($loop->iteration); ?></td> 
+                    <td><?php echo e($loop->iteration); ?></td>
                     <td><?php echo e($producto->serie); ?></td>
                     <td><?php echo e($producto->codigo); ?></td>
                     <td class="producto-nombre"><?php echo e($producto->nombre); ?></td>
@@ -227,4 +224,4 @@
 
 <?php $__env->stopSection(); ?>
 
-<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\cesig\Herd\sistemadeseguridadcentinela\resources\views/productos/index.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\ardon\PhpstormProjects\Centinela\resources\views/productos/index.blade.php ENDPATH**/ ?>
