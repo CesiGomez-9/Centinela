@@ -1,6 +1,5 @@
-@extends('plantilla')
-@section('titulo', 'Asignación de servicio')
-@section('content')
+<?php $__env->startSection('titulo', 'Asignación de servicio'); ?>
+<?php $__env->startSection('content'); ?>
 <style>
     .table-bordered {
         border: 1px solid #dee2e6 !important;
@@ -19,7 +18,7 @@
             <i class="bi bi-file-text"></i> Listado de facturas de venta
         </h3>
 
-        <form method="GET" action="{{ route('facturas_ventas.index') }}">
+        <form method="GET" action="<?php echo e(route('facturas_ventas.index')); ?>">
             <div class="row mb-4 g-2 d-flex flex-wrap align-items-start">
 
                 <div class="col-md-4">
@@ -31,7 +30,7 @@
                             class="form-control"
                             maxlength="30"
                             placeholder="Buscar por número de factura y cliente..."
-                            value="{{ request('searchInput') }}"
+                            value="<?php echo e(request('searchInput')); ?>"
                             onkeydown="bloquearEspacioAlInicio(event, this)"
                             oninput="eliminarEspaciosIniciales(this)">
                         <span class="input-group-text"><i class="bi bi-search"></i></span>
@@ -41,36 +40,37 @@
                     <div class="input-group input-group-sm">
                         <span class="input-group-text">Desde</span>
                         <input type="date" name="fecha_inicio" id="fechaInicio" class="form-control"
-                               value="{{ request('fecha_inicio') }}">
+                               value="<?php echo e(request('fecha_inicio')); ?>">
                     </div>
                     <div class="input-group input-group-sm">
                         <span class="input-group-text">Hasta</span>
                         <input type="date" name="fecha_fin" id="fechaFin" class="form-control"
-                               value="{{ request('fecha_fin') }}">
+                               value="<?php echo e(request('fecha_fin')); ?>">
                     </div>
                 </div>
                 <div class="col-md-2 ms-3 d-flex flex-column gap-2">
                     <button type="submit" class="btn btn-sm btn-primary w-100">
                         <i class="bi bi-funnel me-1"></i> Filtrar
                     </button>
-                    <a href="{{ route('facturas_ventas.index') }}" class="btn btn-sm btn-secondary w-100">
+                    <a href="<?php echo e(route('facturas_ventas.index')); ?>" class="btn btn-sm btn-secondary w-100">
                         <i class="bi bi-x-circle me-1"></i> Limpiar
                     </a>
                 </div>
                 <div class="col-md-3 ms-auto">
-                    <a href="{{ route('facturas_ventas.create') }}"  class="btn btn-md btn-outline-primary w-80">
+                    <a href="<?php echo e(route('facturas_ventas.create')); ?>"  class="btn btn-md btn-outline-primary w-80">
                         <i class="bi bi-pencil-square me-1"></i> Registrar factura de venta
                     </a>
                 </div>
             </div>
         </form>
-        @if(session()->has('status'))
+        <?php if(session()->has('status')): ?>
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
                 <i class="bi bi-check-circle-fill me-2"></i>
-                {{ session('status') }}
+                <?php echo e(session('status')); ?>
+
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
             </div>
-        @endif
+        <?php endif; ?>
         <table class="table table-bordered table-striped">
             <thead class="table-dark">
             <tr>
@@ -84,33 +84,36 @@
             </tr>
             </thead>
             <tbody id="facturasVentasTableBody">
-            @forelse ($facturas as $index => $factura)
+            <?php $__empty_1 = true; $__currentLoopData = $facturas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $factura): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                 <tr>
-                    <td>{{ $index + 1 }}</td>
+                    <td><?php echo e($index + 1); ?></td>
                     <td style="max-width: 150px; word-wrap: break-word; white-space: normal;">
-                        {{ $factura->numero }}
+                        <?php echo e($factura->numero); ?>
+
                     </td>
-                    <td>{{ \Carbon\Carbon::parse($factura->fecha)->format('d/m/Y') }}</td>
+                    <td><?php echo e(\Carbon\Carbon::parse($factura->fecha)->format('d/m/Y')); ?></td>
                     <td style="max-width: 200px; word-wrap: break-word; white-space: normal;">
-                        {{ $factura->cliente->nombre ?? 'No asignado' }}
+                        <?php echo e($factura->cliente->nombre ?? 'No asignado'); ?>
+
                     </td>
-                    <td>{{ ucfirst($factura->forma_pago) }}</td>
-                    <td>L. {{ number_format($factura->total, 2) }}</td>
+                    <td><?php echo e(ucfirst($factura->forma_pago)); ?></td>
+                    <td>L. <?php echo e(number_format($factura->total, 2)); ?></td>
                     <td class="text-center">
-                        <a href="{{ route('facturas_ventas.show', $factura->id) }}" class="btn btn-sm btn-outline-info">
+                        <a href="<?php echo e(route('facturas_ventas.show', $factura->id)); ?>" class="btn btn-sm btn-outline-info">
                             <i class="bi bi-eye me-1"></i> Ver
                         </a>
                     </td>
                 </tr>
-            @empty
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                 <tr>
                     <td colspan="7" class="text-center text-muted">No hay facturas de venta registradas.</td>
                 </tr>
-            @endforelse
+            <?php endif; ?>
             </tbody>
         </table>
         <div class="d-flex justify-content-center">
-            {{ $facturas->links() }}
+            <?php echo e($facturas->links()); ?>
+
         </div>
 
     </div>
@@ -122,7 +125,7 @@
         const hoy = new Date();
         const formatoFecha = (fecha) => fecha.toISOString().split('T')[0];
 
-        const fechaMinima = new Date("{{ $fechaMinima ?? \Carbon\Carbon::now()->toDateString() }}");
+        const fechaMinima = new Date("<?php echo e($fechaMinima ?? \Carbon\Carbon::now()->toDateString()); ?>");
         const minDate = formatoFecha(fechaMinima);
         const maxDate = formatoFecha(hoy);
 
@@ -148,4 +151,6 @@
     });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\cesig\Herd\sistemadeseguridadcentinela\resources\views/facturas_ventas/index.blade.php ENDPATH**/ ?>
