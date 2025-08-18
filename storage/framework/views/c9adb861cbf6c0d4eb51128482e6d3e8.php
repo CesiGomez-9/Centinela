@@ -62,8 +62,14 @@
                         <li><a class="dropdown-item" href="<?php echo e(route('turnos.index')); ?>">Listado de venta de servicios</a></li>
                     </ul>
                 </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Clientes</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="<?php echo e(route('Clientes.indexCliente')); ?>">Lista de clientes</a></li>
+                        <li><a class="dropdown-item" href="<?php echo e(route('Clientes.formulariocliente')); ?>">Registrar un nuevo cliente</a></li>
+                    </ul>
+                </li>
                 <li class="nav-item"><a class="nav-link text-white" href="#">Registrate</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="#">Nosotros</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="#">Contacto</a></li>
             </ul>
         </div>

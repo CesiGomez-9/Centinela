@@ -224,7 +224,7 @@
                 clearTimeout(timeout);
                 timeout = setTimeout(() => {
                     filterForm.submit();
-                }, 500);
+                }, 450);
             });
         });
     </script>
