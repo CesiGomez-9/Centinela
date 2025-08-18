@@ -1,8 +1,7 @@
-@extends('plantilla')
-@section('content')
+<?php $__env->startSection('content'); ?>
 
     <div class="hero-section text-white d-flex align-items-center justify-content-center" style="
-    background-image: url('{{ asset('fondo2.jpg') }}');
+    background-image: url('<?php echo e(asset('fondo2.jpg')); ?>');
     background-size: cover;
     background-position: center;
     height: 450px;
@@ -66,4 +65,6 @@
             <hr class="my-3">
             <p class="mb-0">© 2025 Grupo Centinela. Todos los derechos reservados.</p>
         </div>
-    </footer>@endsection
+    </footer><?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\angel\PhpstormProjects\Centinela\resources\views/index.blade.php ENDPATH**/ ?>
