@@ -988,7 +988,6 @@ unset($__errorArgs, $__bag); ?>
             function renderEmpleadosRadiobuttons(empleados, empleadosAsignadosIds) {
                 modalEmpleadoContainer.innerHTML = '';
 
-                // CAMBIO APLICADO: Ordenar los empleados alfabéticamente por nombre y apellido
                 empleados.sort((a, b) => {
                     const nombreCompletoA = (a.nombre + ' ' + a.apellido).toLowerCase();
                     const nombreCompletoB = (b.nombre + ' ' + b.apellido).toLowerCase();
@@ -1189,6 +1188,16 @@ unset($__errorArgs, $__bag); ?>
                         const totalMinutosInicio = convertirAMinutos(horaInicio24);
                         const totalMinutosFin = convertirAMinutos(horaFin24);
 
+                        // Nueva validación para que las horas de inicio y fin no sean iguales
+                        if ((tipoTurno === 'diurno' || tipoTurno === 'nocturno') && totalMinutosInicio === totalMinutosFin) {
+                            horaInicioError.textContent = 'Las horas de inicio y fin no pueden ser iguales para este tipo de turno.';
+                            horaInicioError.style.display = 'block';
+                            modalHoraInicioInput.classList.add('is-invalid');
+                            modalHoraFinInput.classList.add('is-invalid');
+                            isValid = false;
+                        }
+
+
                         if (tipoTurno === 'diurno') {
                             const diurnoInicio = convertirAMinutos('06:00');
                             const diurnoFin = convertirAMinutos('21:00');
@@ -1284,4 +1293,4 @@ unset($__errorArgs, $__bag); ?>
     </script>
 <?php $__env->stopSection(); ?>
 
-<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\angel\PhpstormProjects\Centinela\resources\views/turnos/formulario.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\ardon\PhpstormProjects\Centinela\resources\views/turnos/formulario.blade.php ENDPATH**/ ?>

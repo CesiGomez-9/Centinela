@@ -183,7 +183,7 @@ unset($__errorArgs, $__bag); ?>
                                             <input
                                                     class="form-check-input"
                                                     type="checkbox"
-                                                    name="empleado_id[]"  
+                                                    name="empleado_id[]"
                                                     value="<?php echo e($tecnico->id); ?>"
                                                     id="tecnico_<?php echo e($tecnico->id); ?>"
                                                     <?php echo e((collect(old('empleado_id'))->contains($tecnico->id) || (isset($instalacion) && $instalacion->tecnicos->contains($tecnico->id))) ? 'checked' : ''); ?>
