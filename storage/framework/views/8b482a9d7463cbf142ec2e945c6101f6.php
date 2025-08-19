@@ -115,34 +115,25 @@
                     <?php echo csrf_field(); ?>
 
                     <div class="row g-4">
-                        <!-- Cliente -->
-                        <div class="col-md-6">
-                            <label for="cliente_id" class="form-label">Cliente</label>
-                            <div class="input-group has-validation">
-                                <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                                <select id="cliente_id" name="cliente_id"
-                                        class="form-select <?php $__errorArgs = ['cliente_id'];
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="cliente_id" class="form-label">Cliente <span class="text-danger">*</span></label>
+                            <select id="cliente_id" name="cliente_id" class="form-select" required>
+                                <option value="">Seleccione un cliente</option>
+                                <?php $__currentLoopData = $clientes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cliente): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($cliente->id); ?>"><?php echo e($cliente->nombre); ?></option>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            </select>
+                            <?php $__errorArgs = ['cliente_id'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>" required>
-                                    <option value="">Seleccione un cliente</option>
-                                    <?php $__currentLoopData = $clientes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cliente): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <option value="<?php echo e($cliente->id); ?>"><?php echo e($cliente->nombre); ?></option>
-                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                </select>
-                                <?php $__errorArgs = ['cliente_id'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?><div class="invalid-feedback"><?php echo e($message); ?></div><?php unset($message);
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <div class="invalid-feedback d-block"><?php echo e($message); ?></div>
+                            <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
-                            </div>
                         </div>
 
                         <!-- Campo Fecha (sin error-tecnicos aquí) -->
@@ -173,34 +164,33 @@ unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
-                        <!-- Campo Técnicos -->
                         <div class="col-md-6">
                             <label for="empleado_id" class="form-label">Técnicos</label>
                             <div class="border rounded p-2" id="tecnicos-container" style="max-height: 200px; overflow-y: auto;">
-                                <div class="row">
+                                <div class="row g-2">
                                     <?php $__currentLoopData = $tecnicos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $tecnico): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <div class="form-check">
-                                            <input
+                                        <div class="col-6 col-md-4">
+                                            <div class="form-check">
+                                                <input
                                                     class="form-check-input"
                                                     type="checkbox"
-                                                    name="empleado_id[]"  
+                                                    name="empleado_id[]"
                                                     value="<?php echo e($tecnico->id); ?>"
                                                     id="tecnico_<?php echo e($tecnico->id); ?>"
                                                     <?php echo e((collect(old('empleado_id'))->contains($tecnico->id) || (isset($instalacion) && $instalacion->tecnicos->contains($tecnico->id))) ? 'checked' : ''); ?>
 
-                                            >
-                                            <label class="form-check-label" for="tecnico_<?php echo e($tecnico->id); ?>">
-                                                <?php echo e($tecnico->nombre); ?>
+                                                >
+                                                <label class="form-check-label" for="tecnico_<?php echo e($tecnico->id); ?>">
+                                                    <?php echo e($tecnico->nombre); ?>
 
-                                            </label>
+                                                </label>
+                                            </div>
                                         </div>
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-
-
-
                                 </div>
                             </div>
-                            <!-- Aquí SI debe ir el div para mostrar el error -->
+
+                            <!-- Aquí sigue el mensaje de error -->
                             <div id="error-tecnicos" class="invalid-feedback d-block" style="margin-top:0.25rem;"></div>
                             <small class="text-muted">Seleccione uno o más técnicos.</small>
                         </div>
@@ -268,22 +258,27 @@ unset($__errorArgs, $__bag); ?>
                         </div>
 
 
-                        <!-- Factura -->
-                        <div class="col-md-6">
-                            <label for="factura_id" class="form-label">Factura de Venta (Opcional)</label>
-                            <div class="input-group has-validation">
-                                <span class="input-group-text"><i class="bi bi-receipt"></i></span>
-                                <select id="factura_id" name="factura_id" class="form-select">
-                                    <option value="">Seleccione una factura</option>
-                                    <?php $__currentLoopData = $facturas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $factura): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <option value="<?php echo e($factura->id); ?>" data-total="<?php echo e($factura->total); ?>">
-                                            Factura #<?php echo e($factura->id); ?> - L. <?php echo e(number_format($factura->total, 2)); ?>
-
-                                        </option>
-                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                </select>
-                            </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="factura_id" class="form-label">Factura (Opcional)</label>
+                            <select id="factura_id" name="factura_id" class="form-select">
+                                <option value="">Seleccione una factura</option>
+                                <?php $__currentLoopData = $facturas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $factura): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($factura->id); ?>"><?php echo e("Factura #{$factura->id} - L. ".number_format($factura->total,2)); ?></option>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            </select>
+                            <?php $__errorArgs = ['factura_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <div class="invalid-feedback d-block"><?php echo e($message); ?></div>
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         </div>
+
 
                         <!-- Descripción -->
                         <div class="col-md-6">
@@ -378,20 +373,18 @@ unset($__errorArgs, $__bag); ?>
 
                 <script>
                     document.addEventListener('DOMContentLoaded', () => {
-                        // === Inicializar TomSelect para cliente y factura ===
-                        ['#cliente_id', '#factura_id'].forEach(selector => {
-                            new TomSelect(selector, {
-                                create: false,
-                                sortField: 'text',
-                                dropdownParent: 'body',
-                                maxOptions: 1000,
-                                hideSelected: true,
-                                allowEmptyOption: true,
-                                render: {
-                                    no_results: function(data, escape) {
-                                        return '<div class="no-results">No se encontraron resultados</div>';
-                                    }
-                                }
+                        ['cliente_id','factura_id'].forEach(id => {
+                            const select = document.getElementById(id);
+                            const firstOptionText = select.options[0].text;
+
+                            // Al hacer focus, se borra el texto inicial
+                            select.addEventListener('focus', () => {
+                                if(select.options[0].value === "") select.options[0].text = "";
+                            });
+
+                            // Al salir de focus, si no hay valor, vuelve el texto inicial
+                            select.addEventListener('blur', () => {
+                                if(!select.value) select.options[0].text = firstOptionText;
                             });
                         });
 
@@ -412,16 +405,19 @@ unset($__errorArgs, $__bag); ?>
                         const totalGeneralSpan = document.getElementById("total-general");
                         const errorTecnicos = document.getElementById('error-tecnicos');
 
-                        // === Actualizar totales ===
+                        // === Actualizar totales (solo refleja costo instalación) ===
                         function actualizarTotales() {
+                            let [entero, decimal] = fields.costo.value.split(".");
+                            if (entero.length > 4) entero = entero.slice(0, 4);
+                            fields.costo.value = decimal !== undefined ? `${entero}.${decimal}` : entero;
+
                             const costo = parseFloat(fields.costo.value) || 0;
-                            const facturaTotal = parseFloat(fields.factura.selectedOptions[0]?.dataset.total || 0);
-                            totalFacturaSpan.textContent = facturaTotal.toFixed(2);
+
                             totalInstalacionSpan.textContent = costo.toFixed(2);
-                            totalGeneralSpan.textContent = (facturaTotal + costo).toFixed(2);
+                            totalFacturaSpan.textContent = "0.00"; // se mantiene en cero
+                            totalGeneralSpan.textContent = costo.toFixed(2); // solo refleja costo instalación
                         }
                         fields.costo.addEventListener("input", actualizarTotales);
-                        fields.factura.addEventListener("change", actualizarTotales);
 
                         // === Limpiar formulario ===
                         document.getElementById("btn-limpiar").addEventListener("click", () => {
@@ -479,13 +475,6 @@ unset($__errorArgs, $__bag); ?>
                             form.querySelectorAll(".invalid-feedback").forEach(fb => fb.remove());
                         }
 
-                        // === Limitar costo a 4 cifras enteras ===
-                        fields.costo.addEventListener("input", () => {
-                            let [entero, decimal] = fields.costo.value.split(".");
-                            if (entero.length > 4) entero = entero.slice(0,4);
-                            fields.costo.value = decimal !== undefined ? `${entero}.${decimal}` : entero;
-                        });
-
                         // === Validar formulario ===
                         form.addEventListener("submit", (e) => {
                             limpiarErrores();
@@ -511,7 +500,7 @@ unset($__errorArgs, $__bag); ?>
                             // Costo
                             const costo = parseFloat(fields.costo.value);
                             if (isNaN(costo) || costo <= 0) { setError(fields.costo, "El costo debe ser mayor a 0."); isValid = false; }
-                            else if (!/^\d{1,4}$/.test(fields.costo.value)) { setError(fields.costo, "El costo solo permite hasta 4 cifras."); isValid = false; }
+                            else if (!/^\d{1,4}(\.\d+)?$/.test(fields.costo.value)) { setError(fields.costo, "El costo solo permite hasta 4 cifras enteras."); isValid = false; }
 
                             // Descripción
                             if (!fields.descripcion.value.trim()) { setError(fields.descripcion, "Debe ingresar una descripción."); isValid = false; }
@@ -596,7 +585,6 @@ unset($__errorArgs, $__bag); ?>
 
                     });
                 </script>
-
 
 
 <?php $__env->stopSection(); ?>

@@ -1,5 +1,4 @@
-@extends('plantilla')
-@section('content')
+<?php $__env->startSection('content'); ?>
 <head>
     <meta charset="UTF-8">
     <title>Información del Servicio</title>
@@ -132,15 +131,16 @@
                 <div class="card-header">
                     <h5 class="mb-0"><i class="bi bi-info-circle-fill me-2"></i>Información del Servicio</h5>
                     <small class="position-absolute top-50 end-0 translate-middle-y me-3 text-white-50">
-                        Creado {{ \Carbon\Carbon::parse($servicio->created_at)->diffForHumans() }}
+                        Creado <?php echo e(\Carbon\Carbon::parse($servicio->created_at)->diffForHumans()); ?>
+
                     </small>
                 </div>
                 <div class="card-body">
                     <div class="row g-3">
                         <!-- Columna Izquierda -->
                         <div class="col-md-6">
-                            <p><i class="bi bi-card-text me-2"></i><strong>Nombre:</strong> {{ $servicio->nombre }}</p>
-                            <p><i class="bi bi-paragraph me-2"></i><strong>Descripción:</strong> {{ $servicio->descripcion }}</p>
+                            <p><i class="bi bi-card-text me-2"></i><strong>Nombre:</strong> <?php echo e($servicio->nombre); ?></p>
+                            <p><i class="bi bi-paragraph me-2"></i><strong>Descripción:</strong> <?php echo e($servicio->descripcion); ?></p>
 
                             <!-- Mostrar la etiqueta "Costos:" y luego los tres costos -->
                             <p class="mb-1">
@@ -148,13 +148,16 @@
                                 <strong>Costos:</strong>
                             </p>
                             <div class="cost-item">
-                                <i class="bi bi-sun me-2"></i><strong>Diurno:</strong> L. {{ number_format($servicio->costo_diurno, 2) }}
+                                <i class="bi bi-sun me-2"></i><strong>Diurno:</strong> L. <?php echo e(number_format($servicio->costo_diurno, 2)); ?>
+
                             </div>
                             <div class="cost-item">
-                                <i class="bi bi-moon me-2"></i><strong>Nocturno:</strong> L. {{ number_format($servicio->costo_nocturno, 2) }}
+                                <i class="bi bi-moon me-2"></i><strong>Nocturno:</strong> L. <?php echo e(number_format($servicio->costo_nocturno, 2)); ?>
+
                             </div>
                             <div class="cost-item">
-                                <i class="bi bi-clock me-2"></i><strong>24 Horas:</strong> L. {{ number_format($servicio->costo_24_horas, 2) }}
+                                <i class="bi bi-clock me-2"></i><strong>24 Horas:</strong> L. <?php echo e(number_format($servicio->costo_24_horas, 2)); ?>
+
                             </div>
                         </div>
 
@@ -162,7 +165,8 @@
                         <div class="col-md-6">
                             <p class="mb-1">
                                 <i class="bi bi-diagram-3-fill me-1"></i>
-                                <strong>Categoría:</strong> {{ ucfirst($servicio->categoria) }}
+                                <strong>Categoría:</strong> <?php echo e(ucfirst($servicio->categoria)); ?>
+
                             </p>
 
                             <p class="mb-1">
@@ -170,39 +174,40 @@
                                 <strong>Productos requeridos:</strong>
                             </p>
 
-                            @if($productos->count() > 0)
-                                @if($productos->count() > 3)
+                            <?php if($productos->count() > 0): ?>
+                                <?php if($productos->count() > 3): ?>
                                     <div class="row">
-                                        @foreach($productos as $producto)
+                                        <?php $__currentLoopData = $productos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $producto): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <div class="col-md-6 col-sm-12 mb-1">
-                                                • {{ $producto->nombre }}
+                                                • <?php echo e($producto->nombre); ?>
+
                                             </div>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </div>
-                                @else
+                                <?php else: ?>
                                     <p class="mb-0">
-                                        @foreach($productos as $producto)
-                                            • {{ $producto->nombre }}@if (!$loop->last), @endif
-                                        @endforeach
+                                        <?php $__currentLoopData = $productos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $producto): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            • <?php echo e($producto->nombre); ?><?php if(!$loop->last): ?>, <?php endif; ?>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </p>
-                                @endif
-                            @else
+                                <?php endif; ?>
+                            <?php else: ?>
                                 <p class="ms-4"><em>No hay productos específicos requeridos.</em></p>
-                            @endif
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
 
                 <div class="card-footer text-end">
-                    <small class="text-white-50">Última actualización: {{ $servicio->updated_at ? $servicio->updated_at->diffForHumans() : 'Fecha no disponible' }}</small>
+                    <small class="text-white-50">Última actualización: <?php echo e($servicio->updated_at ? $servicio->updated_at->diffForHumans() : 'Fecha no disponible'); ?></small>
                 </div>
             </div>
 
             <div class="d-flex justify-content-center align-items-center gap-3 mt-4 flex-wrap">
-                <a href="{{ route('servicios.catalogo') }}" class="btn btn-return">
+                <a href="<?php echo e(route('servicios.catalogo')); ?>" class="btn btn-return">
                     <i class="bi bi-arrow-left me-2"></i>Volver al catálogo
                 </a>
-                <a href="{{ route('servicios.edit', $servicio->id) }}" class="btn btn-edit">
+                <a href="<?php echo e(route('servicios.edit', $servicio->id)); ?>" class="btn btn-edit">
                     <i class="bi bi-pencil-square me-2"></i>Editar servicio
                 </a>
             </div>
@@ -211,4 +216,6 @@
 </div>
 
 </body>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Admin\PhpstormProjects\Centinela\resources\views/servicios/show.blade.php ENDPATH**/ ?>
