@@ -110,18 +110,37 @@
             border-color: #f5c2c7;
         }
 
-        .input-group:not(.has-validation) .form-control:valid,
-        .input-group:not(.has-validation) .form-select:valid {
-            border-color: #dee2e6 !important;
-            padding-right: 0.75rem;
+        /* Estilos de validación para los input-group del formulario principal */
+        .input-group.is-invalid .form-control,
+        .input-group.is-invalid .form-select {
+            border-color: #dc3545 !important;
         }
 
-        /* Estilos para el buscador de cliente */
+        .input-group.is-invalid .form-control:focus,
+        .input-group.is-invalid .form-select:focus {
+            box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
+        }
+
+        .input-group .input-group-text {
+            border-color: #ced4da;
+        }
+
+        /* Asegura que el ícono de validación solo aparezca en el select */
+        .input-group .form-select.is-invalid {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e") !important;
+            background-repeat: no-repeat !important;
+            background-position: right calc(0.375em + 0.1875rem) center !important;
+            background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem) !important;
+        }
+
+        .input-group .form-select.is-invalid:focus {
+            box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
+        }
+
         .autocomplete-container {
             position: relative;
         }
 
-        /* Corrección para que el cuadro de resultados se ajuste al ancho del campo de búsqueda */
         .autocomplete-results {
             position: absolute;
             z-index: 1050;
@@ -147,7 +166,6 @@
             background-color: #f8f9fa;
         }
 
-        /* El input-group debe tener un position: relative para que el autocomplete funcione correctamente */
         .input-group.search-icon-right {
             position: relative;
         }
@@ -175,7 +193,6 @@
             box-shadow: 0 0 0 .25rem rgba(13, 110, 253, .25);
         }
 
-        /* Nuevo estilo para el botón deshabilitado */
         .btn-faded {
             opacity: 0.5;
             cursor: not-allowed;
@@ -199,13 +216,35 @@
             font-size: 0.875em;
             color: #dc3545;
         }
+
+        .modal-body .form-select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+
+        .modal-body .form-select-dropdown {
+            position: absolute;
+            z-index: 1060;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            border: 1px solid #ced4da;
+            border-top: none;
+            background-color: white;
+            border-radius: 0 0 .375rem .375rem;
+        }
+
+        .form-select.is-invalid {
+            border-color: #dc3545;
+        }
     </style>
 
     <div class="container my-5">
         <div class="row justify-content-center">
             <div class="col-lg-10">
                 <div class="bg-white p-5 rounded shadow-lg position-relative">
-
                     <div class="position-absolute top-0 end-0 p-3 text-secondary opacity-25">
                         <i class="bi bi-calendar-check" style="font-size: 4rem;"></i>
                     </div>
@@ -226,7 +265,7 @@
                         <div class="row g-4">
                             <div class="col-md-6">
                                 <label for="cliente_search" class="form-label">Cliente</label>
-                                <div class="input-group search-icon-right">
+                                <div class="input-group search-icon-right" id="cliente_search-group">
                                     <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
                                     <input type="text" id="cliente_search" class="form-control"
                                            placeholder="Buscar cliente por nombre..." autocomplete="off"
@@ -240,7 +279,7 @@
                             </div>
                             <div class="col-md-6">
                                 <label for="servicio_id" class="form-label">Tipo de servicio</label>
-                                <div class="input-group">
+                                <div class="input-group" id="servicio_id-group">
                                     <span class="input-group-text"><i class="bi-shield-check"></i></span>
                                     <select name="servicio_id" id="servicio_id"
                                             class="form-select <?php $__errorArgs = ['servicio_id'];
@@ -287,7 +326,7 @@ unset($__errorArgs, $__bag); ?>
 
                                     <div class="col-md-4">
                                         <label for="fecha_inicio" class="form-label">Fecha inicio</label>
-                                        <div class="input-group">
+                                        <div class="input-group" id="fecha_inicio-group">
                                             <span class="input-group-text"><i class="bi bi-calendar-date"></i></span>
                                             <input type="date" name="fecha_inicio" id="fecha_inicio"
                                                    class="form-control <?php $__errorArgs = ['fecha'];
@@ -320,7 +359,7 @@ unset($__errorArgs, $__bag); ?>
 
                                     <div class="col-md-4">
                                         <label for="fecha_fin" class="form-label">Fecha fin</label>
-                                        <div class="input-group has-validation">
+                                        <div class="input-group has-validation" id="fecha_fin-group">
                                             <span class="input-group-text"><i class="bi bi-calendar-date-fill"></i></span>
                                             <input type="date" name="fecha_fin" id="fecha_fin"
                                                    class="form-control <?php $__errorArgs = ['fecha_fin'];
@@ -399,7 +438,7 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" maxlength="300"
-                                              oninput="autoResizeTextarea(this);" onkeypress="return validarTexto(event)" required><?php echo e(old('observaciones')); ?></textarea>
+                                              oninput="autoResizeTextarea(this);" onkeypress="return validarTexto(event)"><?php echo e(old('observaciones')); ?></textarea>
                                 </div>
                                 <?php $__errorArgs = ['observaciones'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -432,7 +471,6 @@ unset($__errorArgs, $__bag); ?>
                             </button>
                         </div>
                     </form>
-
                 </div>
             </div>
         </div>
@@ -448,7 +486,6 @@ unset($__errorArgs, $__bag); ?>
                 </div>
                 <div class="modal-body">
                     <div id="modal-error-message" class="alert alert-danger" role="alert" style="display: none;"></div>
-
                     <div class="row g-3">
                         <div class="col-md-12">
                             <div class="row g-3 align-items-end">
@@ -496,18 +533,24 @@ unset($__errorArgs, $__bag); ?>
 
                                 <div class="col-md-4">
                                     <label for="modal_hora_inicio" class="form-label">Hora inicio</label>
-                                    <input type="text" name="modal_hora_inicio" id="modal_hora_inicio"
-                                           class="form-control" required maxlength="10"
-                                           oninput="validarHoraFormato12(this)" onkeypress="return isTimeKey(event)">
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-clock-history"></i></span>
+                                        <select name="modal_hora_inicio" id="modal_hora_inicio" class="form-select" required>
+                                            <option value="">Seleccione la hora</option>
+                                        </select>
+                                    </div>
                                     <div id="hora-inicio-error" class="invalid-feedback mt-1 small" style="display:none;">
                                         Hora de inicio es obligatoria.
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <label for="modal_hora_fin" class="form-label">Hora fin</label>
-                                    <input type="text" name="modal_hora_fin" id="modal_hora_fin" class="form-control"
-                                           required maxlength="10"
-                                           oninput="validarHoraFormato12(this)" onkeypress="return isTimeKey(event)">
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-clock-fill"></i></span>
+                                        <select name="modal_hora_fin" id="modal_hora_fin" class="form-select" required>
+                                            <option value="">Seleccione la hora</option>
+                                        </select>
+                                    </div>
                                     <div id="hora-fin-error" class="invalid-feedback mt-1 small" style="display:none;">
                                         Hora de fin es obligatoria.
                                     </div>
@@ -530,7 +573,6 @@ unset($__errorArgs, $__bag); ?>
             </div>
         </div>
     </div>
-
     <script>
         const clientes = <?php echo json_encode($clientes, 15, 512) ?>;
         const servicios = <?php echo json_encode($servicios->keyBy('id'), 15, 512) ?>;
@@ -568,6 +610,7 @@ unset($__errorArgs, $__bag); ?>
             const resultsContainer = document.getElementById(resultsId);
             const hiddenInput = document.getElementById(hiddenInputId);
             const feedback = document.getElementById(inputId + '-error-message');
+            const inputGroup = document.getElementById(inputId + '-group');
 
             searchInput.addEventListener('input', function() {
                 const searchTerm = this.value.toLowerCase();
@@ -577,13 +620,11 @@ unset($__errorArgs, $__bag); ?>
                         const fullName = (item.nombre + ' ' + (item.apellido || '')).toLowerCase();
                         return fullName.includes(searchTerm);
                     });
-
                     filteredData.sort((a, b) => {
                         const nameA = (a.nombre + ' ' + (a.apellido || '')).toLowerCase();
                         const nameB = (b.nombre + ' ' + (b.apellido || '')).toLowerCase();
                         return nameA.localeCompare(nameB);
                     });
-
                     if (filteredData.length > 0) {
                         filteredData.forEach(item => {
                             const resultItem = document.createElement('a');
@@ -596,6 +637,7 @@ unset($__errorArgs, $__bag); ?>
                                 hiddenInput.value = item.id;
                                 resultsContainer.style.display = 'none';
                                 searchInput.classList.remove('is-invalid');
+                                inputGroup.classList.remove('is-invalid');
                                 if (feedback) feedback.style.display = 'none';
                             });
                             resultsContainer.appendChild(resultItem);
@@ -609,7 +651,6 @@ unset($__errorArgs, $__bag); ?>
                     hiddenInput.value = '';
                 }
             });
-
             document.addEventListener('click', function(e) {
                 if (!resultsContainer.contains(e.target) && e.target !== searchInput) {
                     resultsContainer.style.display = 'none';
@@ -620,70 +661,62 @@ unset($__errorArgs, $__bag); ?>
         function isTimeKey(event) {
             const key = event.key;
             const allowedKeys = /[0-9: ap.m]/;
-
             if (event.ctrlKey || event.metaKey || event.keyCode === 8 || event.keyCode === 46 || event.keyCode === 37 || event.keyCode === 39 || event.keyCode === 9) {
                 return true;
             }
-
             if (!allowedKeys.test(key)) {
                 event.preventDefault();
                 return false;
             }
-
             const input = event.target;
             const inputValue = input.value;
             const selectionStart = input.selectionStart;
-
             if (inputValue.length >= 8 && selectionStart === inputValue.length) {
                 if (!['a', 'p', '.', 'm', ' '].includes(key)) {
                     event.preventDefault();
                     return false;
                 }
             }
-
             return true;
         }
 
         function validarHoraFormato12(input) {
             const feedback = document.getElementById(input.id + '-error');
-
             input.addEventListener('input', () => {
                 input.classList.remove('is-invalid');
                 if (feedback) feedback.style.display = 'none';
             });
         }
-
-
         document.addEventListener('DOMContentLoaded', function() {
             configurarAutocomplete('cliente_search', 'cliente_results', 'cliente_id', clientes);
-
             let turnosAsignados = [];
             const empleadosPorServicioUrl = "<?php echo e(route('turnos.empleadosPorServicio', ['servicio_id' => ':id'])); ?>";
             let asignarTurnoModal;
-
             const mainForm = document.getElementById('mainForm');
             const clienteSearchInput = document.getElementById('cliente_search');
+            const clienteSearchGroup = document.getElementById('cliente_search-group');
             const clienteError = document.getElementById('cliente_search-error-message');
             const servicioSelect = document.getElementById('servicio_id');
+            const servicioSelectGroup = document.getElementById('servicio_id-group');
             const fechaInicioInput = document.getElementById('fecha_inicio');
+            const fechaInicioGroup = document.getElementById('fecha_inicio-group');
             const fechaFinInput = document.getElementById('fecha_fin');
+            const fechaFinGroup = document.getElementById('fecha_fin-group');
             const observacionesTextarea = document.getElementById('observaciones');
             const addEmpleadoBtnPrincipal = document.getElementById('add-empleado-btn');
             const turnosTableBody = document.getElementById('turnosTableBody');
             const turnosDataInput = document.getElementById('turnos_data');
             const turnosDataError = document.getElementById('turnos-data-error');
             const resetBtn = document.getElementById('resetBtn');
-
             const modalElement = document.getElementById('asignarTurnoModal');
             const modalEmpleadoContainer = document.getElementById('modal-empleado-checkbox-container');
             const modalTipoTurnoSelect = document.getElementById('modal_tipo_turno');
-            const modalHoraInicioInput = document.getElementById('modal_hora_inicio');
-            const modalHoraFinInput = document.getElementById('modal_hora_fin');
+            const modalHoraInicioSelect = document.getElementById('modal_hora_inicio');
+            const modalHoraFinSelect = document.getElementById('modal_hora_fin');
             const modalCostoInput = document.getElementById('modal_costo');
             const addTurnoBtn = document.getElementById('addTurnoBtn');
             const limpiarModalBtn = document.getElementById('limpiarModalBtn');
             const modalErrorMessage = document.getElementById('modal-error-message');
-
             const empleadoIdsError = document.getElementById('empleado-ids-error');
             const tipoTurnoError = document.getElementById('tipo-turno-error');
             const horaInicioError = document.getElementById('hora-inicio-error');
@@ -725,55 +758,56 @@ unset($__errorArgs, $__bag); ?>
                 resetBtn.addEventListener('click', handleFormReset);
                 fechaInicioInput.addEventListener('change', handleDateChange);
                 fechaFinInput.addEventListener('change', handleDateChange);
-
                 modalTipoTurnoSelect.addEventListener('change', () => {
                     modalTipoTurnoSelect.classList.remove('is-invalid');
                     tipoTurnoError.style.display = 'none';
-
                     modalCostoInput.classList.remove('is-invalid');
                     costoError.style.display = 'none';
-                    modalHoraInicioInput.classList.remove('is-invalid');
+                    modalHoraInicioSelect.classList.remove('is-invalid');
                     horaInicioError.style.display = 'none';
-                    modalHoraFinInput.classList.remove('is-invalid');
+                    modalHoraFinSelect.classList.remove('is-invalid');
                     horaFinError.style.display = 'none';
-
                     updateModalCost();
-                    updateModalHourInputs();
+                    populateModalHourSelects();
                 });
-
-                modalHoraInicioInput.addEventListener('input', () => {
-                    modalHoraInicioInput.classList.remove('is-invalid');
+                modalHoraInicioSelect.addEventListener('change', () => {
+                    modalHoraInicioSelect.classList.remove('is-invalid');
                     horaInicioError.style.display = 'none';
                 });
-                modalHoraFinInput.addEventListener('input', () => {
-                    modalHoraFinInput.classList.remove('is-invalid');
+                modalHoraFinSelect.addEventListener('change', () => {
+                    modalHoraFinSelect.classList.remove('is-invalid');
                     horaFinError.style.display = 'none';
                 });
-
                 modalCostoInput.addEventListener('input', () => {
                     modalCostoInput.classList.remove('is-invalid');
                     costoError.style.display = 'none';
                 });
-
-                const fields = [
-                    clienteSearchInput,
-                    servicioSelect,
-                    fechaInicioInput,
-                    fechaFinInput,
-                    observacionesTextarea
-                ];
+                const fields = [{
+                    input: clienteSearchInput,
+                    group: clienteSearchGroup
+                }, {
+                    input: servicioSelect,
+                    group: servicioSelectGroup
+                }, {
+                    input: fechaInicioInput,
+                    group: fechaInicioGroup
+                }, {
+                    input: fechaFinInput,
+                    group: fechaFinGroup
+                }];
                 fields.forEach(field => {
-                    field.addEventListener('input', () => {
-                        field.classList.remove('is-invalid');
-                        const feedback = document.getElementById(field.id + '-error-message');
+                    field.input.addEventListener('input', () => {
+                        field.input.classList.remove('is-invalid');
+                        if (field.group) {
+                            field.group.classList.remove('is-invalid');
+                        }
+                        const feedback = document.getElementById(field.input.id + '-error-message');
                         if (feedback) feedback.style.display = 'none';
                     });
                 });
-
                 addTurnoBtn.addEventListener('click', handleAddTurnoModalClick);
                 limpiarModalBtn.addEventListener('click', clearModalInputs);
                 modalElement.addEventListener('hidden.bs.modal', clearModalInputs);
-
                 turnosTableBody.addEventListener('click', function(e) {
                     if (e.target.closest('.btn-danger')) {
                         const row = e.target.closest('tr');
@@ -799,24 +833,28 @@ unset($__errorArgs, $__bag); ?>
             function handleFormSubmit(e) {
                 e.preventDefault();
                 e.stopPropagation();
-
                 let formIsValid = true;
-
+                // Limpiar todos los estados de validación existentes
                 document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+                document.querySelectorAll('.input-group.is-invalid').forEach(el => el.classList.remove('is-invalid'));
                 document.querySelectorAll('.invalid-feedback').forEach(el => el.style.display = 'none');
 
                 const clienteIdInput = document.getElementById('cliente_id');
                 if (!clienteIdInput.value) {
                     clienteSearchInput.classList.add('is-invalid');
+                    clienteSearchGroup.classList.add('is-invalid');
                     if (clienteError) clienteError.style.display = 'block';
                     formIsValid = false;
                 }
-
-                const requiredFields = [servicioSelect, fechaInicioInput, fechaFinInput, observacionesTextarea];
-                requiredFields.forEach(field => {
+                const requiredFields = [servicioSelect, fechaInicioInput, fechaFinInput];
+                requiredFields.forEach((field) => {
                     const feedback = document.getElementById(field.id + '-error-message');
                     if (!field.value.trim()) {
                         field.classList.add('is-invalid');
+                        const group = document.getElementById(field.id + '-group');
+                        if (group) {
+                            group.classList.add('is-invalid');
+                        }
                         if (feedback) feedback.style.display = 'block';
                         formIsValid = false;
                     }
@@ -825,23 +863,22 @@ unset($__errorArgs, $__bag); ?>
                 if (fechaInicioInput.value && fechaFinInput.value && new Date(fechaFinInput.value) < new Date(
                     fechaInicioInput.value)) {
                     fechaFinInput.classList.add('is-invalid');
+                    fechaFinGroup.classList.add('is-invalid');
                     document.getElementById('fecha_fin-error-message').textContent =
                         'La fecha de fin no puede ser anterior a la de inicio.';
                     document.getElementById('fecha_fin-error-message').style.display = 'block';
                     formIsValid = false;
                 }
-
                 if (turnosAsignados.length === 0) {
                     turnosDataError.style.display = 'block';
                     formIsValid = false;
                 } else {
                     turnosDataInput.value = JSON.stringify(turnosAsignados);
                 }
-
                 if (formIsValid) {
                     mainForm.submit();
                 } else {
-                    const firstInvalid = mainForm.querySelector('.is-invalid, #turnos-data-error');
+                    const firstInvalid = mainForm.querySelector('.is-invalid, .input-group.is-invalid, #turnos-data-error');
                     if (firstInvalid) {
                         firstInvalid.scrollIntoView({
                             behavior: 'smooth',
@@ -859,27 +896,30 @@ unset($__errorArgs, $__bag); ?>
                     observacionesTextarea.value = '';
                     autoResizeTextarea(observacionesTextarea);
                 }
-
                 servicioSelect.value = '';
                 toggleAddEmpleadoBtn();
-
                 document.getElementById('cliente_search').value = '';
                 document.getElementById('cliente_id').value = '';
-
                 document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
                 document.querySelectorAll('.invalid-feedback').forEach(el => el.style.display = 'none');
+                clienteSearchGroup.classList.remove('is-invalid');
+                servicioSelectGroup.classList.remove('is-invalid');
+                fechaInicioGroup.classList.remove('is-invalid');
+                fechaFinGroup.classList.remove('is-invalid');
             }
 
             function handleDateChange(event) {
                 const changedField = event.target;
                 const value = changedField.value;
-
+                const group = document.getElementById(changedField.id + '-group');
                 if (value.trim() !== '') {
                     changedField.classList.remove('is-invalid');
+                    if (group) {
+                        group.classList.remove('is-invalid');
+                    }
                     const feedback = document.getElementById(changedField.id + '-error-message');
                     if (feedback) feedback.style.display = 'none';
                 }
-
                 if (changedField.id === 'fecha_inicio') {
                     fechaFinInput.min = value;
                 }
@@ -897,47 +937,43 @@ unset($__errorArgs, $__bag); ?>
 
             function renderTurnosTable() {
                 let tableHtml = '';
-
                 if (turnosAsignados.length === 0) {
                     tableHtml = `
-                    <tr>
-                        <td colspan="7" class="text-center text-muted py-4 fila-vacia-estilo">
-                            <i class="bi bi-person-x" style="font-size: 2rem; opacity: 0.5;"></i>
-                            <br>
-                            <span style="font-size: 0.9rem;">No hay empleados agregados</span>
-                            <br>
-                            <small style="font-size: 0.8rem; opacity: 0.7;">Haga clic en "Agregar Empleado(s)" para asignar un empleado al servicio</small>
-                        </td>
-                    </tr>
-                `;
+                <tr>
+                    <td colspan="7" class="text-center text-muted py-4 fila-vacia-estilo">
+                        <i class="bi bi-person-x" style="font-size: 2rem; opacity: 0.5;"></i>
+                        <br>
+                        <span style="font-size: 0.9rem;">No hay empleados agregados</span>
+                        <br>
+                        <small style="font-size: 0.8rem; opacity: 0.7;">Haga clic en "Agregar Empleado(s)" para asignar un empleado al servicio</small>
+                    </td>
+                </tr>
+            `;
                 } else {
                     turnosAsignados.forEach((turno, index) => {
                         const tipoTurnoCapitalizado = turno.tipo_turno.charAt(0).toUpperCase() + turno.tipo_turno.slice(1);
                         tableHtml += `
-                        <tr>
-                            <td>${index + 1}</td>
-                            <td>${turno.empleado_nombres.join(', ')}</td>
-                            <td>${tipoTurnoCapitalizado}</td>
-                            <td>${convertirHora12(turno.hora_inicio)}</td>
-                            <td>${convertirHora12(turno.hora_fin)}</td>
-                            <td>${parseFloat(turno.costo).toFixed(2)}</td>
-                            <td>
-                                <button type="button" class="btn btn-danger btn-sm" data-index="${index}">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    `;
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${turno.empleado_nombres.join(', ')}</td>
+                        <td>${tipoTurnoCapitalizado}</td>
+                        <td>${convertirHora12(turno.hora_inicio)}</td>
+                        <td>${convertirHora12(turno.hora_fin)}</td>
+                        <td>${parseFloat(turno.costo).toFixed(2)}</td>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm" data-index="${index}">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
                     });
                 }
-
                 turnosTableBody.innerHTML = tableHtml;
                 turnosDataInput.value = JSON.stringify(turnosAsignados);
-
                 if (turnosAsignados.length > 0) {
                     turnosDataError.style.display = 'none';
                 }
-
                 calculateTotalCost();
             }
 
@@ -987,27 +1023,24 @@ unset($__errorArgs, $__bag); ?>
 
             function renderEmpleadosRadiobuttons(empleados, empleadosAsignadosIds) {
                 modalEmpleadoContainer.innerHTML = '';
-
                 empleados.sort((a, b) => {
                     const nombreCompletoA = (a.nombre + ' ' + a.apellido).toLowerCase();
                     const nombreCompletoB = (b.nombre + ' ' + b.apellido).toLowerCase();
                     return nombreCompletoA.localeCompare(nombreCompletoB);
                 });
-
                 if (empleados.length > 0) {
                     empleados.forEach(empleado => {
                         const isAssigned = empleadosAsignadosIds.includes(empleado.id);
                         const div = document.createElement('div');
                         div.classList.add('form-check');
                         div.innerHTML = `
-                        <input class="form-check-input" type="radio" name="modal_empleado_id" value="${empleado.id}" id="modal_empleado_${empleado.id}" ${isAssigned ? 'disabled' : ''}>
-                        <label class="form-check-label" for="modal_empleado_${empleado.id}">
-                            ${empleado.nombre} ${empleado.apellido} ${isAssigned ? ' (ya asignado)' : ''}
-                        </label>
-                    `;
+                    <input class="form-check-input" type="radio" name="modal_empleado_id" value="${empleado.id}" id="modal_empleado_${empleado.id}" ${isAssigned ? 'disabled' : ''}>
+                    <label class="form-check-label" for="modal_empleado_${empleado.id}">
+                        ${empleado.nombre} ${empleado.apellido} ${isAssigned ? ' (ya asignado)' : ''}
+                    </label>
+                `;
                         modalEmpleadoContainer.appendChild(div);
                     });
-
                     const radioInputs = modalEmpleadoContainer.querySelectorAll('input[type="radio"]');
                     radioInputs.forEach(radio => {
                         radio.addEventListener('change', () => {
@@ -1023,27 +1056,48 @@ unset($__errorArgs, $__bag); ?>
                 }
             }
 
-            function updateModalHourInputs() {
+            function populateModalHourSelects() {
                 const tipoTurno = modalTipoTurnoSelect.value;
+                const horaInicioSelect = document.getElementById('modal_hora_inicio');
+                const horaFinSelect = document.getElementById('modal_hora_fin');
+                horaInicioSelect.innerHTML = '<option value="">Seleccione la hora</option>';
+                horaFinSelect.innerHTML = '<option value="">Seleccione la hora</option>';
+                let hours = [];
                 if (tipoTurno === 'diurno') {
-                    modalHoraInicioInput.value = '06:00 a.m.';
-                    modalHoraFinInput.value = '09:00 p.m.';
+                    for (let i = 6; i <= 21; i++) {
+                        const time24 = `${i.toString().padStart(2, '0')}:00`;
+                        hours.push(time24);
+                    }
                 } else if (tipoTurno === 'nocturno') {
-                    modalHoraInicioInput.value = '09:00 p.m.';
-                    modalHoraFinInput.value = '06:00 a.m.';
+                    for (let i = 21; i < 24; i++) {
+                        const time24 = `${i.toString().padStart(2, '0')}:00`;
+                        hours.push(time24);
+                    }
+                    for (let i = 0; i <= 6; i++) {
+                        const time24 = `${i.toString().padStart(2, '0')}:00`;
+                        hours.push(time24);
+                    }
                 } else if (tipoTurno === '24 horas') {
-                    modalHoraInicioInput.value = '06:00 a.m.';
-                    modalHoraFinInput.value = '06:00 a.m.';
-                } else {
-                    modalHoraInicioInput.value = '';
-                    modalHoraFinInput.value = '';
+                    horaInicioSelect.innerHTML = '<option value="06:00">06:00 a.m.</option>';
+                    horaFinSelect.innerHTML = '<option value="06:00">06:00 a.m.</option>';
+                    horaInicioSelect.disabled = true;
+                    horaFinSelect.disabled = true;
+                    return;
                 }
+                horaInicioSelect.disabled = false;
+                horaFinSelect.disabled = false;
+                hours.forEach(hora => {
+                    const option = document.createElement('option');
+                    option.value = hora;
+                    option.textContent = convertirHora12(hora);
+                    horaInicioSelect.appendChild(option);
+                    horaFinSelect.appendChild(option.cloneNode(true));
+                });
             }
 
             function updateModalCost() {
                 const tipoTurno = modalTipoTurnoSelect.value;
                 const servicioId = servicioSelect.value;
-
                 let costoUnitario = 0;
                 const servicioData = servicios[servicioId];
                 if (servicioData) {
@@ -1055,7 +1109,6 @@ unset($__errorArgs, $__bag); ?>
                         costoUnitario = servicioData.costo_24_horas;
                     }
                 }
-
                 modalCostoInput.value = parseFloat(costoUnitario || 0).toFixed(2);
             }
 
@@ -1077,37 +1130,32 @@ unset($__errorArgs, $__bag); ?>
                 const empleadoNombre = selectedEmployeeRadio.labels[0].textContent.replace(/\s*\(ya asignado\)/, '')
                     .trim();
                 const tipoTurno = modalTipoTurnoSelect.value;
-                const horaInicio = convertirHora24(modalHoraInicioInput.value.trim());
-                const horaFin = convertirHora24(modalHoraFinInput.value.trim());
-
+                const horaInicio = modalHoraInicioSelect.value;
+                const horaFin = modalHoraFinSelect.value;
                 let costo = 0;
                 const servicioId = servicioSelect.value;
                 const servicioData = servicios[servicioId];
-
                 if (servicioData) {
-                    if (tipoTurno === 'diurno') {
-                        const duracionEstandarDiurno = 15;
+                    let duracionHoras = 0;
+                    if (tipoTurno === 'diurno' || tipoTurno === 'nocturno') {
                         const totalMinutosInicio = convertirAMinutos(horaInicio);
                         let totalMinutosFin = convertirAMinutos(horaFin);
-                        if (totalMinutosFin <= totalMinutosInicio) {
+
+                        if (tipoTurno === 'nocturno' && totalMinutosFin < totalMinutosInicio) {
                             totalMinutosFin += 24 * 60;
                         }
-                        const duracionHoras = (totalMinutosFin - totalMinutosInicio) / 60;
-                        costo = (servicioData.costo_diurno / duracionEstandarDiurno) * duracionHoras;
-                    } else if (tipoTurno === 'nocturno') {
-                        const duracionEstandarNocturno = 9;
-                        const totalMinutosInicio = convertirAMinutos(horaInicio);
-                        let totalMinutosFin = convertirAMinutos(horaFin);
-                        if (totalMinutosFin <= totalMinutosInicio) {
-                            totalMinutosFin += 24 * 60;
-                        }
-                        const duracionHoras = (totalMinutosFin - totalMinutosInicio) / 60;
-                        costo = (servicioData.costo_nocturno / duracionEstandarNocturno) * duracionHoras;
+
+                        duracionHoras = (totalMinutosFin - totalMinutosInicio) / 60;
+                    } else if (tipoTurno === '24 horas') {
+                        duracionHoras = 24;
+                    }
+                    costo = (servicioData.costo_diurno / 15) * duracionHoras;
+                    if (tipoTurno === 'nocturno') {
+                        costo = (servicioData.costo_nocturno / 9) * duracionHoras;
                     } else if (tipoTurno === '24 horas') {
                         costo = servicioData.costo_24_horas;
                     }
                 }
-
                 const newTurno = {
                     empleado_id: empleadoId,
                     empleado_nombres: [empleadoNombre],
@@ -1116,20 +1164,16 @@ unset($__errorArgs, $__bag); ?>
                     hora_fin: horaFin,
                     costo: parseFloat(costo).toFixed(2)
                 };
-
                 turnosAsignados.push(newTurno);
                 renderTurnosTable();
                 asignarTurnoModal.hide();
             }
 
-
             function validateModalInputs() {
                 let isValid = true;
                 clearModalErrors();
 
-                const selectedEmployeeRadio = modalEmpleadoContainer.querySelector(
-                    'input[name="modal_empleado_id"]:checked');
-
+                const selectedEmployeeRadio = modalEmpleadoContainer.querySelector('input[name="modal_empleado_id"]:checked');
                 if (!selectedEmployeeRadio) {
                     empleadoIdsError.style.display = 'block';
                     modalEmpleadoContainer.classList.add('is-invalid');
@@ -1142,21 +1186,52 @@ unset($__errorArgs, $__bag); ?>
                     isValid = false;
                 }
 
-                const horaInicioValue = modalHoraInicioInput.value.trim();
-                const horaFinValue = modalHoraFinInput.value.trim();
+                if (modalTipoTurnoSelect.value !== '24 horas') {
+                    if (!modalHoraInicioSelect.value) {
+                        horaInicioError.textContent = 'Hora de inicio es obligatoria.';
+                        horaInicioError.style.display = 'block';
+                        modalHoraInicioSelect.classList.add('is-invalid');
+                        isValid = false;
+                    }
+                    if (!modalHoraFinSelect.value) {
+                        horaFinError.textContent = 'Hora de fin es obligatoria.';
+                        horaFinError.style.display = 'block';
+                        modalHoraFinSelect.classList.add('is-invalid');
+                        isValid = false;
+                    }
 
-                if (!horaInicioValue) {
-                    horaInicioError.textContent = 'Hora de inicio es obligatoria.';
-                    horaInicioError.style.display = 'block';
-                    modalHoraInicioInput.classList.add('is-invalid');
-                    isValid = false;
-                }
+                    if (modalHoraInicioSelect.value && modalHoraFinSelect.value) {
+                        const totalMinutosInicio = convertirAMinutos(modalHoraInicioSelect.value);
+                        let totalMinutosFin = convertirAMinutos(modalHoraFinSelect.value);
 
-                if (!horaFinValue) {
-                    horaFinError.textContent = 'Hora de fin es obligatoria.';
-                    horaFinError.style.display = 'block';
-                    modalHoraFinInput.classList.add('is-invalid');
-                    isValid = false;
+                        if (modalTipoTurnoSelect.value === 'nocturno') {
+                            if (totalMinutosInicio < convertirAMinutos('21:00') && totalMinutosFin > convertirAMinutos('06:00')) {
+                                horaInicioError.textContent = 'La hora de inicio debe ser 9:00 p.m. o posterior para un turno nocturno.';
+                                horaInicioError.style.display = 'block';
+                                modalHoraInicioSelect.classList.add('is-invalid');
+                                isValid = false;
+                            }
+                            if (totalMinutosFin > convertirAMinutos('06:00') && totalMinutosFin < convertirAMinutos('21:00')) {
+                                horaFinError.textContent = 'La hora de fin debe ser 6:00 a.m. o anterior para un turno nocturno.';
+                                horaFinError.style.display = 'block';
+                                modalHoraFinSelect.classList.add('is-invalid');
+                                isValid = false;
+                            }
+                            if (totalMinutosFin <= totalMinutosInicio && totalMinutosFin > convertirAMinutos('06:00')) {
+                                horaFinError.textContent = 'La hora de fin del turno nocturno debe estar entre 12:00 a.m. y 6:00 a.m.';
+                                horaFinError.style.display = 'block';
+                                modalHoraFinSelect.classList.add('is-invalid');
+                                isValid = false;
+                            }
+                        }
+
+                        if (modalTipoTurnoSelect.value !== 'nocturno' && totalMinutosFin <= totalMinutosInicio) {
+                            horaFinError.textContent = 'La hora de fin debe ser posterior a la de inicio.';
+                            horaFinError.style.display = 'block';
+                            modalHoraFinSelect.classList.add('is-invalid');
+                            isValid = false;
+                        }
+                    }
                 }
 
                 if (!modalCostoInput.value || parseFloat(modalCostoInput.value) <= 0) {
@@ -1165,83 +1240,6 @@ unset($__errorArgs, $__bag); ?>
                     isValid = false;
                 }
 
-                if (isValid) {
-                    const tipoTurno = modalTipoTurnoSelect.value;
-                    const pattern = /^(0?[1-9]|1[0-2]):[0-5][0-9]\s(a|p)\.m\.?$/;
-
-                    if (!pattern.test(horaInicioValue.toLowerCase())) {
-                        horaInicioError.textContent = 'Formato de hora incorrecto.';
-                        horaInicioError.style.display = 'block';
-                        modalHoraInicioInput.classList.add('is-invalid');
-                        isValid = false;
-                    }
-                    if (!pattern.test(horaFinValue.toLowerCase())) {
-                        horaFinError.textContent = 'Formato de hora incorrecto.';
-                        horaFinError.style.display = 'block';
-                        modalHoraFinInput.classList.add('is-invalid');
-                        isValid = false;
-                    }
-
-                    if (isValid) {
-                        const horaInicio24 = convertirHora24(horaInicioValue);
-                        const horaFin24 = convertirHora24(horaFinValue);
-                        const totalMinutosInicio = convertirAMinutos(horaInicio24);
-                        const totalMinutosFin = convertirAMinutos(horaFin24);
-
-                        // Nueva validación para que las horas de inicio y fin no sean iguales
-                        if ((tipoTurno === 'diurno' || tipoTurno === 'nocturno') && totalMinutosInicio === totalMinutosFin) {
-                            horaInicioError.textContent = 'Las horas de inicio y fin no pueden ser iguales para este tipo de turno.';
-                            horaInicioError.style.display = 'block';
-                            modalHoraInicioInput.classList.add('is-invalid');
-                            modalHoraFinInput.classList.add('is-invalid');
-                            isValid = false;
-                        }
-
-
-                        if (tipoTurno === 'diurno') {
-                            const diurnoInicio = convertirAMinutos('06:00');
-                            const diurnoFin = convertirAMinutos('21:00');
-                            if (totalMinutosInicio < diurnoInicio) {
-                                horaInicioError.textContent = 'La hora de inicio no debe ser anterior a las 6:00 a.m.';
-                                horaInicioError.style.display = 'block';
-                                modalHoraInicioInput.classList.add('is-invalid');
-                                isValid = false;
-                            }
-                            if (totalMinutosFin > diurnoFin) {
-                                horaFinError.textContent = 'La hora de fin no debe ser posterior a las 9:00 p.m.';
-                                horaFinError.style.display = 'block';
-                                modalHoraFinInput.classList.add('is-invalid');
-                                isValid = false;
-                            }
-                        } else if (tipoTurno === 'nocturno') {
-                            const nocturnoInicio = convertirAMinutos('21:00');
-                            const nocturnoFin = convertirAMinutos('06:00');
-
-                            if (totalMinutosInicio < nocturnoInicio && totalMinutosInicio > nocturnoFin) {
-                                horaInicioError.textContent = 'La hora de inicio no debe ser anterior a las 9:00 p.m.';
-                                horaInicioError.style.display = 'block';
-                                modalHoraInicioInput.classList.add('is-invalid');
-                                isValid = false;
-                            }
-
-                            if (totalMinutosFin < nocturnoInicio && totalMinutosFin > nocturnoFin) {
-                                horaFinError.textContent = 'La hora de fin no debe ser posterior a las 6:00 a.m.';
-                                horaFinError.style.display = 'block';
-                                modalHoraFinInput.classList.add('is-invalid');
-                                isValid = false;
-                            }
-                        } else if (tipoTurno === '24 horas') {
-                            if (horaInicio24 !== '06:00' || horaFin24 !== '06:00') {
-                                horaInicioError.textContent =
-                                    'Para un turno de 24 horas, la hora de inicio y fin deben ser las 06:00 a.m.';
-                                horaInicioError.style.display = 'block';
-                                modalHoraInicioInput.classList.add('is-invalid');
-                                modalHoraFinInput.classList.add('is-invalid');
-                                isValid = false;
-                            }
-                        }
-                    }
-                }
                 return isValid;
             }
 
@@ -1267,10 +1265,11 @@ unset($__errorArgs, $__bag); ?>
                     'input[name="modal_empleado_id"]:checked');
                 if (selectedRadio) selectedRadio.checked = false;
                 modalTipoTurnoSelect.value = '';
-                modalHoraInicioInput.value = '';
-                modalHoraFinInput.value = '';
+                modalHoraInicioSelect.value = '';
+                modalHoraFinSelect.value = '';
                 modalCostoInput.value = '';
                 clearModalErrors();
+                populateModalHourSelects();
             }
 
             function clearModalErrors() {
@@ -1279,14 +1278,13 @@ unset($__errorArgs, $__bag); ?>
                 empleadoIdsError.style.display = 'none';
                 modalTipoTurnoSelect.classList.remove('is-invalid');
                 tipoTurnoError.style.display = 'none';
-                modalHoraInicioInput.classList.remove('is-invalid');
+                modalHoraInicioSelect.classList.remove('is-invalid');
                 horaInicioError.style.display = 'none';
-                modalHoraFinInput.classList.remove('is-invalid');
+                modalHoraFinSelect.classList.remove('is-invalid');
                 horaFinError.style.display = 'none';
                 modalCostoInput.classList.remove('is-invalid');
                 costoError.style.display = 'none';
             }
-
             init();
             calculateTotalCost();
         });

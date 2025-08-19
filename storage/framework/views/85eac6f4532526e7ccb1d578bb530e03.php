@@ -63,7 +63,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
                 </div>
             <?php endif; ?>
-
+            <div class="table-responsive">
             <table class="table table-bordered table-striped">
                 <thead class="table-dark">
                 <tr>
@@ -101,6 +101,7 @@
                 <?php endif; ?>
                 </tbody>
             </table>
+            </div>
 
             <?php if(request('search') && $clientes->total() > 0): ?>
                 <div class="mb-3 text-muted">
