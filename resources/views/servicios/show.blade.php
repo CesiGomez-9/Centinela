@@ -140,7 +140,6 @@
                         <!-- Columna Izquierda -->
                         <div class="col-md-6">
                             <p><i class="bi bi-card-text me-2"></i><strong>Nombre:</strong> {{ $servicio->nombre }}</p>
-                            <p><i class="bi bi-paragraph me-2"></i><strong>Descripción:</strong> {{ $servicio->descripcion }}</p>
 
                             <!-- Mostrar la etiqueta "Costos:" y luego los tres costos -->
                             <p class="mb-1">
@@ -189,6 +188,11 @@
                             @else
                                 <p class="ms-4"><em>No hay productos específicos requeridos.</em></p>
                             @endif
+
+                            <!-- Descripción movida debajo de productos -->
+                            <p class="mt-3">
+                                <i class="bi bi-paragraph me-2"></i><strong>Descripción:</strong> {{ $servicio->descripcion }}
+                            </p>
                         </div>
                     </div>
                 </div>
