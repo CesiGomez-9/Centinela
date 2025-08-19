@@ -1,12 +1,11 @@
 <?php $__env->startSection('content'); ?>
 
-<head>
     <style>
         .invalid-feedback {
             display: block;
         }
     </style>
-</head>
+
 <body style="background-color: #e6f0ff;">
 <div class="container bg-white p-5 rounded shadow mt-5 mb-5" style="max-width: 950px;">
     <div class="d-flex justify-content-center mb-4">
