@@ -94,6 +94,10 @@
             background: transparent !important;
             color: inherit !important;
         }
+        input.placeholder {
+            color: #6c757d; /* gris placeholder */
+            font-style: italic;
+        }
 
 
     </style>
@@ -117,17 +121,19 @@
 
                     <div class="row g-4">
                         {{-- === Cliente (Obligatorio) === --}}
-                        <div class="col-md-6 mb-3">
-                            <label for="cliente_id" class="form-label">Cliente <span class="text-danger">*</span></label>
-                            <select id="cliente_id" name="cliente_id" class="form-select" required>
-                                <option value="">Seleccione un cliente</option>
-                                @foreach($clientes as $cliente)
-                                    <option value="{{ $cliente->id }}">{{ $cliente->nombre }}</option>
-                                @endforeach
-                            </select>
-                            @error('cliente_id')
-                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                            @enderror
+                        <!-- Cliente -->
+                        <div class="col-md-6">
+                            <label for="cliente_id" class="form-label">Cliente</label>
+                            <div class="input-group has-validation">
+                                <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                                <select id="cliente_id" name="cliente_id">
+                                    <option value="" ></option>
+                                    @foreach($clientes as $cliente)
+                                        <option value="{{ $cliente->id }}">{{ $cliente->nombre }}</option>
+                                    @endforeach
+                                </select>
+                                @error('cliente_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            </div>
                         </div>
 
                         <!-- Campo Fecha (sin error-tecnicos aquí) -->
@@ -208,18 +214,18 @@
                         </div>
 
 
-                        {{-- === Factura (Opcional) === --}}
-                        <div class="col-md-6 mb-3">
-                            <label for="factura_id" class="form-label">Factura (Opcional)</label>
-                            <select id="factura_id" name="factura_id" class="form-select">
-                                <option value="">Seleccione una factura</option>
-                                @foreach($facturas as $factura)
-                                    <option value="{{ $factura->id }}">{{ "Factura #{$factura->id} - L. ".number_format($factura->total,2) }}</option>
-                                @endforeach
-                            </select>
-                            @error('factura_id')
-                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                            @enderror
+                        <!-- Factura (opcional) -->
+                        <div class="col-md-6">
+                            <label for="factura_id" class="form-label">Factura de Venta (Opcional)</label>
+                            <div class="input-group has-validation">
+                                <span class="input-group-text"><i class="bi bi-receipt"></i></span>
+                                <select id="factura_id" name="factura_id">
+                                    <option value=""></option>
+                                    @foreach($facturas as $factura)
+                                        <option value="{{ $factura->id }}">Factura #{{ $factura->id }} - L. {{ number_format($factura->total, 2) }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
 
 
@@ -288,18 +294,19 @@
 
                 <script>
                     document.addEventListener('DOMContentLoaded', () => {
-                        ['cliente_id','factura_id'].forEach(id => {
-                            const select = document.getElementById(id);
-                            const firstOptionText = select.options[0].text;
-
-                            // Al hacer focus, se borra el texto inicial
-                            select.addEventListener('focus', () => {
-                                if(select.options[0].value === "") select.options[0].text = "";
-                            });
-
-                            // Al salir de focus, si no hay valor, vuelve el texto inicial
-                            select.addEventListener('blur', () => {
-                                if(!select.value) select.options[0].text = firstOptionText;
+                        ['#cliente_id', '#factura_id'].forEach(selector => {
+                            new TomSelect(selector, {
+                                create: false,
+                                placeholder: document.querySelector(selector + ' option[value=""]').textContent,
+                                allowEmptyOption: true,
+                                dropdownParent: 'body',
+                                maxOptions: 1000,
+                                hideSelected: true,
+                                render: {
+                                    no_results: function() {
+                                        return '<div class="no-results">No se encontraron resultados</div>';
+                                    }
+                                }
                             });
                         });
 
