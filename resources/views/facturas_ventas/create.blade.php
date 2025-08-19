@@ -1,5 +1,4 @@
 @extends('plantilla')
-@section('titulo', 'Asignación de servicio')
 @section('content')
 <style>
     body { background-color: #e6f0ff; margin: 0; }
@@ -990,5 +989,4 @@
 </script>
 @endverbatim
 <script src="{{ asset('js/tu-script.js') }}"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 @endsection
