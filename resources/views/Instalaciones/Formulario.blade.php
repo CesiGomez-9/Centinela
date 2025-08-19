@@ -508,7 +508,7 @@
                 </script>
 
 
-                @endsection                                @error('direccion')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                @endsection         @error('direccion')<div class="invalid-feedback">{{ $message }}</div>@enderror
                             </div>
                         </div>
                     </div>
