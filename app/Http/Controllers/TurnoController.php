@@ -55,7 +55,7 @@ class TurnoController extends Controller
             'fecha_inicio' => 'required|date',
             'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
             'observaciones' => [
-                'required',
+                'nullable', // Añadido para aceptar nulo
                 'string',
                 'max:300',
                 'regex:/^[\pL0-9\s,.\-#()]*$/u',

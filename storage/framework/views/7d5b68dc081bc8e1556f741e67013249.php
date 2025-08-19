@@ -1,6 +1,5 @@
-@extends('plantilla')
-@section('titulo', 'Venta de servicio')
-@section('content')
+<?php $__env->startSection('titulo', 'Venta de servicio'); ?>
+<?php $__env->startSection('content'); ?>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         body {
@@ -254,14 +253,15 @@
                         <i class="bi bi-calendar-plus me-2"></i>Venta de servicio
                     </h3>
 
-                    @if (session('success'))
+                    <?php if(session('success')): ?>
                         <div class="alert alert-success">
-                            {{ session('success') }}
-                        </div>
-                    @endif
+                            <?php echo e(session('success')); ?>
 
-                    <form method="POST" action="{{ route('turnos.store') }}" novalidate id="mainForm">
-                        @csrf
+                        </div>
+                    <?php endif; ?>
+
+                    <form method="POST" action="<?php echo e(route('turnos.store')); ?>" novalidate id="mainForm">
+                        <?php echo csrf_field(); ?>
                         <div class="row g-4">
                             <div class="col-md-6">
                                 <label for="cliente_search" class="form-label">Cliente</label>
@@ -269,10 +269,10 @@
                                     <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
                                     <input type="text" id="cliente_search" class="form-control"
                                            placeholder="Buscar cliente por nombre..." autocomplete="off"
-                                           value="{{ old('cliente_id', isset($venta) ? $venta->cliente->nombre . ' ' . $venta->cliente->apellido : '') }}">
+                                           value="<?php echo e(old('cliente_id', isset($venta) ? $venta->cliente->nombre . ' ' . $venta->cliente->apellido : '')); ?>">
                                     <span class="input-group-text"><i class="bi bi-search"></i></span>
                                     <input type="hidden" name="cliente_id" id="cliente_id"
-                                           value="{{ old('cliente_id', isset($venta) ? $venta->cliente_id : '') }}">
+                                           value="<?php echo e(old('cliente_id', isset($venta) ? $venta->cliente_id : '')); ?>">
                                     <div id="cliente_results" class="autocomplete-results"></div>
                                 </div>
                                 <div class="invalid-feedback text-danger mt-1 small" id="cliente_search-error-message" style="display:none;">El cliente es obligatorio.</div>
@@ -282,23 +282,38 @@
                                 <div class="input-group" id="servicio_id-group">
                                     <span class="input-group-text"><i class="bi-shield-check"></i></span>
                                     <select name="servicio_id" id="servicio_id"
-                                            class="form-select @error('servicio_id') is-invalid @enderror" required>
+                                            class="form-select <?php $__errorArgs = ['servicio_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" required>
                                         <option value="">Seleccione un servicio</option>
-                                        @foreach ($servicios->sortBy('nombre') as $servicio)
-                                            <option value="{{ $servicio->id }}"
-                                                {{ old('servicio_id') == $servicio->id ? 'selected' : '' }}>
-                                                {{ $servicio->nombre }}
+                                        <?php $__currentLoopData = $servicios->sortBy('nombre'); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $servicio): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($servicio->id); ?>"
+                                                <?php echo e(old('servicio_id') == $servicio->id ? 'selected' : ''); ?>>
+                                                <?php echo e($servicio->nombre); ?>
+
                                             </option>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
                                 </div>
-                                @error('servicio_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @else
+                                <?php $__errorArgs = ['servicio_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                <?php else: ?>
                                     <div class="invalid-feedback" id="servicio_id-error-message" style="display:none;">
                                         El tipo de servicio es obligatorio.
                                     </div>
-                                    @enderror
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
 
                             <div class="col-md-12">
@@ -314,18 +329,32 @@
                                         <div class="input-group" id="fecha_inicio-group">
                                             <span class="input-group-text"><i class="bi bi-calendar-date"></i></span>
                                             <input type="date" name="fecha_inicio" id="fecha_inicio"
-                                                   class="form-control @error('fecha') is-invalid @enderror"
-                                                   value="{{ old('fecha', isset($factura) ? $factura->fecha : \Carbon\Carbon::now()->format('Y-m-d')) }}"
+                                                   class="form-control <?php $__errorArgs = ['fecha'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                                   value="<?php echo e(old('fecha', isset($factura) ? $factura->fecha : \Carbon\Carbon::now()->format('Y-m-d'))); ?>"
                                                    required>
                                         </div>
-                                        @error('fecha_inicio')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                        @else
+                                        <?php $__errorArgs = ['fecha_inicio'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                        <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                        <?php else: ?>
                                             <div class="invalid-feedback" id="fecha_inicio-error-message"
                                                  style="display:none;">
                                                 La fecha de inicio es obligatoria.
                                             </div>
-                                            @enderror
+                                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                     </div>
 
                                     <div class="col-md-4">
@@ -333,16 +362,30 @@
                                         <div class="input-group has-validation" id="fecha_fin-group">
                                             <span class="input-group-text"><i class="bi bi-calendar-date-fill"></i></span>
                                             <input type="date" name="fecha_fin" id="fecha_fin"
-                                                   class="form-control @error('fecha_fin') is-invalid @enderror"
-                                                   value="{{ old('fecha_fin') }}" required>
-                                            @error('fecha_fin')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                            @else
+                                                   class="form-control <?php $__errorArgs = ['fecha_fin'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                                   value="<?php echo e(old('fecha_fin')); ?>" required>
+                                            <?php $__errorArgs = ['fecha_fin'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                            <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                            <?php else: ?>
                                                 <div class="invalid-feedback" id="fecha_fin-error-message"
                                                      style="display:none;">
                                                     La fecha de fin es obligatoria.
                                                 </div>
-                                                @enderror
+                                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                         </div>
                                     </div>
                                 </div>
@@ -387,21 +430,35 @@
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-journal-text"></i></span>
                                     <textarea name="observaciones" id="observaciones" rows="1"
-                                              class="form-control @error('observaciones') is-invalid @enderror" maxlength="300"
-                                              oninput="autoResizeTextarea(this);" onkeypress="return validarTexto(event)">{{ old('observaciones') }}</textarea>
+                                              class="form-control <?php $__errorArgs = ['observaciones'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" maxlength="300"
+                                              oninput="autoResizeTextarea(this);" onkeypress="return validarTexto(event)"><?php echo e(old('observaciones')); ?></textarea>
                                 </div>
-                                @error('observaciones')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @else
+                                <?php $__errorArgs = ['observaciones'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                <?php else: ?>
                                     <div class="invalid-feedback" id="observaciones-error-message" style="display:none;">
                                         Las observaciones son obligatorias.
                                     </div>
-                                    @enderror
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
                         <div class="text-center mt-5">
-                            <a href="{{ route('turnos.index') }}" class="btn btn-danger me-2">
+                            <a href="<?php echo e(route('turnos.index')); ?>" class="btn btn-danger me-2">
                                 <i class="bi bi-x-circle me-2"></i> Cancelar
                             </a>
 
@@ -517,8 +574,8 @@
         </div>
     </div>
     <script>
-        const clientes = @json($clientes);
-        const servicios = @json($servicios->keyBy('id'));
+        const clientes = <?php echo json_encode($clientes, 15, 512) ?>;
+        const servicios = <?php echo json_encode($servicios->keyBy('id'), 15, 512) ?>;
 
         function validarTexto(e) {
             const key = e.keyCode || e.which;
@@ -633,7 +690,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             configurarAutocomplete('cliente_search', 'cliente_results', 'cliente_id', clientes);
             let turnosAsignados = [];
-            const empleadosPorServicioUrl = "{{ route('turnos.empleadosPorServicio', ['servicio_id' => ':id']) }}";
+            const empleadosPorServicioUrl = "<?php echo e(route('turnos.empleadosPorServicio', ['servicio_id' => ':id'])); ?>";
             let asignarTurnoModal;
             const mainForm = document.getElementById('mainForm');
             const clienteSearchInput = document.getElementById('cliente_search');
@@ -683,7 +740,7 @@
             }
 
             function loadOldTurnosData() {
-                const oldTurnosData = @json(old('turnos_data', '[]'));
+                const oldTurnosData = <?php echo json_encode(old('turnos_data', '[]'), 512) ?>;
                 try {
                     const parsedOldTurnos = JSON.parse(oldTurnosData);
                     if (Array.isArray(parsedOldTurnos) && parsedOldTurnos.length > 0) {
@@ -1232,4 +1289,6 @@
             calculateTotalCost();
         });
     </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\ardon\OneDrive\Documentos\GitHub\Centinela\resources\views/turnos/formulario.blade.php ENDPATH**/ ?>
