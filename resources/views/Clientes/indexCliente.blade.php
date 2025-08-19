@@ -26,8 +26,7 @@
     @endif
 
 
-
-    <div class="container my-5">
+    <div class="container mt-5" style="max-width: 1100px;">
         <div class="card shadow p-4" style="background-color: #ffffff;">
             <h3 class="text-center mb-4" style="color: #09457f;">
                 <i class="bi bi-people-fill me-2"></i>

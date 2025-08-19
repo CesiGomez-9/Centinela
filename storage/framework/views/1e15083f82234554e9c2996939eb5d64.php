@@ -50,14 +50,7 @@
 
     </head>
 
-    <style>
-        body{
-            background-color: #e6f0ff;
-            height: 100vh;
-            margin: 0;
-        }
 
-    </style>
 
 
 
