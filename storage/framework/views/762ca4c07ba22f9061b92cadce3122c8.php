@@ -46,4 +46,4 @@
         </div>
     </div>
 </header>
-<?php /**PATH C:\Users\ardon\PhpstormProjects\Centinela\vendor\laravel\framework\src\Illuminate\Foundation\Providers/../resources/exceptions/renderer/components/navigation.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\Users\ardon\OneDrive\Documentos\GitHub\Centinela\vendor\laravel\framework\src\Illuminate\Foundation\Providers/../resources/exceptions/renderer/components/navigation.blade.php ENDPATH**/ ?>

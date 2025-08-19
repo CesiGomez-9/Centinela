@@ -1,7 +1,7 @@
 <?php $__env->startSection('content'); ?>
 
     <div class="hero-section text-white d-flex align-items-center justify-content-center" style="
-    background-image: url('<?php echo e(asset('seguridad/fondo2.jpg')); ?>');
+    background-image: url('<?php echo e(asset('fondo2.jpg')); ?>');
     background-size: cover;
     background-position: center;
     height: 450px;
@@ -67,4 +67,4 @@
         </div>
     </footer><?php $__env->stopSection(); ?>
 
-<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\ardon\PhpstormProjects\Centinela\resources\views/index.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\ardon\OneDrive\Documentos\GitHub\Centinela\resources\views/index.blade.php ENDPATH**/ ?>
