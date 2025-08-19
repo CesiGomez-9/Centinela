@@ -52,7 +52,6 @@ Route::controller(ProductoController::class)->group(function () {
     Route::get('/productos/crear', 'create')->name('productos.create');
     Route::post('/productos/crear', 'store')->name('productos.store');
 
-
     Route::get('/productos/{id}/editar', 'edit')->name('productos.edit')->whereNumber('id');
     Route::put('/productos/{id}/editar', 'update')->name('productos.update')->whereNumber('id');
 });

@@ -37,6 +37,4 @@ class Empleado extends Model
         return $this->belongsToMany(Instalacion::class);
     }
 
-
-
 }

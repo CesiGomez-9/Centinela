@@ -1,5 +1,4 @@
-@extends('plantilla')
-@section('content')
+<?php $__env->startSection('content'); ?>
 
 <div class="container mt-5" style="max-width: 1100px;">
     <div class="card shadow p-4" style="background-color: #ffffff;">
@@ -11,13 +10,13 @@
         <div class="row mb-4 align-items-center">
             <div class="col-md-6 d-flex justify-content-start">
                 <div class="w-100" style="max-width: 400px;">
-                    <form method="GET" action="{{ route('empleados.index') }}">
+                    <form method="GET" action="<?php echo e(route('empleados.index')); ?>">
                         <div class="input-group">
                             <input
                                 type="text"
                                 id="searchInput"
                                 name="search"
-                                value="{{ request('search') }}"
+                                value="<?php echo e(request('search')); ?>"
                                 class="form-control"
                                 placeholder="Buscar por nombre, departamento o identidad"
                                 autocomplete="off"
@@ -28,19 +27,20 @@
                 </div>
             </div>
             <div class="col-md-6 d-flex justify-content-end">
-                <a href="{{ route('empleados.create') }}" class="btn btn-md btn-outline-primary">
+                <a href="<?php echo e(route('empleados.create')); ?>" class="btn btn-md btn-outline-primary">
                     <i class="bi bi-pencil-square me-2"></i>Registrar un nuevo empleado
                 </a>
             </div>
         </div>
 
-        @if(session('success'))
+        <?php if(session('success')): ?>
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 <i class="bi bi-check-circle-fill me-2"></i>
-                {{ session('success') }}
+                <?php echo e(session('success')); ?>
+
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
             </div>
-        @endif
+        <?php endif; ?>
 
         <table class="table table-bordered table-striped">
             <thead class="table-dark">
@@ -53,50 +53,51 @@
             </tr>
             </thead>
             <tbody>
-            @forelse ($empleados as $empleado)
+            <?php $__empty_1 = true; $__currentLoopData = $empleados; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $empleado): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                 <tr>
-                    <td>{{ $empleados->firstItem() + $loop->index }}</td>
+                    <td><?php echo e($empleados->firstItem() + $loop->index); ?></td>
                     <td style="max-width: 200px; word-wrap: break-word; white-space: normal;">
-                        {{ $empleado->nombre }} {{ $empleado->apellido }}</td>
+                        <?php echo e($empleado->nombre); ?> <?php echo e($empleado->apellido); ?></td>
                     <td style="max-width: 200px; word-wrap: break-word; white-space: normal;">
-                        {{ $empleado->departamento }}</td>
-                    <td>{{ $empleado->telefono }}</td>
+                        <?php echo e($empleado->departamento); ?></td>
+                    <td><?php echo e($empleado->telefono); ?></td>
                     <td class="text-center">
-                        <a href="{{ route('empleados.show', $empleado->id) }}" class="btn btn-sm btn-outline-info">
+                        <a href="<?php echo e(route('empleados.show', $empleado->id)); ?>" class="btn btn-sm btn-outline-info">
                             <i class="bi bi-eye"></i> Ver
                         </a>
-                        <a href="{{ route('empleados.edit', $empleado->id) }}" class="btn btn-sm btn-outline-warning" title="Editar">
+                        <a href="<?php echo e(route('empleados.edit', $empleado->id)); ?>" class="btn btn-sm btn-outline-warning" title="Editar">
                             <i class="bi bi-pencil-square"></i>Editar
                         </a>
                     </td>
                 </tr>
-            @empty
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                 <tr>
                     <td colspan="5" class="text-center text-muted">No hay empleados registrados.</td>
                 </tr>
-            @endforelse
+            <?php endif; ?>
             </tbody>
         </table>
 
-        @if(request('search') && $empleados->total() > 0)
+        <?php if(request('search') && $empleados->total() > 0): ?>
             <div class="mb-3 text-muted">
-                Mostrando {{ $empleados->count() }} de {{ $empleados->total() }} empleados encontrados para
-                "<strong>{{ request('search') }}</strong>".
+                Mostrando <?php echo e($empleados->count()); ?> de <?php echo e($empleados->total()); ?> empleados encontrados para
+                "<strong><?php echo e(request('search')); ?></strong>".
             </div>
-        @elseif(request('search') && $empleados->total() === 0)
+        <?php elseif(request('search') && $empleados->total() === 0): ?>
             <div class="mb-3 text-danger">
-                No se encontraron resultados para "<strong>{{ request('search') }}</strong>".
+                No se encontraron resultados para "<strong><?php echo e(request('search')); ?></strong>".
             </div>
-        @endif
+        <?php endif; ?>
 
         <div class="d-flex justify-content-center mt-4">
-            {{ $empleados->links('pagination::bootstrap-5') }}
+            <?php echo e($empleados->links('pagination::bootstrap-5')); ?>
+
         </div>
     </div>
 </div>
 
-@if ($errors->any())
-@endif
+<?php if($errors->any()): ?>
+<?php endif; ?>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
@@ -140,4 +141,6 @@
         });
     });
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\cesig\Herd\sistemadeseguridadcentinela\resources\views/empleados/index.blade.php ENDPATH**/ ?>
