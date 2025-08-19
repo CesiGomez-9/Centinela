@@ -1,5 +1,5 @@
-<?php $__env->startSection('titulo', 'Asignación de servicio'); ?>
 <?php $__env->startSection('content'); ?>
+
 <style>
     body { background-color: #e6f0ff; margin: 0; }
     .error-message { color: #dc3545; font-size: 0.875em; margin-top: 0.25rem; display: none; }
@@ -1047,7 +1047,6 @@ unset($__errorArgs, $__bag); ?>
 </script>
 
 <script src="<?php echo e(asset('js/tu-script.js')); ?>"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\cesig\Herd\sistemadeseguridadcentinela\resources\views/facturas_ventas/create.blade.php ENDPATH**/ ?>

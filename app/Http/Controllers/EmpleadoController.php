@@ -252,7 +252,6 @@ class EmpleadoController extends Controller
                 },
             ],
 
-
             'contactodeemergencia' => 'required|string|max:100|regex:/^[\p{L}\s]+$/u',
             'telefonodeemergencia' => [
                 'required',

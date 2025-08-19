@@ -1,6 +1,6 @@
 @extends('plantilla')
-@section('titulo', 'Asignación de servicio')
 @section('content')
+
 <style>
     body { background-color: #e6f0ff; margin: 0; }
     .error-message { color: #dc3545; font-size: 0.875em; margin-top: 0.25rem; display: none; }
@@ -8,7 +8,6 @@
     #tablaFacturaBody td { color: black !important; font-size: 1rem !important; background-color: #ffffff !important; min-width: 50px; padding: 8px; }
     #tablaFacturaBody td input[type="hidden"] + * { margin-left: 5px; }
     .modal:not(.show), .modal-backdrop:not(.show) { display: none !important; opacity: 0 !important; }
-
 
     body {
         font-family: 'Inter', sans-serif;
@@ -620,18 +619,18 @@
         });
 
         tablaProductosBody.addEventListener('click', function (e) {
+
             // ---------------- Agregar Cantidad ----------------
             if (e.target.closest('.btnAgregarCantidad')) {
-                e.preventDefault(); // Evita que se envíe el formulario
+                e.preventDefault();
 
-                if (!productoSeleccionado) return; // Evita errores si no hay producto seleccionado
+                if (!productoSeleccionado) return;
 
                 const filaCantidad = e.target.closest('tr');
                 const input = filaCantidad.querySelector('.cantidad-input');
                 const cantidad = parseInt(input.value);
                 const errorDiv = filaCantidad.querySelector('.error-message');
 
-                // Validación de cantidad
                 if (!cantidad || cantidad < 1 || cantidad > productoSeleccionado.cantidadDisponible) {
                     errorDiv.textContent = `Ingrese una cantidad válida (1 - ${productoSeleccionado.cantidadDisponible}).`;
                     input.classList.add('is-invalid');
@@ -641,14 +640,12 @@
                 input.classList.remove('is-invalid');
                 errorDiv.textContent = '';
 
-                // Intentar agregar el producto a la factura
                 if (typeof agregarProductoAFactura === 'function') {
                     const agregado = agregarProductoAFactura(productoSeleccionado, cantidad);
 
                     if (agregado) {
                         filaCantidad.remove();
 
-                        // Resetear botón de seleccionar producto
                         const btnSeleccionado = document.querySelector(`.btnSeleccionarProducto[data-id="${productoSeleccionado.id}"]`);
                         if (btnSeleccionado) {
                             btnSeleccionado.classList.remove('btn-success');
@@ -658,10 +655,7 @@
 
                         productoSeleccionado = null;
 
-
-                        // Cierra el modal
                         productosModal.hide();
-
                         document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
                         document.body.classList.remove('modal-open');
                         document.body.style = '';
@@ -859,8 +853,6 @@
         const index = tablaFactura.querySelectorAll('tr').length;
         const precioVenta = parseFloat(producto.precioVenta);
         const iva = parseFloat(producto.iva);
-
-        // El subtotal en la tabla debe ser el costo base por la cantidad, sin el impuesto.
         const subtotalProducto = precioVenta * cantidad;
 
         const fila = document.createElement('tr');
@@ -952,7 +944,6 @@
             if (iva === 15) impuesto15 += impuestoProducto;
             if (iva === 18) impuesto18 += impuestoProducto;
 
-            // Actualiza el subtotal en la fila de la tabla sin el impuesto
             fila.querySelector('.subtotal-producto').textContent = subtotalProducto.toFixed(2);
         });
 
@@ -990,5 +981,4 @@
 </script>
 @endverbatim
 <script src="{{ asset('js/tu-script.js') }}"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 @endsection

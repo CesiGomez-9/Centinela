@@ -1,4 +1,3 @@
-<?php $__env->startSection('titulo', 'Asignación de servicio'); ?>
 <?php $__env->startSection('content'); ?>
 <style>
     .table-bordered {
@@ -140,6 +139,13 @@
     });
 
     const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.focus();
+        // Llevar cursor al final del texto ya escrito
+        const length = searchInput.value.length;
+        searchInput.setSelectionRange(length, length);
+    }
+
     let timer;
     searchInput.addEventListener('input', function () {
         clearTimeout(timer);
@@ -147,10 +153,13 @@
         timer = setTimeout(() => {
             const form = searchInput.closest('form');
             form.submit();
+
+            // Al volver a cargar la página el DOM se reinicia,
+            // por eso este código volverá a ejecutarse desde arriba
+            // y colocará el cursor al final del input automáticamente.
         }, 500);
     });
 </script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\cesig\Herd\sistemadeseguridadcentinela\resources\views/facturas_ventas/index.blade.php ENDPATH**/ ?>
