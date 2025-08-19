@@ -1,5 +1,4 @@
-@extends('plantilla')
-@section('content')
+<?php $__env->startSection('content'); ?>
 <head>
     <meta charset="UTF-8">
     <title>Catálogo de Servicios</title>
@@ -70,10 +69,10 @@
     <!-- Buscador y botón -->
     <div class="d-flex justify-content-between align-items-start mb-5 flex-wrap w-100">
         <!-- Formulario búsqueda -->
-        <form method="GET" action="{{ route('servicios.catalogo') }}" style="width: 400px;" class="align-self-start">
+        <form method="GET" action="<?php echo e(route('servicios.catalogo')); ?>" style="width: 400px;" class="align-self-start">
             <div class="input-group">
                 <input type="text" id="searchInput" name="search" class="form-control form-control-md"
-                       placeholder="Buscar por nombre..." value="{{ request('search') }}">
+                       placeholder="Buscar por nombre..." value="<?php echo e(request('search')); ?>">
                 <button class="btn btn-outline-primary" type="submit">
                     <i class="bi bi-search"></i>
                 </button>
@@ -81,18 +80,19 @@
         </form>
 
         <!-- Botón crear -->
-        <a href="{{ route('servicios.index') }}" class="btn btn-outline-primary d-block align-self-start" style="width: 300px;">
+        <a href="<?php echo e(route('servicios.index')); ?>" class="btn btn-outline-primary d-block align-self-start" style="width: 300px;">
             <i class="bi bi-pencil-square me-2"></i> Crear un registro nuevo
         </a>
     </div>
 
     <!-- Alerta éxito -->
-    @if(session('success'))
+    <?php if(session('success')): ?>
         <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+            <i class="bi bi-check-circle-fill me-2"></i><?php echo e(session('success')); ?>
+
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
         </div>
-    @endif
+    <?php endif; ?>
 
     <!-- Tabla -->
     <div class="table-responsive mx-auto" style="max-width: 1100px;">
@@ -101,55 +101,56 @@
             <tr>
                 <th style="width: 50px;">#</th>
                 <th style="width: 280px;">Nombre</th>
-                <th style="width: 200px;">Costos</th> {{-- Cambiado de "Costo estimado" a "Costos" --}}
+                <th style="width: 200px;">Costos</th> 
                 <th style="width: 130px;">Categoría</th>
                 <th style="width: 160px;">Acciones</th>
             </tr>
             </thead>
             <tbody>
-            @forelse($servicios as $index => $servicio)
+            <?php $__empty_1 = true; $__currentLoopData = $servicios; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $servicio): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                 <tr>
-                    <td class="text-center">{{ $loop->iteration }}</td>
-                    <td class="text-start text-truncate" style="max-width: 280px;">{{ $servicio->nombre }}</td>
-                    <td class="text-start cost-details"> {{-- Alineación a la izquierda para los detalles de costo --}}
-                        <div><strong>Diurno:</strong> L. {{ number_format($servicio->costo_diurno, 2) }}</div>
-                        <div><strong>Nocturno:</strong> L. {{ number_format($servicio->costo_nocturno, 2) }}</div>
-                        <div><strong>24 horas:</strong> L. {{ number_format($servicio->costo_24_horas, 2) }}</div>
+                    <td class="text-center"><?php echo e($loop->iteration); ?></td>
+                    <td class="text-start text-truncate" style="max-width: 280px;"><?php echo e($servicio->nombre); ?></td>
+                    <td class="text-start cost-details"> 
+                        <div><strong>Diurno:</strong> L. <?php echo e(number_format($servicio->costo_diurno, 2)); ?></div>
+                        <div><strong>Nocturno:</strong> L. <?php echo e(number_format($servicio->costo_nocturno, 2)); ?></div>
+                        <div><strong>24 horas:</strong> L. <?php echo e(number_format($servicio->costo_24_horas, 2)); ?></div>
                     </td>
-                    <td class="text-start">{{ ucfirst($servicio->categoria) }}</td>
+                    <td class="text-start"><?php echo e(ucfirst($servicio->categoria)); ?></td>
                     <td class="text-center">
-                        <a href="{{ route('servicios.show', $servicio->id) }}" class="btn btn-sm btn-outline-info">
+                        <a href="<?php echo e(route('servicios.show', $servicio->id)); ?>" class="btn btn-sm btn-outline-info">
                             <i class="bi bi-eye"></i> Ver
                         </a>
-                        <a href="{{ route('servicios.edit', $servicio->id) }}" class="btn btn-sm btn-outline-warning">
+                        <a href="<?php echo e(route('servicios.edit', $servicio->id)); ?>" class="btn btn-sm btn-outline-warning">
                             <i class="bi bi-pencil-square"></i> Editar
                         </a>
                     </td>
                 </tr>
-            @empty
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                 <tr>
                     <td colspan="5" class="text-center text-muted">No hay servicios registrados.</td>
                 </tr>
-            @endforelse
+            <?php endif; ?>
             </tbody>
         </table>
     </div>
 
     <!-- Mensajes búsqueda -->
-    @if(request('search') && $servicios->total() > 0)
+    <?php if(request('search') && $servicios->total() > 0): ?>
         <div class="mb-3 text-muted">
-            Mostrando {{ $servicios->count() }} de {{ $servicios->total() }} servicios encontrados para
-            "<strong>{{ request('search') }}</strong>".
+            Mostrando <?php echo e($servicios->count()); ?> de <?php echo e($servicios->total()); ?> servicios encontrados para
+            "<strong><?php echo e(request('search')); ?></strong>".
         </div>
-    @elseif(request('search') && $servicios->total() === 0)
+    <?php elseif(request('search') && $servicios->total() === 0): ?>
         <div class="mb-3 text-danger">
-            No se encontraron resultados para "<strong>{{ request('search') }}</strong>".
+            No se encontraron resultados para "<strong><?php echo e(request('search')); ?></strong>".
         </div>
-    @endif
+    <?php endif; ?>
 
     <!-- Paginación -->
     <div class="d-flex justify-content-center mt-4">
-        {{ $servicios->appends(['search' => request('search')])->links() }}
+        <?php echo e($servicios->appends(['search' => request('search')])->links()); ?>
+
     </div>
 </div>
 
@@ -182,4 +183,6 @@
 
 <!-- Bootstrap JS -->
 </body>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Admin\PhpstormProjects\Centinela\resources\views/servicios/catalogo.blade.php ENDPATH**/ ?>

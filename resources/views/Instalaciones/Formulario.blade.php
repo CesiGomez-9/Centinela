@@ -116,20 +116,18 @@
                     @csrf
 
                     <div class="row g-4">
-                        <!-- Cliente -->
-                        <div class="col-md-6">
-                            <label for="cliente_id" class="form-label">Cliente</label>
-                            <div class="input-group has-validation">
-                                <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                                <select id="cliente_id" name="cliente_id"
-                                        class="form-select @error('cliente_id') is-invalid @enderror" required>
-                                    <option value="">Seleccione un cliente</option>
-                                    @foreach($clientes as $cliente)
-                                        <option value="{{ $cliente->id }}">{{ $cliente->nombre }}</option>
-                                    @endforeach
-                                </select>
-                                @error('cliente_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                            </div>
+                        {{-- === Cliente (Obligatorio) === --}}
+                        <div class="col-md-6 mb-3">
+                            <label for="cliente_id" class="form-label">Cliente <span class="text-danger">*</span></label>
+                            <select id="cliente_id" name="cliente_id" class="form-select" required>
+                                <option value="">Seleccione un cliente</option>
+                                @foreach($clientes as $cliente)
+                                    <option value="{{ $cliente->id }}">{{ $cliente->nombre }}</option>
+                                @endforeach
+                            </select>
+                            @error('cliente_id')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <!-- Campo Fecha (sin error-tecnicos aquí) -->
@@ -146,32 +144,31 @@
                             </div>
                         </div>
 
-                        <!-- Campo Técnicos -->
                         <div class="col-md-6">
                             <label for="empleado_id" class="form-label">Técnicos</label>
                             <div class="border rounded p-2" id="tecnicos-container" style="max-height: 200px; overflow-y: auto;">
-                                <div class="row">
+                                <div class="row g-2">
                                     @foreach ($tecnicos as $tecnico)
-                                        <div class="form-check">
-                                            <input
+                                        <div class="col-6 col-md-4">
+                                            <div class="form-check">
+                                                <input
                                                     class="form-check-input"
                                                     type="checkbox"
-                                                    name="empleado_id[]"  {{-- debe coincidir con el sync() --}}
+                                                    name="empleado_id[]"
                                                     value="{{ $tecnico->id }}"
                                                     id="tecnico_{{ $tecnico->id }}"
                                                     {{ (collect(old('empleado_id'))->contains($tecnico->id) || (isset($instalacion) && $instalacion->tecnicos->contains($tecnico->id))) ? 'checked' : '' }}
-                                            >
-                                            <label class="form-check-label" for="tecnico_{{ $tecnico->id }}">
-                                                {{ $tecnico->nombre }}
-                                            </label>
+                                                >
+                                                <label class="form-check-label" for="tecnico_{{ $tecnico->id }}">
+                                                    {{ $tecnico->nombre }}
+                                                </label>
+                                            </div>
                                         </div>
                                     @endforeach
-
-
-
                                 </div>
                             </div>
-                            <!-- Aquí SI debe ir el div para mostrar el error -->
+
+                            <!-- Aquí sigue el mensaje de error -->
                             <div id="error-tecnicos" class="invalid-feedback d-block" style="margin-top:0.25rem;"></div>
                             <small class="text-muted">Seleccione uno o más técnicos.</small>
                         </div>
@@ -211,21 +208,20 @@
                         </div>
 
 
-                        <!-- Factura -->
-                        <div class="col-md-6">
-                            <label for="factura_id" class="form-label">Factura de Venta (Opcional)</label>
-                            <div class="input-group has-validation">
-                                <span class="input-group-text"><i class="bi bi-receipt"></i></span>
-                                <select id="factura_id" name="factura_id" class="form-select">
-                                    <option value="">Seleccione una factura</option>
-                                    @foreach($facturas as $factura)
-                                        <option value="{{ $factura->id }}" data-total="{{ $factura->total }}">
-                                            Factura #{{ $factura->id }} - L. {{ number_format($factura->total, 2) }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
+                        {{-- === Factura (Opcional) === --}}
+                        <div class="col-md-6 mb-3">
+                            <label for="factura_id" class="form-label">Factura (Opcional)</label>
+                            <select id="factura_id" name="factura_id" class="form-select">
+                                <option value="">Seleccione una factura</option>
+                                @foreach($facturas as $factura)
+                                    <option value="{{ $factura->id }}">{{ "Factura #{$factura->id} - L. ".number_format($factura->total,2) }}</option>
+                                @endforeach
+                            </select>
+                            @error('factura_id')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
                         </div>
+
 
                         <!-- Descripción -->
                         <div class="col-md-6">
@@ -292,20 +288,18 @@
 
                 <script>
                     document.addEventListener('DOMContentLoaded', () => {
-                        // === Inicializar TomSelect para cliente y factura ===
-                        ['#cliente_id', '#factura_id'].forEach(selector => {
-                            new TomSelect(selector, {
-                                create: false,
-                                sortField: 'text',
-                                dropdownParent: 'body',
-                                maxOptions: 1000,
-                                hideSelected: true,
-                                allowEmptyOption: true,
-                                render: {
-                                    no_results: function(data, escape) {
-                                        return '<div class="no-results">No se encontraron resultados</div>';
-                                    }
-                                }
+                        ['cliente_id','factura_id'].forEach(id => {
+                            const select = document.getElementById(id);
+                            const firstOptionText = select.options[0].text;
+
+                            // Al hacer focus, se borra el texto inicial
+                            select.addEventListener('focus', () => {
+                                if(select.options[0].value === "") select.options[0].text = "";
+                            });
+
+                            // Al salir de focus, si no hay valor, vuelve el texto inicial
+                            select.addEventListener('blur', () => {
+                                if(!select.value) select.options[0].text = firstOptionText;
                             });
                         });
 
@@ -326,16 +320,19 @@
                         const totalGeneralSpan = document.getElementById("total-general");
                         const errorTecnicos = document.getElementById('error-tecnicos');
 
-                        // === Actualizar totales ===
+                        // === Actualizar totales (solo refleja costo instalación) ===
                         function actualizarTotales() {
+                            let [entero, decimal] = fields.costo.value.split(".");
+                            if (entero.length > 4) entero = entero.slice(0, 4);
+                            fields.costo.value = decimal !== undefined ? `${entero}.${decimal}` : entero;
+
                             const costo = parseFloat(fields.costo.value) || 0;
-                            const facturaTotal = parseFloat(fields.factura.selectedOptions[0]?.dataset.total || 0);
-                            totalFacturaSpan.textContent = facturaTotal.toFixed(2);
+
                             totalInstalacionSpan.textContent = costo.toFixed(2);
-                            totalGeneralSpan.textContent = (facturaTotal + costo).toFixed(2);
+                            totalFacturaSpan.textContent = "0.00"; // se mantiene en cero
+                            totalGeneralSpan.textContent = costo.toFixed(2); // solo refleja costo instalación
                         }
                         fields.costo.addEventListener("input", actualizarTotales);
-                        fields.factura.addEventListener("change", actualizarTotales);
 
                         // === Limpiar formulario ===
                         document.getElementById("btn-limpiar").addEventListener("click", () => {
@@ -393,13 +390,6 @@
                             form.querySelectorAll(".invalid-feedback").forEach(fb => fb.remove());
                         }
 
-                        // === Limitar costo a 4 cifras enteras ===
-                        fields.costo.addEventListener("input", () => {
-                            let [entero, decimal] = fields.costo.value.split(".");
-                            if (entero.length > 4) entero = entero.slice(0,4);
-                            fields.costo.value = decimal !== undefined ? `${entero}.${decimal}` : entero;
-                        });
-
                         // === Validar formulario ===
                         form.addEventListener("submit", (e) => {
                             limpiarErrores();
@@ -425,7 +415,7 @@
                             // Costo
                             const costo = parseFloat(fields.costo.value);
                             if (isNaN(costo) || costo <= 0) { setError(fields.costo, "El costo debe ser mayor a 0."); isValid = false; }
-                            else if (!/^\d{1,4}$/.test(fields.costo.value)) { setError(fields.costo, "El costo solo permite hasta 4 cifras."); isValid = false; }
+                            else if (!/^\d{1,4}(\.\d+)?$/.test(fields.costo.value)) { setError(fields.costo, "El costo solo permite hasta 4 cifras enteras."); isValid = false; }
 
                             // Descripción
                             if (!fields.descripcion.value.trim()) { setError(fields.descripcion, "Debe ingresar una descripción."); isValid = false; }
@@ -510,7 +500,6 @@
 
                     });
                 </script>
-
 
 
 @endsection
