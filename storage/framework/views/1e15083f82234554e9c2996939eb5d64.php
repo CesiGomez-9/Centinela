@@ -96,7 +96,7 @@
 
     <!-- Tabla -->
 
-    <div class="container mt-5" style="max-width: 1100px;">
+    <div class="table-responsive mx-auto" style="max-width: 1100px;">
         <table class="table table-bordered table-hover align-middle">
             <thead class="table-dark text-center">
             <tr>

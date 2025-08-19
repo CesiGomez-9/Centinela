@@ -139,6 +139,12 @@
     });
 
     const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.focus();
+        const length = searchInput.value.length;
+        searchInput.setSelectionRange(length, length);
+    }
+
     let timer;
     searchInput.addEventListener('input', function () {
         clearTimeout(timer);
