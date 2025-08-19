@@ -181,12 +181,12 @@ unset($__errorArgs, $__bag); ?>
                                     <?php $__currentLoopData = $tecnicos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $tecnico): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                         <div class="form-check">
                                             <input
-                                                    class="form-check-input"
-                                                    type="checkbox"
-                                                    name="empleado_id[]"
-                                                    value="<?php echo e($tecnico->id); ?>"
-                                                    id="tecnico_<?php echo e($tecnico->id); ?>"
-                                                    <?php echo e((collect(old('empleado_id'))->contains($tecnico->id) || (isset($instalacion) && $instalacion->tecnicos->contains($tecnico->id))) ? 'checked' : ''); ?>
+                                                class="form-check-input"
+                                                type="checkbox"
+                                                name="empleado_id[]"  
+                                                value="<?php echo e($tecnico->id); ?>"
+                                                id="tecnico_<?php echo e($tecnico->id); ?>"
+                                                <?php echo e((collect(old('empleado_id'))->contains($tecnico->id) || (isset($instalacion) && $instalacion->tecnicos->contains($tecnico->id))) ? 'checked' : ''); ?>
 
                                             >
                                             <label class="form-check-label" for="tecnico_<?php echo e($tecnico->id); ?>">
@@ -291,7 +291,7 @@ unset($__errorArgs, $__bag); ?>
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-card-text"></i></span>
                                 <textarea  id="descripcion" name="descripcion" maxlength="255"
-                                          class="form-control auto-expand <?php $__errorArgs = ['descripcion'];
+                                           class="form-control auto-expand <?php $__errorArgs = ['descripcion'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -299,7 +299,7 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                                          rows="2" required></textarea>
+                                           rows="2" required></textarea>
                                 <?php $__errorArgs = ['descripcion'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -327,6 +327,274 @@ endif;
 unset($__errorArgs, $__bag); ?>"
                                           rows="2" required></textarea>
                                 <?php $__errorArgs = ['direccion'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?><div class="invalid-feedback"><?php echo e($message); ?></div><?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end mt-4">
+                        <div class="bg-light p-3 rounded shadow-sm" style="width: 300px; font-size: 0.9rem;">
+                            <h6 class="text-center mb-3">Costos totales</h6>
+                            <p class="d-flex justify-content-between mb-1">
+                                <strong>Costo Factura:</strong>
+                                <span>L. <span id="total-factura">0.00</span></span>
+                            </p>
+                            <p class="d-flex justify-content-between mb-1">
+                                <strong>Costo Instalación:</strong>
+                                <span>L. <span id="total-instalacion">0.00</span></span>
+                            </p>
+                            <hr>
+                            <p class="d-flex justify-content-between fw-bold text-primary mb-1">
+                                <span>Total General:</span>
+                                <span>L. <span id="total-general">0.00</span></span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="text-center mt-4 d-flex justify-content-center gap-3">
+                        <a href="<?php echo e(route('instalaciones.index')); ?>" class="btn btn-danger" type="button">
+                            <i class="bi bi-x-circle me-2"></i> Cancelar
+                        </a>
+
+                        <button type="button" class="btn btn-warning" id="btn-limpiar">
+                            <i class="bi bi-eraser-fill me-2"></i> Limpiar
+                        </button>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save-fill me-2"></i> Guardar
+                        </button>
+
+
+                    </div>
+                </form>
+                <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        // === Inicializar TomSelect para cliente y factura ===
+                        ['#cliente_id', '#factura_id'].forEach(selector => {
+                            new TomSelect(selector, {
+                                create: false,
+                                sortField: 'text',
+                                dropdownParent: 'body',
+                                maxOptions: 1000,
+                                hideSelected: true,
+                                allowEmptyOption: true,
+                                render: {
+                                    no_results: function(data, escape) {
+                                        return '<div class="no-results">No se encontraron resultados</div>';
+                                    }
+                                }
+                            });
+                        });
+
+                        // === Variables del formulario ===
+                        const form = document.getElementById("form-instalacion");
+                        const fields = {
+                            cliente: document.getElementById("cliente_id"),
+                            servicio: document.getElementById("servicio_id"),
+                            fecha: document.getElementById("fecha_instalacion"),
+                            costo: document.getElementById("costo_instalacion"),
+                            descripcion: document.getElementById("descripcion"),
+                            direccion: document.getElementById("direccion"),
+                            factura: document.getElementById("factura_id")
+                        };
+                        const tecnicosContainer = document.getElementById("tecnicos-container");
+                        const totalFacturaSpan = document.getElementById("total-factura");
+                        const totalInstalacionSpan = document.getElementById("total-instalacion");
+                        const totalGeneralSpan = document.getElementById("total-general");
+                        const errorTecnicos = document.getElementById('error-tecnicos');
+
+                        // === Actualizar totales (solo refleja costo instalación) ===
+                        function actualizarTotales() {
+                            let [entero, decimal] = fields.costo.value.split(".");
+                            if (entero.length > 4) entero = entero.slice(0, 4);
+                            fields.costo.value = decimal !== undefined ? ${entero}.${decimal} : entero;
+
+                            const costo = parseFloat(fields.costo.value) || 0;
+
+                            totalInstalacionSpan.textContent = costo.toFixed(2);
+                            totalFacturaSpan.textContent = "0.00"; // se mantiene en cero
+                            totalGeneralSpan.textContent = costo.toFixed(2); // solo refleja costo instalación
+                        }
+                        fields.costo.addEventListener("input", actualizarTotales);
+
+                        // === Limpiar formulario ===
+                        document.getElementById("btn-limpiar").addEventListener("click", () => {
+                            form.reset();
+                            totalFacturaSpan.textContent = "0.00";
+                            totalInstalacionSpan.textContent = "0.00";
+                            totalGeneralSpan.textContent = "0.00";
+                            limpiarErrores();
+                            errorTecnicos.textContent = '';
+                            desbloquearTecnicos();
+                        });
+
+                        // === Evitar espacios al inicio ===
+                        [fields.descripcion, fields.direccion].forEach(field => {
+                            field.addEventListener("input", () => {
+                                if (field.value.startsWith(" ")) field.value = field.value.trimStart();
+                            });
+                        });
+
+                        // === Auto-ajuste dinámico para textareas ===
+                        document.querySelectorAll(".auto-expand").forEach(textarea => {
+                            textarea.style.overflow = "hidden";
+                            textarea.addEventListener("input", () => {
+                                textarea.style.height = "auto";
+                                textarea.style.height = textarea.scrollHeight + "px";
+                            });
+                        });
+
+                        // === Funciones de error ===
+                        function setError(element, message) {
+                            element.classList.add("is-invalid");
+                            let feedback = element.parentNode.querySelector(".invalid-feedback");
+                            if (!feedback) {
+                                feedback = document.createElement("div");
+                                feedback.className = "invalid-feedback";
+                                element.parentNode.appendChild(feedback);
+                            }
+                            feedback.textContent = message;
+                        }
+
+                        function setGroupError(container, message) {
+                            container.classList.add("is-invalid");
+                            let feedback = container.parentNode.querySelector(".invalid-feedback");
+                            if (!feedback) {
+                                feedback = document.createElement("div");
+                                feedback.className = "invalid-feedback";
+                                feedback.style.display = "block";
+                                container.parentNode.appendChild(feedback);
+                            }
+                            feedback.textContent = message;
+                        }
+
+                        function limpiarErrores() {
+                            form.querySelectorAll(".is-invalid").forEach(el => el.classList.remove("is-invalid"));
+                            form.querySelectorAll(".invalid-feedback").forEach(fb => fb.remove());
+                        }
+
+                        // === Validar formulario ===
+                        form.addEventListener("submit", (e) => {
+                            limpiarErrores();
+                            let isValid = true;
+
+                            // Limpiar espacios
+                            fields.descripcion.value = fields.descripcion.value.trimStart();
+                            fields.direccion.value = fields.direccion.value.trimStart();
+
+                            // Cliente
+                            if (!fields.cliente.value) { setError(fields.cliente, "Debe seleccionar un cliente."); isValid = false; }
+
+                            // Técnicos
+                            const tecnicosSeleccionados = document.querySelectorAll('input[name="empleado_id[]"]:checked');
+                            if (tecnicosSeleccionados.length === 0) { setGroupError(tecnicosContainer, "Debe seleccionar al menos un técnico."); isValid = false; }
+
+                            // Servicio
+                            if (!fields.servicio.value) { setError(fields.servicio, "Debe seleccionar un servicio."); isValid = false; }
+
+                            // Fecha
+                            if (!fields.fecha.value) { setError(fields.fecha, "Debe ingresar una fecha de instalación."); isValid = false; }
+
+                            // Costo
+                            const costo = parseFloat(fields.costo.value);
+                            if (isNaN(costo) || costo <= 0) { setError(fields.costo, "El costo debe ser mayor a 0."); isValid = false; }
+                            else if (!/^\d{1,4}(\.\d+)?$/.test(fields.costo.value)) { setError(fields.costo, "El costo solo permite hasta 4 cifras enteras."); isValid = false; }
+
+                            // Descripción
+                            if (!fields.descripcion.value.trim()) { setError(fields.descripcion, "Debe ingresar una descripción."); isValid = false; }
+                            else if (fields.descripcion.value.length > 255) { setError(fields.descripcion, "La descripción no puede superar los 255 caracteres."); isValid = false; }
+
+                            // Dirección
+                            if (!fields.direccion.value.trim()) { setError(fields.direccion, "Debe ingresar una dirección."); isValid = false; }
+                            else if (fields.direccion.value.length > 255) { setError(fields.direccion, "La dirección no puede superar los 255 caracteres."); isValid = false; }
+
+                            if (!isValid) e.preventDefault();
+                        });
+
+                        // === Desbloquear todos los técnicos ===
+                        function desbloquearTecnicos() {
+                            document.querySelectorAll('input[name="empleado_id[]"]').forEach(chk => {
+                                chk.disabled = false;
+                                chk.parentElement.classList.remove("text-muted");
+                            });
+                        }
+
+                        // === Validar técnicos ocupados ===
+                        async function validarTecnicosOcupados() {
+                            const fecha = fields.fecha.value;
+                            if (!fecha) { errorTecnicos.textContent = ''; desbloquearTecnicos(); return; }
+
+                            // Obtener técnicos seleccionados
+                            const seleccionados = Array.from(document.querySelectorAll('input[name="empleado_id[]"]:checked')).map(cb => parseInt(cb.value));
+
+                            try {
+                                const res = await fetch(/api/tecnicos-ocupados?fecha=${fecha});
+                                const ocupados = await res.json();
+
+                                document.querySelectorAll('input[name="empleado_id[]"]').forEach(cb => {
+                                    const id = parseInt(cb.value);
+                                    if (ocupados.includes(id)) {
+                                        cb.disabled = true;
+                                        cb.parentElement.classList.add("text-muted");
+                                    } else {
+                                        cb.disabled = false;
+                                        cb.parentElement.classList.remove("text-muted");
+                                    }
+                                });
+
+                                // Mensaje de técnicos ocupados
+                                const ocupadosSeleccionados = seleccionados.filter(id => ocupados.includes(id));
+                                if (ocupadosSeleccionados.length > 0) {
+                                    const nombres = ocupadosSeleccionados.map(id => {
+                                        const label = document.querySelector(input[name="empleado_id[]"][value="${id}"]).nextElementSibling;
+                                        return label ? label.textContent.trim() : id;
+                                    });
+                                    if (nombres.length === 1) errorTecnicos.textContent = El técnico ${nombres[0]} está ocupado ese día.;
+                                else {
+                                        const ultimo = nombres.pop();
+                                        errorTecnicos.textContent = Los técnicos ${nombres.join(', ')} y ${ultimo} están ocupados ese día.;
+                                    }
+                                } else errorTecnicos.textContent = '';
+
+                            } catch {
+                                errorTecnicos.textContent = 'Error al consultar técnicos ocupados.';
+                            }
+                        }
+
+                        fields.fecha.addEventListener('change', validarTecnicosOcupados);
+                        document.querySelectorAll('input[name="empleado_id[]"]').forEach(cb => cb.addEventListener('change', validarTecnicosOcupados));
+
+                        // === Limitar texto en descripción y dirección ===
+                        [fields.descripcion, fields.direccion].forEach(field => {
+                            field.setAttribute('maxlength', '255');
+                            field.addEventListener('keydown', e => {
+                                const allowedKeys = ["Backspace","Delete","ArrowLeft","ArrowRight","ArrowUp","ArrowDown","Tab","Home","End"];
+                                if (field.value.length >= 255 && !allowedKeys.includes(e.key) && !e.ctrlKey && !e.metaKey) e.preventDefault();
+                            });
+                            field.addEventListener('paste', e => {
+                                e.preventDefault();
+                                const pasteText = (e.clipboardData || window.clipboardData).getData('text').substring(0, 255 - field.value.length);
+                                const start = field.selectionStart, end = field.selectionEnd;
+                                field.value = field.value.slice(0,start) + pasteText + field.value.slice(end);
+                                field.setSelectionRange(start + pasteText.length, start + pasteText.length);
+                                field.dispatchEvent(new Event('input'));
+                            });
+                        });
+
+                    });
+                </script>
+
+
+                <?php $__env->stopSection(); ?>                                <?php $__errorArgs = ['direccion'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }

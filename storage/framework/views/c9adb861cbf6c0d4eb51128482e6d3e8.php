@@ -43,7 +43,7 @@
                     <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Producto</a>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="<?php echo e(route('productos.index')); ?>">Inventario de productos</a></li>
-                        <li><a class="dropdown-item" href="<?php echo e(route('productos.create')); ?>">Registrar un nuevo producto</a></li>
+                        <li><a class="dropdown-item" href="<?php echo e(route('productos.create')); ?>">Registrar producto</a></li>
                         <li><hr class="dropdown-divider"></li> 
                         <li><a class="dropdown-item" href="<?php echo e(route('facturas_compras.index')); ?>">Listado de facturas de compra</a></li>
                         <li><a class="dropdown-item" href="<?php echo e(route('facturas_compras.create')); ?>">Registrar una factura de compra</a></li>
@@ -56,15 +56,42 @@
                     <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Servicios</a>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="<?php echo e(route('servicios.catalogo')); ?>">Listado de servicios</a></li>
-                        <li><a class="dropdown-item" href="<?php echo e(route('servicios.index')); ?>">Registrar un nuevo servicio</a></li>
+                        <li><a class="dropdown-item" href="<?php echo e(route('servicios.index')); ?>">Registrar servicio</a></li>
                         <li><hr class="dropdown-divider"></li> 
                         <li><a class="dropdown-item" href="<?php echo e(route('turnos.create')); ?>">Venta de servicios</a></li>
                         <li><a class="dropdown-item" href="<?php echo e(route('turnos.index')); ?>">Listado de venta de servicios</a></li>
                     </ul>
                 </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Instalaciones</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="<?php echo e(route('instalaciones.index')); ?>">Listado de instalaciones</a></li>
+                        <li><a class="dropdown-item" href="<?php echo e(route('instalaciones.formulario')); ?>">Registrar instalación</a></li>
+
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Empleados</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="<?php echo e(route('empleados.index')); ?>">Listado de empleados</a></li>
+                        <li><a class="dropdown-item" href="<?php echo e(route('empleados.create')); ?>">Registrar empleado</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Clientes</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="<?php echo e(route('Clientes.indexCliente')); ?>">Listado de clientes</a></li>
+                        <li><a class="dropdown-item" href="<?php echo e(route('Clientes.formulariocliente')); ?>">Registrar cliente</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Proveedores</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="<?php echo e(route('Proveedores.indexProveedor')); ?>">Listado de proveedores</a></li>
+                        <li><a class="dropdown-item" href="<?php echo e(route('Proveedores.nuevo')); ?>">Registrar proveedor</a></li>
+                    </ul>
+                </li>
                 <li class="nav-item"><a class="nav-link text-white" href="#">Registrate</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="#">Nosotros</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="#">Contacto</a></li>
             </ul>
         </div>
     </div>

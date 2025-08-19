@@ -257,7 +257,6 @@
     });
 </script>
 {{-- Incluye tus scripts JS personalizados --}}
-@push('scripts')
 
     <script>
         function soloLetras(e) {
@@ -286,7 +285,7 @@
     </script>
 
 
-@endpush
+
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 </body>

@@ -368,7 +368,6 @@ unset($__errorArgs, $__bag); ?>
     });
 </script>
 
-<?php $__env->startPush('scripts'); ?>
 
     <script>
         function soloLetras(e) {
@@ -397,7 +396,7 @@ unset($__errorArgs, $__bag); ?>
     </script>
 
 
-<?php $__env->stopPush(); ?>
+
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 </body>
