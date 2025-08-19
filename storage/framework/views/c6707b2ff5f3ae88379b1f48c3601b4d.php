@@ -141,7 +141,6 @@
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
         searchInput.focus();
-        // Llevar cursor al final del texto ya escrito
         const length = searchInput.value.length;
         searchInput.setSelectionRange(length, length);
     }
@@ -153,10 +152,6 @@
         timer = setTimeout(() => {
             const form = searchInput.closest('form');
             form.submit();
-
-            // Al volver a cargar la página el DOM se reinicia,
-            // por eso este código volverá a ejecutarse desde arriba
-            // y colocará el cursor al final del input automáticamente.
         }, 500);
     });
 </script>
