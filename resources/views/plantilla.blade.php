@@ -25,10 +25,10 @@
         .dropdown-item {
             font-size: 0.875rem;
             color: #212529; }
-        }
-        .dropdown-item:hover {
-            background-color: #e9ecef;
-        }
+    }
+    .dropdown-item:hover {
+        background-color: #e9ecef;
+    }
 </style>
 <nav class="navbar navbar-expand-lg" style="background-color: #0A1F44; padding-top: 0.1rem; padding-bottom: 0.1rem; font-family: 'Courier New', sans-serif;">
     <div class="container" style="max-width: 1600px;">
@@ -75,6 +75,9 @@
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="{{route('empleados.index')}}">Listado de empleados</a></li>
                         <li><a class="dropdown-item" href="{{route('empleados.create')}}">Registrar empleado</a></li>
+                        <li><hr class="dropdown-divider"></li> {{-- Separador--}}
+                        <li><a class="dropdown-item" href="{{route('memorandos.index')}}">Listado de memorandum</a></li>
+                        <li><a class="dropdown-item" href="{{route('memorandos.create')}}">Registrar memorandum</a></li>
                     </ul>
                 </li>
                 <li class="nav-item dropdown">

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('nombrerepresentante',50);
             $table->string('telefonoderepresentante',8);
             $table->string('categoriarubro');
+            $table->string('departamento');
             $table->timestamps();
 
 
