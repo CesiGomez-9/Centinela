@@ -145,24 +145,22 @@
                 <table class="table table-bordered table-sm text-center align-middle small">
                     <tbody>
                     <tr>
-                        <th style="width: 18%;">Factura de venta N°</th>
+                        <th style="width: 18%;">Factura de venta N°:</th>
                         <td style="width: 15%;"><?php echo e($factura->numero); ?></td>
-                        <th style="width: 12%;">Cliente</th>
+                        <th style="width: 12%;">Cliente:</th>
                         <td style="width: 25%;"><?php echo e($factura->cliente->nombre ?? ''); ?> <?php echo e($factura->cliente->apellido ?? ''); ?></td>
-                        <th style="width: 10%;">Fecha</th>
+                        <th style="width: 10%;">Fecha:</th>
                         <td style="width: 20%;"><?php echo e(\Carbon\Carbon::parse($factura->fecha)->format('d/m/Y')); ?></td>
                     </tr>
                     <tr>
-                        <th>Forma de pago</th>
+                        <th>Forma de pago:</th>
                         <td><?php echo e($factura->forma_pago); ?></td>
-                        <th>Responsable</th>
+                        <th>Responsable:</th>
                         <td colspan="3"><?php echo e($factura->responsable->nombre ?? ''); ?> <?php echo e($factura->responsable->apellido ?? ''); ?></td>
                     </tr>
                     </tbody>
                 </table>
             </div>
-
-
 
             <h6 class="section-header"><i class="bi bi-box-seam"></i> Productos vendidos</h6>
             <div class="table-responsive product-table-container">

@@ -32,6 +32,9 @@ Route::get('/facturas_ventas/{factura_venta}', [\App\Http\Controllers\FacturaVen
 Route::get('/facturas_ventas/{factura_venta}/edit', [\App\Http\Controllers\FacturaVentaController::class, 'edit'])->name('facturas_ventas.edit');
 Route::put('/facturas_ventas/{factura_venta}', [\App\Http\Controllers\FacturaVentaController::class, 'update'])->name('facturas_ventas.update');
 
+Route::resource('memorandos', \App\Http\Controllers\MemorandoController::class);
+
+
 Route::get('/clientes/buscar', [App\Http\Controllers\ClienteController::class, 'buscar'])->name('clientes.buscar');
 
 
@@ -98,4 +101,16 @@ Route::get('/Clientes', [\App\Http\Controllers\ClienteController::class, 'index'
 Route::get('/Clientes/{id}', [\App\Http\Controllers\ClienteController::class, 'show'])->name('Clientes.detalleCliente')->whereNumber('id');
 Route::get('/Clientes/{id}/editar', [\App\Http\Controllers\ClienteController::class, 'edit'])->name('Clientes.edit');
 Route::put('/Clientes/{id}', [\App\Http\Controllers\ClienteController::class, 'update'])->name('Clientes.update');
+
+Route::get('/instalaciones/formulario', [\App\Http\Controllers\InstalacionController::class, 'create'])->name('instalaciones.formulario');
+Route::post('/instalaciones', [\App\Http\Controllers\InstalacionController::class, 'store'])->name('instalaciones.store');
+Route::get('/instalaciones', [\App\Http\Controllers\InstalacionController::class, 'index'])->name('instalaciones.index');
+// routes/web.php
+Route::get('/instalaciones/eventos', [\App\Http\Controllers\InstalacionController::class, 'eventos'])->name('instalaciones.eventos');
+Route::get('/instalaciones/formulario', [\App\Http\Controllers\InstalacionController::class, 'create'])->name('instalaciones.formulario');
+Route::post('/instalaciones', [\App\Http\Controllers\InstalacionController::class, 'store'])->name('instalaciones.store');
+Route::get('/instalaciones', [\App\Http\Controllers\InstalacionController::class, 'index'])->name('instalaciones.index');
+// routes/web.php
+Route::get('/instalaciones/eventos', [\App\Http\Controllers\InstalacionController::class, 'eventos'])->name('instalaciones.eventos');
+
 
