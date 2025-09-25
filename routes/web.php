@@ -105,3 +105,9 @@ Route::post('/instalaciones', [\App\Http\Controllers\InstalacionController::clas
 Route::get('/instalaciones', [\App\Http\Controllers\InstalacionController::class, 'index'])->name('instalaciones.index');
 // routes/web.php
 Route::get('/instalaciones/eventos', [\App\Http\Controllers\InstalacionController::class, 'eventos'])->name('instalaciones.eventos');
+
+use App\Http\Controllers\AsistenciaController;
+
+Route::get('/asistencias/index', [AsistenciaController::class, 'index'])->name('asistencias.index');
+Route::get('/asistencias/crear', [AsistenciaController::class, 'create'])->name('asistencias.crear');
+Route::post('/asistencias', [AsistenciaController::class, 'store'])->name('asistencias.store');

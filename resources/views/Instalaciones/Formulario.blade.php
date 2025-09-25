@@ -146,7 +146,7 @@
 
                         <div class="col-md-6">
                             <label for="empleado_id" class="form-label">Técnicos</label>
-                            <div class="border rounded p-2" id="tecnicos-container" style="max-height: 200px; overflow-y: auto;">
+                            <div class="border rounded p-2" id="tecnicos-container" style="max-height: 150px; overflow-y: auto;">
                                 <div class="row g-2">
                                     @foreach ($tecnicos as $tecnico)
                                         <div class="col-6 col-md-4">
