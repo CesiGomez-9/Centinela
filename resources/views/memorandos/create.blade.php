@@ -19,35 +19,36 @@
                 <div class="row g-3">
 
                     <div class="col-md-6">
-                        <label class="form-label fw-bold">Empleado:</label>
+                        <label for="destinatarioInput" class="form-label fw-bold">Empleado:</label>
                         <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                            <select name="destinatario_id" class="form-select @error('destinatario_id') is-invalid @enderror" required>
-                                <option value="">Seleccione un empleado</option>
-                                @foreach($destinatarios as $destinatario)
-                                    <option value="{{ $destinatario->id }}" {{ old('destinatario_id') == $destinatario->id ? 'selected' : '' }}>
-                                        {{ $destinatario->nombre }} {{ $destinatario->apellido }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            <div class="invalid-feedback">@error('destinatario_id') {{ $message }} @enderror</div>
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="text"
+                                   id="destinatarioInput"
+                                   name="destinatario_nombre"
+                                   class="form-control @error('destinatario_id') is-invalid @enderror"
+                                   placeholder="Buscar empleado..."
+                                   autocomplete="off"
+                                   value="{{ old('destinatario_nombre', $destinatarioSeleccionado ?? '') }}">
+                            <input type="hidden" name="destinatario_id" id="destinatario_id" value="{{ old('destinatario_id') }}">
+                            <div class="invalid-feedback d-block">@error('destinatario_id') {{ $message }} @enderror</div>
                         </div>
+                        <div id="destinatarioResults" class="list-group" style="max-height:200px; overflow-y:auto;"></div>
                     </div>
-
                     <div class="col-md-6">
-                        <label class="form-label fw-bold">Autor:</label>
+                        <label for="autorInput" class="form-label fw-bold">Autor:</label>
                         <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-person-badge-fill"></i></span>
-                            <select name="autor_id" class="form-select @error('autor_id') is-invalid @enderror" required>
-                                <option value="">Seleccione un empleado</option>
-                                @foreach($autores as $autor)
-                                    <option value="{{ $autor->id }}" {{ old('autor_id') == $autor->id ? 'selected' : '' }}>
-                                        {{ $autor->nombre }} {{ $autor->apellido }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            <div class="invalid-feedback">@error('autor_id') {{ $message }} @enderror</div>
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="text"
+                                   id="autorInput"
+                                   name="autor_nombre"
+                                   class="form-control @error('autor_id') is-invalid @enderror"
+                                   placeholder="Buscar empleado..."
+                                   autocomplete="off"
+                                   value="{{ old('autor_nombre', $autorSeleccionado ?? '') }}">
+                            <input type="hidden" name="autor_id" id="autor_id" value="{{ old('autor_id') }}">
+                            <div class="invalid-feedback d-block">@error('autor_id') {{ $message }} @enderror</div>
                         </div>
+                        <div id="autorResults" class="list-group" style="max-height:200px; overflow-y:auto;"></div>
                     </div>
 
                     <div class="col-md-6">
@@ -145,6 +146,7 @@
     </div>
 
     <script>
+
         function limitarCaracteres(campoId, maxCaracteres) {
             const campo = document.getElementById(campoId);
 
@@ -154,25 +156,10 @@
                 }
             });
         }
-
         limitarCaracteres("titulo", 100);
         limitarCaracteres("contenido", 250);
         limitarCaracteres("sancion", 250);
         limitarCaracteres("observaciones", 250);
-
-        document.getElementById('btnLimpiar').addEventListener('click', function () {
-            document.querySelectorAll('.is-invalid').forEach(el => {
-                el.classList.remove('is-invalid');
-            });
-            document.querySelectorAll('.invalid-feedback').forEach(el => {
-                el.textContent = '';
-            });
-
-            const alerta = document.querySelector('.alert');
-            if (alerta) {
-                alerta.remove();
-            }
-        });
 
         function autoResize(textarea) {
             textarea.style.height = 'auto';
@@ -187,21 +174,6 @@
             }
         });
 
-        document.getElementById('btnLimpiar').addEventListener('click', function () {
-            document.querySelectorAll('.is-invalid').forEach(el => {
-                el.classList.remove('is-invalid');
-            });
-
-            document.querySelectorAll('.invalid-feedback').forEach(el => {
-                el.textContent = '';
-            });
-
-            const alerta = document.querySelector('.alert');
-            if (alerta) {
-                alerta.remove();
-            }
-        });
-
         document.getElementById('btnLimpiar').addEventListener('click', function (e) {
             e.preventDefault();
             document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
@@ -209,8 +181,67 @@
             const alerta = document.querySelector('.alert');
             if (alerta) alerta.remove();
 
-            window.location.href = "{{ route('memorandos.create') }}";
+            document.querySelector('form').reset();
+            document.getElementById('destinatario_id').value = '';
+            document.getElementById('autor_id').value = '';
+            document.getElementById('destinatarioInput').value = '';
+            document.getElementById('autorInput').value = '';
+            document.getElementById('destinatarioResults').innerHTML = '';
+            document.getElementById('autorResults').innerHTML = '';
+            document.getElementById('fecha').value = '';
         });
+
+        function setupAutocomplete(inputId, resultsId, hiddenId, url, extraParams = {}) {
+            const input = document.getElementById(inputId);
+            const results = document.getElementById(resultsId);
+            const hidden = document.getElementById(hiddenId);
+
+            input.addEventListener('input', function () {
+                const query = this.value.trim();
+                hidden.value = '';
+                if (!query) {
+                    results.innerHTML = '';
+                    return;
+                }
+                fetch(url + '?' + new URLSearchParams({ q: query, ...extraParams }))
+                    .then(res => res.json())
+                    .then(data => {
+                        results.innerHTML = '';
+                        if (data.length === 0) return;
+                        data.forEach(emp => {
+                            const item = document.createElement('button');
+                            item.type = 'button';
+                            item.classList.add('list-group-item', 'list-group-item-action');
+                            item.textContent = emp.nombre + ' ' + emp.apellido;
+                            item.addEventListener('click', () => {
+                                input.value = emp.nombre + ' ' + emp.apellido;
+                                hidden.value = emp.id;
+                                results.innerHTML = '';
+                            });
+                            results.appendChild(item);
+                        });
+                    });
+            });
+            document.addEventListener('click', function(e){
+                if (!results.contains(e.target) && e.target !== input) {
+                    results.innerHTML = '';
+                }
+            });
+        }
+        setupAutocomplete(
+            'destinatarioInput',
+            'destinatarioResults',
+            'destinatario_id',
+            '{{ route("empleados.buscar") }}',
+            { tipo: 'todos' }
+        );
+        setupAutocomplete(
+            'autorInput',
+            'autorResults',
+            'autor_id',
+            '{{ route("empleados.buscar") }}',
+            { tipo: 'administracion' }
+        );
     </script>
     </body>
 @endsection

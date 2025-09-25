@@ -33,6 +33,7 @@ Route::get('/facturas_ventas/{factura_venta}/edit', [\App\Http\Controllers\Factu
 Route::put('/facturas_ventas/{factura_venta}', [\App\Http\Controllers\FacturaVentaController::class, 'update'])->name('facturas_ventas.update');
 
 Route::resource('memorandos', \App\Http\Controllers\MemorandoController::class);
+Route::get('/buscar-empleados', [EmpleadoController::class, 'buscar'])->name('empleados.buscar');
 
 
 Route::get('/clientes/buscar', [App\Http\Controllers\ClienteController::class, 'buscar'])->name('clientes.buscar');
