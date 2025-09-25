@@ -86,7 +86,7 @@ class MemorandoController extends Controller
             'contenido.max' => 'El motivo no puede exceder 250 letras',
             'contenido.regex' => 'El motivo contiene caracteres no permitidos',
 
-            'fecha.required' => 'Debes ingresar una fecha',
+            'fecha.required' => 'Debe seleccionar una fecha',
             'fecha.date' => 'La fecha debe ser válida',
             'fecha.before_or_equal' => 'La fecha no puede ser futura',
             'fecha.after_or_equal' => 'La fecha no puede ser anterior a hace un mes',
@@ -217,4 +217,6 @@ class MemorandoController extends Controller
 
         return redirect()->route('memorandos.index')->with('success', 'Memorando actualizado correctamente.');
     }
+
+
 }

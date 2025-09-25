@@ -18,26 +18,25 @@
                 <div class="row g-3">
 
                     <div class="col-md-6">
-                        <label class="form-label fw-bold">Empleado:</label>
+                        <label for="destinatarioInput" class="form-label fw-bold">Empleado:</label>
                         <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                            <select name="destinatario_id" class="form-select <?php $__errorArgs = ['destinatario_id'];
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="text"
+                                   id="destinatarioInput"
+                                   name="destinatario_nombre"
+                                   class="form-control <?php $__errorArgs = ['destinatario_id'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>" required>
-                                <option value="">Seleccione un empleado</option>
-                                <?php $__currentLoopData = $destinatarios; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $destinatario): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                    <option value="<?php echo e($destinatario->id); ?>" <?php echo e(old('destinatario_id') == $destinatario->id ? 'selected' : ''); ?>>
-                                        <?php echo e($destinatario->nombre); ?> <?php echo e($destinatario->apellido); ?>
-
-                                    </option>
-                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                            </select>
-                            <div class="invalid-feedback"><?php $__errorArgs = ['destinatario_id'];
+unset($__errorArgs, $__bag); ?>"
+                                   placeholder="Buscar empleado..."
+                                   autocomplete="off"
+                                   value="<?php echo e(old('destinatario_nombre', $destinatarioSeleccionado ?? '')); ?>">
+                            <input type="hidden" name="destinatario_id" id="destinatario_id" value="<?php echo e(old('destinatario_id')); ?>">
+                            <div class="invalid-feedback d-block"><?php $__errorArgs = ['destinatario_id'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -46,29 +45,28 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?></div>
                         </div>
+                        <div id="destinatarioResults" class="list-group" style="max-height:200px; overflow-y:auto;"></div>
                     </div>
-
                     <div class="col-md-6">
-                        <label class="form-label fw-bold">Autor:</label>
+                        <label for="autorInput" class="form-label fw-bold">Autor:</label>
                         <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-person-badge-fill"></i></span>
-                            <select name="autor_id" class="form-select <?php $__errorArgs = ['autor_id'];
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="text"
+                                   id="autorInput"
+                                   name="autor_nombre"
+                                   class="form-control <?php $__errorArgs = ['autor_id'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>" required>
-                                <option value="">Seleccione un empleado</option>
-                                <?php $__currentLoopData = $autores; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $autor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                    <option value="<?php echo e($autor->id); ?>" <?php echo e(old('autor_id') == $autor->id ? 'selected' : ''); ?>>
-                                        <?php echo e($autor->nombre); ?> <?php echo e($autor->apellido); ?>
-
-                                    </option>
-                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                            </select>
-                            <div class="invalid-feedback"><?php $__errorArgs = ['autor_id'];
+unset($__errorArgs, $__bag); ?>"
+                                   placeholder="Buscar empleado..."
+                                   autocomplete="off"
+                                   value="<?php echo e(old('autor_nombre', $autorSeleccionado ?? '')); ?>">
+                            <input type="hidden" name="autor_id" id="autor_id" value="<?php echo e(old('autor_id')); ?>">
+                            <div class="invalid-feedback d-block"><?php $__errorArgs = ['autor_id'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -77,6 +75,7 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?></div>
                         </div>
+                        <div id="autorResults" class="list-group" style="max-height:200px; overflow-y:auto;"></div>
                     </div>
 
                     <div class="col-md-6">
@@ -272,6 +271,7 @@ unset($__errorArgs, $__bag); ?></div>
     </div>
 
     <script>
+
         function limitarCaracteres(campoId, maxCaracteres) {
             const campo = document.getElementById(campoId);
 
@@ -281,25 +281,10 @@ unset($__errorArgs, $__bag); ?></div>
                 }
             });
         }
-
         limitarCaracteres("titulo", 100);
         limitarCaracteres("contenido", 250);
         limitarCaracteres("sancion", 250);
         limitarCaracteres("observaciones", 250);
-
-        document.getElementById('btnLimpiar').addEventListener('click', function () {
-            document.querySelectorAll('.is-invalid').forEach(el => {
-                el.classList.remove('is-invalid');
-            });
-            document.querySelectorAll('.invalid-feedback').forEach(el => {
-                el.textContent = '';
-            });
-
-            const alerta = document.querySelector('.alert');
-            if (alerta) {
-                alerta.remove();
-            }
-        });
 
         function autoResize(textarea) {
             textarea.style.height = 'auto';
@@ -314,21 +299,6 @@ unset($__errorArgs, $__bag); ?></div>
             }
         });
 
-        document.getElementById('btnLimpiar').addEventListener('click', function () {
-            document.querySelectorAll('.is-invalid').forEach(el => {
-                el.classList.remove('is-invalid');
-            });
-
-            document.querySelectorAll('.invalid-feedback').forEach(el => {
-                el.textContent = '';
-            });
-
-            const alerta = document.querySelector('.alert');
-            if (alerta) {
-                alerta.remove();
-            }
-        });
-
         document.getElementById('btnLimpiar').addEventListener('click', function (e) {
             e.preventDefault();
             document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
@@ -336,8 +306,67 @@ unset($__errorArgs, $__bag); ?></div>
             const alerta = document.querySelector('.alert');
             if (alerta) alerta.remove();
 
-            window.location.href = "<?php echo e(route('memorandos.create')); ?>";
+            document.querySelector('form').reset();
+            document.getElementById('destinatario_id').value = '';
+            document.getElementById('autor_id').value = '';
+            document.getElementById('destinatarioInput').value = '';
+            document.getElementById('autorInput').value = '';
+            document.getElementById('destinatarioResults').innerHTML = '';
+            document.getElementById('autorResults').innerHTML = '';
+            document.getElementById('fecha').value = '';
         });
+
+        function setupAutocomplete(inputId, resultsId, hiddenId, url, extraParams = {}) {
+            const input = document.getElementById(inputId);
+            const results = document.getElementById(resultsId);
+            const hidden = document.getElementById(hiddenId);
+
+            input.addEventListener('input', function () {
+                const query = this.value.trim();
+                hidden.value = '';
+                if (!query) {
+                    results.innerHTML = '';
+                    return;
+                }
+                fetch(url + '?' + new URLSearchParams({ q: query, ...extraParams }))
+                    .then(res => res.json())
+                    .then(data => {
+                        results.innerHTML = '';
+                        if (data.length === 0) return;
+                        data.forEach(emp => {
+                            const item = document.createElement('button');
+                            item.type = 'button';
+                            item.classList.add('list-group-item', 'list-group-item-action');
+                            item.textContent = emp.nombre + ' ' + emp.apellido;
+                            item.addEventListener('click', () => {
+                                input.value = emp.nombre + ' ' + emp.apellido;
+                                hidden.value = emp.id;
+                                results.innerHTML = '';
+                            });
+                            results.appendChild(item);
+                        });
+                    });
+            });
+            document.addEventListener('click', function(e){
+                if (!results.contains(e.target) && e.target !== input) {
+                    results.innerHTML = '';
+                }
+            });
+        }
+        setupAutocomplete(
+            'destinatarioInput',
+            'destinatarioResults',
+            'destinatario_id',
+            '<?php echo e(route("empleados.buscar")); ?>',
+            { tipo: 'todos' }
+        );
+        setupAutocomplete(
+            'autorInput',
+            'autorResults',
+            'autor_id',
+            '<?php echo e(route("empleados.buscar")); ?>',
+            { tipo: 'administracion' }
+        );
     </script>
     </body>
 <?php $__env->stopSection(); ?>
