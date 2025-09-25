@@ -119,14 +119,14 @@
                     <?php echo csrf_field(); ?>
 
                     <div class="row g-4">
-                        
+
                         <!-- Cliente -->
                         <div class="col-md-6">
                             <label for="cliente_id" class="form-label">Cliente</label>
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
                                 <select id="cliente_id" name="cliente_id">
-                                    <option value="" placeholder="Seleccione un cliente"></option>
+                                    <option value="" ></option>
                                     <?php $__currentLoopData = $clientes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cliente): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                         <option value="<?php echo e($cliente->id); ?>"><?php echo e($cliente->nombre); ?></option>
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -172,7 +172,7 @@ unset($__errorArgs, $__bag); ?>
 
                         <div class="col-md-6">
                             <label for="empleado_id" class="form-label">Técnicos</label>
-                            <div class="border rounded p-2" id="tecnicos-container" style="max-height: 200px; overflow-y: auto;">
+                            <div class="border rounded p-2" id="tecnicos-container" style="max-height: 150px; overflow-y: auto;">
                                 <div class="row g-2">
                                     <?php $__currentLoopData = $tecnicos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $tecnico): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                         <div class="col-6 col-md-4">

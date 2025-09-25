@@ -1,5 +1,4 @@
-@extends('plantilla')
-@section('content')
+<?php $__env->startSection('content'); ?>
 <head>
     <meta charset="UTF-8" />
     <title>Editar Servicio</title>
@@ -54,30 +53,31 @@
             <i class="bi bi-shield-lock"></i> <!-- o bi-tools -->
         </div>
 
-        @if(session('success'))
+        <?php if(session('success')): ?>
             <div class="alert alert-success alert-dismissible fade show py-2" role="alert" style="font-size: 0.85rem;">
-                {{ session('success') }}
+                <?php echo e(session('success')); ?>
+
                 <button type="button" class="btn-close btn-close-sm" data-bs-dismiss="alert" aria-label="Cerrar"></button>
             </div>
-        @endif
+        <?php endif; ?>
 
 
-        <form id="servicioForm" action="{{ route('servicios.update', $servicio->id) }}" method="POST" class="needs-validation" novalidate>
-            @csrf
-            @method('PUT') {{-- Importante para las actualizaciones --}}
+        <form id="servicioForm" action="<?php echo e(route('servicios.update', $servicio->id)); ?>" method="POST" class="needs-validation" novalidate>
+            <?php echo csrf_field(); ?>
+            <?php echo method_field('PUT'); ?> 
 
-            {{-- TEMPORAL: Muestra todos los errores de validación (DEBE APARECER SI HAY ERRORES) --}}
-            @if ($errors->any())
+            
+            <?php if($errors->any()): ?>
                 <div class="alert alert-danger mb-4">
                     <strong>Errores de validación:</strong>
                     <ul>
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
+                        <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <li><?php echo e($error); ?></li>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </ul>
                 </div>
-            @endif
-            {{-- FIN TEMPORAL --}}
+            <?php endif; ?>
+            
 
             <div class="row g-3">
 
@@ -87,16 +87,30 @@
                     <div class="input-group input-group-md">
                         <span class="input-group-text"><i class="bi bi-card-text"></i></span>
                         <input type="text" id="nombreServicio" name="nombreServicio"
-                               class="form-control @error('nombreServicio') is-invalid @enderror"
+                               class="form-control <?php $__errorArgs = ['nombreServicio'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                maxlength="50" pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$"
                                title="Solo letras, máximo 50 caracteres"
-                               value="{{ old('nombreServicio', $servicio->nombre) }}"
+                               value="<?php echo e(old('nombreServicio', $servicio->nombre)); ?>"
                                onkeydown="bloquearEspacioAlInicio(event, this)"
                                oninput="eliminarEspaciosIniciales(this)" required />
                     </div>
-                    @error('nombreServicio')
-                    <div class="text-danger mt-1 small">{{ $message }}</div>
-                    @enderror
+                    <?php $__errorArgs = ['nombreServicio'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                    <div class="text-danger mt-1 small"><?php echo e($message); ?></div>
+                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                 </div>
 
                 <!-- Costo Diurno (ahora col-md-3) -->
@@ -105,14 +119,28 @@
                     <div class="input-group input-group-md">
                         <span class="input-group-text"><i class="bi bi-sun"></i></span>
                         <input type="number" step="0.01"
-                               class="form-control @error('costo_diurno') is-invalid @enderror"
+                               class="form-control <?php $__errorArgs = ['costo_diurno'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                id="costo_diurno" name="costo_diurno"
-                               min="0" max="9999" value="{{ old('costo_diurno', $servicio->costo_diurno) }}"
+                               min="0" max="9999" value="<?php echo e(old('costo_diurno', $servicio->costo_diurno)); ?>"
                                oninput="limitarDigitos(this, 4)" required />
                     </div>
-                    @error('costo_diurno')
-                    <div class="text-danger mt-1 small">{{ $message }}</div>
-                    @enderror
+                    <?php $__errorArgs = ['costo_diurno'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                    <div class="text-danger mt-1 small"><?php echo e($message); ?></div>
+                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                 </div>
 
                 <!-- Costo Nocturno (ahora col-md-3) -->
@@ -121,14 +149,28 @@
                     <div class="input-group input-group-md">
                         <span class="input-group-text"><i class="bi bi-moon"></i></span>
                         <input type="number" step="0.01"
-                               class="form-control @error('costo_nocturno') is-invalid @enderror"
+                               class="form-control <?php $__errorArgs = ['costo_nocturno'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                id="costo_nocturno" name="costo_nocturno"
-                               min="0" max="9999" value="{{ old('costo_nocturno', $servicio->costo_nocturno) }}"
+                               min="0" max="9999" value="<?php echo e(old('costo_nocturno', $servicio->costo_nocturno)); ?>"
                                oninput="limitarDigitos(this, 4)" required />
                     </div>
-                    @error('costo_nocturno')
-                    <div class="text-danger mt-1 small">{{ $message }}</div>
-                    @enderror
+                    <?php $__errorArgs = ['costo_nocturno'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                    <div class="text-danger mt-1 small"><?php echo e($message); ?></div>
+                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                 </div>
 
                 <!-- Costo 24 Horas (ahora col-md-3) -->
@@ -137,14 +179,28 @@
                     <div class="input-group input-group-md">
                         <span class="input-group-text"><i class="bi bi-clock"></i></span>
                         <input type="number" step="0.01"
-                               class="form-control @error('costo_24_horas') is-invalid @enderror"
+                               class="form-control <?php $__errorArgs = ['costo_24_horas'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                id="costo_24_horas" name="costo_24_horas"
-                               min="0" max="9999" value="{{ old('costo_24_horas', $servicio->costo_24_horas) }}"
+                               min="0" max="9999" value="<?php echo e(old('costo_24_horas', $servicio->costo_24_horas)); ?>"
                                oninput="limitarDigitos(this, 4)" required />
                     </div>
-                    @error('costo_24_horas')
-                    <div class="text-danger mt-1 small">{{ $message }}</div>
-                    @enderror
+                    <?php $__errorArgs = ['costo_24_horas'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                    <div class="text-danger mt-1 small"><?php echo e($message); ?></div>
+                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                 </div>
 
                 <!-- Descripción (ocupa todo el ancho) -->
@@ -153,17 +209,31 @@
                     <div class="input-group input-group-md">
                         <span class="input-group-text"><i class="bi bi-textarea-t"></i></span>
                         <textarea id="descripcionServicio" name="descripcionServicio"
-                                  class="form-control @error('descripcionServicio') is-invalid @enderror"
+                                  class="form-control <?php $__errorArgs = ['descripcionServicio'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                   maxlength="125" pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$"
                                   title="Solo letras, máximo 125 caracteres"
                                   rows="1" required
                                   onkeydown="bloquearEspacioAlInicio(event, this)"
                                   oninput="eliminarEspaciosIniciales(this); autoExpand(this);"
-                                  style="overflow:hidden; resize:none;">{{ old('descripcionServicio', $servicio->descripcion) }}</textarea>
+                                  style="overflow:hidden; resize:none;"><?php echo e(old('descripcionServicio', $servicio->descripcion)); ?></textarea>
                     </div>
-                    @error('descripcionServicio')
-                    <div class="text-danger mt-1 small">{{ $message }}</div>
-                    @enderror
+                    <?php $__errorArgs = ['descripcionServicio'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                    <div class="text-danger mt-1 small"><?php echo e($message); ?></div>
+                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                 </div>
 
                 <!-- Categoría -->
@@ -171,15 +241,29 @@
                     <label for="categoria" class="form-label fs-6 mb-2">Categoría</label>
                     <div class="input-group input-group-md">
                         <span class="input-group-text"><i class="bi bi-ui-checks"></i></span>
-                        <select class="form-select form-select-md @error('categoria') is-invalid @enderror" id="categoria" name="categoria" required>
+                        <select class="form-select form-select-md <?php $__errorArgs = ['categoria'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" id="categoria" name="categoria" required>
                             <option value="">Seleccione una categoría</option>
-                            <option value="vigilancia" {{ old('categoria', $servicio->categoria) === 'vigilancia' ? 'selected' : '' }}>Vigilancia</option>
-                            <option value="tecnico" {{ old('categoria', $servicio->categoria) === 'tecnico' ? 'selected' : '' }}>Técnico</option>
+                            <option value="vigilancia" <?php echo e(old('categoria', $servicio->categoria) === 'vigilancia' ? 'selected' : ''); ?>>Vigilancia</option>
+                            <option value="tecnico" <?php echo e(old('categoria', $servicio->categoria) === 'tecnico' ? 'selected' : ''); ?>>Técnico</option>
                         </select>
                     </div>
-                    @error('categoria')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
+                    <?php $__errorArgs = ['categoria'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                    <div class="invalid-feedback"><?php echo e($message); ?></div>
+                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                 </div>
 
                 <!-- Productos requeridos (ahora con selección manual) -->
@@ -187,62 +271,92 @@
                     <label class="form-label fs-6 mb-2">Productos requeridos</label>
                     <div class="input-group input-group-md">
                         <span class="input-group-text"><i class="bi bi-box"></i></span>
-                        <select class="form-select form-select-md @error('productos_categoria') is-invalid @enderror" id="productosCategoria" name="productos_categoria" required>
+                        <select class="form-select form-select-md <?php $__errorArgs = ['productos_categoria'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" id="productosCategoria" name="productos_categoria" required>
                             <option value="">Seleccione una categoría</option>
-                            <option value="vigilancia" {{ old('productos_categoria', (in_array($servicio->categoria, ['vigilancia', 'Implementos de seguridad']) ? 'vigilancia' : (in_array($servicio->categoria, ['tecnico', 'Cámaras de seguridad', 'Alarmas antirrobo', 'Cerraduras inteligentes', 'Sensores de movimiento', 'Luces con sensor de movimiento', 'Rejas o puertas de seguridad', 'Sistema de monitoreo 24/7']) ? 'tecnico' : ''))) === 'vigilancia' ? 'selected' : '' }}>Vigilancia</option>
-                            <option value="tecnico" {{ old('productos_categoria', (in_array($servicio->categoria, ['vigilancia', 'Implementos de seguridad']) ? 'vigilancia' : (in_array($servicio->categoria, ['tecnico', 'Cámaras de seguridad', 'Alarmas antirrobo', 'Cerraduras inteligentes', 'Sensores de movimiento', 'Luces con sensor de movimiento', 'Rejas o puertas de seguridad', 'Sistema de monitoreo 24/7']) ? 'tecnico' : ''))) === 'tecnico' ? 'selected' : '' }}>Técnico</option>
+                            <option value="vigilancia" <?php echo e(old('productos_categoria', (in_array($servicio->categoria, ['vigilancia', 'Implementos de seguridad']) ? 'vigilancia' : (in_array($servicio->categoria, ['tecnico', 'Cámaras de seguridad', 'Alarmas antirrobo', 'Cerraduras inteligentes', 'Sensores de movimiento', 'Luces con sensor de movimiento', 'Rejas o puertas de seguridad', 'Sistema de monitoreo 24/7']) ? 'tecnico' : ''))) === 'vigilancia' ? 'selected' : ''); ?>>Vigilancia</option>
+                            <option value="tecnico" <?php echo e(old('productos_categoria', (in_array($servicio->categoria, ['vigilancia', 'Implementos de seguridad']) ? 'vigilancia' : (in_array($servicio->categoria, ['tecnico', 'Cámaras de seguridad', 'Alarmas antirrobo', 'Cerraduras inteligentes', 'Sensores de movimiento', 'Luces con sensor de movimiento', 'Rejas o puertas de seguridad', 'Sistema de monitoreo 24/7']) ? 'tecnico' : ''))) === 'tecnico' ? 'selected' : ''); ?>>Técnico</option>
                         </select>
                     </div>
-                    @error('productos_categoria')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
+                    <?php $__errorArgs = ['productos_categoria'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                    <div class="invalid-feedback"><?php echo e($message); ?></div>
+                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                 </div>
 
                 <!-- Productos de vigilancia -->
                 <div class="col-12 d-none" id="productos_vigilancia">
                     <label class="form-label fs-6 mb-2">Productos de vigilancia</label>
                     <div class="row g-2" style="font-size: 0.85rem;">
-                        @foreach($productosVigilancia as $producto)
+                        <?php $__currentLoopData = $productosVigilancia; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $producto): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div class="col-md-6">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="productos[]" value="{{ $producto->id }}" id="vig_{{ Str::slug($producto->nombre, '_') }}"
-                                        {{ in_array($producto->id, old('productos', $productosSeleccionados)) ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="vig_{{ Str::slug($producto->nombre, '_') }}">
-                                        {{ $producto->nombre }}
+                                    <input class="form-check-input" type="checkbox" name="productos[]" value="<?php echo e($producto->id); ?>" id="vig_<?php echo e(Str::slug($producto->nombre, '_')); ?>"
+                                        <?php echo e(in_array($producto->id, old('productos', $productosSeleccionados)) ? 'checked' : ''); ?>>
+                                    <label class="form-check-label" for="vig_<?php echo e(Str::slug($producto->nombre, '_')); ?>">
+                                        <?php echo e($producto->nombre); ?>
+
                                     </label>
                                 </div>
                             </div>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
-                    @error('productos')
-                    <div class="text-danger mt-1 small">{{ $message }}</div>
-                    @enderror
+                    <?php $__errorArgs = ['productos'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                    <div class="text-danger mt-1 small"><?php echo e($message); ?></div>
+                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                 </div>
 
                 <!-- Productos técnicos -->
                 <div class="col-12 d-none" id="productos_tecnico">
                     <label class="form-label fs-6 mb-2">Productos técnicos</label>
                     <div class="row g-2" style="font-size: 0.85rem;">
-                        @foreach($productosTecnicos as $producto) {{-- Usar productosTecnicos --}}
+                        <?php $__currentLoopData = $productosTecnicos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $producto): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?> 
                         <div class="col-md-6">
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="productos[]" value="{{ $producto->id }}" id="tec_{{ Str::slug($producto->nombre, '_') }}"
-                                    {{ in_array($producto->id, old('productos', $productosSeleccionados)) ? 'checked' : '' }}>
-                                <label class="form-check-label" for="tec_{{ Str::slug($producto->nombre, '_') }}">
-                                    {{ $producto->nombre }}
+                                <input class="form-check-input" type="checkbox" name="productos[]" value="<?php echo e($producto->id); ?>" id="tec_<?php echo e(Str::slug($producto->nombre, '_')); ?>"
+                                    <?php echo e(in_array($producto->id, old('productos', $productosSeleccionados)) ? 'checked' : ''); ?>>
+                                <label class="form-check-label" for="tec_<?php echo e(Str::slug($producto->nombre, '_')); ?>">
+                                    <?php echo e($producto->nombre); ?>
+
                                 </label>
                             </div>
                         </div>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
-                    @error('productos')
-                    <div class="text-danger mt-1 small">{{ $message }}</div>
-                    @enderror
+                    <?php $__errorArgs = ['productos'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                    <div class="text-danger mt-1 small"><?php echo e($message); ?></div>
+                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                 </div>
 
                 <!-- Botones -->
                 <div class="text-center mt-4">
-                    <a href="{{ route('servicios.catalogo') }}" class="btn btn-danger me-2" style="font-size: 0.85rem;">
+                    <a href="<?php echo e(route('servicios.catalogo')); ?>" class="btn btn-danger me-2" style="font-size: 0.85rem;">
                         <i class="bi bi-x-circle me-2"></i> Cancelar
                     </a>
 
@@ -305,7 +419,7 @@
             updateProductVisibility();
         } else {
             // Intenta inferir la categoría de productos del servicio si no hay old()
-            const servicioCategoria = "{{ $servicio->categoria ?? '' }}";
+            const servicioCategoria = "<?php echo e($servicio->categoria ?? ''); ?>";
             let inferredProductosCategoria = '';
             if (servicioCategoria === 'vigilancia' || servicioCategoria === 'Implementos de seguridad') {
                 inferredProductosCategoria = 'vigilancia';
@@ -381,4 +495,6 @@
 
 
 </body>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Admin\PhpstormProjects\Centinela\resources\views/servicios/edit.blade.php ENDPATH**/ ?>
