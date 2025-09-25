@@ -17,7 +17,8 @@ class Instalacion extends Model
         'direccion',
         'fecha_instalacion',
         'costo_instalacion',
-        'factura_id'
+        'factura_id',
+
     ];
 
     // Relaciones
