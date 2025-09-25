@@ -127,30 +127,39 @@
     </div>
 
     <div class="card-body">
-        <div class="container px-4"> <!-- Contenedor para padding horizontal -->
+        <div class="container px-4">
             <img src="<?php echo e(asset('centinela.jpg')); ?>" alt="Logo Centinela" width="90" />
             <div class="text-center mb-4" style="margin-top: -20px;">
                 <div class="d-flex justify-content-center align-items-center mb-3 gap-3">
                     <h4 class="fw-bold mb-0">GRUPO CENTINELA</h4>
                 </div>
                 <p class="mb-1"><strong>RTN:</strong> 06021999123456</p>
-                <p class="mb-1"><strong>Teléfono fijo: </strong>+504 2763-3585</p>
                 <p class="mb-1"><strong>Celular:</strong> +504 9322-5352</p>
+                <p class="mb-1"><strong>Teléfono fijo: </strong>+504 2763-3585</p>
                 <p class="mb-1"><strong>Email: </strong>grupocentinela.hn@gmail.com</p>
                 <p class="mb-1"><strong>Dirección:</strong> Barrio Oriental, cuatro cuadras al sur del parque central, Danlí, El Paraíso, Honduras.</p>
 
             </div>
 
-            <div class="mb-5 mt-5">
-                <div class="d-flex mb-2 gap-4">
-                    <p class="mb-0"><strong>Factura de venta N°:</strong> <?php echo e($factura->numero); ?></p>
-                    <p class="mb-0"><strong>Fecha:</strong> <?php echo e(\Carbon\Carbon::parse($factura->fecha)->format('d/m/Y')); ?></p>
-                    <p class="mb-0"><strong>Cliente:</strong> <?php echo e($factura->cliente->nombre ?? ''); ?> <?php echo e($factura->cliente->apellido ?? ''); ?></p>
-                </div>
-                <div class="d-flex gap-4">
-                    <p class="mb-0"><strong>Forma de pago:</strong> <?php echo e($factura->forma_pago); ?></p>
-                    <p class="mb-0"><strong>Responsable:</strong> <?php echo e($factura->responsable->nombre ?? ''); ?> <?php echo e($factura->responsable->apellido ?? ''); ?></p>
-                </div>
+            <div class="mb-4 mt-4">
+                <table class="table table-bordered table-sm text-center align-middle small">
+                    <tbody>
+                    <tr>
+                        <th style="width: 18%;">Factura de venta N°:</th>
+                        <td style="width: 15%;"><?php echo e($factura->numero); ?></td>
+                        <th style="width: 12%;">Cliente:</th>
+                        <td style="width: 25%;"><?php echo e($factura->cliente->nombre ?? ''); ?> <?php echo e($factura->cliente->apellido ?? ''); ?></td>
+                        <th style="width: 10%;">Fecha:</th>
+                        <td style="width: 20%;"><?php echo e(\Carbon\Carbon::parse($factura->fecha)->format('d/m/Y')); ?></td>
+                    </tr>
+                    <tr>
+                        <th>Forma de pago:</th>
+                        <td><?php echo e($factura->forma_pago); ?></td>
+                        <th>Responsable:</th>
+                        <td colspan="3"><?php echo e($factura->responsable->nombre ?? ''); ?> <?php echo e($factura->responsable->apellido ?? ''); ?></td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
 
             <h6 class="section-header"><i class="bi bi-box-seam"></i> Productos vendidos</h6>
