@@ -32,6 +32,10 @@
         .is-invalid + .invalid-feedback {
             display: block !important;
         }
+        .is-invalid ~ .text-danger {
+            display: block !important;
+        }
+
 
         #servicioForm {
             font-size: 0.85rem; /* 85% tamaño base */
@@ -82,7 +86,8 @@
             <div class="row g-3">
 
                 <!-- Nombre del servicio (ahora col-md-3) -->
-                <div class="col-12 col-md-3">
+                <!-- Nombre del servicio (más ancho: col-md-6) -->
+                <div class="col-12 col-md-6">
                     <label for="nombreServicio" class="form-label fs-6 mb-2">Nombre del servicio</label>
                     <div class="input-group input-group-md">
                         <span class="input-group-text"><i class="bi bi-card-text"></i></span>
@@ -95,11 +100,12 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                               maxlength="50" pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$"
-                               title="Solo letras, máximo 50 caracteres"
+                               maxlength="50" pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s]+$"
+                               title="Solo letras, números y espacios, máximo 50 caracteres"
                                value="<?php echo e(old('nombreServicio', $servicio->nombre)); ?>"
                                onkeydown="bloquearEspacioAlInicio(event, this)"
                                oninput="eliminarEspaciosIniciales(this)" required />
+                        <div class="invalid-feedback" style="font-size: 0.85rem;">Ingrese un nombre válido (letras y números).</div>
                     </div>
                     <?php $__errorArgs = ['nombreServicio'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -113,8 +119,8 @@ endif;
 unset($__errorArgs, $__bag); ?>
                 </div>
 
-                <!-- Costo Diurno (ahora col-md-3) -->
-                <div class="col-12 col-md-3">
+                <!-- Costo Diurno -->
+                <div class="col-12 col-md-2">
                     <label for="costo_diurno" class="form-label fs-6 mb-2">Costo diurno</label>
                     <div class="input-group input-group-md">
                         <span class="input-group-text"><i class="bi bi-sun"></i></span>
@@ -130,6 +136,7 @@ unset($__errorArgs, $__bag); ?>"
                                id="costo_diurno" name="costo_diurno"
                                min="0" max="9999" value="<?php echo e(old('costo_diurno', $servicio->costo_diurno)); ?>"
                                oninput="limitarDigitos(this, 4)" required />
+                        <div class="invalid-feedback" style="font-size: 0.85rem;">Ingrese un costo diurno válido.</div>
                     </div>
                     <?php $__errorArgs = ['costo_diurno'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -143,8 +150,8 @@ endif;
 unset($__errorArgs, $__bag); ?>
                 </div>
 
-                <!-- Costo Nocturno (ahora col-md-3) -->
-                <div class="col-12 col-md-3">
+                <!-- Costo Nocturno -->
+                <div class="col-12 col-md-2">
                     <label for="costo_nocturno" class="form-label fs-6 mb-2">Costo nocturno</label>
                     <div class="input-group input-group-md">
                         <span class="input-group-text"><i class="bi bi-moon"></i></span>
@@ -160,6 +167,7 @@ unset($__errorArgs, $__bag); ?>"
                                id="costo_nocturno" name="costo_nocturno"
                                min="0" max="9999" value="<?php echo e(old('costo_nocturno', $servicio->costo_nocturno)); ?>"
                                oninput="limitarDigitos(this, 4)" required />
+                        <div class="invalid-feedback" style="font-size: 0.85rem;">Ingrese un costo nocturno válido.</div>
                     </div>
                     <?php $__errorArgs = ['costo_nocturno'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -173,8 +181,8 @@ endif;
 unset($__errorArgs, $__bag); ?>
                 </div>
 
-                <!-- Costo 24 Horas (ahora col-md-3) -->
-                <div class="col-12 col-md-3">
+                <!-- Costo 24 Horas -->
+                <div class="col-12 col-md-2">
                     <label for="costo_24_horas" class="form-label fs-6 mb-2">Costo 24 horas</label>
                     <div class="input-group input-group-md">
                         <span class="input-group-text"><i class="bi bi-clock"></i></span>
@@ -190,6 +198,7 @@ unset($__errorArgs, $__bag); ?>"
                                id="costo_24_horas" name="costo_24_horas"
                                min="0" max="9999" value="<?php echo e(old('costo_24_horas', $servicio->costo_24_horas)); ?>"
                                oninput="limitarDigitos(this, 4)" required />
+                        <div class="invalid-feedback" style="font-size: 0.85rem;">Ingrese un costo de 24 horas válido.</div>
                     </div>
                     <?php $__errorArgs = ['costo_24_horas'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -202,6 +211,7 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
                 </div>
+
 
                 <!-- Descripción (ocupa todo el ancho) -->
                 <div class="col-12">
@@ -217,12 +227,13 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                                  maxlength="125" pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$"
-                                  title="Solo letras, máximo 125 caracteres"
+                                  maxlength="125" pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s]+$"
+                                  title="Solo letras, números y espacios, máximo 125 caracteres"
                                   rows="1" required
                                   onkeydown="bloquearEspacioAlInicio(event, this)"
                                   oninput="eliminarEspaciosIniciales(this); autoExpand(this);"
                                   style="overflow:hidden; resize:none;"><?php echo e(old('descripcionServicio', $servicio->descripcion)); ?></textarea>
+                        <div class="invalid-feedback" style="font-size: 0.85rem;">Ingrese una descripción válida (letras y números).</div>
                     </div>
                     <?php $__errorArgs = ['descripcionServicio'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -253,6 +264,7 @@ unset($__errorArgs, $__bag); ?>" id="categoria" name="categoria" required>
                             <option value="vigilancia" <?php echo e(old('categoria', $servicio->categoria) === 'vigilancia' ? 'selected' : ''); ?>>Vigilancia</option>
                             <option value="tecnico" <?php echo e(old('categoria', $servicio->categoria) === 'tecnico' ? 'selected' : ''); ?>>Técnico</option>
                         </select>
+                        <div class="invalid-feedback" style="font-size: 0.85rem;">Seleccione una categoría.</div>
                     </div>
                     <?php $__errorArgs = ['categoria'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -283,6 +295,7 @@ unset($__errorArgs, $__bag); ?>" id="productosCategoria" name="productos_categor
                             <option value="vigilancia" <?php echo e(old('productos_categoria', (in_array($servicio->categoria, ['vigilancia', 'Implementos de seguridad']) ? 'vigilancia' : (in_array($servicio->categoria, ['tecnico', 'Cámaras de seguridad', 'Alarmas antirrobo', 'Cerraduras inteligentes', 'Sensores de movimiento', 'Luces con sensor de movimiento', 'Rejas o puertas de seguridad', 'Sistema de monitoreo 24/7']) ? 'tecnico' : ''))) === 'vigilancia' ? 'selected' : ''); ?>>Vigilancia</option>
                             <option value="tecnico" <?php echo e(old('productos_categoria', (in_array($servicio->categoria, ['vigilancia', 'Implementos de seguridad']) ? 'vigilancia' : (in_array($servicio->categoria, ['tecnico', 'Cámaras de seguridad', 'Alarmas antirrobo', 'Cerraduras inteligentes', 'Sensores de movimiento', 'Luces con sensor de movimiento', 'Rejas o puertas de seguridad', 'Sistema de monitoreo 24/7']) ? 'tecnico' : ''))) === 'tecnico' ? 'selected' : ''); ?>>Técnico</option>
                         </select>
+                        <div class="invalid-feedback" style="font-size: 0.85rem;">Seleccione una categoría de productos.</div>
                     </div>
                     <?php $__errorArgs = ['productos_categoria'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -389,6 +402,7 @@ unset($__errorArgs, $__bag); ?>
             autoExpand(textarea);
         }
 
+
         const categoriaSelect = document.getElementById('categoria');
         const productosCategoriaSelect = document.getElementById('productosCategoria');
         const vigilanciaDiv = document.getElementById('productos_vigilancia');
@@ -447,12 +461,13 @@ unset($__errorArgs, $__bag); ?>
 
         // Nombre y descripción: solo letras y espacios
         document.getElementById('nombreServicio').addEventListener('input', e => {
-            validarInput(e, '[A-Za-zÁÉÍÓÚáéíóúÑñ\\s]', 50);
+            validarInput(e, '[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\\s]', 50);
         });
 
         document.getElementById('descripcionServicio').addEventListener('input', e => {
-            validarInput(e, '[A-Za-zÁÉÍÓÚáéíóúÑñ\\s]', 125);
+            validarInput(e, '[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\\s]', 125);
         });
+
 
         // Evitar espacio al inicio
         function bloquearEspacioAlInicio(e, input) {
@@ -490,9 +505,23 @@ unset($__errorArgs, $__bag); ?>
             input.value = input.value.slice(0, maxDigits);
         }
     }
+    function autoExpand(textarea) {
+        textarea.style.height = 'auto'; // Reinicia altura
+        textarea.style.height = (textarea.scrollHeight) + 'px'; // Ajusta al contenido
+    }
+
+    // Expande al cargar si ya tiene texto
+    window.addEventListener('DOMContentLoaded', () => {
+        const textarea = document.getElementById('descripcionServicio');
+        if (textarea) {
+            autoExpand(textarea);
+
+            // Para que también se expanda mientras escribes
+            textarea.addEventListener('input', () => autoExpand(textarea));
+        }
+    });
+
 </script>
-
-
 
 </body>
 <?php $__env->stopSection(); ?>

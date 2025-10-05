@@ -1,6 +1,10 @@
 @extends('plantilla')
 
 @section('content')
+    <head>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    </head>
+
     <style>
         body {
             background-color: #ffffff;
@@ -13,7 +17,7 @@
         .container {
             max-width: 550px;
             margin: 0 auto;
-            padding: 15px 30px;
+            padding: 20px 30px;
             border-radius: 15px;
             background-color: #1a2340;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
@@ -55,27 +59,17 @@
         }
 
         .error {
-            color: #cda34f;
+            color: #ffc107;
             font-size: 13px;
             text-align: left;
             margin-bottom: 5px;
         }
 
-        button {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: none;
-            font-size: 17px;
-            background-color: #cda34f;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        button:hover {
-            background-color: #cda34f;
+        .botones {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 15px;
         }
 
         .mensaje {
@@ -83,6 +77,10 @@
             font-size: 15px;
             font-weight: bold;
             color: #00ff99;
+        }
+
+        .btn i {
+            vertical-align: middle;
         }
     </style>
 
@@ -103,12 +101,30 @@
             <input type="text" id="identidad" name="identidad" placeholder="DNI / Identidad" maxlength="13">
             <div id="error-identidad" class="error"></div>
 
-            <button type="submit">Registrar</button>
+            <!-- Botones -->
+            <div class="botones">
+                <!-- Botón Cancelar -->
+                <a href="{{ route('asistencias.index') }}" class="btn btn-danger w-100">
+                    <i class="bi bi-x-circle me-2"></i> Cancelar
+                </a>
+
+                <!-- Botón Limpiar -->
+                <button type="button" class="btn btn-secondary w-100" id="btnLimpiar">
+                    <i class="bi bi-eraser-fill me-2"></i> Limpiar
+                </button>
+
+                <!-- Botón Registrar -->
+                <button type="submit" class="btn btn-warning w-100 text-white fw-normal">
+                    <i class="bi bi-save-fill me-2"></i> Registrar
+                </button>
+            </div>
+
         </form>
+
         <div class="mensaje" id="mensaje"></div>
     </div>
+
     <script>
-        // Obtener elementos del DOM
         const form = document.getElementById("formAsistencia");
         const mensaje = document.getElementById("mensaje");
 
@@ -120,7 +136,9 @@
         const errorApellido = document.getElementById("error-apellido");
         const errorIdentidad = document.getElementById("error-identidad");
 
-        // Validaciones de caracteres mientras el usuario escribe
+        const btnLimpiar = document.getElementById("btnLimpiar");
+
+        // Validaciones en tiempo real
         nombre.addEventListener("input", function() {
             this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, "");
         });
@@ -136,19 +154,28 @@
             }
         });
 
-        // Función para enviar el formulario con fetch
+        // Botón Limpiar
+        btnLimpiar.addEventListener("click", () => {
+            nombre.value = "";
+            apellido.value = "";
+            identidad.value = "";
+            errorNombre.textContent = "";
+            errorApellido.textContent = "";
+            errorIdentidad.textContent = "";
+            mensaje.textContent = "";
+            nombre.focus();
+        });
+
+        // Envío del formulario
         form.addEventListener("submit", async function(e) {
             e.preventDefault();
 
             let valido = true;
-
-            // Reset de errores
             errorNombre.textContent = "";
             errorApellido.textContent = "";
             errorIdentidad.textContent = "";
             mensaje.textContent = "";
 
-            // Validar campos
             if (nombre.value.trim() === "") {
                 errorNombre.textContent = "⚠️ Introduzca el nombre";
                 valido = false;
@@ -167,7 +194,6 @@
 
             if (!valido) return;
 
-            // Crear FormData antes de usarlo
             const formData = new FormData(form);
 
             try {
@@ -182,7 +208,6 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    // Redirigir al listado en lugar de mostrar mensaje
                     window.location.href = "{{ route('asistencias.index') }}";
                 } else {
                     mensaje.style.color = "red";
@@ -197,19 +222,13 @@
         // Reloj dinámico
         function actualizarHora() {
             const ahora = new Date();
-            let horas = ahora.getHours();
-            let minutos = ahora.getMinutes();
-            let segundos = ahora.getSeconds();
-
-            horas = horas < 10 ? "0" + horas : horas;
-            minutos = minutos < 10 ? "0" + minutos : minutos;
-            segundos = segundos < 10 ? "0" + segundos : segundos;
-
+            const horas = String(ahora.getHours()).padStart(2, '0');
+            const minutos = String(ahora.getMinutes()).padStart(2, '0');
+            const segundos = String(ahora.getSeconds()).padStart(2, '0');
             document.getElementById("hora").textContent = `${horas}:${minutos}:${segundos}`;
         }
 
         actualizarHora();
         setInterval(actualizarHora, 1000);
     </script>
-
 @endsection
