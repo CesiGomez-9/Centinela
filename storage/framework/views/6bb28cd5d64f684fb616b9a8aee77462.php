@@ -1,6 +1,4 @@
-@extends('plantilla')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
     <head>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     </head>
@@ -90,8 +88,8 @@
         <div class="clock-icon">🕒</div>
         <div id="hora">00:00</div>
 
-        <form id="formAsistencia" method="POST" action="{{ route('asistencias.store') }}">
-            @csrf
+        <form id="formAsistencia" method="POST" action="<?php echo e(route('asistencias.store')); ?>">
+            <?php echo csrf_field(); ?>
             <input type="text" id="nombre" name="nombre" placeholder="Nombre">
             <div id="error-nombre" class="error"></div>
 
@@ -104,7 +102,7 @@
             <!-- Botones -->
             <div class="botones">
                 <!-- Botón Cancelar -->
-                <a href="{{ route('asistencias.index') }}" class="btn btn-danger w-100">
+                <a href="<?php echo e(route('asistencias.index')); ?>" class="btn btn-danger w-100">
                     <i class="bi bi-x-circle me-2"></i> Cancelar
                 </a>
 
@@ -208,7 +206,7 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    window.location.href = "{{ route('asistencias.index') }}";
+                    window.location.href = "<?php echo e(route('asistencias.index')); ?>";
                 } else {
                     mensaje.style.color = "red";
                     mensaje.textContent = data.error || "❌ Ocurrió un error";
@@ -231,4 +229,6 @@
         actualizarHora();
         setInterval(actualizarHora, 1000);
     </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\angel\PhpstormProjects\Centinela\resources\views/asistencias/crear.blade.php ENDPATH**/ ?>

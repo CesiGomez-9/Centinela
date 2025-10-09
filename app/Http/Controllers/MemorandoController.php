@@ -37,7 +37,7 @@ class MemorandoController extends Controller
             $query->whereDate('fecha', '<=', $request->fecha_fin);
         }
 
-        $memorandos = $query->orderBy('fecha', 'asc')->paginate(10)->withQueryString();
+        $memorandos = $query->orderBy('fecha', 'asc')->paginate(5)->withQueryString();
 
         return view('memorandos.index', compact('memorandos'));
     }
