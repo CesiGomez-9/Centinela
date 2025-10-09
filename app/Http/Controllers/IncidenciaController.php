@@ -16,22 +16,43 @@ class IncidenciaController extends Controller
      */
     public function index(Request $request)
     {
-        //
         $search = $request->input('search');
+        $fecha_inicio = $request->input('fecha_inicio');
+        $fecha_fin = $request->input('fecha_fin');
 
-        $incidencias = Incidencia::query();
+        $query = Incidencia::with('reportadoPorEmpleado');
 
         if ($search) {
-            $incidencias = $incidencias->where(function ($q) use ($search) {
-                $q->where('tipo',  'like', "%{$search}%")
-                    ->orWhere('ubicacion', 'like', "%{$search}%")
-                    ->orWhere('estado',   'like', "%{$search}%");
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('reportadoPorEmpleado', function ($subQuery) use ($search) {
+                    $subQuery->where('nombre', 'like', "%{$search}%")
+                        ->orWhere('apellido', 'like', "%{$search}%");
+                })
+                    ->orWhereHas('cliente', function ($subQuery) use ($search) {
+                        $subQuery->where('nombre', 'like', "%{$search}%");
+                    })
+                    ->orWhere('tipo', 'like', "%{$search}%")
+                    ->orWhere('estado', 'like', "%{$search}%");
             });
         }
 
+        if ($fecha_inicio) {
+            $query->where('fecha', '>=', $fecha_inicio);
+        }
 
-        $incidencias = $incidencias->paginate(10);
-        return view('incidencias.index', compact('incidencias', 'search'));
+        if ($fecha_fin) {
+            $query->where('fecha', '<=', $fecha_fin);
+        }
+
+        $query->orderBy('fecha', 'asc');
+
+        $incidencias = $query->paginate(10)->appends([
+            'search' => $search,
+            'fecha_inicio' => $fecha_inicio,
+            'fecha_fin' => $fecha_fin
+        ]);
+
+        return view('incidencias.index', compact('incidencias', 'search', 'fecha_inicio', 'fecha_fin'));
     }
 
     /**

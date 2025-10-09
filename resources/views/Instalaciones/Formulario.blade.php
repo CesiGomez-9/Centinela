@@ -121,20 +121,28 @@
 
                     <div class="row g-4">
                         {{-- === Cliente (Obligatorio) === --}}
-                        <!-- Cliente -->
+                        {{-- === Cliente (Obligatorio con búsqueda) === --}}
                         <div class="col-md-6">
                             <label for="cliente_id" class="form-label">Cliente</label>
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                                <select id="cliente_id" name="cliente_id">
-                                    <option value="" ></option>
+                                <select id="cliente_id" name="cliente_id"
+                                        class="form-select @error('cliente_id') is-invalid @enderror"
+                                        required>
+                                    <option value="">Seleccione un cliente</option>
                                     @foreach($clientes as $cliente)
-                                        <option value="{{ $cliente->id }}">{{ $cliente->nombre }}</option>
+                                        <option value="{{ $cliente->id }}" {{ old('cliente_id') == $cliente->id ? 'selected' : '' }}>
+                                            {{ $cliente->nombre }}
+                                        </option>
                                     @endforeach
                                 </select>
-                                @error('cliente_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+
+                                @error('cliente_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
+
 
                         <!-- Campo Fecha (sin error-tecnicos aquí) -->
                         <div class="col-md-6">

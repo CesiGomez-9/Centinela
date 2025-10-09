@@ -12,4 +12,14 @@ class Incidencia extends Model
     {
         return $this->belongsToMany(Empleado::class);
     }
+
+    public function reportadoPorEmpleado()
+    {
+        return $this->belongsTo(Empleado::class, 'reportado_por');
+    }
+
+    public function cliente()
+    {
+        return $this->belongsTo(Cliente::class);
+    }
 }

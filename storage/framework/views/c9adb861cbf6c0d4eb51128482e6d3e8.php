@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grupo Centinela</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
 </head>
 <body>
 
@@ -25,10 +27,10 @@
         .dropdown-item {
             font-size: 0.875rem;
             color: #212529; }
-        }
-        .dropdown-item:hover {
-            background-color: #e9ecef;
-        }
+    }
+    .dropdown-item:hover {
+        background-color: #e9ecef;
+    }
 </style>
 <nav class="navbar navbar-expand-lg" style="background-color: #0A1F44; padding-top: 0.1rem; padding-bottom: 0.1rem; font-family: 'Courier New', sans-serif;">
     <div class="container" style="max-width: 1600px;">
@@ -60,6 +62,9 @@
                         <li><hr class="dropdown-divider"></li> 
                         <li><a class="dropdown-item" href="<?php echo e(route('turnos.create')); ?>">Venta de servicios</a></li>
                         <li><a class="dropdown-item" href="<?php echo e(route('turnos.index')); ?>">Listado de venta de servicios</a></li>
+                        <li><hr class="dropdown-divider"></li> 
+                        <li><a class="dropdown-item" href="<?php echo e(route('incidencias.formulario')); ?>">Registrar incidencia</a></li>
+                        <li><a class="dropdown-item" href="<?php echo e(route('incidencias.index')); ?>">Listado de incidencias</a></li>
                     </ul>
                 </li>
                 <li class="nav-item dropdown">
@@ -75,6 +80,12 @@
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="<?php echo e(route('empleados.index')); ?>">Listado de empleados</a></li>
                         <li><a class="dropdown-item" href="<?php echo e(route('empleados.create')); ?>">Registrar empleado</a></li>
+                        <li><hr class="dropdown-divider"></li> 
+                        <li><a class="dropdown-item" href="<?php echo e(route('memorandos.index')); ?>">Listado de memorandum</a></li>
+                        <li><a class="dropdown-item" href="<?php echo e(route('memorandos.create')); ?>">Registrar memorandum</a></li>
+                        <li><hr class="dropdown-divider"></li> 
+                        <li><a class="dropdown-item" href="<?php echo e(route('asistencias.index')); ?>">Listado de asistencias</a></li>
+                        <li><a class="dropdown-item" href="<?php echo e(route('asistencias.crear')); ?>">Registrar asistencias</a></li>
                     </ul>
                 </li>
                 <li class="nav-item dropdown">

@@ -62,6 +62,9 @@
                         <li><hr class="dropdown-divider"></li> {{-- Separador--}}
                         <li><a class="dropdown-item" href="{{route('turnos.create')}}">Venta de servicios</a></li>
                         <li><a class="dropdown-item" href="{{route('turnos.index')}}">Listado de venta de servicios</a></li>
+                        <li><hr class="dropdown-divider"></li> {{-- Separador--}}
+                        <li><a class="dropdown-item" href="{{route('incidencias.formulario')}}">Registrar incidencia</a></li>
+                        <li><a class="dropdown-item" href="{{route('incidencias.index')}}">Listado de incidencias</a></li>
                     </ul>
                 </li>
                 <li class="nav-item dropdown">
@@ -80,6 +83,9 @@
                         <li><hr class="dropdown-divider"></li> {{-- Separador--}}
                         <li><a class="dropdown-item" href="{{route('memorandos.index')}}">Listado de memorandum</a></li>
                         <li><a class="dropdown-item" href="{{route('memorandos.create')}}">Registrar memorandum</a></li>
+                        <li><hr class="dropdown-divider"></li> {{-- Separador--}}
+                        <li><a class="dropdown-item" href="{{route('asistencias.index')}}">Listado de asistencias</a></li>
+                        <li><a class="dropdown-item" href="{{route('asistencias.crear')}}">Registrar asistencias</a></li>
                     </ul>
                 </li>
                 <li class="nav-item dropdown">
