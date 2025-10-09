@@ -26,6 +26,28 @@ class AsistenciaController extends Controller
         return view('asistencias.index', compact('asistencias'));
     }
 
+    public function buscar(Request $request)
+    {
+        $query = $request->input('nombre');
+        $queryApellido = $request->input('apellido');
+
+        $empleados = \App\Models\Empleado::query();
+
+        if ($query) {
+            $empleados->where('nombre', 'like', "%$query%");
+        }
+
+        if ($queryApellido) {
+            $empleados->where('apellido', 'like', "%$queryApellido%");
+        }
+
+        return response()->json($empleados->get());
+    }
+
+
+
+
+
 
 
     /**
@@ -48,10 +70,19 @@ class AsistenciaController extends Controller
             'nombre' => 'required|regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/',
             'apellido' => 'required|regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/',
             'identidad' => 'required|digits:13',
+        ], [
+            'nombre.required' => 'Introduzca el nombre',
+            'apellido.required' => 'Introduzca el apellido',
+            'identidad.required' => 'Introduzca el DNI',
+            'identidad.digits' => 'El DNI debe tener 13 dígitos',
         ]);
 
+
+
         if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()->first()], 422);
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
         }
 
         try {
@@ -61,7 +92,9 @@ class AsistenciaController extends Controller
                 ->first();
 
             if (!$empleado) {
-                return response()->json(['error' => "⚠️ El empleado no está registrado"], 404);
+                return redirect()->back()
+                    ->with('error', "El empleado no está registrado")
+                    ->withInput();
             }
 
             // Turno del día (puede ser null)
@@ -87,36 +120,32 @@ class AsistenciaController extends Controller
                     'hora_salida' => null,
                 ]);
 
-
-                return response()->json([
-                    'mensaje' => "✅ {$request->nombre} {$request->apellido}, tu hora de llegada fue a " . $asistencia->hora_entrada->format('H:i:s')
-                ]);
+                return redirect()->route('asistencias.index')
+                    ->with('exito', "✅ {$request->nombre} {$request->apellido}, tu hora de llegada fue a " . $asistencia->hora_entrada->format('H:i:s'));
             } else {
                 if (!$asistencia->hora_salida) {
                     $asistencia->hora_salida = Carbon::now();
                     $asistencia->save();
 
-                    return response()->json([
-                        'mensaje' => "👋 {$request->nombre} {$request->apellido}, tu hora de salida fue a " . $asistencia->hora_salida->format('H:i:s')
-                    ]);
+                    return redirect()->route('asistencias.index')
+                        ->with('exito', "👋 {$request->nombre} {$request->apellido}, tu hora de salida fue a " . $asistencia->hora_salida->format('H:i:s'));
                 } else {
-                    return response()->json([
-                        'mensaje' => "⚠️ Ya registraste entrada y salida hoy."
-                    ]);
+                    return redirect()->route('asistencias.index')
+                        ->with('exito', "⚠️ Ya registraste entrada y salida hoy.");
                 }
             }
-        }  catch (\Exception $e) {
+        } catch (\Exception $e) {
             \Log::error('Error store asistencia', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
 
-            return response()->json([
-                'error' => "❌ Ocurrió un error interno: " . $e->getMessage()
-            ], 500);
+            return redirect()->back()
+                ->with('error', "❌ Ocurrió un error interno: " . $e->getMessage())
+                ->withInput();
         }
-
     }
+
 
 
 

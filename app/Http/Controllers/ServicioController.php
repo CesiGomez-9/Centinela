@@ -44,11 +44,10 @@ class ServicioController extends Controller
         $validated = $request->validate([
             'nombreServicio'       => 'required|string|max:50|regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/',
             'descripcionServicio'  => 'required|string|max:125|regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/',
-            'categoria'            => 'required|in:vigilancia,tecnico',
             // *** ESTAS DEBEN SER 'required' Y 'max:9999' ***
-            'costo_diurno'         => 'required|numeric|min:0|max:9999',
-            'costo_nocturno'       => 'required|numeric|min:0|max:9999',
-            'costo_24_horas'       => 'required|numeric|min:0|max:9999',
+            'costo_diurno'         => 'required|numeric|min:1|max:9999',
+            'costo_nocturno'       => 'required|numeric|min:1|max:9999',
+            'costo_24_horas'       => 'required|numeric|min:1|max:9999',
             'productos_categoria'  => 'required|in:vigilancia,tecnico',
             'productos'            => 'nullable|array',
             'productos.*'          => 'integer|exists:productos,id'
@@ -58,23 +57,22 @@ class ServicioController extends Controller
             // *** MENSAJES PERSONALIZADOS PARA LOS COSTOS ***
             'costo_diurno.required'     => 'El costo diurno es obligatorio.',
             'costo_diurno.numeric'      => 'El costo diurno debe ser un número.',
-            'costo_diurno.min'          => 'El costo diurno no puede ser negativo.',
+            'costo_diurno.min'          => 'El costo diurno no puede ser 0.',
             'costo_diurno.max'          => 'El costo diurno no puede exceder 9999.',
             'costo_nocturno.required'   => 'El costo nocturno es obligatorio.',
             'costo_nocturno.numeric'    => 'El costo nocturno debe ser un número.',
-            'costo_nocturno.min'        => 'El costo nocturno no puede ser negativo.',
+            'costo_nocturno.min'        => 'El costo nocturno no puede ser 0.',
             'costo_nocturno.max'        => 'El costo nocturno no puede exceder 9999.',
             'costo_24_horas.required'   => 'El costo 24 horas es obligatorio.',
             'costo_24_horas.numeric'    => 'El costo 24 horas debe ser un número.',
-            'costo_24_horas.min'        => 'El costo 24 horas no puede ser negativo.',
+            'costo_24_horas.min'        => 'El costo 24 horas no puede ser 0',
             'costo_24_horas.max'        => 'El costo 24 horas no puede exceder 9999.',
         ]);
 
         $servicio = new Servicio();
         $servicio->nombre          = $validated['nombreServicio'];
         $servicio->descripcion     = $validated['descripcionServicio'];
-        $servicio->categoria       = $validated['categoria'];
-        $servicio->costo_diurno    = $validated['costo_diurno'] ?? null;
+         $servicio->costo_diurno    = $validated['costo_diurno'] ?? null;
         $servicio->costo_nocturno  = $validated['costo_nocturno'] ?? null;
         $servicio->costo_24_horas  = $validated['costo_24_horas'] ?? null;
         $servicio->productos       = json_encode($validated['productos'] ?? []);
@@ -135,11 +133,10 @@ class ServicioController extends Controller
         $validated = $request->validate([
             'nombreServicio'       => 'required|string|max:50|regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/',
             'descripcionServicio'  => 'required|string|max:125|regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/',
-            'categoria'            => 'required|in:vigilancia,tecnico',
-            // *** ESTAS DEBEN SER 'required' Y 'max:9999' ***
-            'costo_diurno'         => 'required|numeric|min:0|max:9999',
-            'costo_nocturno'       => 'required|numeric|min:0|max:9999',
-            'costo_24_horas'       => 'required|numeric|min:0|max:9999',
+             // *** ESTAS DEBEN SER 'required' Y 'max:9999' ***
+            'costo_diurno'         => 'required|numeric|min:1|max:9999',
+            'costo_nocturno'       => 'required|numeric|min:1|max:9999',
+            'costo_24_horas'       => 'required|numeric|min:1|max:9999',
             'productos'            => 'nullable|array',
             'productos.*'          => 'integer|exists:productos,id'
         ], [
@@ -162,8 +159,6 @@ class ServicioController extends Controller
 
         $servicio = Servicio::findOrFail($id);
         $servicio->nombre          = $validated['nombreServicio'];
-        $servicio->descripcion     = $validated['descripcionServicio'];
-        $servicio->categoria       = $validated['categoria'];
         $servicio->costo_diurno    = $validated['costo_diurno'] ?? null;
         $servicio->costo_nocturno  = $validated['costo_nocturno'] ?? null;
         $servicio->costo_24_horas  = $validated['costo_24_horas'] ?? null;
