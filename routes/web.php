@@ -111,3 +111,4 @@ use App\Http\Controllers\AsistenciaController;
 Route::get('/asistencias/index', [AsistenciaController::class, 'index'])->name('asistencias.index');
 Route::get('/asistencias/crear', [AsistenciaController::class, 'create'])->name('asistencias.crear');
 Route::post('/asistencias', [AsistenciaController::class, 'store'])->name('asistencias.store');
+Route::get('/buscar-empleados', [AsistenciaController::class, 'buscar'])->name('empleados.buscar');

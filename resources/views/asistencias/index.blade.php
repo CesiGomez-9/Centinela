@@ -23,13 +23,6 @@
         }
     </style>
 
-    @if(session('exito'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('exito') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-        </div>
-    @endif
-
     <div class="container mt-5" style="max-width: 1100px;">
         <div class="card shadow p-4" style="background-color: #ffffff;">
             <h3 class="text-center mb-4" style="color: #09457f;">
@@ -61,10 +54,27 @@
                 </div>
             </div>
 
+            @if(session('exito'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ session('exito') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                </div>
+            @endif
+
+
+
             <table class="table table-bordered table-striped">
                 <thead class="table-dark">
                 <tr>
                     <th>N°</th>
+                    <th>Fecha</th> <!-- NUEVA COLUMNA -->
                     <th>Nombre</th>
                     <th>Apellido</th>
                     <th>Identidad</th>
@@ -77,6 +87,7 @@
                 @foreach ($asistencias as $asistencia)
                     <tr>
                         <td>{{ $loop->iteration }}</td>
+                        <td>{{ $asistencia->created_at ? $asistencia->created_at->format('d/m/Y') : '-' }}</td> <!-- Fecha -->
                         <td>{{ $asistencia->nombre }}</td>
                         <td>{{ $asistencia->apellido }}</td>
                         <td>{{ $asistencia->identidad }}</td>
@@ -85,9 +96,9 @@
                         <td>{{ $asistencia->hora_salida ? $asistencia->hora_salida->format('H:i:s') : 'No marcada' }}</td>
                     </tr>
                 @endforeach
-
                 </tbody>
             </table>
+
 
             <div class="d-flex justify-content-center mt-4">
                 {{ $asistencias->links('pagination::bootstrap-5') }}

@@ -79,7 +79,7 @@
                     <div class="input-group input-group-md">
                         <span class="input-group-text"><i class="bi bi-sun"></i></span>
                         <input type="number" step="0.01" class="form-control form-control-md" id="costo_diurno" name="costo_diurno"
-                               min="0" max="9999" oninput="limitarDigitos(this, 4)" required />
+                               min="1" max="9999" oninput="limitarDigitos(this, 4)" required />
                         <div class="invalid-feedback" style="font-size: 0.85rem;">Ingrese un costo diurno válido.</div>
                     </div>
                 </div>
@@ -90,7 +90,7 @@
                     <div class="input-group input-group-md">
                         <span class="input-group-text"><i class="bi bi-moon"></i></span>
                         <input type="number" step="0.01" class="form-control form-control-md" id="costo_nocturno" name="costo_nocturno"
-                               min="0" max="9999" oninput="limitarDigitos(this, 4)" required />
+                               min="1" max="9999" oninput="limitarDigitos(this, 4)" required />
                         <div class="invalid-feedback" style="font-size: 0.85rem;">Ingrese un costo nocturno válido.</div>
                     </div>
                 </div>
@@ -101,13 +101,14 @@
                     <div class="input-group input-group-md">
                         <span class="input-group-text"><i class="bi bi-clock"></i></span>
                         <input type="number" step="0.01" class="form-control form-control-md" id="costo_24_horas" name="costo_24_horas"
-                               min="0" max="9999" oninput="limitarDigitos(this, 4)" required />
+                               min="1" max="9999" oninput="limitarDigitos(this, 4)" required />
                         <div class="invalid-feedback" style="font-size: 0.85rem;">Ingrese un costo de 24 horas válido.</div>
                     </div>
                 </div>
 
                 <!-- Descripción (ocupa todo el ancho) -->
-                <div class="col-12">
+                <!-- Descripción (col-md-6) -->
+                <div class="col-12 col-md-6">
                     <label for="descripcionServicio" class="form-label fs-6 mb-2">Descripción</label>
                     <div class="input-group input-group-md">
                         <span class="input-group-text"><i class="bi bi-textarea-t"></i></span>
@@ -122,21 +123,8 @@
                     </div>
                 </div>
 
-                <!-- Categoría y Productos requeridos juntos -->
-                <div class="col-md-6">
-                    <label for="categoria" class="form-label fs-6 mb-2">Categoría</label>
-                    <div class="input-group input-group-md">
-                        <span class="input-group-text"><i class="bi bi-ui-checks"></i></span>
-                        <select class="form-select form-select-md" id="categoria" name="categoria" required>
-                            <option value="">Seleccione una categoría</option>
-                            <option value="vigilancia">Vigilancia</option>
-                            <option value="tecnico">Técnico</option>
-                        </select>
-                        <div class="invalid-feedback" style="font-size: 0.85rem;">Seleccione una categoría.</div>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
+                <!-- Productos requeridos (col-md-6) -->
+                <div class="col-12 col-md-6">
                     <label class="form-label fs-6 mb-2">Productos requeridos</label>
                     <div class="input-group input-group-md">
                         <span class="input-group-text"><i class="bi bi-box"></i></span>
@@ -311,6 +299,7 @@
             categoriaSelect.dispatchEvent(new Event('change'));
         }
     });
+
 </script>
 
 </body>
