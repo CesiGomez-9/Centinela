@@ -111,12 +111,10 @@
                     </div>
 
                     <div class="col-md-12">
-                        <label class="form-label fw-bold">Adjunto (opcional):</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-paperclip"></i></span>
-                            <input type="file" name="adjunto" class="form-control @error('adjunto') is-invalid @enderror" accept=".pdf,.doc,.docx,.jpg,.png">
-                            <div class="invalid-feedback">@error('adjunto') {{ $message }} @enderror</div>
-                        </div>
+                        <label for="adjunto" class="form-label fw-bold">
+                            <i class="bi bi-paperclip me-2"></i>Adjunto (opcional):
+                        </label>
+                        <input type="file" class="form-control" id="adjunto" name="adjunto" accept=".jpg,.jpeg,.png,.pdf">
                     </div>
 
                     <div class="col-md-12">
@@ -144,13 +142,10 @@
             </form>
         </div>
     </div>
-
     <script>
-
         function limitarCaracteres(campoId, maxCaracteres) {
             const campo = document.getElementById(campoId);
-
-            campo.addEventListener('input', function(e) {
+            campo.addEventListener('input', function() {
                 if (campo.value.length > maxCaracteres) {
                     campo.value = campo.value.slice(0, maxCaracteres);
                 }
@@ -174,23 +169,91 @@
             }
         });
 
+        // ✅ Obtener fecha local (sin UTC)
+        function getFechaLocal() {
+            const hoy = new Date();
+            const year = hoy.getFullYear();
+            const month = String(hoy.getMonth() + 1).padStart(2, '0');
+            const day = String(hoy.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // ✅ BOTÓN LIMPIAR
         document.getElementById('btnLimpiar').addEventListener('click', function (e) {
             e.preventDefault();
+
+            // Limpiar validaciones visuales
             document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
             document.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
             const alerta = document.querySelector('.alert');
             if (alerta) alerta.remove();
 
-            document.querySelector('form').reset();
-            document.getElementById('destinatario_id').value = '';
-            document.getElementById('autor_id').value = '';
+            // Limpiar todos los campos manualmente
             document.getElementById('destinatarioInput').value = '';
             document.getElementById('autorInput').value = '';
+            document.getElementById('destinatario_id').value = '';
+            document.getElementById('autor_id').value = '';
             document.getElementById('destinatarioResults').innerHTML = '';
             document.getElementById('autorResults').innerHTML = '';
-            document.getElementById('fecha').value = '';
+            document.getElementById('titulo').value = '';
+            document.getElementById('contenido').value = '';
+            document.getElementById('sancion').value = '';
+            document.getElementById('observaciones').value = '';
+            document.getElementById('tipo').selectedIndex = 0;
+
+            // ✅ Restaurar la fecha actual local
+            document.getElementById('fecha').value = getFechaLocal();
+
+            // ✅ Limpiar el campo de adjunto
+            const adjuntoInput = document.querySelector('input[name="adjunto"]');
+            adjuntoInput.value = '';
+            sessionStorage.removeItem('archivoAdjunto');
+
+            // Quitar texto mostrado del archivo
+            const label = adjuntoInput.nextElementSibling;
+            if (label && label.classList.contains('archivo-nombre')) {
+                label.remove();
+            }
+
+            // Autoajuste de los textareas
+            ['contenido', 'sancion', 'observaciones'].forEach(id => {
+                const campo = document.getElementById(id);
+                if (campo) autoResize(campo);
+            });
         });
 
+        // ✅ Evitar que se borre el adjunto al enviar con errores
+        const fileInput = document.querySelector('input[name="adjunto"]');
+        const storedFile = sessionStorage.getItem('archivoAdjunto');
+
+        // Si hay un archivo guardado, mostrarlo dentro del input (en el texto del campo)
+        if (storedFile) {
+            mostrarNombreArchivo(storedFile);
+        }
+
+        // Al seleccionar un nuevo archivo
+        fileInput.addEventListener('change', function() {
+            if (fileInput.files.length > 0) {
+                const nombreArchivo = fileInput.files[0].name;
+                sessionStorage.setItem('archivoAdjunto', nombreArchivo);
+                mostrarNombreArchivo(nombreArchivo);
+            } else {
+                sessionStorage.removeItem('archivoAdjunto');
+                mostrarNombreArchivo('No se eligió ningún archivo');
+            }
+        });
+
+        // ✅ Mostrar nombre dentro del input file
+        function mostrarNombreArchivo(nombre) {
+            // Sobrescribe el texto del input usando el pseudo placeholder de Bootstrap
+            const dataTransfer = new DataTransfer();
+            const fakeFile = new File([""], nombre);
+            dataTransfer.items.add(fakeFile);
+            fileInput.files = dataTransfer.files;
+        }
+
+
+        // Autocomplete empleados
         function setupAutocomplete(inputId, resultsId, hiddenId, url, extraParams = {}) {
             const input = document.getElementById(inputId);
             const results = document.getElementById(resultsId);
@@ -228,20 +291,10 @@
                 }
             });
         }
-        setupAutocomplete(
-            'destinatarioInput',
-            'destinatarioResults',
-            'destinatario_id',
-            '{{ route("empleados.buscar") }}',
-            { tipo: 'todos' }
-        );
-        setupAutocomplete(
-            'autorInput',
-            'autorResults',
-            'autor_id',
-            '{{ route("empleados.buscar") }}',
-            { tipo: 'administracion' }
-        );
+
+        setupAutocomplete('destinatarioInput', 'destinatarioResults', 'destinatario_id', '{{ route("empleados.buscar") }}', { tipo: 'todos' });
+        setupAutocomplete('autorInput', 'autorResults', 'autor_id', '{{ route("empleados.buscar") }}', { tipo: 'administracion' });
     </script>
+
     </body>
 @endsection

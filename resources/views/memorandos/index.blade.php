@@ -15,47 +15,64 @@
             </h3>
 
             <form method="GET" action="{{ route('memorandos.index') }}">
-                <div class="row mb-4 align-items-center">
-                    <div class="col-md-4">
+                <div class="row mb-4 align-items-center justify-content-between">
+
+                    <div class="col-md-3">
                         <div class="input-group input-group-sm">
                             <input type="text" name="search" id="searchInput" class="form-control"
-                                   placeholder="Buscar por empleado, autor y tipo"
+                                   placeholder="Buscar por empleado y autor..."
                                    value="{{ request('search') }}">
                             <span class="input-group-text"><i class="bi bi-search"></i></span>
                         </div>
                     </div>
 
-                    <div class="col-md-2 d-flex flex-column gap-2">
+                    <div class="col-md-2">
+                        <div class="input-group input-group-sm">
+                            <label class="input-group-text" for="tipo_memorandum">
+                                <i class="bi bi-tags"></i>
+                            </label>
+                            <select name="tipo_memorandum" id="tipo_memorandum" class="form-select">
+                                <option value="">Tipo</option>
+                                <option value="Leve" {{ request('tipo_memorandum') == 'Leve' ? 'selected' : '' }}>Leve</option>
+                                <option value="Media" {{ request('tipo_memorandum') == 'Media' ? 'selected' : '' }}>Media</option>
+                                <option value="Grave" {{ request('tipo_memorandum') == 'Grave' ? 'selected' : '' }}>Grave</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 d-flex flex-column gap-2">
                         <div class="input-group input-group-sm">
                             <span class="input-group-text">Desde</span>
                             <input type="date" name="fecha_inicio" class="form-control"
+                                   style="min-width: 160px;"
                                    value="{{ request('fecha_inicio') }}">
                         </div>
                         <div class="input-group input-group-sm">
                             <span class="input-group-text">Hasta</span>
                             <input type="date" name="fecha_fin" class="form-control"
+                                   style="min-width: 160px;"
                                    value="{{ request('fecha_fin') }}">
                         </div>
                     </div>
 
-                    <div class="col-md-2 ms-3 d-flex flex-column gap-2">
-                        <button type="submit" class="btn btn-sm btn-primary w-100">
+                    <div class="col-md-2 d-flex flex-column gap-2 align-items-start">
+                        <button type="submit" class="btn btn-sm btn-primary px-2 py-1" style="font-size: 12px; width: 90px;">
                             <i class="bi bi-funnel me-1"></i> Filtrar
                         </button>
-                        <a href="{{ route('memorandos.index') }}" class="btn btn-sm btn-secondary w-100">
+                        <a href="{{ route('memorandos.index') }}" class="btn btn-sm btn-secondary px-2 py-1" style="font-size: 12px; width: 90px;">
                             <i class="bi bi-x-circle me-1"></i> Limpiar
                         </a>
                     </div>
 
-                    <div class="col-md-3 ms-auto">
-                        <a href="{{ route('memorandos.create') }}" class="btn btn-md btn-outline-primary w-100">
-                            <i class="bi bi-pencil-square me-0"></i> Crear nuevo memorandum
+                    <div class="col-md-2 text-end">
+                        <a href="{{ route('memorandos.create') }}" class="btn btn-sm btn-outline-primary" style="font-size: 13px; padding: 4px 8px;">
+                            <i class="bi bi-pencil-square me-1"></i> Crear nuevo memorandum
                         </a>
                     </div>
                 </div>
             </form>
 
-            @if(session('success'))
+        @if(session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     <i class="bi bi-check-circle-fill me-2"></i>
                     {{ session('success') }}
@@ -65,7 +82,7 @@
 
             <table class="table table-bordered table-striped tabla-memorandos">
 
-                <thead class="table-dark">
+            <thead class="table-dark">
                 <tr>
                     <th>#</th>
                     <th>Empleado</th>
@@ -88,9 +105,6 @@
                         <td class="text-center">
                             <a href="{{ route('memorandos.show', $memorando->id) }}" class="btn btn-sm btn-outline-info">
                                 <i class="bi bi-eye"></i> Ver
-                            </a>
-                            <a href="{{ route('memorandos.edit', $memorando->id) }}" class="btn btn-sm btn-outline-warning">
-                                <i class="bi bi-pencil-square"></i> Editar
                             </a>
                         </td>
                     </tr>
@@ -124,11 +138,9 @@
             const searchInput = document.getElementById('searchInput');
             if (!searchInput) return;
 
-
             searchInput.focus();
             const length = searchInput.value.length;
             searchInput.setSelectionRange(length, length);
-
 
             let timer;
             searchInput.addEventListener('input', function () {

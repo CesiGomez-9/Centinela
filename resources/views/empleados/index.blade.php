@@ -48,6 +48,7 @@
                 <th>#</th>
                 <th>Nombre</th>
                 <th>Departamento</th>
+                <th>Puesto</th>
                 <th>Teléfono</th>
                 <th>Acciones</th>
             </tr>
@@ -60,6 +61,8 @@
                         {{ $empleado->nombre }} {{ $empleado->apellido }}</td>
                     <td style="max-width: 200px; word-wrap: break-word; white-space: normal;">
                         {{ $empleado->departamento }}</td>
+                    <td style="max-width: 200px; word-wrap: break-word; white-space: normal;">
+                        {{ $empleado->categoria }}</td>
                     <td>{{ $empleado->telefono }}</td>
                     <td class="text-center">
                         <a href="{{ route('empleados.show', $empleado->id) }}" class="btn btn-sm btn-outline-info">

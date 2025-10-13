@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="es">
+<?php $__env->startSection('content'); ?>
 <head>
     <meta charset="UTF-8">
     <title>Catálogo de Servicios</title>
@@ -56,25 +55,6 @@
 <body class="bg-light p-4">
 
 <!-- NAVBAR -->
-<nav class="navbar navbar-expand-lg shadow-sm" style="background-color: #0A1F44;">
-    <div class="container" style="max-width: 1600px;">
-        <a class="navbar-brand text-white fw-bold" href="#">
-            <img src="<?php echo e(asset('centinela.jpg')); ?>" style="height:70px;">
-            Grupo Centinela
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon text-white"></span>
-        </button>
-        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link text-white" href="#">Registrate</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="#">Servicios</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="#">Nosotros</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="#">Contacto</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
 
 <!-- CONTENIDO -->
 <div class="container bg-white p-5 rounded shadow mt-5">
@@ -115,6 +95,7 @@
     <?php endif; ?>
 
     <!-- Tabla -->
+
     <div class="table-responsive mx-auto" style="max-width: 1100px;">
         <table class="table table-bordered table-hover align-middle">
             <thead class="table-dark text-center">
@@ -202,7 +183,7 @@
 </script>
 
 <!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html>
-<?php /**PATH C:\Users\cesig\Herd\sistemadeseguridadcentinela\resources\views/servicios/catalogo.blade.php ENDPATH**/ ?>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\cesig\Herd\sistemadeseguridadcentinela\resources\views/servicios/catalogo.blade.php ENDPATH**/ ?>
