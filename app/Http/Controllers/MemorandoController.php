@@ -29,6 +29,10 @@ class MemorandoController extends Controller
             });
         }
 
+        if ($request->filled('tipo_memorandum')) {
+            $query->where('tipo', $request->tipo_memorandum);
+        }
+
         if ($request->filled('fecha_inicio')) {
             $query->whereDate('fecha', '>=', $request->fecha_inicio);
         }
@@ -89,7 +93,7 @@ class MemorandoController extends Controller
             'fecha.required' => 'Debe seleccionar una fecha',
             'fecha.date' => 'La fecha debe ser válida',
             'fecha.before_or_equal' => 'La fecha no puede ser futura',
-            'fecha.after_or_equal' => 'La fecha no puede ser anterior a hace un mes',
+            'fecha.after_or_equal' => 'La fecha no puede ser anterior a un mes',
 
             'tipo.required' => 'Debe seleccionar un tipo de memorandum',
             'tipo.in' => 'El tipo seleccionado no es válido',
@@ -109,9 +113,10 @@ class MemorandoController extends Controller
         ]);
 
 
+        $adjuntoPath = null;
+
         if ($request->hasFile('adjunto')) {
-            $file = $request->file('adjunto');
-            $request->merge(['adjunto' => $file->store('adjuntos', 'public')]);
+            $adjuntoPath = $request->file('adjunto')->store('adjuntos', 'public');
         }
 
         Memorando::create([
@@ -123,10 +128,11 @@ class MemorandoController extends Controller
             'tipo' => $request->tipo,
             'sancion' => $request->sancion,
             'observaciones' => $request->observaciones,
-            'adjunto' => $request->adjunto,
+            'adjunto' => $adjuntoPath,
+
         ]);
 
-        return redirect()->route('memorandos.index')->with('success', 'Memorando guardado correctamente!');
+        return redirect()->route('memorandos.index')->with('success', 'Memorandum guardado correctamente!');
     }
 
 
@@ -137,86 +143,15 @@ class MemorandoController extends Controller
     }
 
 
-
-    public function edit(Memorando $memorando)
+    public function descargarAdjunto($filename)
     {
-        $autores = Empleado::where('categoria', 'Administracion')->get();
-        $destinatarios = Empleado::all();
+        $path = storage_path('app/' . $filename);
 
-        return view('memorandos.edit', compact('memorando', 'autores', 'destinatarios'));
-    }
-
-
-
-
-    public function update(Request $request, Memorando $memorando)
-    {
-
-        $request->validate([
-            'destinatario_id' => 'required|exists:empleados,id',
-            'autor_id' => 'required|exists:empleados,id',
-            'titulo' => ['required','string','max:100','regex:/^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ ]+$/'],
-            'contenido' => ['required','string','max:250','regex:/^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ .,;:()-]+$/'],
-            'fecha' => 'required|date|before_or_equal:today|after_or_equal:' . now()->subMonth()->format('Y-m-d'),
-            'tipo' => 'required|in:leve,media,grave',
-            'sancion' => ['required','string','max:250','regex:/^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ .,;:()-]+$/'],
-            'observaciones' => ['nullable','string','max:250','regex:/^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ .,;:()-]+$/'],
-            'adjunto' => 'nullable|file|mimes:pdf,doc,docx,jpg,png|max:2048',
-        ], [
-
-            'destinatario_id.required' => 'El destinatario es obligatorio.',
-            'destinatario_id.exists' => 'El destinatario seleccionado no es válido.',
-            'autor_id.required' => 'El autor es obligatorio.',
-            'autor_id.exists' => 'El autor seleccionado no es válido.',
-
-            'titulo.required' => 'Debes escribir un título para el memorando.',
-            'titulo.string' => 'El título debe ser texto válido.',
-            'titulo.max' => 'El título no puede exceder 100 caracteres.',
-            'titulo.regex' => 'El título solo puede contener letras, números y espacios.',
-
-            'contenido.required' => 'Debes escribir el contenido del memorando.',
-            'contenido.string' => 'El contenido debe ser texto válido.',
-            'contenido.max' => 'El contenido no puede exceder 250 caracteres.',
-            'contenido.regex' => 'El contenido contiene caracteres no permitidos.',
-
-            'fecha.required' => 'Debes seleccionar la fecha del memorando.',
-            'fecha.date' => 'La fecha debe ser válida.',
-            'fecha.before_or_equal' => 'La fecha no puede ser futura.',
-            'fecha.after_or_equal' => 'La fecha no puede ser anterior a hace un mes.',
-
-            'tipo.required' => 'Debe seleccionar el tipo de memorando.',
-            'tipo.in' => 'El tipo seleccionado no es válido.',
-
-            'sancion.required' => 'Debes especificar la sanción.',
-            'sancion.string' => 'La sanción debe ser texto válido.',
-            'sancion.max' => 'La sanción no puede exceder 250 caracteres.',
-            'sancion.regex' => 'La sanción contiene caracteres no permitidos.',
-
-            'observaciones.string' => 'Las observaciones deben ser texto válido.',
-            'observaciones.max' => 'Las observaciones no pueden exceder 250 caracteres.',
-
-            'adjunto.file' => 'El archivo adjunto debe ser un archivo válido.',
-            'adjunto.mimes' => 'El archivo adjunto debe ser pdf, doc, docx, jpg o png.',
-            'adjunto.max' => 'El archivo adjunto no puede superar 2MB.',
-        ]);
-
-
-        $data = $request->only([
-            'destinatario_id', 'autor_id', 'titulo', 'contenido',
-            'fecha', 'tipo', 'sancion', 'observaciones'
-        ]);
-
-        if ($request->hasFile('adjunto')) {
-            if ($memorando->adjunto) {
-                Storage::disk('public')->delete($memorando->adjunto);
-            }
-            $data['adjunto'] = $request->file('adjunto')->store('adjuntos', 'public');
+        if (!file_exists($path)) {
+            abort(404);
         }
 
-        $memorando->update($data);
-
-        return redirect()->route('memorandos.index')->with('success', 'Memorando actualizado correctamente.');
+        return response()->download($path);
     }
-
 
 }

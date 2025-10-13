@@ -94,6 +94,13 @@
                         <li><a class="dropdown-item" href="<?php echo e(route('Proveedores.nuevo')); ?>">Registrar proveedor</a></li>
                     </ul>
                 </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Promociones</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="<?php echo e(route('promociones.index')); ?>">Listado de promociones</a></li>
+                        <li><a class="dropdown-item" href="<?php echo e(route('promociones.create')); ?>">Registrar promociones</a></li>
+                    </ul>
+                </li>
                 <li class="nav-item"><a class="nav-link text-white" href="#">Registrate</a></li>
             </ul>
         </div>
