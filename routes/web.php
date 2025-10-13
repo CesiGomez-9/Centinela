@@ -121,3 +121,9 @@ Route::get('/instalaciones/eventos', [\App\Http\Controllers\InstalacionControlle
 Route::get('/asistencias/index', [\App\Http\Controllers\AsistenciaController::class, 'index'])->name('asistencias.index');
 Route::get('/asistencias/crear', [\App\Http\Controllers\AsistenciaController::class, 'create'])->name('asistencias.crear');
 Route::post('/asistencias', [\App\Http\Controllers\AsistenciaController::class, 'store'])->name('asistencias.store');
+
+
+
+Route::get('/incidencias/crear', [\App\Http\Controllers\IncidenciaController::class, 'create'])->name('incidencias.formulario');
+Route::post('/incidencias/crear', [\App\Http\Controllers\IncidenciaController::class, 'store'])->name('incidencias.store');
+Route::get('/incidencias', [\App\Http\Controllers\IncidenciaController::class, 'index'])->name('incidencias.index');

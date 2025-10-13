@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grupo Centinela</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-
 </head>
 <body>
 
@@ -46,10 +44,10 @@
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="<?php echo e(route('productos.index')); ?>">Inventario de productos</a></li>
                         <li><a class="dropdown-item" href="<?php echo e(route('productos.create')); ?>">Registrar producto</a></li>
-                        <li><hr class="dropdown-divider"></li>
+                        <li><hr class="dropdown-divider"></li> 
                         <li><a class="dropdown-item" href="<?php echo e(route('facturas_compras.index')); ?>">Listado de facturas de compra</a></li>
                         <li><a class="dropdown-item" href="<?php echo e(route('facturas_compras.create')); ?>">Registrar una factura de compra</a></li>
-                        <li><hr class="dropdown-divider"></li>
+                        <li><hr class="dropdown-divider"></li> 
                         <li><a class="dropdown-item" href="<?php echo e(route('facturas_ventas.index')); ?>">Listado de facturas de venta</a></li>
                         <li><a class="dropdown-item" href="<?php echo e(route('facturas_ventas.create')); ?>">Registrar una factura de venta</a></li>
                     </ul>
@@ -59,12 +57,9 @@
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="<?php echo e(route('servicios.catalogo')); ?>">Listado de servicios</a></li>
                         <li><a class="dropdown-item" href="<?php echo e(route('servicios.index')); ?>">Registrar servicio</a></li>
-                        <li><hr class="dropdown-divider"></li>
+                        <li><hr class="dropdown-divider"></li> 
                         <li><a class="dropdown-item" href="<?php echo e(route('turnos.create')); ?>">Venta de servicios</a></li>
                         <li><a class="dropdown-item" href="<?php echo e(route('turnos.index')); ?>">Listado de venta de servicios</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="<?php echo e(route('incidencias.formulario')); ?>">Registrar incidencia</a></li>
-                        <li><a class="dropdown-item" href="<?php echo e(route('incidencias.index')); ?>">Listado de incidencias</a></li>
                     </ul>
                 </li>
                 <li class="nav-item dropdown">
@@ -80,12 +75,9 @@
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="<?php echo e(route('empleados.index')); ?>">Listado de empleados</a></li>
                         <li><a class="dropdown-item" href="<?php echo e(route('empleados.create')); ?>">Registrar empleado</a></li>
-                        <li><hr class="dropdown-divider"></li>
+                        <li><hr class="dropdown-divider"></li> 
                         <li><a class="dropdown-item" href="<?php echo e(route('memorandos.index')); ?>">Listado de memorandum</a></li>
                         <li><a class="dropdown-item" href="<?php echo e(route('memorandos.create')); ?>">Registrar memorandum</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="<?php echo e(route('asistencias.index')); ?>">Listado de asistencias</a></li>
-                        <li><a class="dropdown-item" href="<?php echo e(route('asistencias.crear')); ?>">Registrar asistencias</a></li>
                     </ul>
                 </li>
                 <li class="nav-item dropdown">
