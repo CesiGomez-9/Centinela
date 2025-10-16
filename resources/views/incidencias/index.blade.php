@@ -57,7 +57,7 @@
                                 value="{{ request('fecha_inicio') }}"
                             >
                         </div>
-                        <div class="input-group input-group-sm">
+                        <div class="input-group input-group-sm w-100">
                             <span class="input-group-text">Hasta</span>
                             <input
                                 type="date"
@@ -102,6 +102,7 @@
                     <th>Cliente</th>
                     <th>Estado</th>
                     <th>Fecha</th>
+                    <th>Acciones</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -113,6 +114,15 @@
                         <td>{{ $incidencia->cliente->nombre ?? '---' }} </td>
                         <td>{{$incidencia->estado }}</td>
                         <td>{{ \Carbon\Carbon::parse($incidencia->fecha)->format('d/m/Y') }}</td>
+                        <td class="text-center">
+                            <a href="{{ route('incidencias.detalle', $incidencia->id) }}" class="btn btn-sm btn-outline-info">
+                                <i class="bi bi-eye"></i> Ver
+                            </a>
+                            <a href="{{ route('incidencias.edit', $incidencia->id) }}" class="btn btn-sm btn-outline-warning" title="Editar">
+                                <i class="bi bi-pencil-square"></i>Editar
+                            </a>
+
+                        </td>
 
                     </tr>
                 @empty

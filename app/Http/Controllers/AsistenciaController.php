@@ -28,22 +28,15 @@ class AsistenciaController extends Controller
 
     public function buscar(Request $request)
     {
-        $query = $request->input('nombre');
-        $queryApellido = $request->input('apellido');
+        $query = $request->input('nombre') ?? $request->input('apellido');
 
-        $empleados = \App\Models\Empleado::query();
+        $empleados = Empleado::where('nombre', 'like', "%$query%")
+            ->orWhere('apellido', 'like', "%$query%")
+            ->select('nombre', 'apellido', 'identidad') // 👈 importante
+            ->get();
 
-        if ($query) {
-            $empleados->where('nombre', 'like', "%$query%");
-        }
-
-        if ($queryApellido) {
-            $empleados->where('apellido', 'like', "%$queryApellido%");
-        }
-
-        return response()->json($empleados->get());
+        return response()->json($empleados);
     }
-
 
 
 
@@ -181,4 +174,3 @@ class AsistenciaController extends Controller
         //
     }
 }
-

@@ -29,6 +29,11 @@
             width: 100%;
             max-width: 500px;
         }
+
+        textarea.auto-expand {
+            overflow-y: hidden;
+            resize: none;
+        }
     </style>
 </head>
 <body>
@@ -97,14 +102,19 @@
                                 <label for="tipo" class="form-label">Tipo de incidencia</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-tag-fill"></i></span>
-                                    <input type="text" id="tipo" name="tipo"
-                                           class="form-control @error('tipo') is-invalid @enderror"
-                                           value="{{ old('tipo') }}" maxlength="100"
-                                           onkeypress="soloLetras(event)"
-                                           oninput="this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '')"
-                                           onkeydown="bloquearEspacioAlInicio(event, this)"
-                                           oninput="eliminarEspaciosIniciales(this); autoExpand(this);"
-                                           required>
+                                    <select id="tipo" name="tipo"
+                                            class="form-select @error('tipo') is-invalid @enderror"
+                                            required>
+                                        <option value="" disabled {{ old('tipo') ? '' : 'selected' }}>Seleccione un tipo</option>
+                                        <option value="Accidentes laborales" {{ old('tipo') == 'accidentes laborales' ? 'selected' : '' }}>Accidentes laborales</option>
+                                        <option value="Conflictos con clientes" {{ old('tipo') == 'conflictos con clientes' ? 'selected' : '' }}>Conflictos con clientes</option>
+                                        <option value="Errores en la instalacion" {{ old('tipo') == 'errores en la instalacion' ? 'selected' : '' }}>Errores en la instalación</option>
+                                        <option value="Fallas tecnicas" {{ old('tipo') == 'fallas tecnicas' ? 'selected' : '' }}>Fallas técnicas</option>
+                                        <option value="Falla o retraso del personal" {{ old('tipo') == 'falla o retraso del personal' ? 'selected' : '' }}>Falla o retraso del personal</option>
+                                        <option value="Incidentes de seguridad" {{ old('tipo') == 'incidentes de seguridad' ? 'selected' : '' }}>Incidentes de seguridad</option>
+                                        <option value="Incumplimiento de protocolos" {{ old('tipo') == 'incumplimiento de protocolos' ? 'selected' : '' }}>Incumplimiento de protocolos</option>
+                                        <option value="Otros" {{ old('tipo') == 'otros' ? 'selected' : '' }}>Otros</option>
+                                    </select>
                                 </div>
                                 @error('tipo')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -112,16 +122,17 @@
                             </div>
 
 
+
                             <!-- Agentes involucrados -->
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Agentes involucrados</label>
+                                <label class="form-label">Empleados involucrados</label>
 
                                 <div class="card">
-                                    <div class="card-body" style="max-height: 200px; overflow-x: auto; overflow-y: hidden; white-space: nowrap;">
-                                        <div style="display: flex; gap: 1rem;">
+                                    <div class="card-body" style="max-height: 200px; overflow-y: auto; overflow-x: hidden;">
+                                        <div>
                                             @foreach($empleados as $empleado)
                                                 @if(in_array($empleado->categoria, ['Tecnico', 'Vigilancia']))
-                                                    <div class="form-check" style="flex: 0 0 auto; white-space: normal;">
+                                                    <div class="form-check mb-2">
                                                         <input class="form-check-input"
                                                                type="checkbox"
                                                                name="agente_id[]"
@@ -188,23 +199,14 @@
                                 @enderror
                             </div>
 
-                            <!-- Estado -->
                             <div class="col-md-6">
-                                <label for="estado" class="form-label">Estado</label>
+                                <label class="form-label">Estado</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-clipboard-check-fill"></i></span>
-                                    <select id="estado" name="estado"
-                                            class="form-select @error('estado') is-invalid @enderror" required>
-                                        <option value="en proceso" {{ old('estado') == 'en proceso' ? 'selected' : '' }}>En proceso</option>
-                                        <option value="resuelta" {{ old('estado') == 'resuelta' ? 'selected' : '' }}>Resuelta</option>
-                                        <option value="cerrada" {{ old('estado') == 'cerrada' ? 'selected' : '' }}>Cerrada</option>
-                                    </select>
+                                    <input type="text" class="form-control" value="En proceso" disabled>
                                 </div>
-                                @error('estado')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
+                                <input type="hidden" name="estado" value="en proceso">
                             </div>
-
 
                         <div class="col-md-6">
                             <label for="descripcion" class="form-label">Descripción</label>
@@ -215,8 +217,7 @@
                                           class="form-control auto-expand @error('descripcion') is-invalid @enderror"
                                           maxlength="250"
                                           onkeydown="bloquearEspacioAlInicio(event, this)"
-                                          oninput="eliminarEspaciosIniciales(this); "
-                                          oninput="this.style.height='';this.style.height=this.scrollHeight + 'px';"
+                                          oninput="eliminarEspaciosIniciales(this); this.style.height=''; this.style.height=this.scrollHeight + 'px';"
                                           required>{{ old('descripcion') }}</textarea>
                             </div>
                             @error('descripcion')
@@ -237,7 +238,8 @@
                                               name="ubicacion"
                                               class="form-control auto-expand @error('ubicacion') is-invalid @enderror"
                                               maxlength="150"
-                                              oninput="this.style.height='';this.style.height=this.scrollHeight + 'px';"
+                                              onkeydown="bloquearEspacioAlInicio(event, this)"
+                                              oninput="eliminarEspaciosIniciales(this); this.style.height=''; this.style.height=this.scrollHeight + 'px';"
                                               required>{{ old('ubicacion') }}</textarea>
                                 </div>
                                 @error('ubicacion')
@@ -277,17 +279,20 @@
     </div>
 
     <script>
+        // Función para auto expandir un textarea
+        function autoExpand(field) {
+            field.style.height = 'auto'; // Resetea la altura
+            field.style.height = field.scrollHeight + 'px'; // Ajusta según contenido
+        }
 
-
-            // Auto expand para textareas
-            const textareas = document.querySelectorAll("textarea.auto-expand");
+        // Al cargar la página, ajusta la altura inicial y agrega evento input
+        window.addEventListener('DOMContentLoaded', () => {
+            const textareas = document.querySelectorAll('textarea.auto-expand');
             textareas.forEach(el => {
-                el.style.height = '';
-                el.style.height = el.scrollHeight + 'px';
-
+                autoExpand(el); // Ajuste inicial
+                el.addEventListener('input', () => autoExpand(el)); // Ajusta mientras escribes
+            });
         });
-
-
     </script>
 
     <script>
@@ -329,10 +334,12 @@
         });
         });
 
-            clienteInput.addEventListener('blur', () => {
-            setTimeout(() => clienteResults.innerHTML = '', 200); // Espera para permitir click
-        });
-
+            document.addEventListener('click', function(e) {
+                const clicFueraDeCliente = !clienteResults.contains(e.target) && e.target !== clienteInput;
+                if (clicFueraDeCliente) {
+                    clienteResults.innerHTML = '';
+                }
+            });
 
 
 
@@ -388,10 +395,10 @@
             });
             });
 
-                reportadoInput.addEventListener('blur', () => {
-                setTimeout(() => {
+            document.addEventListener('click', function(e) {
+                if (!reportadoResults.contains(e.target) && e.target !== reportadoInput) {
                     reportadoResults.innerHTML = '';
-                }, 200);
+                }
             });
 
 
@@ -433,6 +440,12 @@
             form.querySelectorAll('input[type="text"], input[type="date"], textarea').forEach(input => {
                 input.value = '';
                 input.classList.remove('is-invalid', 'is-valid');
+            });
+
+            const textareas = document.querySelectorAll('textarea.auto-expand');
+            textareas.forEach(el => {
+                el.value = '';
+                autoExpand(el);
             });
 
             // Limpiar selects (TomSelect o normales)

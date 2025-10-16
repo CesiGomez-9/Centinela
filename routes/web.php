@@ -118,6 +118,9 @@ Route::get('/instalaciones/eventos', [\App\Http\Controllers\InstalacionControlle
 Route::get('/incidencias/crear', [\App\Http\Controllers\IncidenciaController::class, 'create'])->name('incidencias.formulario');
 Route::post('/incidencias/crear', [\App\Http\Controllers\IncidenciaController::class, 'store'])->name('incidencias.store');
 Route::get('/incidencias', [\App\Http\Controllers\IncidenciaController::class, 'index'])->name('incidencias.index');
+Route::get('/incidencias/{id}', [\App\Http\Controllers\IncidenciaController::class, 'show'])->name('incidencias.detalle')->whereNumber('id');
+Route::get('/incidencias/{id}/editar', [\App\Http\Controllers\IncidenciaController::class, 'edit'])->name('incidencias.edit');
+Route::put('/incidencias/{id}', [\App\Http\Controllers\IncidenciaController::class, 'update'])->name('incidencias.update');
 
 
 Route::get('/asistencias/index', [\App\Http\Controllers\AsistenciaController::class, 'index'])->name('asistencias.index');
