@@ -57,7 +57,7 @@
                                 value="<?php echo e(request('fecha_inicio')); ?>"
                             >
                         </div>
-                        <div class="input-group input-group-sm">
+                        <div class="input-group input-group-sm w-100">
                             <span class="input-group-text">Hasta</span>
                             <input
                                 type="date"
@@ -103,6 +103,7 @@
                     <th>Cliente</th>
                     <th>Estado</th>
                     <th>Fecha</th>
+                    <th>Acciones</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -114,6 +115,15 @@
                         <td><?php echo e($incidencia->cliente->nombre ?? '---'); ?> </td>
                         <td><?php echo e($incidencia->estado); ?></td>
                         <td><?php echo e(\Carbon\Carbon::parse($incidencia->fecha)->format('d/m/Y')); ?></td>
+                        <td class="text-center">
+                            <a href="<?php echo e(route('incidencias.detalle', $incidencia->id)); ?>" class="btn btn-sm btn-outline-info">
+                                <i class="bi bi-eye"></i> Ver
+                            </a>
+                            <a href="<?php echo e(route('incidencias.edit', $incidencia->id)); ?>" class="btn btn-sm btn-outline-warning" title="Editar">
+                                <i class="bi bi-pencil-square"></i>Editar
+                            </a>
+
+                        </td>
 
                     </tr>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>

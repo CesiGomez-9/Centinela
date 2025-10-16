@@ -134,11 +134,11 @@
 
 
             <input type="text" name="identidad" id="identidad" maxlength="13" value="{{ old('identidad') }}" placeholder="DNI / Identidad">
-                    <div class="error" id="error-identidad">
-                        @error('identidad')
-                        ⚠️ {{ $message }}
-                        @enderror
-                    </div>
+            <div class="error" id="error-identidad">
+                @error('identidad')
+                ⚠️ {{ $message }}
+                @enderror
+            </div>
 
             <div class="botones">
                 <a href="{{ route('asistencias.index') }}" class="btn btn-danger w-100">

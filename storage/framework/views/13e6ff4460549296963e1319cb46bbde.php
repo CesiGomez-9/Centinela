@@ -27,6 +27,11 @@
             width: 100%;
             max-width: 500px;
         }
+
+        textarea.auto-expand {
+            overflow-y: hidden;
+            resize: none;
+        }
     </style>
 </head>
 <body>
@@ -109,8 +114,8 @@ unset($__errorArgs, $__bag); ?>
                                 <label for="tipo" class="form-label">Tipo de incidencia</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-tag-fill"></i></span>
-                                    <input type="text" id="tipo" name="tipo"
-                                           class="form-control <?php $__errorArgs = ['tipo'];
+                                    <select id="tipo" name="tipo"
+                                            class="form-select <?php $__errorArgs = ['tipo'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -118,12 +123,17 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                                           value="<?php echo e(old('tipo')); ?>" maxlength="100"
-                                           onkeypress="soloLetras(event)"
-                                           oninput="this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '')"
-                                           onkeydown="bloquearEspacioAlInicio(event, this)"
-                                           oninput="eliminarEspaciosIniciales(this); autoExpand(this);"
-                                           required>
+                                            required>
+                                        <option value="" disabled <?php echo e(old('tipo') ? '' : 'selected'); ?>>Seleccione un tipo</option>
+                                        <option value="Accidentes laborales" <?php echo e(old('tipo') == 'accidentes laborales' ? 'selected' : ''); ?>>Accidentes laborales</option>
+                                        <option value="Conflictos con clientes" <?php echo e(old('tipo') == 'conflictos con clientes' ? 'selected' : ''); ?>>Conflictos con clientes</option>
+                                        <option value="Errores en la instalacion" <?php echo e(old('tipo') == 'errores en la instalacion' ? 'selected' : ''); ?>>Errores en la instalación</option>
+                                        <option value="Fallas tecnicas" <?php echo e(old('tipo') == 'fallas tecnicas' ? 'selected' : ''); ?>>Fallas técnicas</option>
+                                        <option value="Falla o retraso del personal" <?php echo e(old('tipo') == 'falla o retraso del personal' ? 'selected' : ''); ?>>Falla o retraso del personal</option>
+                                        <option value="Incidentes de seguridad" <?php echo e(old('tipo') == 'incidentes de seguridad' ? 'selected' : ''); ?>>Incidentes de seguridad</option>
+                                        <option value="Incumplimiento de protocolos" <?php echo e(old('tipo') == 'incumplimiento de protocolos' ? 'selected' : ''); ?>>Incumplimiento de protocolos</option>
+                                        <option value="Otros" <?php echo e(old('tipo') == 'otros' ? 'selected' : ''); ?>>Otros</option>
+                                    </select>
                                 </div>
                                 <?php $__errorArgs = ['tipo'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -138,16 +148,17 @@ unset($__errorArgs, $__bag); ?>
                             </div>
 
 
+
                             <!-- Agentes involucrados -->
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Agentes involucrados</label>
+                                <label class="form-label">Empleados involucrados</label>
 
                                 <div class="card">
-                                    <div class="card-body" style="max-height: 200px; overflow-x: auto; overflow-y: hidden; white-space: nowrap;">
-                                        <div style="display: flex; gap: 1rem;">
+                                    <div class="card-body" style="max-height: 200px; overflow-y: auto; overflow-x: hidden;">
+                                        <div>
                                             <?php $__currentLoopData = $empleados; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $empleado): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                 <?php if(in_array($empleado->categoria, ['Tecnico', 'Vigilancia'])): ?>
-                                                    <div class="form-check" style="flex: 0 0 auto; white-space: normal;">
+                                                    <div class="form-check mb-2">
                                                         <input class="form-check-input"
                                                                type="checkbox"
                                                                name="agente_id[]"
@@ -249,37 +260,14 @@ endif;
 unset($__errorArgs, $__bag); ?>
                             </div>
 
-                            <!-- Estado -->
                             <div class="col-md-6">
-                                <label for="estado" class="form-label">Estado</label>
+                                <label class="form-label">Estado</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-clipboard-check-fill"></i></span>
-                                    <select id="estado" name="estado"
-                                            class="form-select <?php $__errorArgs = ['estado'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>" required>
-                                        <option value="en proceso" <?php echo e(old('estado') == 'en proceso' ? 'selected' : ''); ?>>En proceso</option>
-                                        <option value="resuelta" <?php echo e(old('estado') == 'resuelta' ? 'selected' : ''); ?>>Resuelta</option>
-                                        <option value="cerrada" <?php echo e(old('estado') == 'cerrada' ? 'selected' : ''); ?>>Cerrada</option>
-                                    </select>
+                                    <input type="text" class="form-control" value="En proceso" disabled>
                                 </div>
-                                <?php $__errorArgs = ['estado'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-                                <div class="invalid-feedback d-block"><?php echo e($message); ?></div>
-                                <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
+                                <input type="hidden" name="estado" value="en proceso">
                             </div>
-
 
                         <div class="col-md-6">
                             <label for="descripcion" class="form-label">Descripción</label>
@@ -297,8 +285,7 @@ endif;
 unset($__errorArgs, $__bag); ?>"
                                           maxlength="250"
                                           onkeydown="bloquearEspacioAlInicio(event, this)"
-                                          oninput="eliminarEspaciosIniciales(this); "
-                                          oninput="this.style.height='';this.style.height=this.scrollHeight + 'px';"
+                                          oninput="eliminarEspaciosIniciales(this); this.style.height=''; this.style.height=this.scrollHeight + 'px';"
                                           required><?php echo e(old('descripcion')); ?></textarea>
                             </div>
                             <?php $__errorArgs = ['descripcion'];
@@ -333,7 +320,8 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
                                               maxlength="150"
-                                              oninput="this.style.height='';this.style.height=this.scrollHeight + 'px';"
+                                              onkeydown="bloquearEspacioAlInicio(event, this)"
+                                              oninput="eliminarEspaciosIniciales(this); this.style.height=''; this.style.height=this.scrollHeight + 'px';"
                                               required><?php echo e(old('ubicacion')); ?></textarea>
                                 </div>
                                 <?php $__errorArgs = ['ubicacion'];
@@ -380,17 +368,20 @@ unset($__errorArgs, $__bag); ?>
     </div>
 
     <script>
+        // Función para auto expandir un textarea
+        function autoExpand(field) {
+            field.style.height = 'auto'; // Resetea la altura
+            field.style.height = field.scrollHeight + 'px'; // Ajusta según contenido
+        }
 
-
-            // Auto expand para textareas
-            const textareas = document.querySelectorAll("textarea.auto-expand");
+        // Al cargar la página, ajusta la altura inicial y agrega evento input
+        window.addEventListener('DOMContentLoaded', () => {
+            const textareas = document.querySelectorAll('textarea.auto-expand');
             textareas.forEach(el => {
-                el.style.height = '';
-                el.style.height = el.scrollHeight + 'px';
-
+                autoExpand(el); // Ajuste inicial
+                el.addEventListener('input', () => autoExpand(el)); // Ajusta mientras escribes
+            });
         });
-
-
     </script>
 
     <script>
@@ -432,10 +423,12 @@ unset($__errorArgs, $__bag); ?>
         });
         });
 
-            clienteInput.addEventListener('blur', () => {
-            setTimeout(() => clienteResults.innerHTML = '', 200); // Espera para permitir click
-        });
-
+            document.addEventListener('click', function(e) {
+                const clicFueraDeCliente = !clienteResults.contains(e.target) && e.target !== clienteInput;
+                if (clicFueraDeCliente) {
+                    clienteResults.innerHTML = '';
+                }
+            });
 
 
 
@@ -489,10 +482,10 @@ unset($__errorArgs, $__bag); ?>
             });
             });
 
-                reportadoInput.addEventListener('blur', () => {
-                setTimeout(() => {
+            document.addEventListener('click', function(e) {
+                if (!reportadoResults.contains(e.target) && e.target !== reportadoInput) {
                     reportadoResults.innerHTML = '';
-                }, 200);
+                }
             });
 
 
@@ -534,6 +527,12 @@ unset($__errorArgs, $__bag); ?>
             form.querySelectorAll('input[type="text"], input[type="date"], textarea').forEach(input => {
                 input.value = '';
                 input.classList.remove('is-invalid', 'is-valid');
+            });
+
+            const textareas = document.querySelectorAll('textarea.auto-expand');
+            textareas.forEach(el => {
+                el.value = '';
+                autoExpand(el);
             });
 
             // Limpiar selects (TomSelect o normales)

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+
 use App\Models\Cliente;
 use App\Models\Empleado;
 use App\Models\Incidencia;
@@ -76,11 +76,11 @@ class IncidenciaController extends Controller
         $request->validate([
 
                 'fecha' => ['required', 'date', 'before_or_equal:today', // No puede ser futura
-                    'after_or_equal:' . now()->subYear()->format('Y-m-d'), // No antes de hace un año
+                    'after_or_equal:' .  now()->subMonth()->format('Y-m-d'), // No antes de hace un mes
                 ],
-            'tipo' => ['required', 'string', 'max:100','regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/u'],
+            'tipo' => ['required'],
             'descripcion' => ['required', 'string', 'max:250'],
-            'ubicacion' => ['required', 'string', 'max:100'],
+            'ubicacion' => ['required', 'string', 'max:150'],
             'agente_id' => 'required|array',
             'agente_id.*' => 'exists:empleados,id',
             'reportado_por' => ['required', 'exists:empleados,id'],
@@ -92,8 +92,8 @@ class IncidenciaController extends Controller
             'fecha.required' => 'La fecha es obligatoria.',
             'fecha.date' => 'La fecha no es válida.',
             'fecha.before_or_equal' => 'La fecha no puede ser posterior a hoy.',
-            'fecha.after_or_equal' => 'La fecha no puede ser anterior a hace un año.',
-            'tipo.required' => 'Debe ingresar el tipo.',
+            'fecha.after_or_equal' => 'La fecha no puede ser anterior a un mes.',
+            'tipo.required' => 'Debe seleccionar el tipo.',
             'descripcion.required' => 'Debe ingresar la descripcion de la incidencia.',
 
             'ubicacion.required' => 'Debe ingresar la ubicación.',
@@ -135,6 +135,8 @@ class IncidenciaController extends Controller
     public function show(string $id)
     {
         //
+        $incidencia = Incidencia::with(['agentes', 'reportadoPorEmpleado', 'cliente'])->findOrFail($id);
+        return view('incidencias.detalle', compact('incidencia'));
     }
 
     /**
@@ -143,6 +145,12 @@ class IncidenciaController extends Controller
     public function edit(string $id)
     {
         //
+        $incidencia = Incidencia::with('cliente', 'agentes', 'reportadoPorEmpleado')->findOrFail($id);
+        $empleados = Empleado::all();
+
+
+        return view('incidencias.edit', compact('incidencia', 'empleados'));
+
     }
 
     /**
@@ -150,7 +158,56 @@ class IncidenciaController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+
+        $request->validate([
+
+            'fecha' => ['required', 'date', 'before_or_equal:today', // No puede ser futura
+                'after_or_equal:' .  now()->subMonth()->format('Y-m-d'), // No antes de hace un mes
+            ],
+            'tipo' => ['required'],
+            'descripcion' => ['required', 'string', 'max:250'],
+            'ubicacion' => ['required', 'string', 'max:150'],
+            'agente_id' => 'required|array',
+            'agente_id.*' => 'exists:empleados,id',
+            'reportado_por' => ['required', 'exists:empleados,id'],
+            'cliente_id' => ['required', 'exists:clientes,id'],
+            'estado' => ['required', 'in:en proceso,resuelta,cerrada'],
+
+
+        ], [
+            'fecha.required' => 'La fecha es obligatoria.',
+            'fecha.date' => 'La fecha no es válida.',
+            'fecha.before_or_equal' => 'La fecha no puede ser posterior a hoy.',
+            'fecha.after_or_equal' => 'La fecha no puede ser anterior a un mes.',
+            'tipo.required' => 'Debe seleccionar el tipo.',
+            'descripcion.required' => 'Debe ingresar la descripcion de la incidencia.',
+
+            'ubicacion.required' => 'Debe ingresar la ubicación.',
+            'reportado_por.required' => 'Debe seleccionar quien reporta la incidencia.',
+            'cliente_id.required' => 'Debe seleccionar el cliente afectado.',
+            'agente_id.required' =>'Debe seleccionar el agente involucrado.',
+
+
+
+
+        ]);
+        $incidencia = Incidencia::findOrFail($id); // ✅ Actualizar el existente
+        $incidencia->fecha= $request->input('fecha');
+        $incidencia->tipo= $request->input('tipo');
+        $incidencia->descripcion = $request->input('descripcion');
+        $incidencia->ubicacion= $request->input('ubicacion');
+        $incidencia->agente_id= $request->input('agente_id');
+        $incidencia->reportado_por = $request->input('reportado_por');
+        $incidencia->cliente_id = $request->input('cliente_id');
+        $incidencia->estado = 'en proceso';
+
+
+        if ($incidencia->save()) {
+            return redirect()->route('incidencias.index')->with('exito', 'La incidencia se editó correctamente.');
+        } else {
+            return redirect()->route('incidencias.index')->with('fracaso', 'La incidencia no se editó correctamente.');
+        }
+
     }
 
     /**

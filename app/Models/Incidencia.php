@@ -22,4 +22,6 @@ class Incidencia extends Model
     {
         return $this->belongsTo(Cliente::class);
     }
+
+
 }
