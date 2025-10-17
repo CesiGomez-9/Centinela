@@ -31,7 +31,7 @@
                                 <i class="bi bi-tags"></i>
                             </label>
                             <select name="tipo_memorandum" id="tipo_memorandum" class="form-select">
-                                <option value="">Tipo</option>
+                                <option value="">Tipo...</option>
                                 <option value="Leve" <?php echo e(request('tipo_memorandum') == 'Leve' ? 'selected' : ''); ?>>Leve</option>
                                 <option value="Media" <?php echo e(request('tipo_memorandum') == 'Media' ? 'selected' : ''); ?>>Media</option>
                                 <option value="Grave" <?php echo e(request('tipo_memorandum') == 'Grave' ? 'selected' : ''); ?>>Grave</option>
@@ -71,7 +71,7 @@
                 </div>
             </form>
 
-        <?php if(session('success')): ?>
+            <?php if(session('success')): ?>
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     <i class="bi bi-check-circle-fill me-2"></i>
                     <?php echo e(session('success')); ?>
@@ -81,8 +81,7 @@
             <?php endif; ?>
 
             <table class="table table-bordered table-striped tabla-memorandos">
-
-            <thead class="table-dark">
+                <thead class="table-dark">
                 <tr>
                     <th>#</th>
                     <th>Empleado</th>
@@ -115,6 +114,7 @@
                 <?php endif; ?>
                 </tbody>
             </table>
+
             <?php if(request('search') && $memorandos->total() > 0): ?>
                 <div class="mb-3 text-muted">
                     Mostrando <?php echo e($memorandos->count()); ?> de <?php echo e($memorandos->total()); ?> memorandums encontrados para
@@ -126,7 +126,6 @@
                 </div>
             <?php endif; ?>
 
-
             <div class="d-flex justify-content-center mt-4">
                 <?php echo e($memorandos->links('pagination::bootstrap-5')); ?>
 
@@ -137,20 +136,31 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const searchInput = document.getElementById('searchInput');
-            if (!searchInput) return;
+            const tipoSelect = document.getElementById('tipo_memorandum');
 
-            searchInput.focus();
-            const length = searchInput.value.length;
-            searchInput.setSelectionRange(length, length);
+            if (searchInput) {
+                searchInput.focus();
+                const length = searchInput.value.length;
+                searchInput.setSelectionRange(length, length);
+            }
 
             let timer;
-            searchInput.addEventListener('input', function () {
-                clearTimeout(timer);
-                timer = setTimeout(() => {
-                    const form = searchInput.closest('form');
+            if (searchInput) {
+                searchInput.addEventListener('input', function () {
+                    clearTimeout(timer);
+                    timer = setTimeout(() => {
+                        const form = searchInput.closest('form');
+                        form.submit();
+                    }, 500);
+                });
+            }
+
+            if (tipoSelect) {
+                tipoSelect.addEventListener('change', function () {
+                    const form = tipoSelect.closest('form');
                     form.submit();
-                }, 500);
-            });
+                });
+            }
         });
     </script>
 <?php $__env->stopSection(); ?>
