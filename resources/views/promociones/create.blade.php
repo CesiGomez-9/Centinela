@@ -138,21 +138,33 @@
         </div>
     </div>
     <script>
-
         document.addEventListener('DOMContentLoaded', function() {
             const hoy = new Date();
             const yyyy = hoy.getFullYear();
-            const mm = String(hoy.getMonth() + 1).padStart(2, '0');
+            const mm = hoy.getMonth() + 1;
             const dd = String(hoy.getDate()).padStart(2, '0');
-            const hoyStr = `${yyyy}-${mm}-${dd}`;
+            const hoyStr = `${yyyy}-${String(mm).padStart(2, '0')}-${dd}`;
+
+            // 🔹 Calcular el último día del siguiente mes
+            let nextMonth = mm + 1;
+            let nextYear = yyyy;
+            if (nextMonth > 12) {
+                nextMonth = 1;
+                nextYear++;
+            }
+            const lastDayNextMonth = new Date(nextYear, nextMonth, 0).getDate(); // Día 0 del mes siguiente da el último día
+            const maxStr = `${nextYear}-${String(nextMonth).padStart(2, '0')}-${String(lastDayNextMonth).padStart(2, '0')}`;
 
             const fechaInicio = document.getElementById('fecha_inicio');
             const fechaFin = document.getElementById('fecha_fin');
 
+            // Establecer límites dinámicos
             fechaInicio.value = hoyStr;
             fechaFin.value = hoyStr;
             fechaInicio.min = hoyStr;
+            fechaInicio.max = maxStr;
             fechaFin.min = hoyStr;
+            fechaFin.max = maxStr;
 
             const descripcion = document.getElementById('descripcion');
             const nombreInput = document.getElementById('nombre');
@@ -175,7 +187,6 @@
             previewDescripcion.textContent = descripcion.value || 'Aquí aparecerá la descripción.';
             fechaInicioText.textContent = fechaInicio.value;
             fechaFinText.textContent = fechaFin.value;
-
             modalNombre.textContent = previewNombre.textContent;
             modalDescripcion.textContent = previewDescripcion.textContent;
             modalInicio.textContent = fechaInicio.value;
@@ -199,8 +210,8 @@
 
                 if (fechaFin.value < e.target.value) {
                     fechaFin.value = e.target.value;
-                    fechaFinText.textContent = fechaFin.value;
-                    modalFin.textContent = fechaFin.value;
+                    fechaFinText.textContent = e.target.value;
+                    modalFin.textContent = e.target.value;
                 }
 
                 fechaFin.min = e.target.value;
@@ -226,9 +237,9 @@
             });
 
             document.getElementById('btnAmpliar').addEventListener('click', () => modal.show());
+
             document.getElementById('btnRestablecer').addEventListener('click', e => {
                 e.preventDefault();
-
                 nombreInput.value = '';
                 descripcion.value = '';
                 fechaInicio.value = hoyStr;
@@ -294,5 +305,7 @@
             });
         });
     </script>
+
+
     </body>
 @endsection
