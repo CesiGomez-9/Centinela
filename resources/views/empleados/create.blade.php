@@ -1,36 +1,7 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
+@extends('plantilla')
+@section('content')
 
-    <meta charset="UTF-8"/>
-    <title>Registrar empleado</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet"/>
-    <style>
-
-    </style>
-</head>
 <body style="background-color: #e6f0ff;">
-
-<nav class="navbar navbar-expand-lg" style="background-color: #0A1F44; padding:1.2rem; font-family:'Courier New', monospace;">
-    <div class="container" style="max-width:1600px;">
-        <a class="navbar-brand text-white fw-bold" href="#">
-            <img src="{{ asset('centinela.jpg') }}" style="height:80px; margin-right:10px;"/>
-            Grupo Centinela
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link text-white" href="#">Registrate</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="#">Servicios</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="#">Nosotros</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="#">Contacto</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
 <div class="container mt-5" style="max-width:900px;">
     <div class="card shadow p-4 bg-white position-relative">
         <i class="bi bi-person-badge position-absolute top-0 end-0 p-3 text-secondary opacity-25" style="font-size:4rem;"></i>
@@ -683,6 +654,4 @@
     });
 
 </script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+@endsection

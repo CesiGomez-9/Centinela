@@ -1,10 +1,5 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8" />
-    <title>Factura de Venta - Grupo Centinela</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+@extends('plantilla')
+@section('content')
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -125,28 +120,6 @@
         }
     </style>
 
-</head>
-<body>
-<nav class="navbar navbar-expand-lg" style="background-color: #0A1F44; padding-top: 1.2rem; padding-bottom: 1.2rem; font-family: 'Courier New', sans-serif;">
-    <div class="container" style="max-width: 1600px;">
-        <a class="navbar-brand text-white fw-bold d-flex align-items-center" href="#">
-            <img src="{{ asset('centinela.jpg') }}" style="height:80px; margin-right: 10px;" alt="Logo Grupo Centinela">
-            Grupo Centinela
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link text-white" href="#">Registrate</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="#">Servicios</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="#">Nosotros</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="#">Contacto</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
 
 <div class="card position-relative">
     <div class="card-header text-center">
@@ -155,30 +128,39 @@
     </div>
 
     <div class="card-body">
-        <div class="container px-4"> <!-- Contenedor para padding horizontal -->
+        <div class="container px-4">
             <img src="{{ asset('centinela.jpg') }}" alt="Logo Centinela" width="90" />
             <div class="text-center mb-4" style="margin-top: -20px;">
                 <div class="d-flex justify-content-center align-items-center mb-3 gap-3">
                     <h4 class="fw-bold mb-0">GRUPO CENTINELA</h4>
                 </div>
                 <p class="mb-1"><strong>RTN:</strong> 06021999123456</p>
-                <p class="mb-1"><strong>Teléfono fijo: </strong>+504 2763-3585</p>
                 <p class="mb-1"><strong>Celular:</strong> +504 9322-5352</p>
+                <p class="mb-1"><strong>Teléfono fijo: </strong>+504 2763-3585</p>
                 <p class="mb-1"><strong>Email: </strong>grupocentinela.hn@gmail.com</p>
                 <p class="mb-1"><strong>Dirección:</strong> Barrio Oriental, cuatro cuadras al sur del parque central, Danlí, El Paraíso, Honduras.</p>
 
             </div>
 
-            <div class="mb-5 mt-5">
-                <div class="d-flex mb-2 gap-4">
-                    <p class="mb-0"><strong>Factura de venta N°:</strong> {{ $factura->numero }}</p>
-                    <p class="mb-0"><strong>Fecha:</strong> {{ \Carbon\Carbon::parse($factura->fecha)->format('d/m/Y') }}</p>
-                    <p class="mb-0"><strong>Cliente:</strong> {{ $factura->cliente->nombre ?? '' }} {{ $factura->cliente->apellido ?? '' }}</p>
-                </div>
-                <div class="d-flex gap-4">
-                    <p class="mb-0"><strong>Forma de pago:</strong> {{ $factura->forma_pago }}</p>
-                    <p class="mb-0"><strong>Responsable:</strong> {{ $factura->responsable->nombre ?? '' }} {{ $factura->responsable->apellido ?? '' }}</p>
-                </div>
+            <div class="mb-4 mt-4">
+                <table class="table table-bordered table-sm text-center align-middle small">
+                    <tbody>
+                    <tr>
+                        <th style="width: 18%;">Factura de venta N°:</th>
+                        <td style="width: 15%;">{{ $factura->numero }}</td>
+                        <th style="width: 12%;">Cliente:</th>
+                        <td style="width: 25%;">{{ $factura->cliente->nombre ?? '' }} {{ $factura->cliente->apellido ?? '' }}</td>
+                        <th style="width: 10%;">Fecha:</th>
+                        <td style="width: 20%;">{{ \Carbon\Carbon::parse($factura->fecha)->format('d/m/Y') }}</td>
+                    </tr>
+                    <tr>
+                        <th>Forma de pago:</th>
+                        <td>{{ $factura->forma_pago }}</td>
+                        <th>Responsable:</th>
+                        <td colspan="3">{{ $factura->responsable->nombre ?? '' }} {{ $factura->responsable->apellido ?? '' }}</td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
 
             <h6 class="section-header"><i class="bi bi-box-seam"></i> Productos vendidos</h6>
@@ -261,7 +243,4 @@
         <i class="bi bi-arrow-left me-1"></i> Volver a la lista
     </a>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+@endsection

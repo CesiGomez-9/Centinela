@@ -1,31 +1,6 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Empleados Registrados</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-</head>
-<body style="background-color: #e6f0ff;">
-<nav class="navbar navbar-expand-lg" style="background-color: #0A1F44; padding-top: 1.2rem; padding-bottom: 1.2rem; font-family: 'Courier New', sans-serif;">
-    <div class="container" style="max-width: 1600px;">
-        <a class="navbar-brand text-white fw-bold" href="#">
-            <img src="{{ asset('centinela.jpg') }}" style="height:80px; margin-right: 10px;">
-            Grupo Centinela
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link text-white" href="#">Registrate</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="#">Servicios</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="#">Nosotros</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="#">Contacto</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
+@extends('plantilla')
+@section('content')
+
 <div class="container mt-5" style="max-width: 1100px;">
     <div class="card shadow p-4" style="background-color: #ffffff;">
         <h3 class="text-center mb-4" style="color: #09457f;">
@@ -73,6 +48,7 @@
                 <th>#</th>
                 <th>Nombre</th>
                 <th>Departamento</th>
+                <th>Puesto</th>
                 <th>Teléfono</th>
                 <th>Acciones</th>
             </tr>
@@ -85,6 +61,8 @@
                         {{ $empleado->nombre }} {{ $empleado->apellido }}</td>
                     <td style="max-width: 200px; word-wrap: break-word; white-space: normal;">
                         {{ $empleado->departamento }}</td>
+                    <td style="max-width: 200px; word-wrap: break-word; white-space: normal;">
+                        {{ $empleado->categoria }}</td>
                     <td>{{ $empleado->telefono }}</td>
                     <td class="text-center">
                         <a href="{{ route('empleados.show', $empleado->id) }}" class="btn btn-sm btn-outline-info">
@@ -123,43 +101,45 @@
 @if ($errors->any())
 @endif
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const searchInput = document.getElementById('searchInput');
         const form = searchInput.closest('form');
 
-        if (form) {
-            form.addEventListener('submit', e => {
-                e.preventDefault();
-            });
+        if (searchInput) {
+            searchInput.focus();
+            const length = searchInput.value.length;
+            searchInput.setSelectionRange(length, length);
         }
 
+        if (form) {
+            form.addEventListener('submit', e => e.preventDefault());
+        }
         searchInput.addEventListener('keydown', e => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-            }
+            if (e.key === 'Enter') e.preventDefault();
         });
 
         let timeout = null;
 
         searchInput.addEventListener('input', function () {
+            this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "");
+            this.value = this.value.replace(/\s+/g, " ");
+
             clearTimeout(timeout);
 
             timeout = setTimeout(() => {
-                const search = this.value.trim();
+                const search = this.value;
                 const url = new URL(window.location.href);
 
-                if (search) {
+                if (search.trim() !== "") {
                     url.searchParams.set('search', search);
                 } else {
                     url.searchParams.delete('search');
                 }
 
                 window.location.href = url.toString();
-            }, 400);
+            }, 500);
         });
     });
 </script>
-</body>
-</html>
+@endsection

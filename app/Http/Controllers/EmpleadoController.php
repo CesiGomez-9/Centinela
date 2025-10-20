@@ -252,7 +252,6 @@ class EmpleadoController extends Controller
                 },
             ],
 
-
             'contactodeemergencia' => 'required|string|max:100|regex:/^[\p{L}\s]+$/u',
             'telefonodeemergencia' => [
                 'required',
@@ -366,5 +365,28 @@ class EmpleadoController extends Controller
         $empleado->delete();
 
         return redirect()->route('empleados.index')->with('success', 'Empleado eliminado correctamente.');
+    }
+
+    public function buscar(Request $request)
+    {
+        $query = $request->get('q', '');
+        $tipo = $request->get('tipo', 'todos');
+
+        $empleados = Empleado::query();
+
+        if ($tipo === 'administracion') {
+            $empleados->where('categoria', 'Administracion');
+        }
+
+        if ($query) {
+            $empleados->where(function($q) use ($query) {
+                $q->where('nombre', 'like', "%{$query}%")
+                    ->orWhere('apellido', 'like', "%{$query}%");
+            });
+        }
+
+        $result = $empleados->limit(10)->get(['id', 'nombre', 'apellido']);
+
+        return response()->json($result);
     }
 }

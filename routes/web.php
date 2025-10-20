@@ -32,6 +32,14 @@ Route::get('/facturas_ventas/{factura_venta}', [\App\Http\Controllers\FacturaVen
 Route::get('/facturas_ventas/{factura_venta}/edit', [\App\Http\Controllers\FacturaVentaController::class, 'edit'])->name('facturas_ventas.edit');
 Route::put('/facturas_ventas/{factura_venta}', [\App\Http\Controllers\FacturaVentaController::class, 'update'])->name('facturas_ventas.update');
 
+Route::resource('memorandos', \App\Http\Controllers\MemorandoController::class);
+Route::get('/buscar-empleados', [EmpleadoController::class, 'buscar'])->name('empleados.buscar');
+Route::get('memorando/adjunto/{filename}', [\App\Http\Controllers\MemorandoController::class, 'descargarAdjunto'])->name('memorando.adjunto');
+
+
+Route::resource('promociones', \App\Http\Controllers\PromocionController::class);
+
+
 Route::get('/clientes/buscar', [App\Http\Controllers\ClienteController::class, 'buscar'])->name('clientes.buscar');
 
 
@@ -51,7 +59,6 @@ Route::controller(ProductoController::class)->group(function () {
     Route::get('/productos/{id}', 'show')->name('productos.show')->whereNumber('id');
     Route::get('/productos/crear', 'create')->name('productos.create');
     Route::post('/productos/crear', 'store')->name('productos.store');
-
 
     Route::get('/productos/{id}/editar', 'edit')->name('productos.edit')->whereNumber('id');
     Route::put('/productos/{id}/editar', 'update')->name('productos.update')->whereNumber('id');
@@ -105,10 +112,18 @@ Route::post('/instalaciones', [\App\Http\Controllers\InstalacionController::clas
 Route::get('/instalaciones', [\App\Http\Controllers\InstalacionController::class, 'index'])->name('instalaciones.index');
 // routes/web.php
 Route::get('/instalaciones/eventos', [\App\Http\Controllers\InstalacionController::class, 'eventos'])->name('instalaciones.eventos');
+Route::get('/instalaciones/formulario', [\App\Http\Controllers\InstalacionController::class, 'create'])->name('instalaciones.formulario');
+Route::post('/instalaciones', [\App\Http\Controllers\InstalacionController::class, 'store'])->name('instalaciones.store');
+Route::get('/instalaciones', [\App\Http\Controllers\InstalacionController::class, 'index'])->name('instalaciones.index');
+// routes/web.php
+Route::get('/instalaciones/eventos', [\App\Http\Controllers\InstalacionController::class, 'eventos'])->name('instalaciones.eventos');
 
-use App\Http\Controllers\AsistenciaController;
+Route::get('/asistencias/index', [\App\Http\Controllers\AsistenciaController::class, 'index'])->name('asistencias.index');
+Route::get('/asistencias/crear', [\App\Http\Controllers\AsistenciaController::class, 'create'])->name('asistencias.crear');
+Route::post('/asistencias', [\App\Http\Controllers\AsistenciaController::class, 'store'])->name('asistencias.store');
 
-Route::get('/asistencias/index', [AsistenciaController::class, 'index'])->name('asistencias.index');
-Route::get('/asistencias/crear', [AsistenciaController::class, 'create'])->name('asistencias.crear');
-Route::post('/asistencias', [AsistenciaController::class, 'store'])->name('asistencias.store');
-Route::get('/buscar-empleados', [AsistenciaController::class, 'buscar'])->name('empleados.buscar');
+
+
+Route::get('/incidencias/crear', [\App\Http\Controllers\IncidenciaController::class, 'create'])->name('incidencias.formulario');
+Route::post('/incidencias/crear', [\App\Http\Controllers\IncidenciaController::class, 'store'])->name('incidencias.store');
+Route::get('/incidencias', [\App\Http\Controllers\IncidenciaController::class, 'index'])->name('incidencias.index');

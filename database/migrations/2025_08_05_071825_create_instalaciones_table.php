@@ -11,8 +11,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-
-
         Schema::create('instalaciones', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('cliente_id');
@@ -31,10 +29,10 @@ return new class extends Migration
         });
     }
 
-        /**
-         * Reverse the migrations.
-         */
-        public function down(): void
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
     {
         Schema::dropIfExists('instalaciones');
     }
