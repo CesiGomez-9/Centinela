@@ -8,13 +8,13 @@
             margin: 0;
         }
 
-         .btn-outline-custom {
-             border: 2px solid #09457f; /* borde azul */
-             background-color: transparent; /* transparente por defecto */
-             color: #09457f; /* texto azul */
-             font-weight: bold;
-             transition: all 0.3s ease;
-         }
+        .btn-outline-custom {
+            border: 2px solid #09457f; /* borde azul */
+            background-color: transparent; /* transparente por defecto */
+            color: #09457f; /* texto azul */
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
 
         .btn-outline-custom:hover {
             background-color: #09457f; /* fondo azul al pasar el cursor */
@@ -69,37 +69,38 @@
                 </div>
             <?php endif; ?>
 
-
-
             <table class="table table-bordered table-striped">
                 <thead class="table-dark">
                 <tr>
                     <th>N°</th>
-                    <th>Fecha</th> <!-- NUEVA COLUMNA -->
                     <th>Nombre</th>
                     <th>Apellido</th>
                     <th>Identidad</th>
-                    <th>Tipo de Turno</th>
+                    <th>Fecha</th>
                     <th>Hora de entrada</th>
                     <th>Hora de salida</th>
+                    <th class="text-center">Acciones</th>
                 </tr>
                 </thead>
                 <tbody>
                 <?php $__currentLoopData = $asistencias; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $asistencia): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <tr>
                         <td><?php echo e($loop->iteration); ?></td>
-                        <td><?php echo e($asistencia->created_at ? $asistencia->created_at->format('d/m/Y') : '-'); ?></td> <!-- Fecha -->
                         <td><?php echo e($asistencia->nombre); ?></td>
                         <td><?php echo e($asistencia->apellido); ?></td>
                         <td><?php echo e($asistencia->identidad); ?></td>
-                        <td><?php echo e($asistencia->turno ? $asistencia->turno->tipo_turno : 'Sin turno'); ?></td>
-                        <td><?php echo e($asistencia->hora_entrada ? $asistencia->hora_entrada->format('H:i:s') : '-'); ?></td>
-                        <td><?php echo e($asistencia->hora_salida ? $asistencia->hora_salida->format('H:i:s') : 'No marcada'); ?></td>
+                        <td><?php echo e($asistencia->created_at ? $asistencia->created_at->format('d/m/Y') : '-'); ?></td>
+                        <td><?php echo e($asistencia->hora_entrada ? $asistencia->hora_entrada->format('h:i:s A') : '-'); ?></td>
+                        <td><?php echo e($asistencia->hora_salida ? $asistencia->hora_salida->format('h:i:s A') : 'No marcada'); ?></td>
+                        <td class="text-center">
+                            <a href="<?php echo e(route('asistencias.show', $asistencia->id)); ?>" class="btn btn-sm btn-outline-info">
+                                <i class="bi bi-eye"></i> Ver
+                            </a>
+                        </td>
                     </tr>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </tbody>
             </table>
-
 
             <div class="d-flex justify-content-center mt-4">
                 <?php echo e($asistencias->links('pagination::bootstrap-5')); ?>

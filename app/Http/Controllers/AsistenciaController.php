@@ -154,8 +154,10 @@ class AsistenciaController extends Controller
      */
     public function show($id)
     {
-
+        $asistencia = Asistencia::with('empleado')->findOrFail($id);
+        return view('asistencias.show', compact('asistencia'));
     }
+
 
     /**
      * Show the form for editing the specified resource.

@@ -25,6 +25,10 @@ class Asistencia extends Model
     {
         return $this->belongsTo(Turno::class);
     }
+    public function empleado()
+    {
+        return $this->belongsTo(Empleado::class, 'empleado_id');
+    }
 
 
 }

@@ -9,13 +9,13 @@
             margin: 0;
         }
 
-         .btn-outline-custom {
-             border: 2px solid #09457f; /* borde azul */
-             background-color: transparent; /* transparente por defecto */
-             color: #09457f; /* texto azul */
-             font-weight: bold;
-             transition: all 0.3s ease;
-         }
+        .btn-outline-custom {
+            border: 2px solid #09457f; /* borde azul */
+            background-color: transparent; /* transparente por defecto */
+            color: #09457f; /* texto azul */
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
 
         .btn-outline-custom:hover {
             background-color: #09457f; /* fondo azul al pasar el cursor */
@@ -68,37 +68,38 @@
                 </div>
             @endif
 
-
-
             <table class="table table-bordered table-striped">
                 <thead class="table-dark">
                 <tr>
                     <th>N°</th>
-                    <th>Fecha</th> <!-- NUEVA COLUMNA -->
                     <th>Nombre</th>
                     <th>Apellido</th>
                     <th>Identidad</th>
-                    <th>Tipo de Turno</th>
+                    <th>Fecha</th>
                     <th>Hora de entrada</th>
                     <th>Hora de salida</th>
+                    <th class="text-center">Acciones</th>
                 </tr>
                 </thead>
                 <tbody>
                 @foreach ($asistencias as $asistencia)
                     <tr>
                         <td>{{ $loop->iteration }}</td>
-                        <td>{{ $asistencia->created_at ? $asistencia->created_at->format('d/m/Y') : '-' }}</td> <!-- Fecha -->
                         <td>{{ $asistencia->nombre }}</td>
                         <td>{{ $asistencia->apellido }}</td>
                         <td>{{ $asistencia->identidad }}</td>
-                        <td>{{ $asistencia->turno ? $asistencia->turno->tipo_turno : 'Sin turno' }}</td>
-                        <td>{{ $asistencia->hora_entrada ? $asistencia->hora_entrada->format('H:i:s') : '-' }}</td>
-                        <td>{{ $asistencia->hora_salida ? $asistencia->hora_salida->format('H:i:s') : 'No marcada' }}</td>
+                        <td>{{ $asistencia->created_at ? $asistencia->created_at->format('d/m/Y') : '-' }}</td>
+                        <td>{{ $asistencia->hora_entrada ? $asistencia->hora_entrada->format('h:i:s A') : '-' }}</td>
+                        <td>{{ $asistencia->hora_salida ? $asistencia->hora_salida->format('h:i:s A') : 'No marcada' }}</td>
+                        <td class="text-center">
+                            <a href="{{ route('asistencias.show', $asistencia->id) }}" class="btn btn-sm btn-outline-info">
+                                <i class="bi bi-eye"></i> Ver
+                            </a>
+                        </td>
                     </tr>
                 @endforeach
                 </tbody>
             </table>
-
 
             <div class="d-flex justify-content-center mt-4">
                 {{ $asistencias->links('pagination::bootstrap-5') }}

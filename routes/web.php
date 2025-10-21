@@ -6,6 +6,7 @@ use App\Http\Controllers\FacturaCompraController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\ServicioController;
+use App\Http\Controllers\PromocionController;
 use App\Http\Controllers\TurnoController;
 use Illuminate\Support\Facades\Route;
 
@@ -34,6 +35,10 @@ Route::put('/facturas_ventas/{factura_venta}', [\App\Http\Controllers\FacturaVen
 
 Route::resource('memorandos', \App\Http\Controllers\MemorandoController::class);
 Route::get('/buscar-empleados', [EmpleadoController::class, 'buscar'])->name('empleados.buscar');
+Route::get('memorando/adjunto/{filename}', [\App\Http\Controllers\MemorandoController::class, 'descargarAdjunto'])->name('memorando.adjunto');
+
+
+Route::resource('promociones', \App\Http\Controllers\PromocionController::class);
 
 
 Route::get('/clientes/buscar', [App\Http\Controllers\ClienteController::class, 'buscar'])->name('clientes.buscar');
@@ -114,4 +119,17 @@ Route::get('/instalaciones', [\App\Http\Controllers\InstalacionController::class
 // routes/web.php
 Route::get('/instalaciones/eventos', [\App\Http\Controllers\InstalacionController::class, 'eventos'])->name('instalaciones.eventos');
 
+Route::get('/asistencias/index', [\App\Http\Controllers\AsistenciaController::class, 'index'])->name('asistencias.index');
+Route::get('/asistencias/crear', [\App\Http\Controllers\AsistenciaController::class, 'create'])->name('asistencias.crear');
+Route::post('/asistencias', [\App\Http\Controllers\AsistenciaController::class, 'store'])->name('asistencias.store');
+Route::get('/asistencias/{id}', [\App\Http\Controllers\AsistenciaController::class, 'show'])->name('asistencias.show');
+
+
+
+Route::get('/promociones', [\App\Http\Controllers\PromocionController::class, 'index'])->name('promociones.index');
+Route::get('/promociones/create', [\App\Http\Controllers\PromocionController::class, 'create'])->name('promociones.create');
+Route::get('/promociones', [PromocionController::class, 'index'])->name('promociones.index');
+Route::get('/promociones/{promocion}/show', [PromocionController::class, 'show'])->name('promociones.show');
+Route::get('/promociones/{id}/edit', [\App\Http\Controllers\PromocionController::class, 'edit'])->name('promociones.edit');
+Route::put('/promociones/{id}', [\App\Http\Controllers\PromocionController::class, 'update'])->name('promociones.update');
 
