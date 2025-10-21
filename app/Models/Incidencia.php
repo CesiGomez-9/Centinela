@@ -8,6 +8,17 @@ class Incidencia extends Model
 {
     //
 
+    protected $fillable = [
+        'fecha',
+        'tipo',
+        'descripcion',
+        'ubicacion',
+        'agente_id',
+        'reportado_por',
+        'cliente_id',
+        'estado'
+    ];
+
     public function agentes()
     {
         return $this->belongsToMany(Empleado::class);

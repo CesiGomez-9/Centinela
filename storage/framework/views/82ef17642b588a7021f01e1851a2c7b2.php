@@ -8,13 +8,13 @@
             margin: 0;
         }
 
-         .btn-outline-custom {
-             border: 2px solid #09457f; /* borde azul */
-             background-color: transparent; /* transparente por defecto */
-             color: #09457f; /* texto azul */
-             font-weight: bold;
-             transition: all 0.3s ease;
-         }
+        .btn-outline-custom {
+            border: 2px solid #09457f; /* borde azul */
+            background-color: transparent; /* transparente por defecto */
+            color: #09457f; /* texto azul */
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
 
         .btn-outline-custom:hover {
             background-color: #09457f; /* fondo azul al pasar el cursor */

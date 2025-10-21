@@ -7,6 +7,7 @@ use App\Models\Cliente;
 use App\Models\Empleado;
 use App\Models\Incidencia;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 
 class IncidenciaController extends Controller
@@ -158,12 +159,10 @@ class IncidenciaController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $incidencia = Incidencia::findOrFail($id);
 
         $request->validate([
-
-            'fecha' => ['required', 'date', 'before_or_equal:today', // No puede ser futura
-                'after_or_equal:' .  now()->subMonth()->format('Y-m-d'), // No antes de hace un mes
-            ],
+            'fecha' => ['required', 'date', 'before_or_equal:today'],
             'tipo' => ['required'],
             'descripcion' => ['required', 'string', 'max:250'],
             'ubicacion' => ['required', 'string', 'max:150'],
@@ -172,42 +171,34 @@ class IncidenciaController extends Controller
             'reportado_por' => ['required', 'exists:empleados,id'],
             'cliente_id' => ['required', 'exists:clientes,id'],
             'estado' => ['required', 'in:en proceso,resuelta,cerrada'],
-
-
         ], [
             'fecha.required' => 'La fecha es obligatoria.',
             'fecha.date' => 'La fecha no es válida.',
             'fecha.before_or_equal' => 'La fecha no puede ser posterior a hoy.',
-            'fecha.after_or_equal' => 'La fecha no puede ser anterior a un mes.',
-            'tipo.required' => 'Debe seleccionar el tipo.',
-            'descripcion.required' => 'Debe ingresar la descripcion de la incidencia.',
-
+            'tipo.required' => 'Debe seleccionar el tipo de incidencia.',
+            'descripcion.required' => 'Debe ingresar la descripción.',
             'ubicacion.required' => 'Debe ingresar la ubicación.',
-            'reportado_por.required' => 'Debe seleccionar quien reporta la incidencia.',
+            'reportado_por.required' => 'Debe seleccionar quién reporta la incidencia.',
             'cliente_id.required' => 'Debe seleccionar el cliente afectado.',
-            'agente_id.required' =>'Debe seleccionar el agente involucrado.',
-
-
-
-
+            'agente_id.required' => 'Debe seleccionar el agente involucrado.',
         ]);
-        $incidencia = Incidencia::findOrFail($id); // ✅ Actualizar el existente
-        $incidencia->fecha= $request->input('fecha');
-        $incidencia->tipo= $request->input('tipo');
+
+        $incidencia->fecha = $request->input('fecha');
+        $incidencia->tipo = $request->input('tipo');
         $incidencia->descripcion = $request->input('descripcion');
-        $incidencia->ubicacion= $request->input('ubicacion');
-        $incidencia->agente_id= $request->input('agente_id');
+        $incidencia->ubicacion = $request->input('ubicacion');
         $incidencia->reportado_por = $request->input('reportado_por');
         $incidencia->cliente_id = $request->input('cliente_id');
-        $incidencia->estado = 'en proceso';
-
+        $incidencia->estado = $request->input('estado'); // ahora se puede editar
 
         if ($incidencia->save()) {
+            // Esto actualiza la tabla pivote correctamente
+            $incidencia->agentes()->sync($request->input('agente_id'));
+
             return redirect()->route('incidencias.index')->with('exito', 'La incidencia se editó correctamente.');
         } else {
             return redirect()->route('incidencias.index')->with('fracaso', 'La incidencia no se editó correctamente.');
         }
-
     }
 
     /**
@@ -216,5 +207,13 @@ class IncidenciaController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function reporte()
+    {
+        $incidencias = Incidencia::all();
+
+        $pdf = PDF::loadView('incidencias.reportepdf', compact('incidencias'));
+        return $pdf->download('reporte_incidencias.pdf');
     }
 }

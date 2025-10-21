@@ -121,7 +121,7 @@
                     <div class="card-body">
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <p><i class="bi bi-calendar3 me-2"></i><strong>Fecha:</strong> {{ $incidencia->fecha }}</p>
+                                <p><i class="bi bi-calendar3 me-2"></i><strong>Fecha:</strong> {{ \Carbon\Carbon::parse($incidencia->fecha)->format('d/m/Y') }}</p>
                                 <p><i class="bi bi-exclamation-triangle-fill me-2"></i><strong>Tipo:</strong> {{ $incidencia->tipo }}</p>
                                 <p><i class="bi bi-geo-alt-fill me-2"></i><strong>Ubicación:</strong> {{ $incidencia->ubicacion }}</p>
                                 <p><i class="bi bi-card-text me-2"></i><strong>Descripción:</strong> {{ $incidencia->descripcion }}</p>
