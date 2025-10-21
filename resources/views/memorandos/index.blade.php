@@ -20,7 +20,7 @@
                     <div class="col-md-3">
                         <div class="input-group input-group-sm">
                             <input type="text" name="search" id="searchInput" class="form-control"
-                                   placeholder="Buscar por empleado y autor..."
+                                   placeholder="Buscar empleado o creador..."
                                    value="{{ request('search') }}">
                             <span class="input-group-text"><i class="bi bi-search"></i></span>
                         </div>
@@ -84,9 +84,9 @@
                 <thead class="table-dark">
                 <tr>
                     <th>#</th>
-                    <th>Empleado</th>
-                    <th>Autor</th>
-                    <th>Título</th>
+                    <th>Empleado Sancionado</th>
+                    <th>Creador del memorandum</th>
+                    <th>Número de Memorandum</th>
                     <th>Tipo</th>
                     <th>Fecha</th>
                     <th class="text-center">Acciones</th>
@@ -98,7 +98,7 @@
                         <td>{{ $loop->iteration + ($memorandos->currentPage() - 1) * $memorandos->perPage() }}</td>
                         <td>{{ $memorando->destinatario->nombre ?? '---' }} {{ $memorando->destinatario->apellido ?? '' }}</td>
                         <td>{{ $memorando->autor->nombre ?? '---' }} {{ $memorando->autor->apellido ?? '' }}</td>
-                        <td>{{ $memorando->titulo }}</td>
+                        <td>Memorandum N° {{ $memorando->id }}</td>
                         <td>{{ $memorando->tipo }}</td>
                         <td>{{ \Carbon\Carbon::parse($memorando->fecha)->format('d/m/Y') }}</td>
                         <td class="text-center">
@@ -115,7 +115,8 @@
                 </tbody>
             </table>
 
-            @if(request('search') && $memorandos->total() > 0)
+
+        @if(request('search') && $memorandos->total() > 0)
                 <div class="mb-3 text-muted">
                     Mostrando {{ $memorandos->count() }} de {{ $memorandos->total() }} memorandums encontrados para
                     "<strong>{{ request('search') }}</strong>".

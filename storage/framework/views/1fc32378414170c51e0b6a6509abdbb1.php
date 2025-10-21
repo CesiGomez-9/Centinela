@@ -19,7 +19,7 @@
                     <div class="col-md-3">
                         <div class="input-group input-group-sm">
                             <input type="text" name="search" id="searchInput" class="form-control"
-                                   placeholder="Buscar por empleado y autor..."
+                                   placeholder="Buscar empleado o creador..."
                                    value="<?php echo e(request('search')); ?>">
                             <span class="input-group-text"><i class="bi bi-search"></i></span>
                         </div>
@@ -84,9 +84,9 @@
                 <thead class="table-dark">
                 <tr>
                     <th>#</th>
-                    <th>Empleado</th>
-                    <th>Autor</th>
-                    <th>Título</th>
+                    <th>Empleado Sancionado</th>
+                    <th>Creador del memorandum</th>
+                    <th>Número de Memorandum</th>
                     <th>Tipo</th>
                     <th>Fecha</th>
                     <th class="text-center">Acciones</th>
@@ -98,7 +98,7 @@
                         <td><?php echo e($loop->iteration + ($memorandos->currentPage() - 1) * $memorandos->perPage()); ?></td>
                         <td><?php echo e($memorando->destinatario->nombre ?? '---'); ?> <?php echo e($memorando->destinatario->apellido ?? ''); ?></td>
                         <td><?php echo e($memorando->autor->nombre ?? '---'); ?> <?php echo e($memorando->autor->apellido ?? ''); ?></td>
-                        <td><?php echo e($memorando->titulo); ?></td>
+                        <td>Memorandum N° <?php echo e($memorando->id); ?></td>
                         <td><?php echo e($memorando->tipo); ?></td>
                         <td><?php echo e(\Carbon\Carbon::parse($memorando->fecha)->format('d/m/Y')); ?></td>
                         <td class="text-center">
@@ -115,7 +115,8 @@
                 </tbody>
             </table>
 
-            <?php if(request('search') && $memorandos->total() > 0): ?>
+
+        <?php if(request('search') && $memorandos->total() > 0): ?>
                 <div class="mb-3 text-muted">
                     Mostrando <?php echo e($memorandos->count()); ?> de <?php echo e($memorandos->total()); ?> memorandums encontrados para
                     "<strong><?php echo e(request('search')); ?></strong>".
