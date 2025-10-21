@@ -129,7 +129,7 @@ Route::get('/asistencias/{id}', [\App\Http\Controllers\AsistenciaController::cla
 Route::get('/promociones', [\App\Http\Controllers\PromocionController::class, 'index'])->name('promociones.index');
 Route::get('/promociones/create', [\App\Http\Controllers\PromocionController::class, 'create'])->name('promociones.create');
 Route::get('/promociones', [PromocionController::class, 'index'])->name('promociones.index');
-Route::get('/promociones/show', [\App\Http\Controllers\PromocionController::class, 'show'])->name('promociones.show');
+Route::get('/promociones/{promocion}/show', [PromocionController::class, 'show'])->name('promociones.show');
 Route::get('/promociones/{id}/edit', [\App\Http\Controllers\PromocionController::class, 'edit'])->name('promociones.edit');
 Route::put('/promociones/{id}', [\App\Http\Controllers\PromocionController::class, 'update'])->name('promociones.update');
 
