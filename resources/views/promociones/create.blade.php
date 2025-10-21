@@ -63,6 +63,17 @@
                     </div>
 
                     <div class="col-md-6">
+                        <label class="form-label fw-bold">Restricción:</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-exclamation-triangle-fill"></i></span>
+                            <textarea name="restriccion" id="restriccion"
+                                      class="form-control @error('restriccion') is-invalid @enderror"
+                                      rows="3" maxlength="150" style="overflow:hidden; resize:none;">{{ old('restriccion') }}</textarea>
+                            <div class="invalid-feedback d-block">@error('restriccion') {{ $message }} @enderror</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
                         <label class="form-label fw-bold">Subir plantilla de promoción (opcional):</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-image"></i></span>
@@ -71,21 +82,19 @@
                                    accept="image/*">
                             <div class="invalid-feedback d-block">@error('imagen') {{ $message }} @enderror</div>
                         </div>
-
                     </div>
 
                     <div class="col-md-12">
                         <label class="form-label fw-bold">Vista previa:</label>
-                        <div class="preview-container border rounded shadow-sm overflow-hidden p-2 bg-light" id="previewCard">
+                        <div class="preview-container border rounded shadow-sm overflow-hidden p-2 bg-light position-relative" id="previewCard">
                             <img id="previewImagen" src="{{ asset('imagenes/plantilla_promocion.jpg') }}"
-                                 alt="Vista previa" class="w-100 rounded mb-3" style="object-fit:cover; max-height:200px;">
-                            <div class="text-center">
-                                <h5 id="previewNombre" class="fw-bold text-primary mb-1">Nombre de la promoción</h5>
-                                <p id="previewDescripcion" class="mb-1">Aquí aparecerá la descripción.</p>
-                                <p id="previewFechas" class="small text-muted">
-                                    <i class="bi bi-calendar3"></i>
-                                    <span id="fechaInicioText"></span> - <span id="fechaFinText"></span>
-                                </p>
+                                 alt="Vista previa" class="w-100 rounded mb-3" style="object-fit:cover; max-height:400px;">
+                            <!-- CUADRO NEGRO CENTRADO -->
+                            <div class="position-absolute top-50 start-50 translate-middle text-center p-3 bg-dark bg-opacity-50 rounded" style="max-width: 70%;">
+                                <h5 id="previewNombre" class="fw-bold text-white mb-1">Nombre de la promoción:</h5>
+                                <p id="previewDescripcion" class="text-white mb-1">Descripción:</p>
+                                <p id="previewRestriccion" class="text-white mb-1">Restricción:</p>
+                                <p id="previewFechas" class="small text-white mb-0">Promoción válida desde: <span id="fechaInicioText"></span> hasta <span id="fechaFinText"></span></p>
                             </div>
                         </div>
                         <div class="text-center mt-2">
@@ -120,118 +129,102 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
                 <div class="modal-body d-flex justify-content-center align-items-center bg-black overflow-auto" style="min-height: 60vh;">
-                    <div class="position-relative text-center" style="max-width:30%; max-height:50%;">
+                    <div class="position-relative text-center w-30">
                         <img id="modalImagen" src="{{ asset('imagenes/plantilla_promocion.jpg') }}"
-                             class="w-100 h-auto rounded shadow" style="object-fit: contain;">
+                             class="w-50 h-auto rounded shadow" style="object-fit: contain;">
 
-                        <div class="text-white mt-2">
-                            <h3 id="modalNombre" class="fw-bold">Nombre de la promoción</h3>
-                            <p id="modalDescripcion" class="mb-2">Aquí aparecerá la descripción.</p>
-                            <p id="modalFechas" class="small">
-                                <i class="bi bi-calendar3"></i>
-                                <span id="modalInicio"></span> - <span id="modalFin"></span>
-                            </p>
+                        <!-- CUADRO NEGRO CENTRADO -->
+                        <div class="position-absolute top-50 start-50 translate-middle text-center p-3 bg-dark bg-opacity-50 rounded" style="max-width: 50%;">
+                            <h3 id="modalNombre" class="fw-bold text-white mb-2">Nombre de la promoción:</h3>
+                            <p id="modalDescripcion" class="text-white mb-1">Descripción:</p>
+                            <p id="modalRestriccion" class="text-white mb-1">Restricción:</p>
+                            <p id="modalFechas" class="small text-white mb-0">Promoción válida desde: <span id="modalInicio"></span> hasta <span id="modalFin"></span></p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const hoy = new Date();
             const yyyy = hoy.getFullYear();
             const mm = hoy.getMonth() + 1;
-            const dd = String(hoy.getDate()).padStart(2, '0');
-            const hoyStr = `${yyyy}-${String(mm).padStart(2, '0')}-${dd}`;
+            const dd = String(hoy.getDate()).padStart(2,'0');
+            const hoyStr = `${yyyy}-${String(mm).padStart(2,'0')}-${dd}`;
 
-            // 🔹 Calcular el último día del siguiente mes
-            let nextMonth = mm + 1;
-            let nextYear = yyyy;
-            if (nextMonth > 12) {
-                nextMonth = 1;
-                nextYear++;
-            }
-            const lastDayNextMonth = new Date(nextYear, nextMonth, 0).getDate(); // Día 0 del mes siguiente da el último día
-            const maxStr = `${nextYear}-${String(nextMonth).padStart(2, '0')}-${String(lastDayNextMonth).padStart(2, '0')}`;
+            let maxDate = new Date();
+            maxDate.setMonth(maxDate.getMonth() + 4);
+            const maxStr = `${maxDate.getFullYear()}-${String(maxDate.getMonth()+1).padStart(2,'0')}-${String(maxDate.getDate()).padStart(2,'0')}`;
 
             const fechaInicio = document.getElementById('fecha_inicio');
             const fechaFin = document.getElementById('fecha_fin');
-
-            // Establecer límites dinámicos
             fechaInicio.value = hoyStr;
             fechaFin.value = hoyStr;
             fechaInicio.min = hoyStr;
-            fechaInicio.max = maxStr;
             fechaFin.min = hoyStr;
+            fechaInicio.max = maxStr;
             fechaFin.max = maxStr;
 
-            const descripcion = document.getElementById('descripcion');
             const nombreInput = document.getElementById('nombre');
+            const descripcion = document.getElementById('descripcion');
+            const restriccion = document.getElementById('restriccion');
             const imagenInput = document.getElementById('imagenInput');
 
             const previewNombre = document.getElementById('previewNombre');
             const previewDescripcion = document.getElementById('previewDescripcion');
-            const previewImagen = document.getElementById('previewImagen');
+            const previewRestriccion = document.getElementById('previewRestriccion');
             const fechaInicioText = document.getElementById('fechaInicioText');
             const fechaFinText = document.getElementById('fechaFinText');
 
             const modal = new bootstrap.Modal(document.getElementById('previewModal'));
-            const modalImagen = document.getElementById('modalImagen');
             const modalNombre = document.getElementById('modalNombre');
             const modalDescripcion = document.getElementById('modalDescripcion');
+            const modalRestriccion = document.getElementById('modalRestriccion');
             const modalInicio = document.getElementById('modalInicio');
             const modalFin = document.getElementById('modalFin');
+            const modalImagen = document.getElementById('modalImagen');
 
-            previewNombre.textContent = nombreInput.value || 'Nombre de la promoción';
-            previewDescripcion.textContent = descripcion.value || 'Aquí aparecerá la descripción.';
-            fechaInicioText.textContent = fechaInicio.value;
-            fechaFinText.textContent = fechaFin.value;
-            modalNombre.textContent = previewNombre.textContent;
-            modalDescripcion.textContent = previewDescripcion.textContent;
-            modalInicio.textContent = fechaInicio.value;
-            modalFin.textContent = fechaFin.value;
+            function formatoFecha(fecha) {
+                if(!fecha) return '';
+                const d = new Date(fecha);
+                const dd = String(d.getDate()).padStart(2,'0');
+                const mm = String(d.getMonth()+1).padStart(2,'0');
+                const yyyy = d.getFullYear();
+                return `${dd}/${mm}/${yyyy}`;
+            }
 
-            nombreInput.addEventListener('input', e => {
-                previewNombre.textContent = e.target.value || 'Nombre de la promoción';
+            function actualizarVista() {
+                previewNombre.textContent = "Nombre de la promoción: " + (nombreInput.value || '');
+                previewDescripcion.textContent = "Descripción: " + (descripcion.value || '');
+                previewRestriccion.textContent = "Restricción: " + (restriccion.value || '');
+                fechaInicioText.textContent = formatoFecha(fechaInicio.value);
+                fechaFinText.textContent = formatoFecha(fechaFin.value);
+
                 modalNombre.textContent = previewNombre.textContent;
-            });
-
-            descripcion.addEventListener('input', e => {
-                descripcion.style.height = 'auto';
-                descripcion.style.height = descripcion.scrollHeight + 'px';
-                previewDescripcion.textContent = e.target.value || 'Aquí aparecerá la descripción.';
                 modalDescripcion.textContent = previewDescripcion.textContent;
-            });
+                modalRestriccion.textContent = previewRestriccion.textContent;
+                modalInicio.textContent = fechaInicioText.textContent;
+                modalFin.textContent = fechaFinText.textContent;
+            }
 
-            fechaInicio.addEventListener('input', e => {
-                fechaInicioText.textContent = e.target.value;
-                modalInicio.textContent = e.target.value;
+            nombreInput.addEventListener('input', actualizarVista);
+            descripcion.addEventListener('input', actualizarVista);
+            restriccion.addEventListener('input', actualizarVista);
+            fechaInicio.addEventListener('input', actualizarVista);
+            fechaFin.addEventListener('input', actualizarVista);
 
-                if (fechaFin.value < e.target.value) {
-                    fechaFin.value = e.target.value;
-                    fechaFinText.textContent = e.target.value;
-                    modalFin.textContent = e.target.value;
-                }
-
-                fechaFin.min = e.target.value;
-            });
-
-            fechaFin.addEventListener('input', e => {
-                fechaFinText.textContent = e.target.value;
-                modalFin.textContent = e.target.value;
-            });
-
-            imagenInput.addEventListener('change', function() {
+            imagenInput.addEventListener('change', function(){
                 if(this.files && this.files[0]){
                     const reader = new FileReader();
                     reader.onload = e => {
-                        previewImagen.src = e.target.result;
+                        document.getElementById('previewImagen').src = e.target.result;
                         modalImagen.src = e.target.result;
                     };
                     reader.readAsDataURL(this.files[0]);
                 } else {
-                    previewImagen.src = "{{ asset('imagenes/plantilla_promocion.jpg') }}";
+                    document.getElementById('previewImagen').src = "{{ asset('imagenes/plantilla_promocion.jpg') }}";
                     modalImagen.src = "{{ asset('imagenes/plantilla_promocion.jpg') }}";
                 }
             });
@@ -242,21 +235,13 @@
                 e.preventDefault();
                 nombreInput.value = '';
                 descripcion.value = '';
+                restriccion.value = '';
                 fechaInicio.value = hoyStr;
                 fechaFin.value = hoyStr;
                 imagenInput.value = '';
-
-                previewNombre.textContent = 'Nombre de la promoción';
-                previewDescripcion.textContent = 'Aquí aparecerá la descripción.';
-                fechaInicioText.textContent = hoyStr;
-                fechaFinText.textContent = hoyStr;
-                previewImagen.src = "{{ asset('imagenes/plantilla_promocion.jpg') }}";
-
-                modalNombre.textContent = previewNombre.textContent;
-                modalDescripcion.textContent = previewDescripcion.textContent;
-                modalInicio.textContent = fechaInicio.value;
-                modalFin.textContent = fechaFin.value;
-                modalImagen.src = previewImagen.src;
+                actualizarVista();
+                document.getElementById('previewImagen').src = "{{ asset('imagenes/plantilla_promocion.jpg') }}";
+                modalImagen.src = "{{ asset('imagenes/plantilla_promocion.jpg') }}";
 
                 const feedbacks = document.querySelectorAll('.invalid-feedback');
                 feedbacks.forEach(f => f.textContent = '');
@@ -264,48 +249,8 @@
                 errores.forEach(el => el.classList.remove('is-invalid'));
             });
 
-            const form = document.getElementById('promocionForm');
-            form.addEventListener('submit', function(e) {
-                let error = false;
-
-                const feedbacks = form.querySelectorAll('.invalid-feedback');
-                feedbacks.forEach(f => f.textContent = '');
-                const errores = form.querySelectorAll('.is-invalid');
-                errores.forEach(el => el.classList.remove('is-invalid'));
-
-                if(nombreInput.value.trim() === '') {
-                    const feedback = nombreInput.closest('.input-group').querySelector('.invalid-feedback');
-                    feedback.textContent = 'Debe ingresar el nombre de la promoción';
-                    nombreInput.classList.add('is-invalid');
-                    error = true;
-                }
-
-                if(descripcion.value.trim() === '') {
-                    const feedback = descripcion.closest('.input-group').querySelector('.invalid-feedback');
-                    feedback.textContent = 'Debe ingresar una descripción';
-                    descripcion.classList.add('is-invalid');
-                    error = true;
-                }
-
-                if(fechaInicio.value === '') {
-                    const feedback = fechaInicio.closest('.input-group').querySelector('.invalid-feedback');
-                    feedback.textContent = 'Debe seleccionar una fecha';
-                    fechaInicio.classList.add('is-invalid');
-                    error = true;
-                }
-
-                if(fechaFin.value === '') {
-                    const feedback = fechaFin.closest('.input-group').querySelector('.invalid-feedback');
-                    feedback.textContent = 'Debe seleccionar una fecha';
-                    fechaFin.classList.add('is-invalid');
-                    error = true;
-                }
-
-                if(error) e.preventDefault();
-            });
+            actualizarVista();
         });
     </script>
-
-
     </body>
 @endsection
