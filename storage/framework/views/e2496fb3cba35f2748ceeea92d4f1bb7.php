@@ -6,7 +6,6 @@
             white-space: normal;
         }
 
-        /* Color para promociones vencidas */
         .promocion-expirada {
             background-color: #ffe6e6 !important;
         }
@@ -21,12 +20,24 @@
 
             <form method="GET" action="<?php echo e(route('promociones.index')); ?>">
                 <div class="row mb-4 align-items-center">
-                    <div class="col-md-4">
+
+                    <div class="col-md-3">
                         <div class="input-group input-group-sm">
                             <input type="text" name="search" id="searchInput" class="form-control"
-                                   placeholder="Buscar por nombre o descripción"
+                                   placeholder="Buscar nombre de promoción..."
                                    value="<?php echo e(request('search')); ?>">
                             <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text">Activo</span>
+                            <select name="activo" id="activoSelect" class="form-select">
+                                <option value="">Todos</option>
+                                <option value="1" <?php echo e(request('activo') == '1' ? 'selected' : ''); ?>>Sí</option>
+                                <option value="0" <?php echo e(request('activo') == '0' ? 'selected' : ''); ?>>No</option>
+                            </select>
                         </div>
                     </div>
 
@@ -54,8 +65,7 @@
                         </a>
                     </div>
 
-
-                    <div class="col-md-3 ms-auto">
+                    <div class="col-md-2 ms-auto">
                         <a href="<?php echo e(route('promociones.create')); ?>" class="btn btn-md btn-outline-primary w-100">
                             <i class="bi bi-pencil-square me-0"></i> Registrar nueva promoción
                         </a>
@@ -77,8 +87,7 @@
                     <thead class="table-dark">
                     <tr>
                         <th>#</th>
-                        <th>Nombre</th>
-                        <th>Descripción</th>
+                        <th>Nombre de la promoción</th>
                         <th>Fecha Inicio</th>
                         <th>Fecha Fin</th>
                         <th>Activo</th>
@@ -90,14 +99,13 @@
                         <?php
                             $hoy = \Carbon\Carbon::now();
                             $inicio = \Carbon\Carbon::parse($promocion->fecha_inicio);
-                            $fin = \Carbon\Carbon::parse($promocion->fecha_fin)->endOfDay(); // Incluye todo el día de fin
+                            $fin = \Carbon\Carbon::parse($promocion->fecha_fin)->endOfDay();
                             $esActiva = $hoy->between($inicio, $fin);
                         ?>
 
                         <tr class="<?php echo e(!$esActiva ? 'promocion-expirada' : ''); ?>">
                             <td><?php echo e($loop->iteration + ($promociones->currentPage() - 1) * $promociones->perPage()); ?></td>
                             <td><?php echo e($promocion->nombre); ?></td>
-                            <td><?php echo e(Str::limit($promocion->descripcion, 50)); ?></td>
                             <td><?php echo e($inicio->format('d/m/Y')); ?></td>
                             <td><?php echo e($fin->format('d/m/Y')); ?></td>
                             <td class="text-center">
@@ -122,7 +130,6 @@
                         </tr>
                     <?php endif; ?>
                     </tbody>
-
                 </table>
             </div>
 
@@ -147,23 +154,33 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const searchInput = document.getElementById('searchInput');
-            if (!searchInput) return;
+            const activoSelect = document.getElementById('activoSelect');
 
-            searchInput.focus();
-            const length = searchInput.value.length;
-            searchInput.setSelectionRange(length, length);
+            if (searchInput) {
+                searchInput.focus();
+                const length = searchInput.value.length;
+                searchInput.setSelectionRange(length, length);
+            }
 
             let timer;
-            searchInput.addEventListener('input', function () {
-                clearTimeout(timer);
-                timer = setTimeout(() => {
-                    const form = searchInput.closest('form');
-                    form.submit();
-                }, 500);
-            });
+            if (searchInput) {
+                searchInput.addEventListener('input', function () {
+                    clearTimeout(timer);
+                    timer = setTimeout(() => {
+                        const form = searchInput.closest('form');
+                        form.submit();
+                    }, 500);
+                });
+            }
+
+            if (activoSelect) {
+                activoSelect.addEventListener('change', function () {
+                    this.closest('form').submit();
+                });
+            }
         });
     </script>
     </body>
 <?php $__env->stopSection(); ?>
 
-<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\cesig\Herd\sistemadeseguridadcentinela\resources\views/promociones/index.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Admin\PhpstormProjects\Centinela\resources\views/promociones/index.blade.php ENDPATH**/ ?>

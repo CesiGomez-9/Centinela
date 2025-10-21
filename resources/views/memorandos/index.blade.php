@@ -20,7 +20,7 @@
                     <div class="col-md-3">
                         <div class="input-group input-group-sm">
                             <input type="text" name="search" id="searchInput" class="form-control"
-                                   placeholder="Buscar por empleado y autor..."
+                                   placeholder="Buscar empleado o creador..."
                                    value="{{ request('search') }}">
                             <span class="input-group-text"><i class="bi bi-search"></i></span>
                         </div>
@@ -32,7 +32,7 @@
                                 <i class="bi bi-tags"></i>
                             </label>
                             <select name="tipo_memorandum" id="tipo_memorandum" class="form-select">
-                                <option value="">Tipo</option>
+                                <option value="">Tipo...</option>
                                 <option value="Leve" {{ request('tipo_memorandum') == 'Leve' ? 'selected' : '' }}>Leve</option>
                                 <option value="Media" {{ request('tipo_memorandum') == 'Media' ? 'selected' : '' }}>Media</option>
                                 <option value="Grave" {{ request('tipo_memorandum') == 'Grave' ? 'selected' : '' }}>Grave</option>
@@ -72,7 +72,7 @@
                 </div>
             </form>
 
-        @if(session('success'))
+            @if(session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     <i class="bi bi-check-circle-fill me-2"></i>
                     {{ session('success') }}
@@ -81,13 +81,12 @@
             @endif
 
             <table class="table table-bordered table-striped tabla-memorandos">
-
-            <thead class="table-dark">
+                <thead class="table-dark">
                 <tr>
                     <th>#</th>
-                    <th>Empleado</th>
-                    <th>Autor</th>
-                    <th>Título</th>
+                    <th>Empleado Sancionado</th>
+                    <th>Creador del memorandum</th>
+                    <th>Número de Memorandum</th>
                     <th>Tipo</th>
                     <th>Fecha</th>
                     <th class="text-center">Acciones</th>
@@ -99,7 +98,7 @@
                         <td>{{ $loop->iteration + ($memorandos->currentPage() - 1) * $memorandos->perPage() }}</td>
                         <td>{{ $memorando->destinatario->nombre ?? '---' }} {{ $memorando->destinatario->apellido ?? '' }}</td>
                         <td>{{ $memorando->autor->nombre ?? '---' }} {{ $memorando->autor->apellido ?? '' }}</td>
-                        <td>{{ $memorando->titulo }}</td>
+                        <td>Memorandum N° {{ $memorando->id }}</td>
                         <td>{{ $memorando->tipo }}</td>
                         <td>{{ \Carbon\Carbon::parse($memorando->fecha)->format('d/m/Y') }}</td>
                         <td class="text-center">
@@ -115,7 +114,9 @@
                 @endforelse
                 </tbody>
             </table>
-            @if(request('search') && $memorandos->total() > 0)
+
+
+        @if(request('search') && $memorandos->total() > 0)
                 <div class="mb-3 text-muted">
                     Mostrando {{ $memorandos->count() }} de {{ $memorandos->total() }} memorandums encontrados para
                     "<strong>{{ request('search') }}</strong>".
@@ -126,7 +127,6 @@
                 </div>
             @endif
 
-
             <div class="d-flex justify-content-center mt-4">
                 {{ $memorandos->links('pagination::bootstrap-5') }}
             </div>
@@ -136,20 +136,31 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const searchInput = document.getElementById('searchInput');
-            if (!searchInput) return;
+            const tipoSelect = document.getElementById('tipo_memorandum');
 
-            searchInput.focus();
-            const length = searchInput.value.length;
-            searchInput.setSelectionRange(length, length);
+            if (searchInput) {
+                searchInput.focus();
+                const length = searchInput.value.length;
+                searchInput.setSelectionRange(length, length);
+            }
 
             let timer;
-            searchInput.addEventListener('input', function () {
-                clearTimeout(timer);
-                timer = setTimeout(() => {
-                    const form = searchInput.closest('form');
+            if (searchInput) {
+                searchInput.addEventListener('input', function () {
+                    clearTimeout(timer);
+                    timer = setTimeout(() => {
+                        const form = searchInput.closest('form');
+                        form.submit();
+                    }, 500);
+                });
+            }
+
+            if (tipoSelect) {
+                tipoSelect.addEventListener('change', function () {
+                    const form = tipoSelect.closest('form');
                     form.submit();
-                }, 500);
-            });
+                });
+            }
         });
     </script>
 @endsection

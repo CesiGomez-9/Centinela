@@ -14,12 +14,14 @@ return new class extends Migration
         Schema::create('promociones', function (Blueprint $table) {
             $table->id();
             $table->string('nombre', 150);
-            $table->text('descripcion')->nullable();
+            $table->text('descripcion');
+            $table->text('restriccion');
             $table->date('fecha_inicio');
             $table->date('fecha_fin');
-            $table->string('imagen')->nullable(); // para banner o logo de promoción
+            $table->string('imagen')->nullable();
             $table->timestamps();
         });
+
     }
 
     /**

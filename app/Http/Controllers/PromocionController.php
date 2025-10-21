@@ -12,18 +12,37 @@ class PromocionController extends Controller
     public function index(Request $request)
     {
         $query = Promocion::query();
+        $hoy = now();
 
         if ($search = $request->input('search')) {
-            $query->where('nombre', 'like', "%{$search}%")
-                ->orWhere('descripcion', 'like', "%{$search}%");
+            $query->where(function ($q) use ($search) {
+                $q->where('nombre', 'like', "%{$search}%")
+                    ->orWhere('descripcion', 'like', "%{$search}%");
+            });
         }
 
-        if ($request->fecha_inicio) {
+
+        if ($request->filled('fecha_inicio')) {
             $query->whereDate('fecha_inicio', '>=', $request->fecha_inicio);
         }
 
-        if ($request->fecha_fin) {
+        if ($request->filled('fecha_fin')) {
             $query->whereDate('fecha_fin', '<=', $request->fecha_fin);
+        }
+
+
+        if ($request->filled('activo')) {
+            if ($request->activo == '1') {
+                // Promociones activas: fecha actual entre inicio y fin
+                $query->whereDate('fecha_inicio', '<=', $hoy)
+                    ->whereDate('fecha_fin', '>=', $hoy);
+            } elseif ($request->activo == '0') {
+
+                $query->where(function ($q) use ($hoy) {
+                    $q->whereDate('fecha_fin', '<', $hoy)
+                        ->orWhereDate('fecha_inicio', '>', $hoy);
+                });
+            }
         }
 
         $promociones = $query->orderBy('fecha_inicio', 'asc')->paginate(10);
@@ -41,7 +60,8 @@ class PromocionController extends Controller
 
         $validated = $request->validate([
             'nombre' => 'required|max:100|regex:/^[\p{L}\s]+$/u',
-            'descripcion' => 'required|max:250|regex:/^[\p{L}\s]+$/u',
+            'descripcion' => 'required|max:250',
+            'restriccion' => 'required|max:150',
             'fecha_inicio' => 'required|date',
             'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
             'imagen' => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
@@ -49,27 +69,22 @@ class PromocionController extends Controller
             'nombre.required' => 'Debe ingresar el nombre de la promoción',
             'nombre.regex' => 'El nombre solo puede contener letras y espacios',
             'descripcion.required' => 'Debe ingresar una descripción',
-            'descripcion.regex' => 'La descripción solo puede contener letras y espacios',
+            'restriccion.required' => 'Debe ingresar una restricción',
             'fecha_inicio.required' => 'Debe seleccionar una fecha',
             'fecha_fin.required' => 'Debe seleccionar una fecha',
             'fecha_fin.after_or_equal' => 'La fecha fin debe ser igual o posterior a la fecha inicio',
             'imagen.image' => 'El archivo debe ser una imagen válida (jpg, jpeg o png)',
         ]);
 
+
         $nombreImagen = null;
-        if ($request->hasFile('imagen')) {
-            $file = $request->file('imagen');
-
-            if ($file->isValid()) {
-                $nombreImagen = $file->store('promociones', 'public');
-            } else {
-                return back()->withErrors(['imagen' => 'El archivo no se pudo subir.'])->withInput();
-            }
+        if ($request->hasFile('imagen') && $request->file('imagen')->isValid()) {
+            $nombreImagen = $request->file('imagen')->store('promociones', 'public');
         }
-
         Promocion::create([
             'nombre' => $validated['nombre'],
             'descripcion' => $validated['descripcion'],
+            'restriccion' => $validated['restriccion'],
             'fecha_inicio' => $validated['fecha_inicio'],
             'fecha_fin' => $validated['fecha_fin'],
             'imagen' => $nombreImagen,
@@ -78,14 +93,64 @@ class PromocionController extends Controller
         return redirect()->route('promociones.index')->with('success', '¡Promoción guardada correctamente!');
     }
 
+
+
     public function show(Promocion $promocion)
     {
         return view('promociones.show', compact('promocion'));
     }
 
-    public function edit(Promocion $promocion)
+    public function edit($id)
     {
+        $promocion = Promocion::findOrFail($id); // Buscar la promoción o fallar
         return view('promociones.edit', compact('promocion'));
     }
+
+
+    public function update(Request $request, $id)
+    {
+        $promocion = Promocion::findOrFail($id);
+
+        $validated = $request->validate([
+            'nombre' => 'required|max:100|regex:/^[\p{L}\s]+$/u',
+            'descripcion' => 'required|max:250',
+            'restriccion' => 'required|max:150',
+            'fecha_inicio' => 'required|date',
+            'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
+            'imagen' => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
+        ], [
+            'nombre.required' => 'Debe ingresar el nombre de la promoción',
+            'nombre.regex' => 'El nombre solo puede contener letras y espacios',
+            'descripcion.required' => 'Debe ingresar una descripción',
+            'restriccion.required' => 'Debe ingresar una restricción',
+            'fecha_inicio.required' => 'Debe seleccionar una fecha',
+            'fecha_fin.required' => 'Debe seleccionar una fecha',
+            'fecha_fin.after_or_equal' => 'La fecha fin debe ser igual o posterior a la fecha inicio',
+            'imagen.image' => 'El archivo debe ser una imagen válida (jpg, jpeg o png)',
+        ]);
+
+        // Si se subió nueva imagen, guardarla
+        if ($request->hasFile('imagen') && $request->file('imagen')->isValid()) {
+            // Opcional: eliminar la imagen anterior
+            if ($promocion->imagen && \Storage::disk('public')->exists($promocion->imagen)) {
+                \Storage::disk('public')->delete($promocion->imagen);
+            }
+
+            $promocion->imagen = $request->file('imagen')->store('promociones', 'public');
+        }
+
+        // Actualizar otros campos
+        $promocion->nombre = $validated['nombre'];
+        $promocion->descripcion = $validated['descripcion'];
+        $promocion->restriccion = $validated['restriccion'];
+        $promocion->fecha_inicio = $validated['fecha_inicio'];
+        $promocion->fecha_fin = $validated['fecha_fin'];
+
+        $promocion->save();
+
+        return redirect()->route('promociones.index')->with('success', '¡Promoción actualizada correctamente!');
+    }
+
+
 
 }

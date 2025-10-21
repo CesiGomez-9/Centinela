@@ -1,21 +1,22 @@
 @extends('plantilla')
-@section('content')
 
+@section('content')
     <body style="background-color: #e6f0ff;">
     <div class="container mt-5" style="max-width:900px;">
         <div class="card shadow p-4 bg-white position-relative">
-            <i class="bi bi-badge-ad-fill position-absolute top-0 end-0 p-3 text-secondary opacity-25" style="font-size:4rem;"></i>
+            <i class="bi bi-pencil-square position-absolute top-0 end-0 p-3 text-secondary opacity-25" style="font-size:4rem;"></i>
 
             <h3 class="text-center mb-4" style="color:#09457f;">
-                <i class="bi bi-badge-ad me-2"></i>Registrar nueva promoción
+                <i class="bi bi-pencil-fill me-2"></i>Editar promoción
             </h3>
 
             @if(session('success'))
-                <div class="alert alert-success">¡Promoción guardada correctamente!</div>
+                <div class="alert alert-success">¡Cambios guardados correctamente!</div>
             @endif
 
-            <form action="{{ route('promociones.store') }}" method="POST" enctype="multipart/form-data" novalidate id="promocionForm">
+            <form action="{{ route('promociones.update', $promocion->id) }}" method="POST" enctype="multipart/form-data" id="promocionForm" novalidate>
                 @csrf
+                @method('PUT')
                 <div class="row g-3">
 
                     <div class="col-md-6">
@@ -24,7 +25,7 @@
                             <span class="input-group-text"><i class="bi bi-card-heading"></i></span>
                             <input type="text" id="nombre" name="nombre"
                                    class="form-control @error('nombre') is-invalid @enderror"
-                                   value="{{ old('nombre') }}">
+                                   value="{{ old('nombre', $promocion->nombre) }}">
                             <div class="invalid-feedback d-block">@error('nombre') {{ $message }} @enderror</div>
                         </div>
                     </div>
@@ -35,7 +36,7 @@
                             <span class="input-group-text"><i class="bi bi-calendar-date-fill"></i></span>
                             <input type="date" name="fecha_inicio" id="fecha_inicio"
                                    class="form-control @error('fecha_inicio') is-invalid @enderror"
-                                   value="{{ old('fecha_inicio') }}">
+                                   value="{{ old('fecha_inicio', $promocion->fecha_inicio) }}">
                             <div class="invalid-feedback d-block">@error('fecha_inicio') {{ $message }} @enderror</div>
                         </div>
                     </div>
@@ -46,7 +47,7 @@
                             <span class="input-group-text"><i class="bi bi-calendar2-check-fill"></i></span>
                             <input type="date" name="fecha_fin" id="fecha_fin"
                                    class="form-control @error('fecha_fin') is-invalid @enderror"
-                                   value="{{ old('fecha_fin') }}">
+                                   value="{{ old('fecha_fin', $promocion->fecha_fin) }}">
                             <div class="invalid-feedback d-block">@error('fecha_fin') {{ $message }} @enderror</div>
                         </div>
                     </div>
@@ -57,7 +58,7 @@
                             <span class="input-group-text"><i class="bi bi-pencil-fill"></i></span>
                             <textarea name="descripcion" id="descripcion"
                                       class="form-control @error('descripcion') is-invalid @enderror"
-                                      rows="3" style="overflow:hidden; resize:none;">{{ old('descripcion') }}</textarea>
+                                      rows="3" style="overflow:hidden; resize:none;">{{ old('descripcion', $promocion->descripcion) }}</textarea>
                             <div class="invalid-feedback d-block">@error('descripcion') {{ $message }} @enderror</div>
                         </div>
                     </div>
@@ -68,13 +69,13 @@
                             <span class="input-group-text"><i class="bi bi-exclamation-triangle-fill"></i></span>
                             <textarea name="restriccion" id="restriccion"
                                       class="form-control @error('restriccion') is-invalid @enderror"
-                                      rows="3" maxlength="150" style="overflow:hidden; resize:none;">{{ old('restriccion') }}</textarea>
+                                      rows="3" maxlength="150" style="overflow:hidden; resize:none;">{{ old('restriccion', $promocion->restriccion) }}</textarea>
                             <div class="invalid-feedback d-block">@error('restriccion') {{ $message }} @enderror</div>
                         </div>
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label fw-bold">Subir plantilla de promoción (opcional):</label>
+                        <label class="form-label fw-bold">Actualizar imagen (opcional):</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-image"></i></span>
                             <input type="file" name="imagen" id="imagenInput"
@@ -87,14 +88,16 @@
                     <div class="col-md-12">
                         <label class="form-label fw-bold">Vista previa:</label>
                         <div class="preview-container border rounded shadow-sm overflow-hidden p-2 bg-light position-relative" id="previewCard">
-                            <img id="previewImagen" src="{{ asset('imagenes/plantilla_promocion.jpg') }}"
+                            <img id="previewImagen"
+                                 src="{{ $promocion->imagen ? asset('storage/'.$promocion->imagen) : asset('imagenes/plantilla_promocion.jpg') }}"
                                  alt="Vista previa" class="w-100 rounded mb-3" style="object-fit:cover; max-height:400px;">
-                            <!-- CUADRO NEGRO CENTRADO -->
                             <div class="position-absolute top-50 start-50 translate-middle text-center p-3 bg-dark bg-opacity-50 rounded" style="max-width: 70%;">
-                                <h5 id="previewNombre" class="fw-bold text-white mb-1">Nombre de la promoción:</h5>
-                                <p id="previewDescripcion" class="text-white mb-1">Descripción:</p>
-                                <p id="previewRestriccion" class="text-white mb-1">Restricción:</p>
-                                <p id="previewFechas" class="small text-white mb-0">Promoción válida desde: <span id="fechaInicioText"></span> hasta <span id="fechaFinText"></span></p>
+                                <h5 id="previewNombre" class="fw-bold text-white mb-1"></h5>
+                                <p id="previewDescripcion" class="text-white mb-1"></p>
+                                <p id="previewRestriccion" class="text-white mb-1"></p>
+                                <p id="previewFechas" class="small text-white mb-0">
+                                    Promoción válida desde: <span id="fechaInicioText"></span> hasta <span id="fechaFinText"></span>
+                                </p>
                             </div>
                         </div>
                         <div class="text-center mt-2">
@@ -108,11 +111,11 @@
                         <a href="{{ route('promociones.index') }}" class="btn btn-danger me-2">
                             <i class="bi bi-x-circle me-2"></i>Cancelar
                         </a>
-                        <button type="reset" class="btn btn-warning me-2" id="btnRestablecer">
-                            <i class="bi bi-eraser-fill me-2"></i>Limpiar
+                        <button type="button" class="btn btn-warning me-2" id="btnRestablecer">
+                            <i class="bi bi-arrow-counterclockwise me-2"></i>Restablecer
                         </button>
                         <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-save-fill me-2"></i>Guardar
+                            <i class="bi bi-save-fill me-2"></i>Guardar cambios
                         </button>
                     </div>
 
@@ -121,6 +124,7 @@
         </div>
     </div>
 
+    {{-- Modal de vista completa --}}
     <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-fullscreen">
             <div class="modal-content bg-dark">
@@ -130,14 +134,13 @@
                 </div>
                 <div class="modal-body d-flex justify-content-center align-items-center bg-black overflow-auto" style="min-height: 60vh;">
                     <div class="position-relative text-center w-30">
-                        <img id="modalImagen" src="{{ asset('imagenes/plantilla_promocion.jpg') }}"
+                        <img id="modalImagen"
+                             src="{{ $promocion->imagen ? asset('storage/'.$promocion->imagen) : asset('imagenes/plantilla_promocion.jpg') }}"
                              class="w-50 h-auto rounded shadow" style="object-fit: contain;">
-
-                        <!-- CUADRO NEGRO CENTRADO -->
                         <div class="position-absolute top-50 start-50 translate-middle text-center p-3 bg-dark bg-opacity-50 rounded" style="max-width: 50%;">
-                            <h3 id="modalNombre" class="fw-bold text-white mb-2">Nombre de la promoción:</h3>
-                            <p id="modalDescripcion" class="text-white mb-1">Descripción:</p>
-                            <p id="modalRestriccion" class="text-white mb-1">Restricción:</p>
+                            <h3 id="modalNombre" class="fw-bold text-white mb-2"></h3>
+                            <p id="modalDescripcion" class="text-white mb-1"></p>
+                            <p id="modalRestriccion" class="text-white mb-1"></p>
                             <p id="modalFechas" class="small text-white mb-0">Promoción válida desde: <span id="modalInicio"></span> hasta <span id="modalFin"></span></p>
                         </div>
                     </div>
@@ -148,28 +151,12 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const hoy = new Date();
-            const yyyy = hoy.getFullYear();
-            const mm = hoy.getMonth() + 1;
-            const dd = String(hoy.getDate()).padStart(2,'0');
-            const hoyStr = `${yyyy}-${String(mm).padStart(2,'0')}-${dd}`;
-
-            let maxDate = new Date();
-            maxDate.setMonth(maxDate.getMonth() + 4);
-            const maxStr = `${maxDate.getFullYear()}-${String(maxDate.getMonth()+1).padStart(2,'0')}-${String(maxDate.getDate()).padStart(2,'0')}`;
-
-            const fechaInicio = document.getElementById('fecha_inicio');
-            const fechaFin = document.getElementById('fecha_fin');
-            fechaInicio.value = hoyStr;
-            fechaFin.value = hoyStr;
-            fechaInicio.min = hoyStr;
-            fechaFin.min = hoyStr;
-            fechaInicio.max = maxStr;
-            fechaFin.max = maxStr;
 
             const nombreInput = document.getElementById('nombre');
             const descripcion = document.getElementById('descripcion');
             const restriccion = document.getElementById('restriccion');
+            const fechaInicio = document.getElementById('fecha_inicio');
+            const fechaFin = document.getElementById('fecha_fin');
             const imagenInput = document.getElementById('imagenInput');
 
             const previewNombre = document.getElementById('previewNombre');
@@ -186,21 +173,29 @@
             const modalFin = document.getElementById('modalFin');
             const modalImagen = document.getElementById('modalImagen');
 
+            // Valores originales desde la base de datos
+            const originalData = {
+                nombre: @json($promocion->nombre),
+                descripcion: @json($promocion->descripcion),
+                restriccion: @json($promocion->restriccion),
+                fecha_inicio: @json($promocion->fecha_inicio),
+                fecha_fin: @json($promocion->fecha_fin),
+                imagen: "{{ $promocion->imagen ? asset('storage/'.$promocion->imagen) : asset('imagenes/plantilla_promocion.jpg') }}"
+            };
+
             function formatoFecha(fecha) {
                 if(!fecha) return '';
                 const d = new Date(fecha);
-                const dd = String(d.getDate()).padStart(2,'0');
-                const mm = String(d.getMonth()+1).padStart(2,'0');
-                const yyyy = d.getFullYear();
-                return `${dd}/${mm}/${yyyy}`;
+                return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
             }
 
             function actualizarVista() {
-                previewNombre.textContent = "Nombre de la promoción: " + (nombreInput.value || '');
-                previewDescripcion.textContent = "Descripción: " + (descripcion.value || '');
-                previewRestriccion.textContent = "Restricción: " + (restriccion.value || '');
-                fechaInicioText.textContent = formatoFecha(fechaInicio.value);
-                fechaFinText.textContent = formatoFecha(fechaFin.value);
+                // Si el input está vacío, usar originalData como fallback
+                previewNombre.textContent = nombreInput.value ? "Nombre de la promoción: " + nombreInput.value : "Nombre de la promoción: " + originalData.nombre;
+                previewDescripcion.textContent = descripcion.value ? "Descripción: " + descripcion.value : "Descripción: " + originalData.descripcion;
+                previewRestriccion.textContent = restriccion.value ? "Restricción: " + restriccion.value : "Restricción: " + originalData.restriccion;
+                fechaInicioText.textContent = fechaInicio.value ? formatoFecha(fechaInicio.value) : formatoFecha(originalData.fecha_inicio);
+                fechaFinText.textContent = fechaFin.value ? formatoFecha(fechaFin.value) : formatoFecha(originalData.fecha_fin);
 
                 modalNombre.textContent = previewNombre.textContent;
                 modalDescripcion.textContent = previewDescripcion.textContent;
@@ -209,48 +204,67 @@
                 modalFin.textContent = fechaFinText.textContent;
             }
 
-            nombreInput.addEventListener('input', actualizarVista);
-            descripcion.addEventListener('input', actualizarVista);
-            restriccion.addEventListener('input', actualizarVista);
-            fechaInicio.addEventListener('input', actualizarVista);
-            fechaFin.addEventListener('input', actualizarVista);
+            // Ejecutar al cargar para llenar preview y modal
+            actualizarVista();
 
+            // Actualizar preview y modal al escribir
+            [nombreInput, descripcion, restriccion, fechaInicio, fechaFin].forEach(input => {
+                input.addEventListener('input', actualizarVista);
+            });
+
+            // Imagen
             imagenInput.addEventListener('change', function(){
+                const previewImagen = document.getElementById('previewImagen');
                 if(this.files && this.files[0]){
                     const reader = new FileReader();
                     reader.onload = e => {
-                        document.getElementById('previewImagen').src = e.target.result;
+                        previewImagen.src = e.target.result;
                         modalImagen.src = e.target.result;
                     };
                     reader.readAsDataURL(this.files[0]);
                 } else {
-                    document.getElementById('previewImagen').src = "{{ asset('imagenes/plantilla_promocion.jpg') }}";
-                    modalImagen.src = "{{ asset('imagenes/plantilla_promocion.jpg') }}";
+                    previewImagen.src = originalData.imagen;
+                    modalImagen.src = originalData.imagen;
                 }
             });
 
             document.getElementById('btnAmpliar').addEventListener('click', () => modal.show());
 
+            // Restablecer
             document.getElementById('btnRestablecer').addEventListener('click', e => {
                 e.preventDefault();
-                nombreInput.value = '';
-                descripcion.value = '';
-                restriccion.value = '';
-                fechaInicio.value = hoyStr;
-                fechaFin.value = hoyStr;
-                imagenInput.value = '';
-                actualizarVista();
-                document.getElementById('previewImagen').src = "{{ asset('imagenes/plantilla_promocion.jpg') }}";
-                modalImagen.src = "{{ asset('imagenes/plantilla_promocion.jpg') }}";
 
+                // Restaurar valores originales
+                nombreInput.value = originalData.nombre;
+                descripcion.value = originalData.descripcion;
+                restriccion.value = originalData.restriccion;
+                fechaInicio.value = originalData.fecha_inicio;
+                fechaFin.value = originalData.fecha_fin;
+                document.getElementById('previewImagen').src = originalData.imagen;
+                modalImagen.src = originalData.imagen;
+                imagenInput.value = '';
+
+                // Ocultar alertas de validación
                 const feedbacks = document.querySelectorAll('.invalid-feedback');
-                feedbacks.forEach(f => f.textContent = '');
+                feedbacks.forEach(f => {
+                    f.textContent = '';   // Borra el mensaje
+                    f.style.display = 'none'; // Oculta visualmente
+                });
+
+                // Quitar clase is-invalid de los inputs
                 const errores = document.querySelectorAll('.is-invalid');
                 errores.forEach(el => el.classList.remove('is-invalid'));
+
+                // Ocultar alertas tipo session si existen
+                const sessionAlerts = document.querySelectorAll('.alert');
+                sessionAlerts.forEach(alert => alert.remove());
+
+                // Actualizar preview y modal
+                actualizarVista();
             });
 
-            actualizarVista();
         });
+
     </script>
     </body>
 @endsection

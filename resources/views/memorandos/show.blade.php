@@ -135,14 +135,14 @@
         <div class="card-body">
             <div class="text-center mb-3">
                 <h5 class="fw-bold">GRUPO CENTINELA</h5>
-                <small>Memorando N° {{ $memorando->id }}</small>
+                <small>Memorandum N° {{ $memorando->id }}</small>
             </div>
 
             <div class="info-container">
                 <!-- Cuadro Empleado, Autor, Título -->
                 <div class="info-box">
-                    <p><i class="bi bi-person-fill me-2"></i><strong>Empleado:</strong> {{ $memorando->destinatario->nombre ?? '' }} {{ $memorando->destinatario->apellido ?? '' }}</p>
-                    <p><i class="bi bi-person-fill me-2"></i><strong>Autor:</strong> {{ $memorando->autor->nombre ?? '' }} {{ $memorando->autor->apellido ?? '' }}</p>
+                    <p><i class="bi bi-person-fill me-2"></i><strong>Empleado Sancionado:</strong> {{ $memorando->destinatario->nombre ?? '' }} {{ $memorando->destinatario->apellido ?? '' }}</p>
+                    <p><i class="bi bi-person-fill me-2"></i><strong>Creador del memorandum:</strong> {{ $memorando->autor->nombre ?? '' }} {{ $memorando->autor->apellido ?? '' }}</p>
                     <p><i class="bi bi-card-heading"></i><strong>  Asunto:</strong> {{ $memorando->titulo }}</p>
                 </div>
 
@@ -150,6 +150,7 @@
                 <div class="info-box">
                     <p><i class="bi bi-exclamation-triangle-fill"></i><strong> Tipo:</strong> {{ $memorando->tipo }}</p>
                     <p><i class="bi bi-calendar-date-fill"></i><strong>  Fecha:</strong> {{ \Carbon\Carbon::parse($memorando->fecha)->format('d/m/Y') }}</p>
+                    <p><i class="bi bi-hammer"></i><strong>  Sancion:</strong> {{ $memorando->sancion }}</p>
                 </div>
             </div>
 

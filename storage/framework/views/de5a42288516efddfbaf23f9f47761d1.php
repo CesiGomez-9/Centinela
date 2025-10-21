@@ -1,5 +1,4 @@
-@extends('plantilla')
-@section('content')
+<?php $__env->startSection('content'); ?>
 
     <body style="background-color: #e6f0ff;">
     <div class="container mt-5" style="max-width:900px;">
@@ -10,12 +9,12 @@
                 <i class="bi bi-badge-ad me-2"></i>Registrar nueva promoción
             </h3>
 
-            @if(session('success'))
+            <?php if(session('success')): ?>
                 <div class="alert alert-success">¡Promoción guardada correctamente!</div>
-            @endif
+            <?php endif; ?>
 
-            <form action="{{ route('promociones.store') }}" method="POST" enctype="multipart/form-data" novalidate id="promocionForm">
-                @csrf
+            <form action="<?php echo e(route('promociones.store')); ?>" method="POST" enctype="multipart/form-data" novalidate id="promocionForm">
+                <?php echo csrf_field(); ?>
                 <div class="row g-3">
 
                     <div class="col-md-6">
@@ -23,9 +22,23 @@
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-card-heading"></i></span>
                             <input type="text" id="nombre" name="nombre"
-                                   class="form-control @error('nombre') is-invalid @enderror"
-                                   value="{{ old('nombre') }}">
-                            <div class="invalid-feedback d-block">@error('nombre') {{ $message }} @enderror</div>
+                                   class="form-control <?php $__errorArgs = ['nombre'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                   value="<?php echo e(old('nombre')); ?>">
+                            <div class="invalid-feedback d-block"><?php $__errorArgs = ['nombre'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <?php echo e($message); ?> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?></div>
                         </div>
                     </div>
 
@@ -34,9 +47,23 @@
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-calendar-date-fill"></i></span>
                             <input type="date" name="fecha_inicio" id="fecha_inicio"
-                                   class="form-control @error('fecha_inicio') is-invalid @enderror"
-                                   value="{{ old('fecha_inicio') }}">
-                            <div class="invalid-feedback d-block">@error('fecha_inicio') {{ $message }} @enderror</div>
+                                   class="form-control <?php $__errorArgs = ['fecha_inicio'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                   value="<?php echo e(old('fecha_inicio')); ?>">
+                            <div class="invalid-feedback d-block"><?php $__errorArgs = ['fecha_inicio'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <?php echo e($message); ?> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?></div>
                         </div>
                     </div>
 
@@ -45,9 +72,23 @@
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-calendar2-check-fill"></i></span>
                             <input type="date" name="fecha_fin" id="fecha_fin"
-                                   class="form-control @error('fecha_fin') is-invalid @enderror"
-                                   value="{{ old('fecha_fin') }}">
-                            <div class="invalid-feedback d-block">@error('fecha_fin') {{ $message }} @enderror</div>
+                                   class="form-control <?php $__errorArgs = ['fecha_fin'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                   value="<?php echo e(old('fecha_fin')); ?>">
+                            <div class="invalid-feedback d-block"><?php $__errorArgs = ['fecha_fin'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <?php echo e($message); ?> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?></div>
                         </div>
                     </div>
 
@@ -56,9 +97,23 @@
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-pencil-fill"></i></span>
                             <textarea name="descripcion" id="descripcion"
-                                      class="form-control @error('descripcion') is-invalid @enderror"
-                                      rows="3" style="overflow:hidden; resize:none;">{{ old('descripcion') }}</textarea>
-                            <div class="invalid-feedback d-block">@error('descripcion') {{ $message }} @enderror</div>
+                                      class="form-control <?php $__errorArgs = ['descripcion'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                      rows="3" style="overflow:hidden; resize:none;"><?php echo e(old('descripcion')); ?></textarea>
+                            <div class="invalid-feedback d-block"><?php $__errorArgs = ['descripcion'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <?php echo e($message); ?> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?></div>
                         </div>
                     </div>
 
@@ -67,9 +122,23 @@
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-exclamation-triangle-fill"></i></span>
                             <textarea name="restriccion" id="restriccion"
-                                      class="form-control @error('restriccion') is-invalid @enderror"
-                                      rows="3" maxlength="150" style="overflow:hidden; resize:none;">{{ old('restriccion') }}</textarea>
-                            <div class="invalid-feedback d-block">@error('restriccion') {{ $message }} @enderror</div>
+                                      class="form-control <?php $__errorArgs = ['restriccion'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                      rows="3" maxlength="150" style="overflow:hidden; resize:none;"><?php echo e(old('restriccion')); ?></textarea>
+                            <div class="invalid-feedback d-block"><?php $__errorArgs = ['restriccion'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <?php echo e($message); ?> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?></div>
                         </div>
                     </div>
 
@@ -78,16 +147,30 @@
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-image"></i></span>
                             <input type="file" name="imagen" id="imagenInput"
-                                   class="form-control @error('imagen') is-invalid @enderror"
+                                   class="form-control <?php $__errorArgs = ['imagen'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                    accept="image/*">
-                            <div class="invalid-feedback d-block">@error('imagen') {{ $message }} @enderror</div>
+                            <div class="invalid-feedback d-block"><?php $__errorArgs = ['imagen'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <?php echo e($message); ?> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?></div>
                         </div>
                     </div>
 
                     <div class="col-md-12">
                         <label class="form-label fw-bold">Vista previa:</label>
                         <div class="preview-container border rounded shadow-sm overflow-hidden p-2 bg-light position-relative" id="previewCard">
-                            <img id="previewImagen" src="{{ asset('imagenes/plantilla_promocion.jpg') }}"
+                            <img id="previewImagen" src="<?php echo e(asset('imagenes/plantilla_promocion.jpg')); ?>"
                                  alt="Vista previa" class="w-100 rounded mb-3" style="object-fit:cover; max-height:400px;">
                             <!-- CUADRO NEGRO CENTRADO -->
                             <div class="position-absolute top-50 start-50 translate-middle text-center p-3 bg-dark bg-opacity-50 rounded" style="max-width: 70%;">
@@ -105,7 +188,7 @@
                     </div>
 
                     <div class="text-center mt-4 col-12">
-                        <a href="{{ route('promociones.index') }}" class="btn btn-danger me-2">
+                        <a href="<?php echo e(route('promociones.index')); ?>" class="btn btn-danger me-2">
                             <i class="bi bi-x-circle me-2"></i>Cancelar
                         </a>
                         <button type="reset" class="btn btn-warning me-2" id="btnRestablecer">
@@ -130,7 +213,7 @@
                 </div>
                 <div class="modal-body d-flex justify-content-center align-items-center bg-black overflow-auto" style="min-height: 60vh;">
                     <div class="position-relative text-center w-30">
-                        <img id="modalImagen" src="{{ asset('imagenes/plantilla_promocion.jpg') }}"
+                        <img id="modalImagen" src="<?php echo e(asset('imagenes/plantilla_promocion.jpg')); ?>"
                              class="w-50 h-auto rounded shadow" style="object-fit: contain;">
 
                         <!-- CUADRO NEGRO CENTRADO -->
@@ -224,8 +307,8 @@
                     };
                     reader.readAsDataURL(this.files[0]);
                 } else {
-                    document.getElementById('previewImagen').src = "{{ asset('imagenes/plantilla_promocion.jpg') }}";
-                    modalImagen.src = "{{ asset('imagenes/plantilla_promocion.jpg') }}";
+                    document.getElementById('previewImagen').src = "<?php echo e(asset('imagenes/plantilla_promocion.jpg')); ?>";
+                    modalImagen.src = "<?php echo e(asset('imagenes/plantilla_promocion.jpg')); ?>";
                 }
             });
 
@@ -240,8 +323,8 @@
                 fechaFin.value = hoyStr;
                 imagenInput.value = '';
                 actualizarVista();
-                document.getElementById('previewImagen').src = "{{ asset('imagenes/plantilla_promocion.jpg') }}";
-                modalImagen.src = "{{ asset('imagenes/plantilla_promocion.jpg') }}";
+                document.getElementById('previewImagen').src = "<?php echo e(asset('imagenes/plantilla_promocion.jpg')); ?>";
+                modalImagen.src = "<?php echo e(asset('imagenes/plantilla_promocion.jpg')); ?>";
 
                 const feedbacks = document.querySelectorAll('.invalid-feedback');
                 feedbacks.forEach(f => f.textContent = '');
@@ -253,4 +336,6 @@
         });
     </script>
     </body>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Admin\PhpstormProjects\Centinela\resources\views/promociones/create.blade.php ENDPATH**/ ?>

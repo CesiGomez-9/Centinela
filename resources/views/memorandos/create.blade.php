@@ -19,7 +19,7 @@
                 <div class="row g-3">
 
                     <div class="col-md-6">
-                        <label for="destinatarioInput" class="form-label fw-bold">Empleado:</label>
+                        <label for="destinatarioInput" class="form-label fw-bold">Empleado Sancionado:</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-search"></i></span>
                             <input type="text"
@@ -35,7 +35,7 @@
                         <div id="destinatarioResults" class="list-group" style="max-height:200px; overflow-y:auto;"></div>
                     </div>
                     <div class="col-md-6">
-                        <label for="autorInput" class="form-label fw-bold">Autor:</label>
+                        <label for="autorInput" class="form-label fw-bold">Creador del memorandum:</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-search"></i></span>
                             <input type="text"
@@ -169,7 +169,6 @@
             }
         });
 
-        // ✅ Obtener fecha local (sin UTC)
         function getFechaLocal() {
             const hoy = new Date();
             const year = hoy.getFullYear();
@@ -178,17 +177,14 @@
             return `${year}-${month}-${day}`;
         }
 
-        // ✅ BOTÓN LIMPIAR
         document.getElementById('btnLimpiar').addEventListener('click', function (e) {
             e.preventDefault();
 
-            // Limpiar validaciones visuales
             document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
             document.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
             const alerta = document.querySelector('.alert');
             if (alerta) alerta.remove();
 
-            // Limpiar todos los campos manualmente
             document.getElementById('destinatarioInput').value = '';
             document.getElementById('autorInput').value = '';
             document.getElementById('destinatario_id').value = '';
@@ -201,37 +197,30 @@
             document.getElementById('observaciones').value = '';
             document.getElementById('tipo').selectedIndex = 0;
 
-            // ✅ Restaurar la fecha actual local
             document.getElementById('fecha').value = getFechaLocal();
 
-            // ✅ Limpiar el campo de adjunto
             const adjuntoInput = document.querySelector('input[name="adjunto"]');
             adjuntoInput.value = '';
             sessionStorage.removeItem('archivoAdjunto');
 
-            // Quitar texto mostrado del archivo
             const label = adjuntoInput.nextElementSibling;
             if (label && label.classList.contains('archivo-nombre')) {
                 label.remove();
             }
 
-            // Autoajuste de los textareas
             ['contenido', 'sancion', 'observaciones'].forEach(id => {
                 const campo = document.getElementById(id);
                 if (campo) autoResize(campo);
             });
         });
 
-        // ✅ Evitar que se borre el adjunto al enviar con errores
         const fileInput = document.querySelector('input[name="adjunto"]');
         const storedFile = sessionStorage.getItem('archivoAdjunto');
 
-        // Si hay un archivo guardado, mostrarlo dentro del input (en el texto del campo)
         if (storedFile) {
             mostrarNombreArchivo(storedFile);
         }
 
-        // Al seleccionar un nuevo archivo
         fileInput.addEventListener('change', function() {
             if (fileInput.files.length > 0) {
                 const nombreArchivo = fileInput.files[0].name;
@@ -243,17 +232,13 @@
             }
         });
 
-        // ✅ Mostrar nombre dentro del input file
         function mostrarNombreArchivo(nombre) {
-            // Sobrescribe el texto del input usando el pseudo placeholder de Bootstrap
             const dataTransfer = new DataTransfer();
             const fakeFile = new File([""], nombre);
             dataTransfer.items.add(fakeFile);
             fileInput.files = dataTransfer.files;
         }
 
-
-        // Autocomplete empleados
         function setupAutocomplete(inputId, resultsId, hiddenId, url, extraParams = {}) {
             const input = document.getElementById(inputId);
             const results = document.getElementById(resultsId);
@@ -295,6 +280,5 @@
         setupAutocomplete('destinatarioInput', 'destinatarioResults', 'destinatario_id', '{{ route("empleados.buscar") }}', { tipo: 'todos' });
         setupAutocomplete('autorInput', 'autorResults', 'autor_id', '{{ route("empleados.buscar") }}', { tipo: 'administracion' });
     </script>
-
     </body>
 @endsection

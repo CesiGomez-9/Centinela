@@ -18,8 +18,8 @@ return new class extends Migration
             $table->foreignId('cliente_id')->constrained('clientes')->onDelete('cascade');
             $table->date('fecha_inicio');
             $table->date('fecha_fin');
-            $table->time('hora_inicio');
-            $table->time('hora_fin');
+            $table->time('hora_inicio')->nullable();;
+            $table->time('hora_fin')->nullable();;
             $table->string('tipo_turno');
             $table->text('observaciones')->nullable();
             $table->timestamps();

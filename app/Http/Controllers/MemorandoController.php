@@ -74,11 +74,11 @@ class MemorandoController extends Controller
             'adjunto' => 'nullable|file|mimes:pdf,doc,docx,jpg,png|max:2048',
         ], [
 
-            'destinatario_id.required' => 'Debe seleccionar un empleado',
-            'destinatario_id.different' => 'El empleado no puede ser el mismo que el autor',
+            'destinatario_id.required' => 'Debe seleccionar un empleado sancionado',
+            'destinatario_id.different' => 'El empleado sancionado no puede ser el mismo que el creador del memorandum',
 
-            'autor_id.required' => 'Debe seleccionar un empleado',
-            'autor_id.different' => 'El autor no puede ser el mismo que el empleado',
+            'autor_id.required' => 'Debe seleccionar un creador del memorandum',
+            'autor_id.different' => 'El creador del memorandum no puede ser el mismo que el empleado sancionado',
 
             'titulo.required' => 'Debe ingresar un asunto',
             'titulo.string' => 'El asunto debe ser texto válido',
