@@ -1,38 +1,12 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8" />
-    <title>Editar Empleado</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+<?php $__env->startSection('content'); ?>
+
     <style>
         .invalid-feedback {
             display: block;
         }
     </style>
-</head>
+
 <body style="background-color: #e6f0ff;">
-
-<nav class="navbar navbar-expand-lg" style="background-color: #0A1F44; padding-top: 1.2rem; padding-bottom: 1.2rem; font-family: 'Courier New', sans-serif;">
-    <div class="container" style="max-width: 1600px;">
-        <a class="navbar-brand text-white fw-bold" href="#">
-            <img src="<?php echo e(asset('centinela.jpg')); ?>" style="height:80px; margin-right: 10px;" alt="Logo Grupo Centinela">
-            Grupo Centinela
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link text-white" href="#">Registrate</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="#">Servicios</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="#">Nosotros</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="#">Contacto</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
-
 <div class="container bg-white p-5 rounded shadow mt-5 mb-5" style="max-width: 950px;">
     <div class="d-flex justify-content-center mb-4">
         <h3 class="mb-0 text-center" style="color: #09457f;">
@@ -1064,7 +1038,6 @@ unset($__errorArgs, $__bag); ?></div>
         });
     });
 </script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
-<?php /**PATH C:\Users\Admin\PhpstormProjects\Centinela\resources\views/empleados/edit.blade.php ENDPATH**/ ?>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Admin\PhpstormProjects\Centinela\resources\views/empleados/edit.blade.php ENDPATH**/ ?>

@@ -6,6 +6,7 @@ use App\Http\Controllers\FacturaCompraController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\ServicioController;
+use App\Http\Controllers\PromocionController;
 use App\Http\Controllers\TurnoController;
 use Illuminate\Support\Facades\Route;
 
@@ -121,9 +122,14 @@ Route::get('/instalaciones/eventos', [\App\Http\Controllers\InstalacionControlle
 Route::get('/asistencias/index', [\App\Http\Controllers\AsistenciaController::class, 'index'])->name('asistencias.index');
 Route::get('/asistencias/crear', [\App\Http\Controllers\AsistenciaController::class, 'create'])->name('asistencias.crear');
 Route::post('/asistencias', [\App\Http\Controllers\AsistenciaController::class, 'store'])->name('asistencias.store');
+Route::get('/asistencias/{id}', [\App\Http\Controllers\AsistenciaController::class, 'show'])->name('asistencias.show');
 
 
 
-Route::get('/incidencias/crear', [\App\Http\Controllers\IncidenciaController::class, 'create'])->name('incidencias.formulario');
-Route::post('/incidencias/crear', [\App\Http\Controllers\IncidenciaController::class, 'store'])->name('incidencias.store');
-Route::get('/incidencias', [\App\Http\Controllers\IncidenciaController::class, 'index'])->name('incidencias.index');
+Route::get('/promociones', [\App\Http\Controllers\PromocionController::class, 'index'])->name('promociones.index');
+Route::get('/promociones/create', [\App\Http\Controllers\PromocionController::class, 'create'])->name('promociones.create');
+Route::get('/promociones', [PromocionController::class, 'index'])->name('promociones.index');
+Route::get('/promociones/show', [\App\Http\Controllers\PromocionController::class, 'show'])->name('promociones.show');
+Route::get('/promociones/{id}/edit', [\App\Http\Controllers\PromocionController::class, 'edit'])->name('promociones.edit');
+Route::put('/promociones/{id}', [\App\Http\Controllers\PromocionController::class, 'update'])->name('promociones.update');
+

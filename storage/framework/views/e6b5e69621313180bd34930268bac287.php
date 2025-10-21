@@ -1,32 +1,4 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Informacion del Empleado</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-</head>
-<body style="background-color: #f8f4ec; font-family: 'Inter', sans-serif; font-size: 16px;">
-<nav class="navbar navbar-expand-lg" style="background-color: #0A1F44; padding-top: 1.2rem; padding-bottom: 1.2rem; font-family: 'Courier New', sans-serif;">
-    <div class="container" style="max-width: 1600px;">
-        <a class="navbar-brand text-white fw-bold" href="#">
-            <img src="<?php echo e(asset('centinela.jpg')); ?>" style="height:80px; margin-right: 10px;">
-            Grupo Centinela
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link text-white" href="#">Registrate</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="#">Servicios</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="#">Nosotros</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="#">Contacto</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
+<?php $__env->startSection('content'); ?>
 
 <?php if(session('info')): ?>
     <div class="alert alert-info alert-dismissible fade show mt-3 mx-3" role="alert">
@@ -198,7 +170,6 @@
                             <p><i class="bi bi-exclamation-diamond-fill me-2"></i><strong>Alergias:</strong></p>
 
                             <?php
-                                // Convertir alergias a array, para evitar errores
                                 $alergiasArray = [];
 
                                 if (is_string($empleado->alergias)) {
@@ -264,9 +235,6 @@
         </div>
     </div>
 </div>
+<?php $__env->stopSection(); ?>
 
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
-<?php /**PATH C:\Users\Admin\PhpstormProjects\Centinela\resources\views/empleados/show.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Admin\PhpstormProjects\Centinela\resources\views/empleados/show.blade.php ENDPATH**/ ?>
