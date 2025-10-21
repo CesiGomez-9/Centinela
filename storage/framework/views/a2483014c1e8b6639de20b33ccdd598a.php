@@ -63,6 +63,8 @@
                         white-space: normal !important;
                     }
                 </style>
+
+
                 <form action="<?php echo e(route('incidencias.update', $incidencia->id)); ?>" method="POST" id="form-incidencia" novalidate>
                     <?php echo csrf_field(); ?>
                     <?php echo method_field('PUT'); ?>
@@ -96,13 +98,14 @@ $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
-                            <div class="invalid-feedback"><?php echo e($message); ?></div>
+                            <div class="invalid-feedback d-block"><?php echo e($message); ?></div>
                             <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
                             <div id="clienteResults" class="list-group mt-1" style="max-height:200px; overflow-y:auto;"></div>
                         </div>
+
 
                         
                         <div class="col-md-6">
@@ -117,61 +120,63 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" required>
-                                    <option value="" disabled <?php echo e(old('tipo', $incidencia->tipo ?? '') ? '' : 'selected'); ?>>Seleccione un tipo</option>
-                                    <?php
-                                        $tipos = [
-                                            'Accidentes laborales',
-                                            'Conflictos con clientes',
-                                            'Errores en la instalacion',
-                                            'Fallas tecnicas',
-                                            'Falla o retraso del personal',
-                                            'Incidentes de seguridad',
-                                            'Incumplimiento de protocolos',
-                                            'Otros'
-                                        ];
-                                    ?>
-                                    <?php $__currentLoopData = $tipos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $tipo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <option value="<?php echo e($tipo); ?>" <?php echo e(old('tipo', $incidencia->tipo ?? '') == $tipo ? 'selected' : ''); ?>><?php echo e($tipo); ?></option>
+                                    <option value="">Seleccione un tipo</option>
+                                    <?php $__currentLoopData = [
+                                        "accidentes laborales",
+                                        "conflictos con clientes",
+                                        "errores en la instalacion",
+                                        "fallas tecnicas",
+                                        "falla o retraso del personal",
+                                        "incidentes de seguridad",
+                                        "incumplimiento de protocolos",
+                                        "otros"
+                                    ]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $dep): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <option value="<?php echo e($dep); ?>" <?php echo e(old('tipo', $incidencia->tipo) == $dep ? 'selected' : ''); ?>><?php echo e($dep); ?></option>
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </select>
-                            </div>
-                            <?php $__errorArgs = ['tipo'];
+                                <?php $__errorArgs = ['tipo'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
-                            <div class="invalid-feedback"><?php echo e($message); ?></div>
-                            <?php unset($message);
+                                <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
+                            </div>
                         </div>
 
-                        
+
+                        <!-- Agentes involucrados -->
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Empleados involucrados</label>
+
                             <div class="card">
-                                <div class="card-body" style="max-height: 200px; overflow-y: auto;">
-                                    <?php
-                                        $empleadosSeleccionados = old('agente_id', $incidencia->agentes ? $incidencia->agentes->pluck('id')->toArray() : []);
-                                    ?>
-                                    <?php $__currentLoopData = $empleados; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $empleado): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <?php if(in_array($empleado->categoria, ['Tecnico', 'Vigilancia'])): ?>
-                                            <div class="form-check mb-2">
-                                                <input class="form-check-input"
-                                                       type="checkbox"
-                                                       name="agente_id[]"
-                                                       value="<?php echo e($empleado->id); ?>"
-                                                       id="agente_<?php echo e($empleado->id); ?>"
-                                                    <?php echo e(in_array($empleado->id, $empleadosSeleccionados) ? 'checked' : ''); ?>>
-                                                <label class="form-check-label" for="agente_<?php echo e($empleado->id); ?>">
-                                                    <?php echo e($empleado->nombre); ?> (<?php echo e(ucfirst($empleado->categoria)); ?>)
-                                                </label>
-                                            </div>
-                                        <?php endif; ?>
-                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                <div class="card-body" style="max-height: 200px; overflow-y: auto; overflow-x: hidden;">
+                                    <div>
+                                        <?php $__currentLoopData = $empleados; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $empleado): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <?php if(in_array($empleado->categoria, ['Tecnico', 'Vigilancia'])): ?>
+                                                <div class="form-check mb-2">
+                                                    <input class="form-check-input"
+                                                           type="checkbox"
+                                                           name="agente_id[]"
+                                                           value="<?php echo e($empleado->id); ?>"
+                                                           id="agente_<?php echo e($empleado->id); ?>"
+                                                        <?php echo e((
+                                                                (is_array(old('agente_id')) && in_array($empleado->id, old('agente_id'))) ||
+                                                                (!old('agente_id') && isset($incidencia) && $incidencia->agentes->contains('id', $empleado->id))
+                                                            ) ? 'checked' : ''); ?>>
+                                                    <label class="form-check-label" for="agente_<?php echo e($empleado->id); ?>">
+                                                        <?php echo e($empleado->nombre); ?>  (<?php echo e(ucfirst($empleado->categoria)); ?>)
+                                                    </label>
+                                                </div>
+                                            <?php endif; ?>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    </div>
                                 </div>
                             </div>
+
                             <?php $__errorArgs = ['agente_id'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -184,11 +189,16 @@ endif;
 unset($__errorArgs, $__bag); ?>
                         </div>
 
+
+
+
                         
                         <div class="col-md-6">
                             <label for="reportadoPorInput" class="form-label">Reportado por</label>
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-person-fill-check"></i></span>
+
+                                
                                 <input type="text"
                                        id="reportadoPorInput"
                                        name="reportado_por_nombre"
@@ -204,20 +214,30 @@ unset($__errorArgs, $__bag); ?>"
                                        autocomplete="off"
                                        value="<?php echo e(old('reportado_por_nombre', $incidencia->reportadoPorEmpleado->nombre ?? '')); ?>"
                                        required>
-                                <input type="hidden" name="reportado_por" id="reportado_por" value="<?php echo e(old('reportado_por', $incidencia->reportado_por ?? '')); ?>">
+
+                                
+                                <input type="hidden"
+                                       name="reportado_por"
+                                       id="reportado_por"
+                                       value="<?php echo e(old('reportado_por', $incidencia->reportado_por ?? '')); ?>">
                             </div>
+
+                            
                             <?php $__errorArgs = ['reportado_por'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
-                            <div class="invalid-feedback"><?php echo e($message); ?></div>
+                            <div class="invalid-feedback d-block"><?php echo e($message); ?></div>
                             <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
+
+                            
                             <div id="reportadoPorResults" class="list-group mt-1" style="max-height:200px; overflow-y:auto;"></div>
                         </div>
+
 
                         
                         <div class="col-md-6">
@@ -232,14 +252,15 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                                       value="<?php echo e(old('fecha', optional($incidencia->fecha)->format('Y-m-d') ?? '')); ?>" required>
+                                       value="<?php echo e(old('fecha', $incidencia->fecha)); ?>" required>
+
                             </div>
                             <?php $__errorArgs = ['fecha'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
-                            <div class="invalid-feedback"><?php echo e($message); ?></div>
+                            <div class="invalid-feedback d-block"><?php echo e($message); ?></div>
                             <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
@@ -251,10 +272,14 @@ unset($__errorArgs, $__bag); ?>
                             <label class="form-label">Estado</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-clipboard-check-fill"></i></span>
-                                <input type="text" class="form-control" value="<?php echo e(ucfirst($incidencia->estado ?? 'En proceso')); ?>" disabled>
+                                <select name="estado" class="form-select">
+                                    <option value="en proceso" <?php echo e($incidencia->estado == 'en proceso' ? 'selected' : ''); ?>>En proceso</option>
+                                    <option value="resuelta" <?php echo e($incidencia->estado == 'resuelta' ? 'selected' : ''); ?>>Resuelta</option>
+                                    <option value="cerrada" <?php echo e($incidencia->estado == 'cerrada' ? 'selected' : ''); ?>>Cerrada</option>
+                                </select>
                             </div>
-                            <input type="hidden" name="estado" value="<?php echo e($incidencia->estado ?? 'en proceso'); ?>">
                         </div>
+
 
                         
                         <div class="col-md-6">
@@ -281,7 +306,7 @@ $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
-                            <div class="invalid-feedback"><?php echo e($message); ?></div>
+                            <div class="invalid-feedback d-block"><?php echo e($message); ?></div>
                             <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
@@ -313,7 +338,7 @@ $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
-                            <div class="invalid-feedback"><?php echo e($message); ?></div>
+                            <div class="invalid-feedback d-block"><?php echo e($message); ?></div>
                             <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
@@ -328,9 +353,10 @@ unset($__errorArgs, $__bag); ?>
                             <i class="bi bi-x-circle me-2"></i> Cancelar
                         </a>
 
-                        <button type="button" class="btn btn-warning" onclick="limpiarFormulario()">
-                            <i class="bi bi-eraser-fill me-2"></i> Limpiar
-                        </button>
+                        <a href="<?php echo e(route('incidencias.edit', $incidencia->id)); ?>"
+                           class="btn btn-warning">
+                            <i class="bi bi-arrow-counterclockwise me-2"></i> Restablecer
+                        </a>
 
                         <button type="submit" class="btn btn-primary">
                             <i class="bi bi-save-fill me-2"></i> Guardar
@@ -364,6 +390,16 @@ unset($__errorArgs, $__bag); ?>
 
 
 <script>
+
+    document.getElementById('clienteInput').addEventListener('input', function () {
+        if (this.value.trim() === '') {
+            document.getElementById('cliente_id').value = '';
+        }
+    });
+
+    document.getElementById('reportadoPorInput').addEventListener('input', function () {
+        document.getElementById('reportado_por').value = '';
+    });
     function soloLetras(e) {
         const key = e.key;
         if (!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]$/.test(key) && !['Backspace','Tab','ArrowLeft','ArrowRight','Delete'].includes(key)) {

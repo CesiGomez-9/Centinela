@@ -47,41 +47,45 @@
                         </div>
                     </div>
 
-                    <div class="col-md-2 d-flex flex-column gap-2">
+                    <div class="col-md-3 d-flex flex-column gap-2">
                         <div class="input-group input-group-sm">
                             <span class="input-group-text">Desde</span>
-                            <input
-                                type="date"
-                                name="fecha_inicio"
-                                class="form-control"
-                                value="{{ request('fecha_inicio') }}"
-                            >
+                            <input type="date" name="fecha_inicio" class="form-control"
+                                   style="min-width: 140px;"
+                                   value="{{ request('fecha_inicio') }}">
                         </div>
-                        <div class="input-group input-group-sm w-100">
+                        <div class="input-group input-group-sm">
                             <span class="input-group-text">Hasta</span>
-                            <input
-                                type="date"
-                                name="fecha_fin"
-                                class="form-control"
-                                value="{{ request('fecha_fin') }}"
-                            >
+                            <input type="date" name="fecha_fin" class="form-control"
+                                   style="min-width: 140px;"
+                                   value="{{ request('fecha_fin') }}">
                         </div>
                     </div>
 
-                    <div class="col-md-2 ms-3 d-flex flex-column gap-2">
-                        <button type="submit" class="btn btn-sm btn-primary w-100">
+
+                    <div class="col-md-2 d-flex flex-column gap-2 align-items-start">
+                        <button type="submit" class="btn btn-sm btn-primary px-2 py-1" style="font-size: 12px; width: 90px;">
                             <i class="bi bi-funnel me-1"></i> Filtrar
                         </button>
-                        <a href="{{ route('incidencias.index') }}" class="btn btn-sm btn-secondary w-100">
+                        <a href="{{ route('incidencias.index') }}" class="btn btn-sm btn-secondary px-2 py-1" style="font-size: 12px; width: 90px;">
                             <i class="bi bi-x-circle me-1"></i> Limpiar
                         </a>
                     </div>
 
-                    <div class="col-auto d-flex justify-content-end">
+
+                    <div class="col-auto d-flex flex-column align-items-end">
                         <a href="{{ route('incidencias.formulario') }}" class="btn btn-sm btn-outline-primary mb-2">
-                            <i class="bi bi-pencil-square me-2"></i>Registrar una nueva incidencia
+                            <i class="bi bi-pencil-square me-2" ></i>Registrar una nueva incidencia
+                        </a>
+
+                        <a href="{{ route('incidencias.reporte') }}"
+                           class="btn btn-sm text-white mb-2"
+                           style="background-color: #bfa046;">
+                            <i class="bi bi-file-earmark-text me-2"></i> Generar reporte de incidencias
                         </a>
                     </div>
+
+
                 </div>
             </form>
 

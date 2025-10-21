@@ -64,6 +64,8 @@
                         white-space: normal !important;
                     }
                 </style>
+
+
                 <form action="{{ route('incidencias.update', $incidencia->id) }}" method="POST" id="form-incidencia" novalidate>
                     @csrf
                     @method('PUT')
@@ -86,10 +88,11 @@
                                 <input type="hidden" name="cliente_id" id="cliente_id" value="{{ old('cliente_id', $incidencia->cliente_id ?? '') }}">
                             </div>
                             @error('cliente_id')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
                             <div id="clienteResults" class="list-group mt-1" style="max-height:200px; overflow-y:auto;"></div>
                         </div>
+
 
                         {{-- Tipo de incidencia --}}
                         <div class="col-md-6">
@@ -97,64 +100,72 @@
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-tag-fill"></i></span>
                                 <select id="tipo" name="tipo" class="form-select @error('tipo') is-invalid @enderror" required>
-                                    <option value="" disabled {{ old('tipo', $incidencia->tipo ?? '') ? '' : 'selected' }}>Seleccione un tipo</option>
-                                    @php
-                                        $tipos = [
-                                            'Accidentes laborales',
-                                            'Conflictos con clientes',
-                                            'Errores en la instalacion',
-                                            'Fallas tecnicas',
-                                            'Falla o retraso del personal',
-                                            'Incidentes de seguridad',
-                                            'Incumplimiento de protocolos',
-                                            'Otros'
-                                        ];
-                                    @endphp
-                                    @foreach($tipos as $tipo)
-                                        <option value="{{ $tipo }}" {{ old('tipo', $incidencia->tipo ?? '') == $tipo ? 'selected' : '' }}>{{ $tipo }}</option>
+                                    <option value="">Seleccione un tipo</option>
+                                    @foreach([
+                                        "accidentes laborales",
+                                        "conflictos con clientes",
+                                        "errores en la instalacion",
+                                        "fallas tecnicas",
+                                        "falla o retraso del personal",
+                                        "incidentes de seguridad",
+                                        "incumplimiento de protocolos",
+                                        "otros"
+                                    ] as $dep)
+                                        <option value="{{ $dep }}" {{ old('tipo', $incidencia->tipo) == $dep ? 'selected' : '' }}>{{ $dep }}</option>
                                     @endforeach
                                 </select>
+                                @error('tipo')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
-                            @error('tipo')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
                         </div>
 
-                        {{-- Empleados involucrados --}}
+
+                        <!-- Agentes involucrados -->
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Empleados involucrados</label>
+
                             <div class="card">
-                                <div class="card-body" style="max-height: 200px; overflow-y: auto;">
-                                    @php
-                                        $empleadosSeleccionados = old('agente_id', $incidencia->agentes ? $incidencia->agentes->pluck('id')->toArray() : []);
-                                    @endphp
-                                    @foreach($empleados as $empleado)
-                                        @if(in_array($empleado->categoria, ['Tecnico', 'Vigilancia']))
-                                            <div class="form-check mb-2">
-                                                <input class="form-check-input"
-                                                       type="checkbox"
-                                                       name="agente_id[]"
-                                                       value="{{ $empleado->id }}"
-                                                       id="agente_{{ $empleado->id }}"
-                                                    {{ in_array($empleado->id, $empleadosSeleccionados) ? 'checked' : '' }}>
-                                                <label class="form-check-label" for="agente_{{ $empleado->id }}">
-                                                    {{ $empleado->nombre }} ({{ ucfirst($empleado->categoria) }})
-                                                </label>
-                                            </div>
-                                        @endif
-                                    @endforeach
+                                <div class="card-body" style="max-height: 200px; overflow-y: auto; overflow-x: hidden;">
+                                    <div>
+                                        @foreach($empleados as $empleado)
+                                            @if(in_array($empleado->categoria, ['Tecnico', 'Vigilancia']))
+                                                <div class="form-check mb-2">
+                                                    <input class="form-check-input"
+                                                           type="checkbox"
+                                                           name="agente_id[]"
+                                                           value="{{ $empleado->id }}"
+                                                           id="agente_{{ $empleado->id }}"
+                                                        {{
+                                                            (
+                                                                (is_array(old('agente_id')) && in_array($empleado->id, old('agente_id'))) ||
+                                                                (!old('agente_id') && isset($incidencia) && $incidencia->agentes->contains('id', $empleado->id))
+                                                            ) ? 'checked' : '' }}>
+                                                    <label class="form-check-label" for="agente_{{ $empleado->id }}">
+                                                        {{ $empleado->nombre }}  ({{ ucfirst($empleado->categoria) }})
+                                                    </label>
+                                                </div>
+                                            @endif
+                                        @endforeach
+                                    </div>
                                 </div>
                             </div>
+
                             @error('agente_id')
                             <div class="text-danger mt-1">{{ $message }}</div>
                             @enderror
                         </div>
+
+
+
 
                         {{-- Reportado por --}}
                         <div class="col-md-6">
                             <label for="reportadoPorInput" class="form-label">Reportado por</label>
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-person-fill-check"></i></span>
+
+                                {{-- Campo visible (nombre del empleado) --}}
                                 <input type="text"
                                        id="reportadoPorInput"
                                        name="reportado_por_nombre"
@@ -163,13 +174,23 @@
                                        autocomplete="off"
                                        value="{{ old('reportado_por_nombre', $incidencia->reportadoPorEmpleado->nombre ?? '') }}"
                                        required>
-                                <input type="hidden" name="reportado_por" id="reportado_por" value="{{ old('reportado_por', $incidencia->reportado_por ?? '') }}">
+
+                                {{-- Campo oculto (ID del empleado) --}}
+                                <input type="hidden"
+                                       name="reportado_por"
+                                       id="reportado_por"
+                                       value="{{ old('reportado_por', $incidencia->reportado_por ?? '') }}">
                             </div>
+
+                            {{-- Mensaje de error (mostrado debajo del campo visible) --}}
                             @error('reportado_por')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
+
+                            {{-- Resultados del autocompletado --}}
                             <div id="reportadoPorResults" class="list-group mt-1" style="max-height:200px; overflow-y:auto;"></div>
                         </div>
+
 
                         {{-- Fecha --}}
                         <div class="col-md-6">
@@ -177,22 +198,27 @@
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
                                 <input type="date" id="fecha" name="fecha" class="form-control @error('fecha') is-invalid @enderror"
-                                       value="{{ old('fecha', optional($incidencia->fecha)->format('Y-m-d') ?? '') }}" required>
+                                       value="{{ old('fecha', $incidencia->fecha) }}" required>
+
                             </div>
                             @error('fecha')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
                         </div>
 
-                        {{-- Estado --}}
+                        {{-- Estado (editable en editar) --}}
                         <div class="col-md-6">
                             <label class="form-label">Estado</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-clipboard-check-fill"></i></span>
-                                <input type="text" class="form-control" value="{{ ucfirst($incidencia->estado ?? 'En proceso') }}" disabled>
+                                <select name="estado" class="form-select">
+                                    <option value="en proceso" {{ $incidencia->estado == 'en proceso' ? 'selected' : '' }}>En proceso</option>
+                                    <option value="resuelta" {{ $incidencia->estado == 'resuelta' ? 'selected' : '' }}>Resuelta</option>
+                                    <option value="cerrada" {{ $incidencia->estado == 'cerrada' ? 'selected' : '' }}>Cerrada</option>
+                                </select>
                             </div>
-                            <input type="hidden" name="estado" value="{{ $incidencia->estado ?? 'en proceso' }}">
                         </div>
+
 
                         {{-- Descripción --}}
                         <div class="col-md-6">
@@ -208,7 +234,7 @@
                                           required>{{ old('descripcion', $incidencia->descripcion ?? '') }}</textarea>
                             </div>
                             @error('descripcion')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
                         </div>
 
@@ -226,7 +252,7 @@
                                           required>{{ old('ubicacion', $incidencia->ubicacion ?? '') }}</textarea>
                             </div>
                             @error('ubicacion')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
                         </div>
 
@@ -238,9 +264,10 @@
                             <i class="bi bi-x-circle me-2"></i> Cancelar
                         </a>
 
-                        <button type="button" class="btn btn-warning" onclick="limpiarFormulario()">
-                            <i class="bi bi-eraser-fill me-2"></i> Limpiar
-                        </button>
+                        <a href="{{ route('incidencias.edit', $incidencia->id) }}"
+                           class="btn btn-warning">
+                            <i class="bi bi-arrow-counterclockwise me-2"></i> Restablecer
+                        </a>
 
                         <button type="submit" class="btn btn-primary">
                             <i class="bi bi-save-fill me-2"></i> Guardar
@@ -274,6 +301,16 @@
 {{-- Incluye tus scripts JS personalizados --}}
 
 <script>
+
+    document.getElementById('clienteInput').addEventListener('input', function () {
+        if (this.value.trim() === '') {
+            document.getElementById('cliente_id').value = '';
+        }
+    });
+
+    document.getElementById('reportadoPorInput').addEventListener('input', function () {
+        document.getElementById('reportado_por').value = '';
+    });
     function soloLetras(e) {
         const key = e.key;
         if (!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]$/.test(key) && !['Backspace','Tab','ArrowLeft','ArrowRight','Delete'].includes(key)) {
