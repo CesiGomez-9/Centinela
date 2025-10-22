@@ -8,27 +8,19 @@
             margin: 0;
         }
 
-         .btn-outline-custom {
-             border: 2px solid #09457f; /* borde azul */
-             background-color: transparent; /* transparente por defecto */
-             color: #09457f; /* texto azul */
-             font-weight: bold;
-             transition: all 0.3s ease;
-         }
+        .btn-outline-custom {
+            border: 2px solid #09457f; /* borde azul */
+            background-color: transparent; /* transparente por defecto */
+            color: #09457f; /* texto azul */
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
 
         .btn-outline-custom:hover {
             background-color: #09457f; /* fondo azul al pasar el cursor */
             color: white; /* texto blanco cuando el fondo es azul */
         }
     </style>
-
-    <?php if(session('exito')): ?>
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <?php echo e(session('exito')); ?>
-
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-        </div>
-    <?php endif; ?>
 
     <div class="container mt-5" style="max-width: 1100px;">
         <div class="card shadow p-4" style="background-color: #ffffff;">
@@ -61,10 +53,29 @@
                 </div>
             </div>
 
+            <?php if(session('exito')): ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <?php echo e(session('exito')); ?>
+
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                </div>
+            <?php endif; ?>
+
+            <?php if(session('error')): ?>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <?php echo e(session('error')); ?>
+
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                </div>
+            <?php endif; ?>
+
+
+
             <table class="table table-bordered table-striped">
                 <thead class="table-dark">
                 <tr>
                     <th>N°</th>
+                    <th>Fecha</th> <!-- NUEVA COLUMNA -->
                     <th>Nombre</th>
                     <th>Apellido</th>
                     <th>Identidad</th>
@@ -77,6 +88,7 @@
                 <?php $__currentLoopData = $asistencias; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $asistencia): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <tr>
                         <td><?php echo e($loop->iteration); ?></td>
+                        <td><?php echo e($asistencia->created_at ? $asistencia->created_at->format('d/m/Y') : '-'); ?></td> <!-- Fecha -->
                         <td><?php echo e($asistencia->nombre); ?></td>
                         <td><?php echo e($asistencia->apellido); ?></td>
                         <td><?php echo e($asistencia->identidad); ?></td>
@@ -85,9 +97,9 @@
                         <td><?php echo e($asistencia->hora_salida ? $asistencia->hora_salida->format('H:i:s') : 'No marcada'); ?></td>
                     </tr>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-
                 </tbody>
             </table>
+
 
             <div class="d-flex justify-content-center mt-4">
                 <?php echo e($asistencias->links('pagination::bootstrap-5')); ?>

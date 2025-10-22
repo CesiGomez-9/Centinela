@@ -9,6 +9,7 @@ use App\Http\Controllers\ServicioController;
 use App\Http\Controllers\TurnoController;
 use Illuminate\Support\Facades\Route;
 
+
 Route::get('/', function () {
     return redirect()->route('empleados.index');
 });
@@ -34,10 +35,6 @@ Route::put('/facturas_ventas/{factura_venta}', [\App\Http\Controllers\FacturaVen
 
 Route::resource('memorandos', \App\Http\Controllers\MemorandoController::class);
 Route::get('/buscar-empleados', [EmpleadoController::class, 'buscar'])->name('empleados.buscar');
-Route::get('memorando/adjunto/{filename}', [\App\Http\Controllers\MemorandoController::class, 'descargarAdjunto'])->name('memorando.adjunto');
-
-
-Route::resource('promociones', \App\Http\Controllers\PromocionController::class);
 
 
 Route::get('/clientes/buscar', [App\Http\Controllers\ClienteController::class, 'buscar'])->name('clientes.buscar');
@@ -118,12 +115,22 @@ Route::get('/instalaciones', [\App\Http\Controllers\InstalacionController::class
 // routes/web.php
 Route::get('/instalaciones/eventos', [\App\Http\Controllers\InstalacionController::class, 'eventos'])->name('instalaciones.eventos');
 
+
+Route::get('/incidencias/crear', [\App\Http\Controllers\IncidenciaController::class, 'create'])->name('incidencias.formulario');
+Route::post('/incidencias/crear', [\App\Http\Controllers\IncidenciaController::class, 'store'])->name('incidencias.store');
+Route::get('/incidencias', [\App\Http\Controllers\IncidenciaController::class, 'index'])->name('incidencias.index');
+Route::get('/incidencias/{id}', [\App\Http\Controllers\IncidenciaController::class, 'show'])->name('incidencias.detalle')->whereNumber('id');
+Route::get('/incidencias/{id}/editar', [\App\Http\Controllers\IncidenciaController::class, 'edit'])->name('incidencias.edit');
+Route::put('/incidencias/{id}', [\App\Http\Controllers\IncidenciaController::class, 'update'])->name('incidencias.update');
+Route::get('/incidencias/reporte', [\App\Http\Controllers\IncidenciaController::class, 'reporte'])->name('incidencias.reporte');
+
+
+
+
 Route::get('/asistencias/index', [\App\Http\Controllers\AsistenciaController::class, 'index'])->name('asistencias.index');
 Route::get('/asistencias/crear', [\App\Http\Controllers\AsistenciaController::class, 'create'])->name('asistencias.crear');
 Route::post('/asistencias', [\App\Http\Controllers\AsistenciaController::class, 'store'])->name('asistencias.store');
 
 
-
-Route::get('/incidencias/crear', [\App\Http\Controllers\IncidenciaController::class, 'create'])->name('incidencias.formulario');
-Route::post('/incidencias/crear', [\App\Http\Controllers\IncidenciaController::class, 'store'])->name('incidencias.store');
-Route::get('/incidencias', [\App\Http\Controllers\IncidenciaController::class, 'index'])->name('incidencias.index');
+Route::get('/promociones', [\App\Http\Controllers\PromocionController::class, 'index'])->name('promociones.index');
+Route::get('/promociones/create', [\App\Http\Controllers\PromocionController::class, 'create'])->name('promociones.create');
