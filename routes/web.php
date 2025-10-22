@@ -35,6 +35,7 @@ Route::put('/facturas_ventas/{factura_venta}', [\App\Http\Controllers\FacturaVen
 Route::resource('memorandos', \App\Http\Controllers\MemorandoController::class);
 Route::get('/buscar-empleados', [EmpleadoController::class, 'buscar'])->name('empleados.buscar');
 Route::get('memorando/adjunto/{filename}', [\App\Http\Controllers\MemorandoController::class, 'descargarAdjunto'])->name('memorando.adjunto');
+Route::get('/memorandos/{memorando}', [\App\Http\Controllers\MemorandoController::class, 'show'])->name('memorandos.show');
 
 
 Route::resource('promociones', \App\Http\Controllers\PromocionController::class);

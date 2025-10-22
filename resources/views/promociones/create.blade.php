@@ -57,7 +57,7 @@
                             <span class="input-group-text"><i class="bi bi-pencil-fill"></i></span>
                             <textarea name="descripcion" id="descripcion"
                                       class="form-control @error('descripcion') is-invalid @enderror"
-                                      rows="3" style="overflow:hidden; resize:none;">{{ old('descripcion') }}</textarea>
+                                      rows="3" maxlength="250" style="overflow:hidden; resize:none;">{{ old('descripcion') }}</textarea>
                             <div class="invalid-feedback d-block">@error('descripcion') {{ $message }} @enderror</div>
                         </div>
                     </div>
@@ -73,27 +73,47 @@
                         </div>
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <label class="form-label fw-bold">Subir plantilla de promoción (opcional):</label>
-                        <div class="input-group">
+                        <div class="input-group" id="fileInputContainer">
                             <span class="input-group-text"><i class="bi bi-image"></i></span>
-                            <input type="file" name="imagen" id="imagenInput"
-                                   class="form-control @error('imagen') is-invalid @enderror"
-                                   accept="image/*">
-                            <div class="invalid-feedback d-block">@error('imagen') {{ $message }} @enderror</div>
+
+                            @if (old('base64_imagen'))
+                                <div id="persistedFileDisplay" class="form-control text-muted d-flex align-items-center bg-light">
+                                    {{ old('old_file_name', 'Imagen cargada') }}
+                                </div>
+
+                                <input type="file" name="imagen" id="imagenInput" style="display:none;"
+                                       class="form-control" accept="image/*">
+                            @else
+                                <input type="file" name="imagen" id="imagenInput"
+                                       class="form-control @error('imagen') is-invalid @enderror"
+                                       accept="image/*">
+                                <div id="persistedFileDisplay" class="form-control text-muted d-flex align-items-center bg-light" style="display:none;">
+                                </div>
+                            @endif
+
+                            @if ($errors->has('imagen') && !old('base64_imagen'))
+                                <div class="invalid-feedback d-block">{{ $errors->first('imagen') }}</div>
+                            @else
+                                <div class="invalid-feedback d-block"></div>
+                            @endif
                         </div>
                     </div>
+
+                    <input type="hidden" name="base64_imagen" id="base64Imagen" value="{{ old('base64_imagen') }}">
+                    <input type="hidden" name="old_file_name" id="oldFileName" value="{{ old('old_file_name') }}">
 
                     <div class="col-md-12">
                         <label class="form-label fw-bold">Vista previa:</label>
                         <div class="preview-container border rounded shadow-sm overflow-hidden p-2 bg-light position-relative" id="previewCard">
-                            <img id="previewImagen" src="{{ asset('imagenes/plantilla_promocion.jpg') }}"
+                            <img id="previewImagen"
+                                 src="{{ old('base64_imagen') ?: (old('imagen') ? asset('storage/promociones/' . old('imagen')) : asset('imagenes/plantilla_promocion.jpg')) }}"
                                  alt="Vista previa" class="w-100 rounded mb-3" style="object-fit:cover; max-height:400px;">
-                            <!-- CUADRO NEGRO CENTRADO -->
                             <div class="position-absolute top-50 start-50 translate-middle text-center p-3 bg-dark bg-opacity-50 rounded" style="max-width: 70%;">
                                 <h5 id="previewNombre" class="fw-bold text-white mb-1">Nombre de la promoción:</h5>
                                 <p id="previewDescripcion" class="text-white mb-1">Descripción:</p>
-                                <p id="previewRestriccion" class="text-white mb-1">Restricción:</p>
+                                <p id="previewRestriccion" class="text-danger mb-1">Restricción:</p>
                                 <p id="previewFechas" class="small text-white mb-0">Promoción válida desde: <span id="fechaInicioText"></span> hasta <span id="fechaFinText"></span></p>
                             </div>
                         </div>
@@ -130,14 +150,14 @@
                 </div>
                 <div class="modal-body d-flex justify-content-center align-items-center bg-black overflow-auto" style="min-height: 60vh;">
                     <div class="position-relative text-center w-30">
-                        <img id="modalImagen" src="{{ asset('imagenes/plantilla_promocion.jpg') }}"
+                        <img id="modalImagen"
+                             src="{{ old('base64_imagen') ?: (old('imagen') ? asset('storage/promociones/' . old('imagen')) : asset('imagenes/plantilla_promocion.jpg')) }}"
                              class="w-50 h-auto rounded shadow" style="object-fit: contain;">
 
-                        <!-- CUADRO NEGRO CENTRADO -->
                         <div class="position-absolute top-50 start-50 translate-middle text-center p-3 bg-dark bg-opacity-50 rounded" style="max-width: 50%;">
                             <h3 id="modalNombre" class="fw-bold text-white mb-2">Nombre de la promoción:</h3>
                             <p id="modalDescripcion" class="text-white mb-1">Descripción:</p>
-                            <p id="modalRestriccion" class="text-white mb-1">Restricción:</p>
+                            <p id="modalRestriccion" class="text-danger mb-1">Restricción:</p>
                             <p id="modalFechas" class="small text-white mb-0">Promoción válida desde: <span id="modalInicio"></span> hasta <span id="modalFin"></span></p>
                         </div>
                     </div>
@@ -148,11 +168,12 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+
             const hoy = new Date();
             const yyyy = hoy.getFullYear();
-            const mm = hoy.getMonth() + 1;
+            const mm = String(hoy.getMonth() + 1).padStart(2,'0');
             const dd = String(hoy.getDate()).padStart(2,'0');
-            const hoyStr = `${yyyy}-${String(mm).padStart(2,'0')}-${dd}`;
+            const hoyStr = `${yyyy}-${mm}-${dd}`;
 
             let maxDate = new Date();
             maxDate.setMonth(maxDate.getMonth() + 4);
@@ -160,53 +181,115 @@
 
             const fechaInicio = document.getElementById('fecha_inicio');
             const fechaFin = document.getElementById('fecha_fin');
-            fechaInicio.value = hoyStr;
-            fechaFin.value = hoyStr;
-            fechaInicio.min = hoyStr;
-            fechaFin.min = hoyStr;
-            fechaInicio.max = maxStr;
-            fechaFin.max = maxStr;
-
             const nombreInput = document.getElementById('nombre');
             const descripcion = document.getElementById('descripcion');
             const restriccion = document.getElementById('restriccion');
+
             const imagenInput = document.getElementById('imagenInput');
+            const base64ImagenInput = document.getElementById('base64Imagen');
+            const oldFileNameInput = document.getElementById('oldFileName');
+            const persistedFileDisplay = document.getElementById('persistedFileDisplay');
+
+            const previewImagen = document.getElementById('previewImagen');
+            const modalImagen = document.getElementById('modalImagen');
 
             const previewNombre = document.getElementById('previewNombre');
             const previewDescripcion = document.getElementById('previewDescripcion');
             const previewRestriccion = document.getElementById('previewRestriccion');
             const fechaInicioText = document.getElementById('fechaInicioText');
             const fechaFinText = document.getElementById('fechaFinText');
-
-            const modal = new bootstrap.Modal(document.getElementById('previewModal'));
             const modalNombre = document.getElementById('modalNombre');
             const modalDescripcion = document.getElementById('modalDescripcion');
             const modalRestriccion = document.getElementById('modalRestriccion');
             const modalInicio = document.getElementById('modalInicio');
             const modalFin = document.getElementById('modalFin');
-            const modalImagen = document.getElementById('modalImagen');
+            const modal = new bootstrap.Modal(document.getElementById('previewModal'));
 
-            function formatoFecha(fecha) {
-                if(!fecha) return '';
-                const d = new Date(fecha);
-                const dd = String(d.getDate()).padStart(2,'0');
-                const mm = String(d.getMonth()+1).padStart(2,'0');
-                const yyyy = d.getFullYear();
-                return `${dd}/${mm}/${yyyy}`;
+            let tempImagenData = "{{ old('base64_imagen') }}";
+            let tempFileName = "{{ old('old_file_name') }}";
+
+            const oldFechaInicio = "{{ old('fecha_inicio') }}";
+            const oldFechaFin = "{{ old('fecha_fin') }}";
+
+            if (oldFechaInicio === '' && !fechaInicio.classList.contains('is-invalid')) {
+                fechaInicio.value = hoyStr;
+            } else if (oldFechaInicio === '') {
+                fechaInicio.value = '';
             }
 
-            function actualizarVista() {
+            if (oldFechaFin === '' && !fechaFin.classList.contains('is-invalid')) {
+                fechaFin.value = hoyStr;
+            } else if (oldFechaFin === '') {
+                fechaFin.value = '';
+            }
+
+            fechaInicio.min = hoyStr;
+            fechaFin.min = hoyStr;
+            fechaInicio.max = maxStr;
+            fechaFin.max = maxStr;
+
+            function formatoFecha(fecha){
+                if(!fecha) return '';
+                const partes = fecha.split('-');
+                return `${partes[2]}/${partes[1]}/${partes[0]}`;
+            }
+
+            function actualizarVista(){
+
                 previewNombre.textContent = "Nombre de la promoción: " + (nombreInput.value || '');
                 previewDescripcion.textContent = "Descripción: " + (descripcion.value || '');
                 previewRestriccion.textContent = "Restricción: " + (restriccion.value || '');
-                fechaInicioText.textContent = formatoFecha(fechaInicio.value);
-                fechaFinText.textContent = formatoFecha(fechaFin.value);
+
+                fechaInicioText.textContent = fechaInicio.value ? formatoFecha(fechaInicio.value) : '';
+                fechaFinText.textContent = fechaFin.value ? formatoFecha(fechaFin.value) : '';
 
                 modalNombre.textContent = previewNombre.textContent;
                 modalDescripcion.textContent = previewDescripcion.textContent;
                 modalRestriccion.textContent = previewRestriccion.textContent;
                 modalInicio.textContent = fechaInicioText.textContent;
                 modalFin.textContent = fechaFinText.textContent;
+
+                if(tempImagenData){
+                    previewImagen.src = tempImagenData;
+                    modalImagen.src = tempImagenData;
+
+                    if(persistedFileDisplay) {
+                        persistedFileDisplay.style.display = 'flex';
+                        persistedFileDisplay.textContent = tempFileName || 'Imagen cargada';
+                    }
+                    if(imagenInput) imagenInput.style.display = 'none';
+                } else {
+
+                    const defaultImage = "{{ asset('imagenes/plantilla_promocion.jpg') }}";
+                    previewImagen.src = defaultImage;
+                    modalImagen.src = defaultImage;
+
+                    if(imagenInput) imagenInput.style.display = 'block';
+                    if(persistedFileDisplay) persistedFileDisplay.style.display = 'none';
+                }
+            }
+
+            function limpiarFormulario() {
+
+                nombreInput.value = '';
+                descripcion.value = '';
+                restriccion.value = '';
+                fechaInicio.value = hoyStr;
+                fechaFin.value = hoyStr;
+
+                if(imagenInput) imagenInput.value = '';
+                tempImagenData = null;
+                tempFileName = null;
+                base64ImagenInput.value = '';
+                oldFileNameInput.value = '';
+
+                if(imagenInput) imagenInput.style.display = 'block';
+                if(persistedFileDisplay) persistedFileDisplay.style.display = 'none';
+
+                actualizarVista();
+
+                document.querySelectorAll('.invalid-feedback').forEach(f => f.textContent='');
+                document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
             }
 
             nombreInput.addEventListener('input', actualizarVista);
@@ -215,41 +298,39 @@
             fechaInicio.addEventListener('input', actualizarVista);
             fechaFin.addEventListener('input', actualizarVista);
 
-            imagenInput.addEventListener('change', function(){
-                if(this.files && this.files[0]){
-                    const reader = new FileReader();
-                    reader.onload = e => {
-                        document.getElementById('previewImagen').src = e.target.result;
-                        modalImagen.src = e.target.result;
-                    };
-                    reader.readAsDataURL(this.files[0]);
-                } else {
-                    document.getElementById('previewImagen').src = "{{ asset('imagenes/plantilla_promocion.jpg') }}";
-                    modalImagen.src = "{{ asset('imagenes/plantilla_promocion.jpg') }}";
-                }
-            });
+            if(imagenInput) {
+                imagenInput.addEventListener('change', function(){
+                    if(this.files && this.files[0]){
+                        const file = this.files[0];
+                        const reader = new FileReader();
+                        reader.onload = e => {
+                            tempImagenData = e.target.result;
+                            tempFileName = file.name;
+
+                            base64ImagenInput.value = e.target.result;
+                            oldFileNameInput.value = file.name;
+
+                            actualizarVista();
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        limpiarFormulario();
+                    }
+                });
+            }
 
             document.getElementById('btnAmpliar').addEventListener('click', () => modal.show());
-
-            document.getElementById('btnRestablecer').addEventListener('click', e => {
+            document.getElementById('btnRestablecer').addEventListener('click', e=>{
                 e.preventDefault();
-                nombreInput.value = '';
-                descripcion.value = '';
-                restriccion.value = '';
-                fechaInicio.value = hoyStr;
-                fechaFin.value = hoyStr;
-                imagenInput.value = '';
-                actualizarVista();
-                document.getElementById('previewImagen').src = "{{ asset('imagenes/plantilla_promocion.jpg') }}";
-                modalImagen.src = "{{ asset('imagenes/plantilla_promocion.jpg') }}";
 
-                const feedbacks = document.querySelectorAll('.invalid-feedback');
-                feedbacks.forEach(f => f.textContent = '');
-                const errores = document.querySelectorAll('.is-invalid');
-                errores.forEach(el => el.classList.remove('is-invalid'));
+                limpiarFormulario();
             });
 
             actualizarVista();
+
+            if(tempImagenData && imagenInput) {
+                imagenInput.style.display = 'none';
+            }
         });
     </script>
     </body>
