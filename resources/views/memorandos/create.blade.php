@@ -14,6 +14,7 @@
                 <div class="alert alert-success">¡Memorandum guardado correctamente!</div>
             @endif
 
+
             <form action="{{ route('memorandos.store') }}" method="POST" enctype="multipart/form-data" novalidate>
                 @csrf
                 <div class="row g-3">

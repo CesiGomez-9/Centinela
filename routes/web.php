@@ -133,3 +133,12 @@ Route::get('/promociones/{promocion}/show', [PromocionController::class, 'show']
 Route::get('/promociones/{id}/edit', [\App\Http\Controllers\PromocionController::class, 'edit'])->name('promociones.edit');
 Route::put('/promociones/{id}', [\App\Http\Controllers\PromocionController::class, 'update'])->name('promociones.update');
 
+
+Route::get('/incidencias/crear', [\App\Http\Controllers\IncidenciaController::class, 'create'])->name('incidencias.formulario');
+Route::post('/incidencias/crear', [\App\Http\Controllers\IncidenciaController::class, 'store'])->name('incidencias.store');
+Route::get('/incidencias', [\App\Http\Controllers\IncidenciaController::class, 'index'])->name('incidencias.index');
+Route::get('/incidencias/{id}', [\App\Http\Controllers\IncidenciaController::class, 'show'])->name('incidencias.detalle')->whereNumber('id');
+Route::get('/incidencias/{id}/editar', [\App\Http\Controllers\IncidenciaController::class, 'edit'])->name('incidencias.edit');
+Route::put('/incidencias/{id}', [\App\Http\Controllers\IncidenciaController::class, 'update'])->name('incidencias.update');
+Route::get('/incidencias/reporte', [\App\Http\Controllers\IncidenciaController::class, 'reporte'])->name('incidencias.reporte');
+

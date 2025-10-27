@@ -13,6 +13,7 @@
                 <div class="alert alert-success">¡Memorandum guardado correctamente!</div>
             <?php endif; ?>
 
+
             <form action="<?php echo e(route('memorandos.store')); ?>" method="POST" enctype="multipart/form-data" novalidate>
                 <?php echo csrf_field(); ?>
                 <div class="row g-3">

@@ -45,7 +45,8 @@ class IncidenciaController extends Controller
             $query->where('fecha', '<=', $fecha_fin);
         }
 
-        $query->orderBy('fecha', 'asc');
+        // Ordenar por fecha de creación, más recientes primero
+        $query->orderBy('created_at', 'asc');
 
         $incidencias = $query->paginate(10)->appends([
             'search' => $search,
