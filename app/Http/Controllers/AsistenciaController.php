@@ -152,11 +152,44 @@ class AsistenciaController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        $asistencia = Asistencia::with('empleado')->findOrFail($id);
-        return view('asistencias.show', compact('asistencia'));
+        $asistencia = Asistencia::with('turno')->findOrFail($id);
+
+        // Fechas límite (2 meses antes y después de hoy)
+        $fechaMin = now()->subMonths(2)->startOfDay();
+        $fechaMax = now()->addMonths(2)->endOfDay();
+
+        // Fechas de filtro
+        $inicio = $request->input('fecha_inicio', $fechaMin->toDateString());
+        $fin = $request->input('fecha_fin', $fechaMax->toDateString());
+
+        $historial = Asistencia::with('turno')
+            ->where('identidad', $asistencia->identidad)
+            ->whereBetween('created_at', [$inicio, $fin])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('asistencias.show', compact('asistencia', 'historial'));
     }
+    public function historial(Request $request)
+    {
+        $query = \App\Models\Asistencia::query();
+
+        // Si el usuario filtró fechas, aplicar rango
+        if ($request->filled('fecha_inicio') && $request->filled('fecha_fin')) {
+            $query->whereBetween('created_at', [
+                $request->fecha_inicio,
+                \Carbon\Carbon::parse($request->fecha_fin)->endOfDay()
+            ]);
+        }
+
+        $asistencias = $query->with('empleado')->orderByDesc('created_at')->get();
+
+        return view('asistencias.show', compact('asistencias'));
+    }
+
+
 
 
     /**

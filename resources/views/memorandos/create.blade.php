@@ -14,7 +14,7 @@
                 <div class="alert alert-success">¡Memorandum guardado correctamente!</div>
             @endif
 
-            <form action="{{ route('memorandos.store') }}" method="POST" enctype="multipart/form-data" novalidate>
+            <form id="memorandoForm" action="{{ route('memorandos.store') }}" method="POST" enctype="multipart/form-data" novalidate>
                 @csrf
                 <div class="row g-3">
 
@@ -30,10 +30,11 @@
                                    autocomplete="off"
                                    value="{{ old('destinatario_nombre', $destinatarioSeleccionado ?? '') }}">
                             <input type="hidden" name="destinatario_id" id="destinatario_id" value="{{ old('destinatario_id') }}">
-                            <div class="invalid-feedback d-block">@error('destinatario_id') {{ $message }} @enderror</div>
                         </div>
+                        <div class="invalid-feedback d-block">@error('destinatario_id') {{ $message }} @enderror</div>
                         <div id="destinatarioResults" class="list-group" style="max-height:200px; overflow-y:auto;"></div>
                     </div>
+
                     <div class="col-md-6">
                         <label for="autorInput" class="form-label fw-bold">Creador del memorandum:</label>
                         <div class="input-group">
@@ -46,8 +47,8 @@
                                    autocomplete="off"
                                    value="{{ old('autor_nombre', $autorSeleccionado ?? '') }}">
                             <input type="hidden" name="autor_id" id="autor_id" value="{{ old('autor_id') }}">
-                            <div class="invalid-feedback d-block">@error('autor_id') {{ $message }} @enderror</div>
                         </div>
+                        <div class="invalid-feedback d-block">@error('autor_id') {{ $message }} @enderror</div>
                         <div id="autorResults" class="list-group" style="max-height:200px; overflow-y:auto;"></div>
                     </div>
 
@@ -56,9 +57,9 @@
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-calendar-date-fill"></i></span>
                             <input type="date" id="fecha" name="fecha" class="form-control @error('fecha') is-invalid @enderror"
-                                   value="{{ old('fecha', date('Y-m-d')) }}">
-                            <div class="invalid-feedback d-block" id="fechaError">@error('fecha') {{ $message }} @enderror</div>
+                                   value="{{ old('fecha') }}">
                         </div>
+                        <div class="invalid-feedback d-block">@error('fecha') {{ $message }} @enderror</div>
                     </div>
 
                     <div class="col-md-6">
@@ -71,8 +72,8 @@
                                 <option value="media" {{ old('tipo') == 'media' ? 'selected' : '' }}>Media</option>
                                 <option value="grave" {{ old('tipo') == 'grave' ? 'selected' : '' }}>Grave</option>
                             </select>
-                            <div class="invalid-feedback d-block" id="tipoError">@error('tipo') {{ $message }} @enderror</div>
                         </div>
+                        <div class="invalid-feedback d-block">@error('tipo') {{ $message }} @enderror</div>
                     </div>
 
                     <div class="col-md-6">
@@ -82,8 +83,8 @@
                             <input type="text" id="titulo" name="titulo"
                                    class="form-control @error('titulo') is-invalid @enderror"
                                    value="{{ old('titulo') }}">
-                            <div class="invalid-feedback d-block" id="tituloError">@error('titulo') {{ $message }} @enderror</div>
                         </div>
+                        <div class="invalid-feedback d-block">@error('titulo') {{ $message }} @enderror</div>
                     </div>
 
                     <div class="col-md-6">
@@ -93,8 +94,8 @@
                             <textarea id="contenido" name="contenido"
                                       class="form-control @error('contenido') is-invalid @enderror"
                                       style="overflow:hidden; resize:none;">{{ old('contenido') }}</textarea>
-                            <div class="invalid-feedback d-block" id="contenidoError">@error('contenido') {{ $message }} @enderror</div>
                         </div>
+                        <div class="invalid-feedback d-block">@error('contenido') {{ $message }} @enderror</div>
                     </div>
 
                     <div class="col-md-12">
@@ -105,17 +106,35 @@
                                       class="form-control @error('sancion') is-invalid @enderror"
                                       style="overflow:hidden; resize:none;">{{ old('sancion') }}</textarea>
                         </div>
-                        <div class="invalid-feedback d-block" id="sancionError">
-                            @error('sancion') {{ $message }} @enderror
-                        </div>
+                        <div class="invalid-feedback d-block">@error('sancion') {{ $message }} @enderror</div>
                     </div>
 
                     <div class="col-md-12">
-                        <label for="adjunto" class="form-label fw-bold">
+                        <label for="adjuntoInput" class="form-label fw-bold">
                             <i class="bi bi-paperclip me-2"></i>Adjunto (opcional):
                         </label>
-                        <input type="file" class="form-control" id="adjunto" name="adjunto" accept=".jpg,.jpeg,.png,.pdf">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-paperclip"></i></span>
+                            @if (old('base64_adjunto'))
+                                <div id="persistedFileDisplay" class="form-control text-muted d-flex align-items-center bg-light">
+                                    {{ old('old_file_name', 'Archivo cargado') }}
+                                </div>
+
+                                <input type="file" name="adjunto" id="adjuntoInput" style="display:none;"
+                                       class="form-control @error('adjunto') is-invalid @enderror" accept=".jpg,.jpeg,.png,.pdf">
+                            @else
+                                <input type="file" name="adjunto" id="adjuntoInput"
+                                       class="form-control @error('adjunto') is-invalid @enderror"
+                                       accept=".jpg,.jpeg,.png,.pdf">
+                                <div id="persistedFileDisplay" class="form-control text-muted d-flex align-items-center bg-light" style="display:none;">
+                                </div>
+                            @endif
+                        </div>
+                        <div class="invalid-feedback d-block">@error('adjunto') {{ $message }} @enderror</div>
                     </div>
+
+                    <input type="hidden" name="base64_adjunto" id="base64Adjunto" value="{{ old('base64_adjunto') }}">
+                    <input type="hidden" name="old_file_name" id="oldFileName" value="{{ old('old_file_name') }}">
 
                     <div class="col-md-12">
                         <label class="form-label fw-bold">Observaciones (opcional):</label>
@@ -124,8 +143,8 @@
                             <textarea id="observaciones" name="observaciones" rows="2"
                                       class="form-control @error('observaciones') is-invalid @enderror"
                                       style="overflow:hidden; resize:none;">{{ old('observaciones') }}</textarea>
-                            <div class="invalid-feedback d-block">@error('observaciones') {{ $message }} @enderror</div>
                         </div>
+                        <div class="invalid-feedback d-block">@error('observaciones') {{ $message }} @enderror</div>
                     </div>
 
                     <div class="text-center mt-4 col-12">
@@ -142,7 +161,9 @@
             </form>
         </div>
     </div>
+
     <script>
+
         function limitarCaracteres(campoId, maxCaracteres) {
             const campo = document.getElementById(campoId);
             campo.addEventListener('input', function() {
@@ -151,16 +172,12 @@
                 }
             });
         }
-        limitarCaracteres("titulo", 100);
-        limitarCaracteres("contenido", 250);
-        limitarCaracteres("sancion", 250);
-        limitarCaracteres("observaciones", 250);
+        ['titulo','contenido','sancion','observaciones'].forEach(id => limitarCaracteres(id, id==='titulo'?100:250));
 
         function autoResize(textarea) {
             textarea.style.height = 'auto';
             textarea.style.height = textarea.scrollHeight + 'px';
         }
-
         ['contenido', 'sancion', 'observaciones'].forEach(id => {
             const campo = document.getElementById(id);
             if (campo) {
@@ -177,6 +194,69 @@
             return `${year}-${month}-${day}`;
         }
 
+        const hoyStr = getFechaLocal();
+        const fechaInput = document.getElementById('fecha');
+        const adjuntoInput = document.getElementById('adjuntoInput');
+        const base64AdjuntoInput = document.getElementById('base64Adjunto');
+        const oldFileNameInput = document.getElementById('oldFileName');
+        const persistedFileDisplay = document.getElementById('persistedFileDisplay');
+
+        let tempAdjuntoData = "{{ old('base64_adjunto') }}";
+        let tempFileName = "{{ old('old_file_name') }}";
+
+        if (!fechaInput.value && !fechaInput.classList.contains('is-invalid')) {
+            fechaInput.value = hoyStr;
+        }
+
+
+        function actualizarVistaAdjunto() {
+
+            if (tempAdjuntoData) {
+                if(persistedFileDisplay) {
+                    persistedFileDisplay.style.display = 'flex';
+                    persistedFileDisplay.textContent = tempFileName || 'Archivo cargado';
+                }
+                if(adjuntoInput) adjuntoInput.style.display = 'none';
+                if(adjuntoInput) adjuntoInput.classList.remove('is-invalid');
+            } else {
+
+                if(adjuntoInput) adjuntoInput.style.display = 'block';
+                if(persistedFileDisplay) persistedFileDisplay.style.display = 'none';
+            }
+        }
+
+        if(adjuntoInput) {
+            adjuntoInput.addEventListener('change', function(){
+                if(this.files && this.files[0]){
+                    const file = this.files[0];
+                    const reader = new FileReader();
+
+                    tempFileName = file.name;
+                    oldFileNameInput.value = file.name;
+
+                    if (file.type.match('image.*')) {
+                        reader.onload = e => {
+                            tempAdjuntoData = e.target.result;
+                            base64AdjuntoInput.value = e.target.result;
+                            actualizarVistaAdjunto();
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+
+                        tempAdjuntoData = 'file_placeholder';
+                        base64AdjuntoInput.value = 'placeholder_non_image';
+                        actualizarVistaAdjunto();
+                    }
+                } else {
+
+                    tempAdjuntoData = null;
+                    tempFileName = null;
+                    base64AdjuntoInput.value = '';
+                    oldFileNameInput.value = '';
+                    actualizarVistaAdjunto();
+                }
+            });
+        }
         document.getElementById('btnLimpiar').addEventListener('click', function (e) {
             e.preventDefault();
 
@@ -185,64 +265,61 @@
             const alerta = document.querySelector('.alert');
             if (alerta) alerta.remove();
 
-            document.getElementById('destinatarioInput').value = '';
-            document.getElementById('autorInput').value = '';
-            document.getElementById('destinatario_id').value = '';
-            document.getElementById('autor_id').value = '';
-            document.getElementById('destinatarioResults').innerHTML = '';
-            document.getElementById('autorResults').innerHTML = '';
-            document.getElementById('titulo').value = '';
-            document.getElementById('contenido').value = '';
-            document.getElementById('sancion').value = '';
-            document.getElementById('observaciones').value = '';
-            document.getElementById('tipo').selectedIndex = 0;
-
-            document.getElementById('fecha').value = getFechaLocal();
-
-            const adjuntoInput = document.querySelector('input[name="adjunto"]');
-            adjuntoInput.value = '';
-            sessionStorage.removeItem('archivoAdjunto');
-
-            const label = adjuntoInput.nextElementSibling;
-            if (label && label.classList.contains('archivo-nombre')) {
-                label.remove();
-            }
-
-            ['contenido', 'sancion', 'observaciones'].forEach(id => {
-                const campo = document.getElementById(id);
-                if (campo) autoResize(campo);
+            ['destinatarioInput','autorInput','destinatario_id','autor_id','titulo','contenido','sancion','observaciones'].forEach(id=>{
+                const el=document.getElementById(id);
+                if(el) el.value='';
             });
+            ['destinatarioResults','autorResults'].forEach(id=>document.getElementById(id).innerHTML='');
+            document.getElementById('tipo').selectedIndex=0;
+            document.getElementById('fecha').value=hoyStr;
+
+            if(adjuntoInput) adjuntoInput.value='';
+            tempAdjuntoData = null;
+            tempFileName = null;
+            base64AdjuntoInput.value = '';
+            oldFileNameInput.value = '';
+            actualizarVistaAdjunto();
+
+            ['contenido','sancion','observaciones'].forEach(id=>autoResize(document.getElementById(id)));
         });
 
-        const fileInput = document.querySelector('input[name="adjunto"]');
-        const storedFile = sessionStorage.getItem('archivoAdjunto');
+        document.getElementById('memorandoForm').addEventListener('submit', function(e){
+            let hasError = false;
 
-        if (storedFile) {
-            mostrarNombreArchivo(storedFile);
-        }
+            const destinatarioId = document.getElementById('destinatario_id');
+            const destinatarioInput = document.getElementById('destinatarioInput');
+            const destinatarioFeedback = destinatarioId.nextElementSibling;
 
-        fileInput.addEventListener('change', function() {
-            if (fileInput.files.length > 0) {
-                const nombreArchivo = fileInput.files[0].name;
-                sessionStorage.setItem('archivoAdjunto', nombreArchivo);
-                mostrarNombreArchivo(nombreArchivo);
+            if(!destinatarioId.value){
+                destinatarioFeedback.textContent = 'Debes seleccionar un empleado sancionado de la lista.';
+                destinatarioInput.classList.add('is-invalid');
+                hasError = true;
             } else {
-                sessionStorage.removeItem('archivoAdjunto');
-                mostrarNombreArchivo('No se eligió ningún archivo');
+                destinatarioFeedback.textContent = '';
+                destinatarioInput.classList.remove('is-invalid');
             }
-        });
 
-        function mostrarNombreArchivo(nombre) {
-            const dataTransfer = new DataTransfer();
-            const fakeFile = new File([""], nombre);
-            dataTransfer.items.add(fakeFile);
-            fileInput.files = dataTransfer.files;
-        }
+            const autorId = document.getElementById('autor_id');
+            const autorInput = document.getElementById('autorInput');
+            const autorFeedback = autorId.nextElementSibling;
+
+            if(!autorId.value){
+                autorFeedback.textContent = 'Debes seleccionar un autor de la lista.';
+                autorInput.classList.add('is-invalid');
+                hasError = true;
+            } else {
+                autorFeedback.textContent = '';
+                autorInput.classList.remove('is-invalid');
+            }
+
+            if(hasError) e.preventDefault();
+        });
 
         function setupAutocomplete(inputId, resultsId, hiddenId, url, extraParams = {}) {
             const input = document.getElementById(inputId);
             const results = document.getElementById(resultsId);
             const hidden = document.getElementById(hiddenId);
+            const feedback = hidden.nextElementSibling;
 
             input.addEventListener('input', function () {
                 const query = this.value.trim();
@@ -265,6 +342,9 @@
                                 input.value = emp.nombre + ' ' + emp.apellido;
                                 hidden.value = emp.id;
                                 results.innerHTML = '';
+
+                                input.classList.remove('is-invalid');
+                                feedback.textContent = '';
                             });
                             results.appendChild(item);
                         });
@@ -277,8 +357,12 @@
             });
         }
 
-        setupAutocomplete('destinatarioInput', 'destinatarioResults', 'destinatario_id', '{{ route("empleados.buscar") }}', { tipo: 'todos' });
-        setupAutocomplete('autorInput', 'autorResults', 'autor_id', '{{ route("empleados.buscar") }}', { tipo: 'administracion' });
+        document.addEventListener('DOMContentLoaded', function() {
+            setupAutocomplete('destinatarioInput', 'destinatarioResults', 'destinatario_id', '{{ route("empleados.buscar") }}', { tipo: 'todos' });
+            setupAutocomplete('autorInput', 'autorResults', 'autor_id', '{{ route("empleados.buscar") }}', { tipo: 'administracion' });
+            actualizarVistaAdjunto();
+            ['contenido', 'sancion', 'observaciones'].forEach(id => autoResize(document.getElementById(id)));
+        });
     </script>
     </body>
 @endsection

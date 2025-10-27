@@ -37,4 +37,15 @@ class Empleado extends Model
         return $this->belongsToMany(Instalacion::class);
     }
 
+    public function memorandosRecibidos()
+    {
+        return $this->hasMany(Memorando::class, 'destinatario_id');
+    }
+
+    public function memorandosCreados()
+    {
+        return $this->hasMany(Memorando::class, 'autor_id');
+    }
+
+
 }

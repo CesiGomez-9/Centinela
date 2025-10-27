@@ -105,7 +105,7 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                                      rows="3" style="overflow:hidden; resize:none;"><?php echo e(old('descripcion', $promocion->descripcion)); ?></textarea>
+                                      rows="3" maxlength="250" style="overflow:hidden; resize:none;"><?php echo e(old('descripcion', $promocion->descripcion)); ?></textarea>
                             <div class="invalid-feedback d-block"><?php $__errorArgs = ['descripcion'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -167,11 +167,15 @@ unset($__errorArgs, $__bag); ?></div>
                         </div>
                     </div>
 
+                    
+                    <input type="hidden" name="previewImagen" id="previewImagenHidden"
+                           value="<?php echo e(old('previewImagen', $promocion->imagen ? asset('storage/'.$promocion->imagen) : asset('imagenes/plantilla_promocion.jpg'))); ?>">
+
                     <div class="col-md-12">
                         <label class="form-label fw-bold">Vista previa:</label>
                         <div class="preview-container border rounded shadow-sm overflow-hidden p-2 bg-light position-relative" id="previewCard">
                             <img id="previewImagen"
-                                 src="<?php echo e($promocion->imagen ? asset('storage/'.$promocion->imagen) : asset('imagenes/plantilla_promocion.jpg')); ?>"
+                                 src="<?php echo e(old('previewImagen', $promocion->imagen ? asset('storage/'.$promocion->imagen) : asset('imagenes/plantilla_promocion.jpg'))); ?>"
                                  alt="Vista previa" class="w-100 rounded mb-3" style="object-fit:cover; max-height:400px;">
                             <div class="position-absolute top-50 start-50 translate-middle text-center p-3 bg-dark bg-opacity-50 rounded" style="max-width: 70%;">
                                 <h5 id="previewNombre" class="fw-bold text-white mb-1"></h5>
@@ -207,23 +211,25 @@ unset($__errorArgs, $__bag); ?></div>
     </div>
 
     
-    <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+    <div class="modal fade" id="previewModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-fullscreen">
             <div class="modal-content bg-dark">
                 <div class="modal-header border-0">
-                    <h5 class="modal-title text-white">Vista completa de la promoción</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    <h5 class="text-white">Vista completa de la promoción</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body d-flex justify-content-center align-items-center bg-black overflow-auto" style="min-height: 60vh;">
                     <div class="position-relative text-center w-30">
                         <img id="modalImagen"
-                             src="<?php echo e($promocion->imagen ? asset('storage/'.$promocion->imagen) : asset('imagenes/plantilla_promocion.jpg')); ?>"
+                             src="<?php echo e(old('previewImagen', $promocion->imagen ? asset('storage/'.$promocion->imagen) : asset('imagenes/plantilla_promocion.jpg'))); ?>"
                              class="w-50 h-auto rounded shadow" style="object-fit: contain;">
                         <div class="position-absolute top-50 start-50 translate-middle text-center p-3 bg-dark bg-opacity-50 rounded" style="max-width: 50%;">
                             <h3 id="modalNombre" class="fw-bold text-white mb-2"></h3>
                             <p id="modalDescripcion" class="text-white mb-1"></p>
                             <p id="modalRestriccion" class="text-white mb-1"></p>
-                            <p id="modalFechas" class="small text-white mb-0">Promoción válida desde: <span id="modalInicio"></span> hasta <span id="modalFin"></span></p>
+                            <p id="modalFechas" class="small text-white mb-0">
+                                Promoción válida desde: <span id="modalInicio"></span> hasta <span id="modalFin"></span>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -235,11 +241,12 @@ unset($__errorArgs, $__bag); ?></div>
         document.addEventListener('DOMContentLoaded', function() {
 
             const nombreInput = document.getElementById('nombre');
-            const descripcion = document.getElementById('descripcion');
-            const restriccion = document.getElementById('restriccion');
+            const descripcionInput = document.getElementById('descripcion');
+            const restriccionInput = document.getElementById('restriccion');
             const fechaInicio = document.getElementById('fecha_inicio');
             const fechaFin = document.getElementById('fecha_fin');
             const imagenInput = document.getElementById('imagenInput');
+            const previewHidden = document.getElementById('previewImagenHidden');
 
             const previewNombre = document.getElementById('previewNombre');
             const previewDescripcion = document.getElementById('previewDescripcion');
@@ -255,15 +262,16 @@ unset($__errorArgs, $__bag); ?></div>
             const modalFin = document.getElementById('modalFin');
             const modalImagen = document.getElementById('modalImagen');
 
-            // Valores originales desde la base de datos
             const originalData = {
                 nombre: <?php echo json_encode($promocion->nombre, 15, 512) ?>,
                 descripcion: <?php echo json_encode($promocion->descripcion, 15, 512) ?>,
                 restriccion: <?php echo json_encode($promocion->restriccion, 15, 512) ?>,
                 fecha_inicio: <?php echo json_encode($promocion->fecha_inicio, 15, 512) ?>,
-                fecha_fin: <?php echo json_encode($promocion->fecha_fin, 15, 512) ?>,
-                imagen: "<?php echo e($promocion->imagen ? asset('storage/'.$promocion->imagen) : asset('imagenes/plantilla_promocion.jpg')); ?>"
+                fecha_fin: <?php echo json_encode($promocion->fecha_fin, 15, 512) ?>
             };
+
+            // Mantener imagen seleccionada incluso tras validación
+            let ultimaImagenSeleccionada = previewHidden.value;
 
             function formatoFecha(fecha) {
                 if(!fecha) return '';
@@ -272,10 +280,9 @@ unset($__errorArgs, $__bag); ?></div>
             }
 
             function actualizarVista() {
-                // Si el input está vacío, usar originalData como fallback
                 previewNombre.textContent = nombreInput.value ? "Nombre de la promoción: " + nombreInput.value : "Nombre de la promoción: " + originalData.nombre;
-                previewDescripcion.textContent = descripcion.value ? "Descripción: " + descripcion.value : "Descripción: " + originalData.descripcion;
-                previewRestriccion.textContent = restriccion.value ? "Restricción: " + restriccion.value : "Restricción: " + originalData.restriccion;
+                previewDescripcion.textContent = descripcionInput.value ? "Descripción: " + descripcionInput.value : "Descripción: " + originalData.descripcion;
+                previewRestriccion.textContent = restriccionInput.value ? "Restricción: " + restriccionInput.value : "Restricción: " + originalData.restriccion;
                 fechaInicioText.textContent = fechaInicio.value ? formatoFecha(fechaInicio.value) : formatoFecha(originalData.fecha_inicio);
                 fechaFinText.textContent = fechaFin.value ? formatoFecha(fechaFin.value) : formatoFecha(originalData.fecha_fin);
 
@@ -284,69 +291,51 @@ unset($__errorArgs, $__bag); ?></div>
                 modalRestriccion.textContent = previewRestriccion.textContent;
                 modalInicio.textContent = fechaInicioText.textContent;
                 modalFin.textContent = fechaFinText.textContent;
+                modalImagen.src = ultimaImagenSeleccionada;
+                document.getElementById('previewImagen').src = ultimaImagenSeleccionada;
+                previewHidden.value = ultimaImagenSeleccionada;
             }
 
-            // Ejecutar al cargar para llenar preview y modal
-            actualizarVista();
-
-            // Actualizar preview y modal al escribir
-            [nombreInput, descripcion, restriccion, fechaInicio, fechaFin].forEach(input => {
-                input.addEventListener('input', actualizarVista);
+            descripcionInput.addEventListener('input', () => {
+                if(descripcionInput.value.length > 250) descripcionInput.value = descripcionInput.value.slice(0,250);
+            });
+            restriccionInput.addEventListener('input', () => {
+                if(restriccionInput.value.length > 150) restriccionInput.value = restriccionInput.value.slice(0,150);
             });
 
-            // Imagen
             imagenInput.addEventListener('change', function(){
-                const previewImagen = document.getElementById('previewImagen');
                 if(this.files && this.files[0]){
                     const reader = new FileReader();
                     reader.onload = e => {
-                        previewImagen.src = e.target.result;
-                        modalImagen.src = e.target.result;
+                        ultimaImagenSeleccionada = e.target.result;
+                        actualizarVista();
                     };
                     reader.readAsDataURL(this.files[0]);
-                } else {
-                    previewImagen.src = originalData.imagen;
-                    modalImagen.src = originalData.imagen;
                 }
             });
 
+            [nombreInput, descripcionInput, restriccionInput, fechaInicio, fechaFin].forEach(input => input.addEventListener('input', actualizarVista));
+
             document.getElementById('btnAmpliar').addEventListener('click', () => modal.show());
 
-            // Restablecer
             document.getElementById('btnRestablecer').addEventListener('click', e => {
                 e.preventDefault();
-
-                // Restaurar valores originales
                 nombreInput.value = originalData.nombre;
-                descripcion.value = originalData.descripcion;
-                restriccion.value = originalData.restriccion;
+                descripcionInput.value = originalData.descripcion;
+                restriccionInput.value = originalData.restriccion;
                 fechaInicio.value = originalData.fecha_inicio;
                 fechaFin.value = originalData.fecha_fin;
-                document.getElementById('previewImagen').src = originalData.imagen;
-                modalImagen.src = originalData.imagen;
-                imagenInput.value = '';
-
-                // Ocultar alertas de validación
-                const feedbacks = document.querySelectorAll('.invalid-feedback');
-                feedbacks.forEach(f => {
-                    f.textContent = '';   // Borra el mensaje
-                    f.style.display = 'none'; // Oculta visualmente
-                });
-
-                // Quitar clase is-invalid de los inputs
-                const errores = document.querySelectorAll('.is-invalid');
-                errores.forEach(el => el.classList.remove('is-invalid'));
-
-                // Ocultar alertas tipo session si existen
-                const sessionAlerts = document.querySelectorAll('.alert');
-                sessionAlerts.forEach(alert => alert.remove());
-
-                // Actualizar preview y modal
                 actualizarVista();
+
+                imagenInput.value = '';
+                document.querySelectorAll('.invalid-feedback').forEach(f => { f.textContent=''; f.style.display='none'; });
+                document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+                document.querySelectorAll('.alert').forEach(alert => alert.remove());
             });
 
+            // Ejecutar al cargar la página para mantener imagen seleccionada tras validación
+            actualizarVista();
         });
-
     </script>
     </body>
 <?php $__env->stopSection(); ?>
