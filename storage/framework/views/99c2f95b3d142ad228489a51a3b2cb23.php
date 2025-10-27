@@ -73,7 +73,7 @@
 
         .footer {
             margin-top: 50px;
-            text-align: right;
+            text-align: center;
             font-size: 12px;
         }
 
@@ -99,7 +99,43 @@
     </div>
 </header>
 
-<div class="titulo-reporte">Listado General de Incidencias</div>
+<div class="titulo-reporte">
+    Listado de Incidencias
+</div>
+
+
+
+<div class="filtros">
+    <strong>Filtros aplicados:</strong><br>
+
+    <?php if(isset($filtrosAplicados['fecha_inicio']) || isset($filtrosAplicados['fecha_fin'])): ?>
+        <strong>Rango de fechas:</strong>
+        <?php echo e($filtrosAplicados['fecha_inicio'] ?? '---'); ?> hasta <?php echo e($filtrosAplicados['fecha_fin'] ?? '---'); ?><br>
+    <?php endif; ?>
+
+    <?php if(isset($filtrosAplicados['reportado_por'])): ?>
+        <strong>Reportado por:</strong> <?php echo e($filtrosAplicados['reportado_por']); ?><br>
+    <?php endif; ?>
+
+    <?php if(isset($filtrosAplicados['cliente'])): ?>
+        <strong>Cliente:</strong> <?php echo e($filtrosAplicados['cliente']); ?><br>
+    <?php endif; ?>
+
+    <?php if(isset($filtrosAplicados['tipo'])): ?>
+        <strong>Tipo:</strong> <?php echo e($filtrosAplicados['tipo']); ?><br>
+    <?php endif; ?>
+
+    <?php if(isset($filtrosAplicados['estado'])): ?>
+        <strong>Estado:</strong> <?php echo e($filtrosAplicados['estado']); ?><br>
+    <?php endif; ?>
+
+    <?php if(empty($filtrosAplicados)): ?>
+        <em>No se aplicaron filtros</em>
+    <?php endif; ?>
+</div>
+
+
+
 
 <table>
     <thead>

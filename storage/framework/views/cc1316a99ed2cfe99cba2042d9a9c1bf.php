@@ -127,10 +127,12 @@
                             </div>
 
                             <div class="col-md-6">
-                                <p><i class="bi bi-people-fill me-2"></i>  <strong>Empleados involucrados:</strong>
+                                <p><i class="bi bi-people-fill me-2"></i>  <strong>Empleados involucrados:</strong>  </p>
+                                <ul style="list-style: none; margin:  0 0 0.5rem 0; padding-left: 0;">
                                     <?php $__currentLoopData = $incidencia->agentes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $agente): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                    <?php echo e($agente->nombre); ?> <?php echo e($agente->apellido); ?><?php if(!$loop->last): ?>, <?php endif; ?>
-                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?></p>
+                                        <li><?php echo e($agente->nombre); ?> <?php echo e($agente->apellido); ?></li>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                </ul>
                                 <p><i class="bi bi-person-fill-check me-2"></i><strong>Reportado por:</strong>
                                     <?php echo e($incidencia->reportadoPorEmpleado->nombre ?? '---'); ?> <?php echo e($incidencia->reportadoPorEmpleado->apellido ?? ''); ?>
 
@@ -141,6 +143,8 @@
 
                                 </p>
                                 <p><i class="bi bi-clipboard-check-fill me-2"></i><strong>Estado:</strong> <?php echo e($incidencia->estado); ?></p>
+
+
                             </div>
 
                         </div>

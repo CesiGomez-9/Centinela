@@ -1,7 +1,6 @@
-@extends('plantilla')
-@section('titulo', 'Detalles de la promoción')
+<?php $__env->startSection('titulo', 'Detalles de la promoción'); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
     <style>
@@ -148,49 +147,55 @@
             <div class="card-header position-relative">
                 <h5 class="mb-0"><i class="bi bi-badge-ad-fill me-2"></i>Detalles de la promoción</h5>
                 <small class="position-absolute top-50 end-0 translate-middle-y me-3">
-                    Creado {{ $promocion->created_at->diffForHumans() }}
+                    Creado <?php echo e($promocion->created_at->diffForHumans()); ?>
+
                 </small>
             </div>
             <div class="card-body">
-                <div class="nombre-promocion">{{ $promocion->nombre }}</div>
+                <div class="nombre-promocion"><?php echo e($promocion->nombre); ?></div>
 
                 <div class="imagen-rellena-container">
-                    <img src="{{ $promocion->imagen ? asset('storage/'.$promocion->imagen) : asset('imagenes/plantilla_promocion.jpg') }}" alt="Promoción">
+                    <img src="<?php echo e($promocion->imagen ? asset('storage/'.$promocion->imagen) : asset('imagenes/plantilla_promocion.jpg')); ?>" alt="Promoción">
                     <div class="imagen-overlay">
-                        <h3 class="fw-bold mb-2">{{ $promocion->nombre }}</h3>
-                        <p class="mb-1">{{ $promocion->descripcion }}</p>
-                        <p class="mb-1">{{ $promocion->restriccion }}</p>
+                        <h3 class="fw-bold mb-2"><?php echo e($promocion->nombre); ?></h3>
+                        <p class="mb-1"><?php echo e($promocion->descripcion); ?></p>
+                        <p class="mb-1"><?php echo e($promocion->restriccion); ?></p>
                         <p class="small mb-0">
-                            Válida desde: {{ \Carbon\Carbon::parse($promocion->fecha_inicio)->format('d/m/Y') }}
-                            hasta {{ \Carbon\Carbon::parse($promocion->fecha_fin)->format('d/m/Y') }}
+                            Válida desde: <?php echo e(\Carbon\Carbon::parse($promocion->fecha_inicio)->format('d/m/Y')); ?>
+
+                            hasta <?php echo e(\Carbon\Carbon::parse($promocion->fecha_fin)->format('d/m/Y')); ?>
+
                         </p>
                     </div>
                 </div>
 
                 <div class="detalle-campo row g-3">
                     <div class="col-md-6">
-                        <p><strong>Nombre de la promoción:</strong> {{ $promocion->nombre }}</p>
-                        <p><strong>Descripción:</strong> {{ $promocion->descripcion }}</p>
-                        <p><strong>Restricción:</strong> {{ $promocion->restriccion }}</p>
+                        <p><strong>Nombre de la promoción:</strong> <?php echo e($promocion->nombre); ?></p>
+                        <p><strong>Descripción:</strong> <?php echo e($promocion->descripcion); ?></p>
+                        <p><strong>Restricción:</strong> <?php echo e($promocion->restriccion); ?></p>
                     </div>
                     <div class="col-md-6">
-                        <p><strong>Fecha inicio:</strong> {{ \Carbon\Carbon::parse($promocion->fecha_inicio)->format('d/m/Y') }}</p>
-                        <p><strong>Fecha fin:</strong> {{ \Carbon\Carbon::parse($promocion->fecha_fin)->format('d/m/Y') }}</p>
+                        <p><strong>Fecha inicio:</strong> <?php echo e(\Carbon\Carbon::parse($promocion->fecha_inicio)->format('d/m/Y')); ?></p>
+                        <p><strong>Fecha fin:</strong> <?php echo e(\Carbon\Carbon::parse($promocion->fecha_fin)->format('d/m/Y')); ?></p>
                     </div>
                 </div>
             </div>
             <div class="card-footer">
-                Última actualización: {{ $promocion->updated_at->diffForHumans() }}
+                Última actualización: <?php echo e($promocion->updated_at->diffForHumans()); ?>
+
             </div>
         </div>
 
         <div class="d-flex justify-content-center align-items-center gap-3 mt-3 flex-wrap">
-            <a href="{{ route('promociones.index') }}" class="btn btn-return">
+            <a href="<?php echo e(route('promociones.index')); ?>" class="btn btn-return">
                 <i class="bi bi-arrow-left me-2"></i>Volver
             </a>
-            <a href="{{ route('promociones.edit', $promocion->id) }}" class="btn btn-edit">
+            <a href="<?php echo e(route('promociones.edit', $promocion->id)); ?>" class="btn btn-edit">
                 <i class="bi bi-pencil-square me-2"></i>Editar
             </a>
         </div>
     </div>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\angel\PhpstormProjects\Centinela\resources\views/promociones/show.blade.php ENDPATH**/ ?>

@@ -122,7 +122,7 @@ Route::get('/incidencias', [\App\Http\Controllers\IncidenciaController::class, '
 Route::get('/incidencias/{id}', [\App\Http\Controllers\IncidenciaController::class, 'show'])->name('incidencias.detalle')->whereNumber('id');
 Route::get('/incidencias/{id}/editar', [\App\Http\Controllers\IncidenciaController::class, 'edit'])->name('incidencias.edit');
 Route::put('/incidencias/{id}', [\App\Http\Controllers\IncidenciaController::class, 'update'])->name('incidencias.update');
-Route::get('/incidencias/reporte', [\App\Http\Controllers\IncidenciaController::class, 'reporte'])->name('incidencias.reporte');
+Route::get('/incidencias/reporte', [\App\Http\Controllers\IncidenciaController::class, 'Reporte'])->name('incidencias.reporte');
 
 
 
@@ -130,7 +130,14 @@ Route::get('/incidencias/reporte', [\App\Http\Controllers\IncidenciaController::
 Route::get('/asistencias/index', [\App\Http\Controllers\AsistenciaController::class, 'index'])->name('asistencias.index');
 Route::get('/asistencias/crear', [\App\Http\Controllers\AsistenciaController::class, 'create'])->name('asistencias.crear');
 Route::post('/asistencias', [\App\Http\Controllers\AsistenciaController::class, 'store'])->name('asistencias.store');
+Route::get('/asistencias/{id}', [\App\Http\Controllers\AsistenciaController::class, 'show'])->name('asistencias.show');
+
 
 
 Route::get('/promociones', [\App\Http\Controllers\PromocionController::class, 'index'])->name('promociones.index');
 Route::get('/promociones/create', [\App\Http\Controllers\PromocionController::class, 'create'])->name('promociones.create');
+Route::get('/promociones', [\App\Http\Controllers\PromocionController::class, 'index'])->name('promociones.index');
+Route::get('/promociones/{promocion}/show', [\App\Http\Controllers\PromocionController::class, 'show'])->name('promociones.show');
+Route::get('/promociones/{id}/edit', [\App\Http\Controllers\PromocionController::class, 'edit'])->name('promociones.edit');
+Route::put('/promociones/{id}', [\App\Http\Controllers\PromocionController::class, 'update'])->name('promociones.update');
+Route::post('/promociones/create', [\App\Http\Controllers\PromocionController::class, 'store'])->name('promociones.store');
