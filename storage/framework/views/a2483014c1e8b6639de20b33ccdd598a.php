@@ -30,7 +30,10 @@
 
 
         }
-
+        textarea.auto-expand {
+            overflow-y: hidden;
+            resize: none;
+        }
 
     </style>
 </head>
@@ -79,73 +82,31 @@
                                 <input type="text"
                                        id="clienteInput"
                                        name="cliente_nombre"
-                                       class="form-control <?php $__errorArgs = ['cliente_id'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>"
-                                       placeholder="Buscar cliente"
-                                       autocomplete="off"
-                                       value="<?php echo e(old('cliente_nombre', $incidencia->cliente->nombre ?? '')); ?>"
-                                       required>
-                                <input type="hidden" name="cliente_id" id="cliente_id" value="<?php echo e(old('cliente_id', $incidencia->cliente_id ?? '')); ?>">
+                                       class="form-control"
+                                       value="<?php echo e($incidencia->cliente->nombre ?? ''); ?>"
+                                       readonly>
+                                <input type="hidden" name="cliente_id" id="cliente_id" value="<?php echo e($incidencia->cliente_id); ?>">
                             </div>
-                            <?php $__errorArgs = ['cliente_id'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-                            <div class="invalid-feedback d-block"><?php echo e($message); ?></div>
-                            <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
-                            <div id="clienteResults" class="list-group mt-1" style="max-height:200px; overflow-y:auto;"></div>
                         </div>
-
 
                         
                         <div class="col-md-6">
-                            <label for="tipo" class="form-label">Tipo de incidencia</label>
+                            <label for="tipoInput" class="form-label">Tipo de incidencia</label>
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-tag-fill"></i></span>
-                                <select id="tipo" name="tipo" class="form-select <?php $__errorArgs = ['tipo'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>" required>
-                                    <option value="">Seleccione un tipo</option>
-                                    <?php $__currentLoopData = [
-                                        "accidentes laborales",
-                                        "conflictos con clientes",
-                                        "errores en la instalacion",
-                                        "fallas tecnicas",
-                                        "falla o retraso del personal",
-                                        "incidentes de seguridad",
-                                        "incumplimiento de protocolos",
-                                        "otros"
-                                    ]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $dep): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <option value="<?php echo e($dep); ?>" <?php echo e(old('tipo', $incidencia->tipo) == $dep ? 'selected' : ''); ?>><?php echo e($dep); ?></option>
-                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                </select>
-                                <?php $__errorArgs = ['tipo'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-                                <div class="invalid-feedback"><?php echo e($message); ?></div>
-                                <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
+
+                                
+                                <input type="text"
+                                       id="tipoInput"
+                                       class="form-control"
+                                       value="<?php echo e(ucfirst($incidencia->tipo)); ?>"
+                                       readonly>
+
+                                
+                                <input type="hidden" name="tipo" value="<?php echo e($incidencia->tipo); ?>">
                             </div>
                         </div>
+
 
 
                         <!-- Agentes involucrados -->
@@ -189,9 +150,6 @@ endif;
 unset($__errorArgs, $__bag); ?>
                         </div>
 
-
-
-
                         
                         <div class="col-md-6">
                             <label for="reportadoPorInput" class="form-label">Reportado por</label>
@@ -202,41 +160,18 @@ unset($__errorArgs, $__bag); ?>
                                 <input type="text"
                                        id="reportadoPorInput"
                                        name="reportado_por_nombre"
-                                       class="form-control <?php $__errorArgs = ['reportado_por'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>"
-                                       placeholder="Buscar empleado"
-                                       autocomplete="off"
-                                       value="<?php echo e(old('reportado_por_nombre', $incidencia->reportadoPorEmpleado->nombre ?? '')); ?>"
-                                       required>
+                                       class="form-control"
+                                       value="<?php echo e($incidencia->reportadoPorEmpleado->nombre ?? ''); ?>"
+                                       readonly>
 
                                 
                                 <input type="hidden"
                                        name="reportado_por"
                                        id="reportado_por"
-                                       value="<?php echo e(old('reportado_por', $incidencia->reportado_por ?? '')); ?>">
+                                       value="<?php echo e($incidencia->reportado_por ?? ''); ?>">
                             </div>
-
-                            
-                            <?php $__errorArgs = ['reportado_por'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-                            <div class="invalid-feedback d-block"><?php echo e($message); ?></div>
-                            <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
-
-                            
-                            <div id="reportadoPorResults" class="list-group mt-1" style="max-height:200px; overflow-y:auto;"></div>
                         </div>
+
 
 
                         
@@ -370,21 +305,19 @@ unset($__errorArgs, $__bag); ?>
 </div>
 
 <script>
-    function autoExpand(el) {
-        // Reinicia la altura
-        el.style.height = "auto";
-        // Asegura que se expanda correctamente según el scrollHeight
-        el.style.height = (el.scrollHeight) + "px";
+    // Función para auto expandir un textarea
+    function autoExpand(field) {
+        field.style.height = 'auto'; // Resetea la altura
+        field.style.height = field.scrollHeight + 'px'; // Ajusta según contenido
     }
 
-    document.addEventListener("DOMContentLoaded", function () {
-        const direccion = document.getElementById("direccion");
-        if (direccion) {
-            autoExpand(direccion); // ajusta si ya tiene texto
-            direccion.addEventListener("input", function () {
-                autoExpand(direccion);
-            });
-        }
+    // Al cargar la página, ajusta la altura inicial y agrega evento input
+    window.addEventListener('DOMContentLoaded', () => {
+        const textareas = document.querySelectorAll('textarea.auto-expand');
+        textareas.forEach(el => {
+            autoExpand(el); // Ajuste inicial
+            el.addEventListener('input', () => autoExpand(el)); // Ajusta mientras escribes
+        });
     });
 </script>
 

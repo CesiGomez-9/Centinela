@@ -45,7 +45,7 @@ class PromocionController extends Controller
             }
         }
 
-        $promociones = $query->orderBy('fecha_inicio', 'asc')->paginate(10);
+        $promociones = $query->orderBy('fecha_inicio', 'asc')->paginate(5);
 
         return view('promociones.index', compact('promociones'));
     }

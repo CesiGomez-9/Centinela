@@ -73,7 +73,7 @@
 
         .footer {
             margin-top: 50px;
-            text-align: right;
+            text-align: center;
             font-size: 12px;
         }
 
@@ -99,7 +99,43 @@
     </div>
 </header>
 
-<div class="titulo-reporte">Listado General de Incidencias</div>
+<div class="titulo-reporte">
+    Listado de Incidencias
+</div>
+
+{{-- 🔍 Sección de filtros aplicados --}}
+
+<div class="filtros">
+    <strong>Filtros aplicados:</strong><br>
+
+    @if(isset($filtrosAplicados['fecha_inicio']) || isset($filtrosAplicados['fecha_fin']))
+        <strong>Rango de fechas:</strong>
+        {{ $filtrosAplicados['fecha_inicio'] ?? '---' }} hasta {{ $filtrosAplicados['fecha_fin'] ?? '---' }}<br>
+    @endif
+
+    @if(isset($filtrosAplicados['reportado_por']))
+        <strong>Reportado por:</strong> {{ $filtrosAplicados['reportado_por'] }}<br>
+    @endif
+
+    @if(isset($filtrosAplicados['cliente']))
+        <strong>Cliente:</strong> {{ $filtrosAplicados['cliente'] }}<br>
+    @endif
+
+    @if(isset($filtrosAplicados['tipo']))
+        <strong>Tipo:</strong> {{ $filtrosAplicados['tipo'] }}<br>
+    @endif
+
+    @if(isset($filtrosAplicados['estado']))
+        <strong>Estado:</strong> {{ $filtrosAplicados['estado'] }}<br>
+    @endif
+
+    @if(empty($filtrosAplicados))
+        <em>No se aplicaron filtros</em>
+    @endif
+</div>
+
+
+
 
 <table>
     <thead>

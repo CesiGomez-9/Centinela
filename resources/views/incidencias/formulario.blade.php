@@ -108,7 +108,7 @@
                                         <option value="" disabled {{ old('tipo') ? '' : 'selected' }}>Seleccione un tipo</option>
                                         <option value="Accidentes laborales" {{ old('tipo') == 'Accidentes laborales' ? 'selected' : '' }}>Accidentes laborales</option>
                                         <option value="Conflictos con clientes" {{ old('tipo') == 'Conflictos con clientes' ? 'selected' : '' }}>Conflictos con clientes</option>
-                                        <option value="Errores en la instalacion" {{ old('tipo') == 'Errores en la instalacion' ? 'selected' : '' }}>Errores en la instalación</option>
+                                        <option value="Errores en la instalación" {{ old('tipo') == 'Errores en la instalación' ? 'selected' : '' }}>Errores en la instalación</option>
                                         <option value="Fallas tecnicas" {{ old('tipo') == 'Fallas tecnicas' ? 'selected' : '' }}>Fallas técnicas</option>
                                         <option value="Falla o retraso del personal" {{ old('tipo') == 'Falla o retraso del personal' ? 'selected' : '' }}>Falla o retraso del personal</option>
                                         <option value="Incidentes de seguridad" {{ old('tipo') == 'Incidentes de seguridad' ? 'selected' : '' }}>Incidentes de seguridad</option>
