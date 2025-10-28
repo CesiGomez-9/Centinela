@@ -128,10 +128,12 @@
                             </div>
 
                             <div class="col-md-6">
-                                <p><i class="bi bi-people-fill me-2"></i>  <strong>Empleados involucrados:</strong>
+                                <p><i class="bi bi-people-fill me-2"></i>  <strong>Empleados involucrados:</strong>  </p>
+                                <ul style="list-style: none; margin:  0 0 0.5rem 0; padding-left: 0;">
                                     @foreach ($incidencia->agentes as $agente)
-                                    {{ $agente->nombre }} {{ $agente->apellido }}@if (!$loop->last), @endif
-                                    @endforeach</p>
+                                        <li>{{ $agente->nombre }} {{ $agente->apellido }}</li>
+                                    @endforeach
+                                </ul>
                                 <p><i class="bi bi-person-fill-check me-2"></i><strong>Reportado por:</strong>
                                     {{ $incidencia->reportadoPorEmpleado->nombre ?? '---' }} {{ $incidencia->reportadoPorEmpleado->apellido ?? '' }}
                                 </p>
@@ -140,6 +142,8 @@
                                     {{ $incidencia->cliente->nombre ?? '---' }} {{ $incidencia->cliente->apellido ?? '' }}
                                 </p>
                                 <p><i class="bi bi-clipboard-check-fill me-2"></i><strong>Estado:</strong> {{ $incidencia->estado }}</p>
+
+
                             </div>
 
                         </div>

@@ -45,7 +45,8 @@ class IncidenciaController extends Controller
             $query->where('fecha', '<=', $fecha_fin);
         }
 
-        $query->orderBy('fecha', 'asc');
+        // Ordenar por fecha de creación, más recientes primero
+        $query->orderBy('created_at', 'asc');
 
         $incidencias = $query->paginate(10)->appends([
             'search' => $search,
@@ -76,9 +77,9 @@ class IncidenciaController extends Controller
         //
         $request->validate([
 
-                'fecha' => ['required', 'date', 'before_or_equal:today', // No puede ser futura
-                    'after_or_equal:' .  now()->subMonth()->format('Y-m-d'), // No antes de hace un mes
-                ],
+            'fecha' => ['required', 'date', 'before_or_equal:today', // No puede ser futura
+                'after_or_equal:' . now()->subMonth()->format('Y-m-d'), // No antes de hace un mes
+            ],
             'tipo' => ['required'],
             'descripcion' => ['required', 'string', 'max:250'],
             'ubicacion' => ['required', 'string', 'max:150'],
@@ -100,20 +101,16 @@ class IncidenciaController extends Controller
             'ubicacion.required' => 'Debe ingresar la ubicación.',
             'reportado_por.required' => 'Debe seleccionar quien reporta la incidencia.',
             'cliente_id.required' => 'Debe seleccionar el cliente afectado.',
-            'agente_id.required' =>'Debe seleccionar el agente involucrado.',
-
-
-
-
+            'agente_id.required' => 'Debe seleccionar el agente involucrado.',
 
 
         ]);
 
-        $incidencia= new Incidencia();
+        $incidencia = new Incidencia();
         $incidencia->fecha = $request->input('fecha');
         $incidencia->tipo = $request->input('tipo');
         $incidencia->descripcion = $request->input('descripcion');
-        $incidencia->ubicacion= $request->input('ubicacion');
+        $incidencia->ubicacion = $request->input('ubicacion');
         $incidencia->reportado_por = $request->input('reportado_por');
         $incidencia->cliente_id = $request->input('cliente_id');
         $incidencia->estado = $request->input('estado');
@@ -209,11 +206,83 @@ class IncidenciaController extends Controller
         //
     }
 
-    public function reporte()
+    public function Reporte(Request $request)
     {
-        $incidencias = Incidencia::all();
+        $search = $request->input('search');
+        $fecha_inicio = $request->input('fecha_inicio');
+        $fecha_fin = $request->input('fecha_fin');
 
-        $pdf = PDF::loadView('incidencias.reportepdf', compact('incidencias'));
+        $query = \App\Models\Incidencia::with(['cliente', 'reportadoPorEmpleado']);
+
+        $filtrosAplicados = [];
+
+        // Fechas
+        if ($fecha_inicio) {
+            $query->whereDate('fecha', '>=', $fecha_inicio);
+            $filtrosAplicados['fecha_inicio'] = \Carbon\Carbon::parse($fecha_inicio)->format('d/m/Y');
+        }
+        if ($fecha_fin) {
+            $query->whereDate('fecha', '<=', $fecha_fin);
+            $filtrosAplicados['fecha_fin'] = \Carbon\Carbon::parse($fecha_fin)->format('d/m/Y');
+        }
+
+        // Filtro por búsqueda
+        if ($search) {
+            $query->where(function ($q) use ($search, &$filtrosAplicados) {
+                // Reportado por
+                $q->whereHas('reportadoPorEmpleado', function ($subQuery) use ($search, &$filtrosAplicados) {
+                    $subQuery->where('nombre', 'like', "%{$search}%")
+                        ->orWhere('apellido', 'like', "%{$search}%");
+                });
+
+                // Cliente
+                $q->orWhereHas('cliente', function ($subQuery) use ($search) {
+                    $subQuery->where('nombre', 'like', "%{$search}%");
+                });
+
+                // Tipo o Estado
+                $q->orWhere('tipo', 'like', "%{$search}%")
+                    ->orWhere('estado', 'like', "%{$search}%");
+            });
+
+            // Ahora llenamos filtrosAplicados con nombres visibles
+            $incidenciasEjemplo = \App\Models\Incidencia::with(['cliente', 'reportadoPorEmpleado'])
+                ->where(function ($q) use ($search) {
+                    $q->whereHas('reportadoPorEmpleado', function ($subQuery) use ($search) {
+                        $subQuery->where('nombre', 'like', "%{$search}%")
+                            ->orWhere('apellido', 'like', "%{$search}%");
+                    })
+                        ->orWhereHas('cliente', function ($subQuery) use ($search) {
+                            $subQuery->where('nombre', 'like', "%{$search}%");
+                        })
+                        ->orWhere('tipo', 'like', "%{$search}%")
+                        ->orWhere('estado', 'like', "%{$search}%");
+                })->first();
+
+            if ($incidenciasEjemplo) {
+                if ($incidenciasEjemplo->reportadoPorEmpleado && str_contains(strtolower($incidenciasEjemplo->reportadoPorEmpleado->nombre), strtolower($search))) {
+                    $filtrosAplicados['reportado_por'] = $incidenciasEjemplo->reportadoPorEmpleado->nombre;
+                }
+                if ($incidenciasEjemplo->cliente && str_contains(strtolower($incidenciasEjemplo->cliente->nombre), strtolower($search))) {
+                    $filtrosAplicados['cliente'] = $incidenciasEjemplo->cliente->nombre;
+                }
+                if (str_contains(strtolower($incidenciasEjemplo->tipo), strtolower($search))) {
+                    $filtrosAplicados['tipo'] = $incidenciasEjemplo->tipo;
+                }
+                if (str_contains(strtolower($incidenciasEjemplo->estado), strtolower($search))) {
+                    $filtrosAplicados['estado'] = ucfirst($incidenciasEjemplo->estado);
+                }
+            }
+        }
+
+        $incidencias = $query->orderBy('fecha', 'asc')->get();
+
+        $pdf = \PDF::loadView('incidencias.reportepdf', compact('incidencias', 'filtrosAplicados'));
+
         return $pdf->download('reporte_incidencias.pdf');
     }
+
+
+
+
 }

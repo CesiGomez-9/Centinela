@@ -78,7 +78,15 @@
                             <i class="bi bi-pencil-square me-2" ></i>Registrar una nueva incidencia
                         </a>
 
-                        <a href="{{ route('incidencias.reporte') }}"
+                        <a href="{{ route('incidencias.reporte', [
+        'search' => request('search'),
+        'fecha_inicio' => request('fecha_inicio'),
+        'fecha_fin' => request('fecha_fin'),
+        'cliente' => request('cliente'),
+        'reportado_por' => request('reportado_por'),
+        'tipo' => request('tipo'),
+        'estado' => request('estado'),
+    ]) }}"
                            class="btn btn-sm text-white mb-2"
                            style="background-color: #bfa046;">
                             <i class="bi bi-file-earmark-text me-2"></i> Generar reporte de incidencias

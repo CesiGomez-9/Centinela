@@ -1,20 +1,20 @@
 <?php $__env->startSection('content'); ?>
-
     <body style="background-color: #e6f0ff;">
     <div class="container mt-5" style="max-width:900px;">
         <div class="card shadow p-4 bg-white position-relative">
-            <i class="bi bi-badge-ad-fill position-absolute top-0 end-0 p-3 text-secondary opacity-25" style="font-size:4rem;"></i>
+            <i class="bi bi-pencil-square position-absolute top-0 end-0 p-3 text-secondary opacity-25" style="font-size:4rem;"></i>
 
             <h3 class="text-center mb-4" style="color:#09457f;">
-                <i class="bi bi-badge-ad me-2"></i>Registrar nueva promoción
+                <i class="bi bi-pencil-fill me-2"></i>Editar promoción
             </h3>
 
             <?php if(session('success')): ?>
-                <div class="alert alert-success">¡Promoción guardada correctamente!</div>
+                <div class="alert alert-success">¡Cambios guardados correctamente!</div>
             <?php endif; ?>
 
-            <form action="<?php echo e(route('promociones.store')); ?>" method="POST" enctype="multipart/form-data" novalidate id="promocionForm">
+            <form action="<?php echo e(route('promociones.update', $promocion->id)); ?>" method="POST" enctype="multipart/form-data" id="promocionForm" novalidate>
                 <?php echo csrf_field(); ?>
+                <?php echo method_field('PUT'); ?>
                 <div class="row g-3">
 
                     <div class="col-md-6">
@@ -30,7 +30,7 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                                   value="<?php echo e(old('nombre')); ?>">
+                                   value="<?php echo e(old('nombre', $promocion->nombre)); ?>">
                             <div class="invalid-feedback d-block"><?php $__errorArgs = ['nombre'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -55,7 +55,7 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                                   value="<?php echo e(old('fecha_inicio')); ?>">
+                                   value="<?php echo e(old('fecha_inicio', $promocion->fecha_inicio)); ?>">
                             <div class="invalid-feedback d-block"><?php $__errorArgs = ['fecha_inicio'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -80,7 +80,7 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                                   value="<?php echo e(old('fecha_fin')); ?>">
+                                   value="<?php echo e(old('fecha_fin', $promocion->fecha_fin)); ?>">
                             <div class="invalid-feedback d-block"><?php $__errorArgs = ['fecha_fin'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -105,7 +105,7 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                                      rows="3" style="overflow:hidden; resize:none;"><?php echo e(old('descripcion')); ?></textarea>
+                                      rows="3" style="overflow:hidden; resize:none;"><?php echo e(old('descripcion', $promocion->descripcion)); ?></textarea>
                             <div class="invalid-feedback d-block"><?php $__errorArgs = ['descripcion'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -130,7 +130,7 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                                      rows="3" maxlength="150" style="overflow:hidden; resize:none;"><?php echo e(old('restriccion')); ?></textarea>
+                                      rows="3" maxlength="150" style="overflow:hidden; resize:none;"><?php echo e(old('restriccion', $promocion->restriccion)); ?></textarea>
                             <div class="invalid-feedback d-block"><?php $__errorArgs = ['restriccion'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -143,7 +143,7 @@ unset($__errorArgs, $__bag); ?></div>
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label fw-bold">Subir plantilla de promoción (opcional):</label>
+                        <label class="form-label fw-bold">Actualizar imagen (opcional):</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-image"></i></span>
                             <input type="file" name="imagen" id="imagenInput"
@@ -170,14 +170,16 @@ unset($__errorArgs, $__bag); ?></div>
                     <div class="col-md-12">
                         <label class="form-label fw-bold">Vista previa:</label>
                         <div class="preview-container border rounded shadow-sm overflow-hidden p-2 bg-light position-relative" id="previewCard">
-                            <img id="previewImagen" src="<?php echo e(asset('imagenes/plantilla_promocion.jpg')); ?>"
+                            <img id="previewImagen"
+                                 src="<?php echo e($promocion->imagen ? asset('storage/'.$promocion->imagen) : asset('imagenes/plantilla_promocion.jpg')); ?>"
                                  alt="Vista previa" class="w-100 rounded mb-3" style="object-fit:cover; max-height:400px;">
-                            <!-- CUADRO NEGRO CENTRADO -->
                             <div class="position-absolute top-50 start-50 translate-middle text-center p-3 bg-dark bg-opacity-50 rounded" style="max-width: 70%;">
-                                <h5 id="previewNombre" class="fw-bold text-white mb-1">Nombre de la promoción:</h5>
-                                <p id="previewDescripcion" class="text-white mb-1">Descripción:</p>
-                                <p id="previewRestriccion" class="text-white mb-1">Restricción:</p>
-                                <p id="previewFechas" class="small text-white mb-0">Promoción válida desde: <span id="fechaInicioText"></span> hasta <span id="fechaFinText"></span></p>
+                                <h5 id="previewNombre" class="fw-bold text-white mb-1"></h5>
+                                <p id="previewDescripcion" class="text-white mb-1"></p>
+                                <p id="previewRestriccion" class="text-white mb-1"></p>
+                                <p id="previewFechas" class="small text-white mb-0">
+                                    Promoción válida desde: <span id="fechaInicioText"></span> hasta <span id="fechaFinText"></span>
+                                </p>
                             </div>
                         </div>
                         <div class="text-center mt-2">
@@ -191,11 +193,11 @@ unset($__errorArgs, $__bag); ?></div>
                         <a href="<?php echo e(route('promociones.index')); ?>" class="btn btn-danger me-2">
                             <i class="bi bi-x-circle me-2"></i>Cancelar
                         </a>
-                        <button type="reset" class="btn btn-warning me-2" id="btnRestablecer">
-                            <i class="bi bi-eraser-fill me-2"></i>Limpiar
+                        <button type="button" class="btn btn-warning me-2" id="btnRestablecer">
+                            <i class="bi bi-arrow-counterclockwise me-2"></i>Restablecer
                         </button>
                         <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-save-fill me-2"></i>Guardar
+                            <i class="bi bi-save-fill me-2"></i>Guardar cambios
                         </button>
                     </div>
 
@@ -204,6 +206,7 @@ unset($__errorArgs, $__bag); ?></div>
         </div>
     </div>
 
+    
     <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-fullscreen">
             <div class="modal-content bg-dark">
@@ -213,14 +216,13 @@ unset($__errorArgs, $__bag); ?></div>
                 </div>
                 <div class="modal-body d-flex justify-content-center align-items-center bg-black overflow-auto" style="min-height: 60vh;">
                     <div class="position-relative text-center w-30">
-                        <img id="modalImagen" src="<?php echo e(asset('imagenes/plantilla_promocion.jpg')); ?>"
+                        <img id="modalImagen"
+                             src="<?php echo e($promocion->imagen ? asset('storage/'.$promocion->imagen) : asset('imagenes/plantilla_promocion.jpg')); ?>"
                              class="w-50 h-auto rounded shadow" style="object-fit: contain;">
-
-                        <!-- CUADRO NEGRO CENTRADO -->
                         <div class="position-absolute top-50 start-50 translate-middle text-center p-3 bg-dark bg-opacity-50 rounded" style="max-width: 50%;">
-                            <h3 id="modalNombre" class="fw-bold text-white mb-2">Nombre de la promoción:</h3>
-                            <p id="modalDescripcion" class="text-white mb-1">Descripción:</p>
-                            <p id="modalRestriccion" class="text-white mb-1">Restricción:</p>
+                            <h3 id="modalNombre" class="fw-bold text-white mb-2"></h3>
+                            <p id="modalDescripcion" class="text-white mb-1"></p>
+                            <p id="modalRestriccion" class="text-white mb-1"></p>
                             <p id="modalFechas" class="small text-white mb-0">Promoción válida desde: <span id="modalInicio"></span> hasta <span id="modalFin"></span></p>
                         </div>
                     </div>
@@ -231,28 +233,12 @@ unset($__errorArgs, $__bag); ?></div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const hoy = new Date();
-            const yyyy = hoy.getFullYear();
-            const mm = hoy.getMonth() + 1;
-            const dd = String(hoy.getDate()).padStart(2,'0');
-            const hoyStr = `${yyyy}-${String(mm).padStart(2,'0')}-${dd}`;
-
-            let maxDate = new Date();
-            maxDate.setMonth(maxDate.getMonth() + 4);
-            const maxStr = `${maxDate.getFullYear()}-${String(maxDate.getMonth()+1).padStart(2,'0')}-${String(maxDate.getDate()).padStart(2,'0')}`;
-
-            const fechaInicio = document.getElementById('fecha_inicio');
-            const fechaFin = document.getElementById('fecha_fin');
-            fechaInicio.value = hoyStr;
-            fechaFin.value = hoyStr;
-            fechaInicio.min = hoyStr;
-            fechaFin.min = hoyStr;
-            fechaInicio.max = maxStr;
-            fechaFin.max = maxStr;
 
             const nombreInput = document.getElementById('nombre');
             const descripcion = document.getElementById('descripcion');
             const restriccion = document.getElementById('restriccion');
+            const fechaInicio = document.getElementById('fecha_inicio');
+            const fechaFin = document.getElementById('fecha_fin');
             const imagenInput = document.getElementById('imagenInput');
 
             const previewNombre = document.getElementById('previewNombre');
@@ -269,21 +255,29 @@ unset($__errorArgs, $__bag); ?></div>
             const modalFin = document.getElementById('modalFin');
             const modalImagen = document.getElementById('modalImagen');
 
+            // Valores originales desde la base de datos
+            const originalData = {
+                nombre: <?php echo json_encode($promocion->nombre, 15, 512) ?>,
+                descripcion: <?php echo json_encode($promocion->descripcion, 15, 512) ?>,
+                restriccion: <?php echo json_encode($promocion->restriccion, 15, 512) ?>,
+                fecha_inicio: <?php echo json_encode($promocion->fecha_inicio, 15, 512) ?>,
+                fecha_fin: <?php echo json_encode($promocion->fecha_fin, 15, 512) ?>,
+                imagen: "<?php echo e($promocion->imagen ? asset('storage/'.$promocion->imagen) : asset('imagenes/plantilla_promocion.jpg')); ?>"
+            };
+
             function formatoFecha(fecha) {
                 if(!fecha) return '';
                 const d = new Date(fecha);
-                const dd = String(d.getDate()).padStart(2,'0');
-                const mm = String(d.getMonth()+1).padStart(2,'0');
-                const yyyy = d.getFullYear();
-                return `${dd}/${mm}/${yyyy}`;
+                return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
             }
 
             function actualizarVista() {
-                previewNombre.textContent = "Nombre de la promoción: " + (nombreInput.value || '');
-                previewDescripcion.textContent = "Descripción: " + (descripcion.value || '');
-                previewRestriccion.textContent = "Restricción: " + (restriccion.value || '');
-                fechaInicioText.textContent = formatoFecha(fechaInicio.value);
-                fechaFinText.textContent = formatoFecha(fechaFin.value);
+                // Si el input está vacío, usar originalData como fallback
+                previewNombre.textContent = nombreInput.value ? "Nombre de la promoción: " + nombreInput.value : "Nombre de la promoción: " + originalData.nombre;
+                previewDescripcion.textContent = descripcion.value ? "Descripción: " + descripcion.value : "Descripción: " + originalData.descripcion;
+                previewRestriccion.textContent = restriccion.value ? "Restricción: " + restriccion.value : "Restricción: " + originalData.restriccion;
+                fechaInicioText.textContent = fechaInicio.value ? formatoFecha(fechaInicio.value) : formatoFecha(originalData.fecha_inicio);
+                fechaFinText.textContent = fechaFin.value ? formatoFecha(fechaFin.value) : formatoFecha(originalData.fecha_fin);
 
                 modalNombre.textContent = previewNombre.textContent;
                 modalDescripcion.textContent = previewDescripcion.textContent;
@@ -292,50 +286,69 @@ unset($__errorArgs, $__bag); ?></div>
                 modalFin.textContent = fechaFinText.textContent;
             }
 
-            nombreInput.addEventListener('input', actualizarVista);
-            descripcion.addEventListener('input', actualizarVista);
-            restriccion.addEventListener('input', actualizarVista);
-            fechaInicio.addEventListener('input', actualizarVista);
-            fechaFin.addEventListener('input', actualizarVista);
+            // Ejecutar al cargar para llenar preview y modal
+            actualizarVista();
 
+            // Actualizar preview y modal al escribir
+            [nombreInput, descripcion, restriccion, fechaInicio, fechaFin].forEach(input => {
+                input.addEventListener('input', actualizarVista);
+            });
+
+            // Imagen
             imagenInput.addEventListener('change', function(){
+                const previewImagen = document.getElementById('previewImagen');
                 if(this.files && this.files[0]){
                     const reader = new FileReader();
                     reader.onload = e => {
-                        document.getElementById('previewImagen').src = e.target.result;
+                        previewImagen.src = e.target.result;
                         modalImagen.src = e.target.result;
                     };
                     reader.readAsDataURL(this.files[0]);
                 } else {
-                    document.getElementById('previewImagen').src = "<?php echo e(asset('imagenes/plantilla_promocion.jpg')); ?>";
-                    modalImagen.src = "<?php echo e(asset('imagenes/plantilla_promocion.jpg')); ?>";
+                    previewImagen.src = originalData.imagen;
+                    modalImagen.src = originalData.imagen;
                 }
             });
 
             document.getElementById('btnAmpliar').addEventListener('click', () => modal.show());
 
+            // Restablecer
             document.getElementById('btnRestablecer').addEventListener('click', e => {
                 e.preventDefault();
-                nombreInput.value = '';
-                descripcion.value = '';
-                restriccion.value = '';
-                fechaInicio.value = hoyStr;
-                fechaFin.value = hoyStr;
-                imagenInput.value = '';
-                actualizarVista();
-                document.getElementById('previewImagen').src = "<?php echo e(asset('imagenes/plantilla_promocion.jpg')); ?>";
-                modalImagen.src = "<?php echo e(asset('imagenes/plantilla_promocion.jpg')); ?>";
 
+                // Restaurar valores originales
+                nombreInput.value = originalData.nombre;
+                descripcion.value = originalData.descripcion;
+                restriccion.value = originalData.restriccion;
+                fechaInicio.value = originalData.fecha_inicio;
+                fechaFin.value = originalData.fecha_fin;
+                document.getElementById('previewImagen').src = originalData.imagen;
+                modalImagen.src = originalData.imagen;
+                imagenInput.value = '';
+
+                // Ocultar alertas de validación
                 const feedbacks = document.querySelectorAll('.invalid-feedback');
-                feedbacks.forEach(f => f.textContent = '');
+                feedbacks.forEach(f => {
+                    f.textContent = '';   // Borra el mensaje
+                    f.style.display = 'none'; // Oculta visualmente
+                });
+
+                // Quitar clase is-invalid de los inputs
                 const errores = document.querySelectorAll('.is-invalid');
                 errores.forEach(el => el.classList.remove('is-invalid'));
+
+                // Ocultar alertas tipo session si existen
+                const sessionAlerts = document.querySelectorAll('.alert');
+                sessionAlerts.forEach(alert => alert.remove());
+
+                // Actualizar preview y modal
+                actualizarVista();
             });
 
-            actualizarVista();
         });
+
     </script>
     </body>
 <?php $__env->stopSection(); ?>
 
-<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\angel\PhpstormProjects\Centinela\resources\views/promociones/create.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\angel\PhpstormProjects\Centinela\resources\views/promociones/edit.blade.php ENDPATH**/ ?>

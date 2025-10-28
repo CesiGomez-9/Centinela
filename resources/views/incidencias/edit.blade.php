@@ -31,7 +31,10 @@
 
 
         }
-
+        textarea.auto-expand {
+            overflow-y: hidden;
+            resize: none;
+        }
 
     </style>
 </head>
@@ -80,45 +83,31 @@
                                 <input type="text"
                                        id="clienteInput"
                                        name="cliente_nombre"
-                                       class="form-control @error('cliente_id') is-invalid @enderror"
-                                       placeholder="Buscar cliente"
-                                       autocomplete="off"
-                                       value="{{ old('cliente_nombre', $incidencia->cliente->nombre ?? '') }}"
-                                       required>
-                                <input type="hidden" name="cliente_id" id="cliente_id" value="{{ old('cliente_id', $incidencia->cliente_id ?? '') }}">
+                                       class="form-control"
+                                       value="{{ $incidencia->cliente->nombre ?? '' }}"
+                                       readonly>
+                                <input type="hidden" name="cliente_id" id="cliente_id" value="{{ $incidencia->cliente_id }}">
                             </div>
-                            @error('cliente_id')
-                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                            @enderror
-                            <div id="clienteResults" class="list-group mt-1" style="max-height:200px; overflow-y:auto;"></div>
                         </div>
-
 
                         {{-- Tipo de incidencia --}}
                         <div class="col-md-6">
-                            <label for="tipo" class="form-label">Tipo de incidencia</label>
+                            <label for="tipoInput" class="form-label">Tipo de incidencia</label>
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-tag-fill"></i></span>
-                                <select id="tipo" name="tipo" class="form-select @error('tipo') is-invalid @enderror" required>
-                                    <option value="">Seleccione un tipo</option>
-                                    @foreach([
-                                        "accidentes laborales",
-                                        "conflictos con clientes",
-                                        "errores en la instalacion",
-                                        "fallas tecnicas",
-                                        "falla o retraso del personal",
-                                        "incidentes de seguridad",
-                                        "incumplimiento de protocolos",
-                                        "otros"
-                                    ] as $dep)
-                                        <option value="{{ $dep }}" {{ old('tipo', $incidencia->tipo) == $dep ? 'selected' : '' }}>{{ $dep }}</option>
-                                    @endforeach
-                                </select>
-                                @error('tipo')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+
+                                {{-- Campo visible (solo lectura, parece editable) --}}
+                                <input type="text"
+                                       id="tipoInput"
+                                       class="form-control"
+                                       value="{{ ucfirst($incidencia->tipo) }}"
+                                       readonly>
+
+                                {{-- Campo oculto (para enviar el valor al backend) --}}
+                                <input type="hidden" name="tipo" value="{{ $incidencia->tipo }}">
                             </div>
                         </div>
+
 
 
                         <!-- Agentes involucrados -->
@@ -156,40 +145,28 @@
                             @enderror
                         </div>
 
-
-
-
                         {{-- Reportado por --}}
                         <div class="col-md-6">
                             <label for="reportadoPorInput" class="form-label">Reportado por</label>
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-person-fill-check"></i></span>
 
-                                {{-- Campo visible (nombre del empleado) --}}
+                                {{-- Campo visible (solo lectura) --}}
                                 <input type="text"
                                        id="reportadoPorInput"
                                        name="reportado_por_nombre"
-                                       class="form-control @error('reportado_por') is-invalid @enderror"
-                                       placeholder="Buscar empleado"
-                                       autocomplete="off"
-                                       value="{{ old('reportado_por_nombre', $incidencia->reportadoPorEmpleado->nombre ?? '') }}"
-                                       required>
+                                       class="form-control"
+                                       value="{{ $incidencia->reportadoPorEmpleado->nombre ?? '' }}"
+                                       readonly>
 
-                                {{-- Campo oculto (ID del empleado) --}}
+                                {{-- Campo oculto (ID del empleado, se mantiene para enviar al backend) --}}
                                 <input type="hidden"
                                        name="reportado_por"
                                        id="reportado_por"
-                                       value="{{ old('reportado_por', $incidencia->reportado_por ?? '') }}">
+                                       value="{{ $incidencia->reportado_por ?? '' }}">
                             </div>
-
-                            {{-- Mensaje de error (mostrado debajo del campo visible) --}}
-                            @error('reportado_por')
-                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                            @enderror
-
-                            {{-- Resultados del autocompletado --}}
-                            <div id="reportadoPorResults" class="list-group mt-1" style="max-height:200px; overflow-y:auto;"></div>
                         </div>
+
 
 
                         {{-- Fecha --}}
@@ -281,21 +258,19 @@
 </div>
 
 <script>
-    function autoExpand(el) {
-        // Reinicia la altura
-        el.style.height = "auto";
-        // Asegura que se expanda correctamente según el scrollHeight
-        el.style.height = (el.scrollHeight) + "px";
+    // Función para auto expandir un textarea
+    function autoExpand(field) {
+        field.style.height = 'auto'; // Resetea la altura
+        field.style.height = field.scrollHeight + 'px'; // Ajusta según contenido
     }
 
-    document.addEventListener("DOMContentLoaded", function () {
-        const direccion = document.getElementById("direccion");
-        if (direccion) {
-            autoExpand(direccion); // ajusta si ya tiene texto
-            direccion.addEventListener("input", function () {
-                autoExpand(direccion);
-            });
-        }
+    // Al cargar la página, ajusta la altura inicial y agrega evento input
+    window.addEventListener('DOMContentLoaded', () => {
+        const textareas = document.querySelectorAll('textarea.auto-expand');
+        textareas.forEach(el => {
+            autoExpand(el); // Ajuste inicial
+            el.addEventListener('input', () => autoExpand(el)); // Ajusta mientras escribes
+        });
     });
 </script>
 {{-- Incluye tus scripts JS personalizados --}}

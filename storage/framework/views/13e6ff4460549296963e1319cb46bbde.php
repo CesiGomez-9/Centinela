@@ -127,7 +127,7 @@ unset($__errorArgs, $__bag); ?>"
                                         <option value="" disabled <?php echo e(old('tipo') ? '' : 'selected'); ?>>Seleccione un tipo</option>
                                         <option value="Accidentes laborales" <?php echo e(old('tipo') == 'Accidentes laborales' ? 'selected' : ''); ?>>Accidentes laborales</option>
                                         <option value="Conflictos con clientes" <?php echo e(old('tipo') == 'Conflictos con clientes' ? 'selected' : ''); ?>>Conflictos con clientes</option>
-                                        <option value="Errores en la instalacion" <?php echo e(old('tipo') == 'Errores en la instalacion' ? 'selected' : ''); ?>>Errores en la instalación</option>
+                                        <option value="Errores en la instalación" <?php echo e(old('tipo') == 'Errores en la instalación' ? 'selected' : ''); ?>>Errores en la instalación</option>
                                         <option value="Fallas tecnicas" <?php echo e(old('tipo') == 'Fallas tecnicas' ? 'selected' : ''); ?>>Fallas técnicas</option>
                                         <option value="Falla o retraso del personal" <?php echo e(old('tipo') == 'Falla o retraso del personal' ? 'selected' : ''); ?>>Falla o retraso del personal</option>
                                         <option value="Incidentes de seguridad" <?php echo e(old('tipo') == 'Incidentes de seguridad' ? 'selected' : ''); ?>>Incidentes de seguridad</option>
