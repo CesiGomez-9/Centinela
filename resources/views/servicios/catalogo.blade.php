@@ -1,5 +1,5 @@
-<!DOCTYPE html>
-<html lang="es">
+@extends('plantilla')
+@section('content')
 <head>
     <meta charset="UTF-8">
     <title>Catálogo de Servicios</title>
@@ -56,25 +56,6 @@
 <body class="bg-light p-4">
 
 <!-- NAVBAR -->
-<nav class="navbar navbar-expand-lg shadow-sm" style="background-color: #0A1F44;">
-    <div class="container" style="max-width: 1600px;">
-        <a class="navbar-brand text-white fw-bold" href="#">
-            <img src="{{ asset('centinela.jpg') }}" style="height:70px;">
-            Grupo Centinela
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon text-white"></span>
-        </button>
-        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link text-white" href="#">Registrate</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="#">Servicios</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="#">Nosotros</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="#">Contacto</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
 
 <!-- CONTENIDO -->
 <div class="container bg-white p-5 rounded shadow mt-5">
@@ -119,9 +100,8 @@
             <thead class="table-dark text-center">
             <tr>
                 <th style="width: 50px;">#</th>
-                <th style="width: 280px;">Nombre</th>
-                <th style="width: 200px;">Costos</th> {{-- Cambiado de "Costo estimado" a "Costos" --}}
-                <th style="width: 130px;">Categoría</th>
+                <th style="width: 200px;">Nombre</th>
+                <th style="width: 150px;">Costos</th> {{-- Cambiado de "Costo estimado" a "Costos" --}}
                 <th style="width: 160px;">Acciones</th>
             </tr>
             </thead>
@@ -135,7 +115,6 @@
                         <div><strong>Nocturno:</strong> L. {{ number_format($servicio->costo_nocturno, 2) }}</div>
                         <div><strong>24 horas:</strong> L. {{ number_format($servicio->costo_24_horas, 2) }}</div>
                     </td>
-                    <td class="text-start">{{ ucfirst($servicio->categoria) }}</td>
                     <td class="text-center">
                         <a href="{{ route('servicios.show', $servicio->id) }}" class="btn btn-sm btn-outline-info">
                             <i class="bi bi-eye"></i> Ver
@@ -200,6 +179,5 @@
 </script>
 
 <!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html>
+@endsection

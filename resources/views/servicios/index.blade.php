@@ -1,11 +1,6 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8" />
-    <title>Registrar Servicio</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+@extends('plantilla')
+@section('content')
+
     <style>
 
             body{
@@ -36,27 +31,9 @@
     </style>
 
 
-</head>
+
 <body>
-<nav class="navbar navbar-expand-lg" style="background-color: #0A1F44; padding-top: 1.2rem; padding-bottom: 1.2rem; font-family: 'Courier New', sans-serif;">
-    <div class="container" style="max-width: 1600px;">
-        <a class="navbar-brand text-white fw-bold" href="#">
-            <img src="{{ asset('centinela.jpg') }}" style="height:80px; margin-right: 10px;" />
-            Grupo Centinela
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link text-white" href="#">Registrate</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="#">Servicios</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="#">Nosotros</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="#">Contacto</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
+
 
 <div class="container my-3">
     <div class="form-contenedor position-relative">
@@ -102,7 +79,7 @@
                     <div class="input-group input-group-md">
                         <span class="input-group-text"><i class="bi bi-sun"></i></span>
                         <input type="number" step="0.01" class="form-control form-control-md" id="costo_diurno" name="costo_diurno"
-                               min="0" max="9999" oninput="limitarDigitos(this, 4)" required />
+                               min="1" max="9999" oninput="limitarDigitos(this, 4)" required />
                         <div class="invalid-feedback" style="font-size: 0.85rem;">Ingrese un costo diurno válido.</div>
                     </div>
                 </div>
@@ -113,7 +90,7 @@
                     <div class="input-group input-group-md">
                         <span class="input-group-text"><i class="bi bi-moon"></i></span>
                         <input type="number" step="0.01" class="form-control form-control-md" id="costo_nocturno" name="costo_nocturno"
-                               min="0" max="9999" oninput="limitarDigitos(this, 4)" required />
+                               min="1" max="9999" oninput="limitarDigitos(this, 4)" required />
                         <div class="invalid-feedback" style="font-size: 0.85rem;">Ingrese un costo nocturno válido.</div>
                     </div>
                 </div>
@@ -124,13 +101,14 @@
                     <div class="input-group input-group-md">
                         <span class="input-group-text"><i class="bi bi-clock"></i></span>
                         <input type="number" step="0.01" class="form-control form-control-md" id="costo_24_horas" name="costo_24_horas"
-                               min="0" max="9999" oninput="limitarDigitos(this, 4)" required />
+                               min="1" max="9999" oninput="limitarDigitos(this, 4)" required />
                         <div class="invalid-feedback" style="font-size: 0.85rem;">Ingrese un costo de 24 horas válido.</div>
                     </div>
                 </div>
 
                 <!-- Descripción (ocupa todo el ancho) -->
-                <div class="col-12">
+                <!-- Descripción (col-md-6) -->
+                <div class="col-12 col-md-6">
                     <label for="descripcionServicio" class="form-label fs-6 mb-2">Descripción</label>
                     <div class="input-group input-group-md">
                         <span class="input-group-text"><i class="bi bi-textarea-t"></i></span>
@@ -145,21 +123,8 @@
                     </div>
                 </div>
 
-                <!-- Categoría y Productos requeridos juntos -->
-                <div class="col-md-6">
-                    <label for="categoria" class="form-label fs-6 mb-2">Categoría</label>
-                    <div class="input-group input-group-md">
-                        <span class="input-group-text"><i class="bi bi-ui-checks"></i></span>
-                        <select class="form-select form-select-md" id="categoria" name="categoria" required>
-                            <option value="">Seleccione una categoría</option>
-                            <option value="vigilancia">Vigilancia</option>
-                            <option value="tecnico">Técnico</option>
-                        </select>
-                        <div class="invalid-feedback" style="font-size: 0.85rem;">Seleccione una categoría.</div>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
+                <!-- Productos requeridos (col-md-6) -->
+                <div class="col-12 col-md-6">
                     <label class="form-label fs-6 mb-2">Productos requeridos</label>
                     <div class="input-group input-group-md">
                         <span class="input-group-text"><i class="bi bi-box"></i></span>
@@ -334,9 +299,8 @@
             categoriaSelect.dispatchEvent(new Event('change'));
         }
     });
+
 </script>
 
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html>
+@endsection
