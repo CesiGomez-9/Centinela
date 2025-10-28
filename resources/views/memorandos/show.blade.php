@@ -150,19 +150,28 @@
                     <p class="mb-2"><i class="bi bi-paperclip me-2"></i><strong>Adjunto:</strong></p>
 
                     @if ($memorando->adjunto)
-                        @php $extension = strtolower(pathinfo($memorando->adjunto, PATHINFO_EXTENSION)); @endphp
+                        @php
+                            // Limpiar el prefijo 'public/' si existe
+                            $rutaAdjunto = $memorando->adjunto ? str_replace('public/', '', $memorando->adjunto) : null;
+                        @endphp
 
-                        @if (in_array($extension, ['jpg','jpeg','png','gif','webp']))
-                            <img src="{{ asset('storage/' . $memorando->adjunto) }}" alt="Adjunto" class="img-fluid rounded shadow" style="max-height:300px;">
-                        @elseif($extension === 'pdf')
-                            <iframe src="{{ asset('storage/' . $memorando->adjunto) }}" width="100%" height="400px" class="border rounded mt-2"></iframe>
+                        @if ($rutaAdjunto && file_exists(storage_path('app/public/' . $rutaAdjunto)))
+                            @php $extension = strtolower(pathinfo($rutaAdjunto, PATHINFO_EXTENSION)); @endphp
+
+                            @if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp']))
+                                <img src="{{ asset('storage/' . $rutaAdjunto) }}" alt="Adjunto" class="img-fluid rounded shadow" style="max-height:300px;">
+                            @elseif($extension === 'pdf')
+                                <iframe src="{{ asset('storage/' . $rutaAdjunto) }}" width="100%" height="400px" class="border rounded mt-2"></iframe>
+                            @else
+                                <a href="{{ asset('storage/' . $rutaAdjunto) }}" target="_blank" class="btn btn-outline-primary mt-2">
+                                    <i class="bi bi-paperclip me-1"></i> Descargar adjunto
+                                </a>
+                            @endif
                         @else
-                            <a href="{{ asset('storage/' . $memorando->adjunto) }}" target="_blank" class="btn btn-outline-primary mt-2">
-                                <i class="bi bi-paperclip me-1"></i> Descargar adjunto
-                            </a>
+                            <span class="text-danger ms-1">⚠️ El archivo adjunto no se encuentra o fue eliminado.</span>
                         @endif
                     @else
-                        <span class="text-muted ms-1">No hay adjunto</span>
+                        <span class="text-muted ms-1">No hay archivo adjunto.</span>
                     @endif
                 </div>
 

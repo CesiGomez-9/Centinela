@@ -21,14 +21,13 @@ class PromocionController extends Controller
         }
 
         if ($request->filled('fecha_inicio')) {
-            $fecha = $request->fecha_inicio;
-            $query->where('fecha_inicio', 'like', "%{$fecha}%");
+            $query->whereDate('fecha_inicio', '>=', $request->fecha_inicio);
         }
 
         if ($request->filled('fecha_fin')) {
-            $fecha = $request->fecha_fin;
-            $query->where('fecha_inicio', 'like', "%{$fecha}%");
+            $query->whereDate('fecha_fin', '<=', $request->fecha_fin);
         }
+
 
         if ($request->filled('activo')) {
             if ($request->activo == '1') {
