@@ -1,3 +1,6 @@
+index:
+
+
 @extends('plantilla')
 @section('content')
     <style>
@@ -93,12 +96,23 @@
                 </tr>
                 </thead>
                 <tbody>
+                @php
+                    $contadorPorEmpleado = [];
+                @endphp
                 @forelse($memorandos as $memorando)
+                    @php
+                        $empleadoId = $memorando->destinatario->id ?? 0;
+                        if (!isset($contadorPorEmpleado[$empleadoId])) {
+                            $contadorPorEmpleado[$empleadoId] = 1;
+                        } else {
+                            $contadorPorEmpleado[$empleadoId]++;
+                        }
+                    @endphp
                     <tr>
                         <td>{{ $loop->iteration + ($memorandos->currentPage() - 1) * $memorandos->perPage() }}</td>
                         <td>{{ $memorando->destinatario->nombre ?? '---' }} {{ $memorando->destinatario->apellido ?? '' }}</td>
                         <td>{{ $memorando->autor->nombre ?? '---' }} {{ $memorando->autor->apellido ?? '' }}</td>
-                        <td>Memorandum N° {{ $memorando->id }}</td>
+                        <td>Memorandum N° {{ $contadorPorEmpleado[$empleadoId] }}</td>
                         <td>{{ $memorando->tipo }}</td>
                         <td>{{ \Carbon\Carbon::parse($memorando->fecha)->format('d/m/Y') }}</td>
                         <td class="text-center">
@@ -115,8 +129,7 @@
                 </tbody>
             </table>
 
-
-        @if(request('search') && $memorandos->total() > 0)
+            @if(request('search') && $memorandos->total() > 0)
                 <div class="mb-3 text-muted">
                     Mostrando {{ $memorandos->count() }} de {{ $memorandos->total() }} memorandums encontrados para
                     "<strong>{{ request('search') }}</strong>".

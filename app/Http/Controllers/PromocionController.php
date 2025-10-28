@@ -102,19 +102,19 @@ class PromocionController extends Controller
 
     public function edit($id)
     {
-        $promocion = Promocion::findOrFail($id); // Buscar la promoción o fallar
+        $promocion = Promocion::findOrFail($id);
         return view('promociones.edit', compact('promocion'));
     }
 
-
+    // Actualizar la promoción
     public function update(Request $request, $id)
     {
         $promocion = Promocion::findOrFail($id);
 
         $validated = $request->validate([
             'nombre' => 'required|max:100|regex:/^[\p{L}\s]+$/u',
-            'descripcion' => 'required|max:250',
-            'restriccion' => 'required|max:150',
+            'descripcion' => 'required|max:250|regex:/^[\p{L}\s]+$/u',
+            'restriccion' => 'required|max:150|regex:/^[\p{L}\s]+$/u',
             'fecha_inicio' => 'required|date',
             'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
             'imagen' => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
@@ -122,31 +122,32 @@ class PromocionController extends Controller
             'nombre.required' => 'Debe ingresar el nombre de la promoción',
             'nombre.regex' => 'El nombre solo puede contener letras y espacios',
             'descripcion.required' => 'Debe ingresar una descripción',
+            'descripcion.regex' => 'La descripción solo puede contener letras y espacios',
             'restriccion.required' => 'Debe ingresar una restricción',
+            'restriccion.regex' => 'La restricción solo puede contener letras y espacios',
             'fecha_inicio.required' => 'Debe seleccionar una fecha',
             'fecha_fin.required' => 'Debe seleccionar una fecha',
             'fecha_fin.after_or_equal' => 'La fecha fin debe ser igual o posterior a la fecha inicio',
             'imagen.image' => 'El archivo debe ser una imagen válida (jpg, jpeg o png)',
         ]);
 
-        // Si se subió nueva imagen, guardarla
+        // Manejo de imagen si se sube una nueva
         if ($request->hasFile('imagen') && $request->file('imagen')->isValid()) {
-            // Opcional: eliminar la imagen anterior
-            if ($promocion->imagen && \Storage::disk('public')->exists($promocion->imagen)) {
+            // Opcional: eliminar la imagen anterior si existe
+            if ($promocion->imagen) {
                 \Storage::disk('public')->delete($promocion->imagen);
             }
-
-            $promocion->imagen = $request->file('imagen')->store('promociones', 'public');
+            $validated['imagen'] = $request->file('imagen')->store('promociones', 'public');
         }
 
-        // Actualizar otros campos
-        $promocion->nombre = $validated['nombre'];
-        $promocion->descripcion = $validated['descripcion'];
-        $promocion->restriccion = $validated['restriccion'];
-        $promocion->fecha_inicio = $validated['fecha_inicio'];
-        $promocion->fecha_fin = $validated['fecha_fin'];
+        $promocion->update($validated);
 
-        $promocion->save();
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => '¡Promoción actualizada correctamente!'
+            ]);
+        }
 
         return redirect()->route('promociones.index')->with('success', '¡Promoción actualizada correctamente!');
     }

@@ -13,8 +13,7 @@
                 <div class="alert alert-success">¡Memorandum guardado correctamente!</div>
             <?php endif; ?>
 
-
-            <form action="<?php echo e(route('memorandos.store')); ?>" method="POST" enctype="multipart/form-data" novalidate>
+            <form id="memorandoForm" action="<?php echo e(route('memorandos.store')); ?>" method="POST" enctype="multipart/form-data" novalidate>
                 <?php echo csrf_field(); ?>
                 <div class="row g-3">
 
@@ -37,7 +36,8 @@ unset($__errorArgs, $__bag); ?>"
                                    autocomplete="off"
                                    value="<?php echo e(old('destinatario_nombre', $destinatarioSeleccionado ?? '')); ?>">
                             <input type="hidden" name="destinatario_id" id="destinatario_id" value="<?php echo e(old('destinatario_id')); ?>">
-                            <div class="invalid-feedback d-block"><?php $__errorArgs = ['destinatario_id'];
+                        </div>
+                        <div class="invalid-feedback d-block"><?php $__errorArgs = ['destinatario_id'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -45,9 +45,9 @@ $message = $__bag->first($__errorArgs[0]); ?> <?php echo e($message); ?> <?php u
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?></div>
-                        </div>
                         <div id="destinatarioResults" class="list-group" style="max-height:200px; overflow-y:auto;"></div>
                     </div>
+
                     <div class="col-md-6">
                         <label for="autorInput" class="form-label fw-bold">Creador del memorandum:</label>
                         <div class="input-group">
@@ -67,7 +67,8 @@ unset($__errorArgs, $__bag); ?>"
                                    autocomplete="off"
                                    value="<?php echo e(old('autor_nombre', $autorSeleccionado ?? '')); ?>">
                             <input type="hidden" name="autor_id" id="autor_id" value="<?php echo e(old('autor_id')); ?>">
-                            <div class="invalid-feedback d-block"><?php $__errorArgs = ['autor_id'];
+                        </div>
+                        <div class="invalid-feedback d-block"><?php $__errorArgs = ['autor_id'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -75,7 +76,6 @@ $message = $__bag->first($__errorArgs[0]); ?> <?php echo e($message); ?> <?php u
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?></div>
-                        </div>
                         <div id="autorResults" class="list-group" style="max-height:200px; overflow-y:auto;"></div>
                     </div>
 
@@ -91,8 +91,9 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                                   value="<?php echo e(old('fecha', date('Y-m-d'))); ?>">
-                            <div class="invalid-feedback d-block" id="fechaError"><?php $__errorArgs = ['fecha'];
+                                   value="<?php echo e(old('fecha')); ?>">
+                        </div>
+                        <div class="invalid-feedback d-block"><?php $__errorArgs = ['fecha'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -100,7 +101,6 @@ $message = $__bag->first($__errorArgs[0]); ?> <?php echo e($message); ?> <?php u
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?></div>
-                        </div>
                     </div>
 
                     <div class="col-md-6">
@@ -120,7 +120,8 @@ unset($__errorArgs, $__bag); ?>" required>
                                 <option value="media" <?php echo e(old('tipo') == 'media' ? 'selected' : ''); ?>>Media</option>
                                 <option value="grave" <?php echo e(old('tipo') == 'grave' ? 'selected' : ''); ?>>Grave</option>
                             </select>
-                            <div class="invalid-feedback d-block" id="tipoError"><?php $__errorArgs = ['tipo'];
+                        </div>
+                        <div class="invalid-feedback d-block"><?php $__errorArgs = ['tipo'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -128,7 +129,6 @@ $message = $__bag->first($__errorArgs[0]); ?> <?php echo e($message); ?> <?php u
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?></div>
-                        </div>
                     </div>
 
                     <div class="col-md-6">
@@ -145,7 +145,8 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
                                    value="<?php echo e(old('titulo')); ?>">
-                            <div class="invalid-feedback d-block" id="tituloError"><?php $__errorArgs = ['titulo'];
+                        </div>
+                        <div class="invalid-feedback d-block"><?php $__errorArgs = ['titulo'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -153,7 +154,6 @@ $message = $__bag->first($__errorArgs[0]); ?> <?php echo e($message); ?> <?php u
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?></div>
-                        </div>
                     </div>
 
                     <div class="col-md-6">
@@ -170,7 +170,8 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
                                       style="overflow:hidden; resize:none;"><?php echo e(old('contenido')); ?></textarea>
-                            <div class="invalid-feedback d-block" id="contenidoError"><?php $__errorArgs = ['contenido'];
+                        </div>
+                        <div class="invalid-feedback d-block"><?php $__errorArgs = ['contenido'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -178,7 +179,6 @@ $message = $__bag->first($__errorArgs[0]); ?> <?php echo e($message); ?> <?php u
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?></div>
-                        </div>
                     </div>
 
                     <div class="col-md-12">
@@ -196,24 +196,64 @@ endif;
 unset($__errorArgs, $__bag); ?>"
                                       style="overflow:hidden; resize:none;"><?php echo e(old('sancion')); ?></textarea>
                         </div>
-                        <div class="invalid-feedback d-block" id="sancionError">
-                            <?php $__errorArgs = ['sancion'];
+                        <div class="invalid-feedback d-block"><?php $__errorArgs = ['sancion'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> <?php echo e($message); ?> <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>
-                        </div>
+unset($__errorArgs, $__bag); ?></div>
                     </div>
 
                     <div class="col-md-12">
-                        <label for="adjunto" class="form-label fw-bold">
+                        <label for="adjuntoInput" class="form-label fw-bold">
                             <i class="bi bi-paperclip me-2"></i>Adjunto (opcional):
                         </label>
-                        <input type="file" class="form-control" id="adjunto" name="adjunto" accept=".jpg,.jpeg,.png,.pdf">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-paperclip"></i></span>
+                            <?php if(old('base64_adjunto')): ?>
+                                <div id="persistedFileDisplay" class="form-control text-muted d-flex align-items-center bg-light">
+                                    <?php echo e(old('old_file_name', 'Archivo cargado')); ?>
+
+                                </div>
+
+                                <input type="file" name="adjunto" id="adjuntoInput" style="display:none;"
+                                       class="form-control <?php $__errorArgs = ['adjunto'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" accept=".jpg,.jpeg,.png,.pdf">
+                            <?php else: ?>
+                                <input type="file" name="adjunto" id="adjuntoInput"
+                                       class="form-control <?php $__errorArgs = ['adjunto'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                       accept=".jpg,.jpeg,.png,.pdf">
+                                <div id="persistedFileDisplay" class="form-control text-muted d-flex align-items-center bg-light" style="display:none;">
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                        <div class="invalid-feedback d-block"><?php $__errorArgs = ['adjunto'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <?php echo e($message); ?> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?></div>
                     </div>
+
+                    <input type="hidden" name="base64_adjunto" id="base64Adjunto" value="<?php echo e(old('base64_adjunto')); ?>">
+                    <input type="hidden" name="old_file_name" id="oldFileName" value="<?php echo e(old('old_file_name')); ?>">
 
                     <div class="col-md-12">
                         <label class="form-label fw-bold">Observaciones (opcional):</label>
@@ -229,7 +269,8 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
                                       style="overflow:hidden; resize:none;"><?php echo e(old('observaciones')); ?></textarea>
-                            <div class="invalid-feedback d-block"><?php $__errorArgs = ['observaciones'];
+                        </div>
+                        <div class="invalid-feedback d-block"><?php $__errorArgs = ['observaciones'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -237,7 +278,6 @@ $message = $__bag->first($__errorArgs[0]); ?> <?php echo e($message); ?> <?php u
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?></div>
-                        </div>
                     </div>
 
                     <div class="text-center mt-4 col-12">
@@ -254,7 +294,9 @@ unset($__errorArgs, $__bag); ?></div>
             </form>
         </div>
     </div>
+
     <script>
+
         function limitarCaracteres(campoId, maxCaracteres) {
             const campo = document.getElementById(campoId);
             campo.addEventListener('input', function() {
@@ -263,16 +305,12 @@ unset($__errorArgs, $__bag); ?></div>
                 }
             });
         }
-        limitarCaracteres("titulo", 100);
-        limitarCaracteres("contenido", 250);
-        limitarCaracteres("sancion", 250);
-        limitarCaracteres("observaciones", 250);
+        ['titulo','contenido','sancion','observaciones'].forEach(id => limitarCaracteres(id, id==='titulo'?100:250));
 
         function autoResize(textarea) {
             textarea.style.height = 'auto';
             textarea.style.height = textarea.scrollHeight + 'px';
         }
-
         ['contenido', 'sancion', 'observaciones'].forEach(id => {
             const campo = document.getElementById(id);
             if (campo) {
@@ -289,6 +327,69 @@ unset($__errorArgs, $__bag); ?></div>
             return `${year}-${month}-${day}`;
         }
 
+        const hoyStr = getFechaLocal();
+        const fechaInput = document.getElementById('fecha');
+        const adjuntoInput = document.getElementById('adjuntoInput');
+        const base64AdjuntoInput = document.getElementById('base64Adjunto');
+        const oldFileNameInput = document.getElementById('oldFileName');
+        const persistedFileDisplay = document.getElementById('persistedFileDisplay');
+
+        let tempAdjuntoData = "<?php echo e(old('base64_adjunto')); ?>";
+        let tempFileName = "<?php echo e(old('old_file_name')); ?>";
+
+        if (!fechaInput.value && !fechaInput.classList.contains('is-invalid')) {
+            fechaInput.value = hoyStr;
+        }
+
+
+        function actualizarVistaAdjunto() {
+
+            if (tempAdjuntoData) {
+                if(persistedFileDisplay) {
+                    persistedFileDisplay.style.display = 'flex';
+                    persistedFileDisplay.textContent = tempFileName || 'Archivo cargado';
+                }
+                if(adjuntoInput) adjuntoInput.style.display = 'none';
+                if(adjuntoInput) adjuntoInput.classList.remove('is-invalid');
+            } else {
+
+                if(adjuntoInput) adjuntoInput.style.display = 'block';
+                if(persistedFileDisplay) persistedFileDisplay.style.display = 'none';
+            }
+        }
+
+        if(adjuntoInput) {
+            adjuntoInput.addEventListener('change', function(){
+                if(this.files && this.files[0]){
+                    const file = this.files[0];
+                    const reader = new FileReader();
+
+                    tempFileName = file.name;
+                    oldFileNameInput.value = file.name;
+
+                    if (file.type.match('image.*')) {
+                        reader.onload = e => {
+                            tempAdjuntoData = e.target.result;
+                            base64AdjuntoInput.value = e.target.result;
+                            actualizarVistaAdjunto();
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+
+                        tempAdjuntoData = 'file_placeholder';
+                        base64AdjuntoInput.value = 'placeholder_non_image';
+                        actualizarVistaAdjunto();
+                    }
+                } else {
+
+                    tempAdjuntoData = null;
+                    tempFileName = null;
+                    base64AdjuntoInput.value = '';
+                    oldFileNameInput.value = '';
+                    actualizarVistaAdjunto();
+                }
+            });
+        }
         document.getElementById('btnLimpiar').addEventListener('click', function (e) {
             e.preventDefault();
 
@@ -297,64 +398,61 @@ unset($__errorArgs, $__bag); ?></div>
             const alerta = document.querySelector('.alert');
             if (alerta) alerta.remove();
 
-            document.getElementById('destinatarioInput').value = '';
-            document.getElementById('autorInput').value = '';
-            document.getElementById('destinatario_id').value = '';
-            document.getElementById('autor_id').value = '';
-            document.getElementById('destinatarioResults').innerHTML = '';
-            document.getElementById('autorResults').innerHTML = '';
-            document.getElementById('titulo').value = '';
-            document.getElementById('contenido').value = '';
-            document.getElementById('sancion').value = '';
-            document.getElementById('observaciones').value = '';
-            document.getElementById('tipo').selectedIndex = 0;
-
-            document.getElementById('fecha').value = getFechaLocal();
-
-            const adjuntoInput = document.querySelector('input[name="adjunto"]');
-            adjuntoInput.value = '';
-            sessionStorage.removeItem('archivoAdjunto');
-
-            const label = adjuntoInput.nextElementSibling;
-            if (label && label.classList.contains('archivo-nombre')) {
-                label.remove();
-            }
-
-            ['contenido', 'sancion', 'observaciones'].forEach(id => {
-                const campo = document.getElementById(id);
-                if (campo) autoResize(campo);
+            ['destinatarioInput','autorInput','destinatario_id','autor_id','titulo','contenido','sancion','observaciones'].forEach(id=>{
+                const el=document.getElementById(id);
+                if(el) el.value='';
             });
+            ['destinatarioResults','autorResults'].forEach(id=>document.getElementById(id).innerHTML='');
+            document.getElementById('tipo').selectedIndex=0;
+            document.getElementById('fecha').value=hoyStr;
+
+            if(adjuntoInput) adjuntoInput.value='';
+            tempAdjuntoData = null;
+            tempFileName = null;
+            base64AdjuntoInput.value = '';
+            oldFileNameInput.value = '';
+            actualizarVistaAdjunto();
+
+            ['contenido','sancion','observaciones'].forEach(id=>autoResize(document.getElementById(id)));
         });
 
-        const fileInput = document.querySelector('input[name="adjunto"]');
-        const storedFile = sessionStorage.getItem('archivoAdjunto');
+        document.getElementById('memorandoForm').addEventListener('submit', function(e){
+            let hasError = false;
 
-        if (storedFile) {
-            mostrarNombreArchivo(storedFile);
-        }
+            const destinatarioId = document.getElementById('destinatario_id');
+            const destinatarioInput = document.getElementById('destinatarioInput');
+            const destinatarioFeedback = destinatarioId.nextElementSibling;
 
-        fileInput.addEventListener('change', function() {
-            if (fileInput.files.length > 0) {
-                const nombreArchivo = fileInput.files[0].name;
-                sessionStorage.setItem('archivoAdjunto', nombreArchivo);
-                mostrarNombreArchivo(nombreArchivo);
+            if(!destinatarioId.value){
+                destinatarioFeedback.textContent = 'Debes seleccionar un empleado sancionado de la lista.';
+                destinatarioInput.classList.add('is-invalid');
+                hasError = true;
             } else {
-                sessionStorage.removeItem('archivoAdjunto');
-                mostrarNombreArchivo('No se eligió ningún archivo');
+                destinatarioFeedback.textContent = '';
+                destinatarioInput.classList.remove('is-invalid');
             }
-        });
 
-        function mostrarNombreArchivo(nombre) {
-            const dataTransfer = new DataTransfer();
-            const fakeFile = new File([""], nombre);
-            dataTransfer.items.add(fakeFile);
-            fileInput.files = dataTransfer.files;
-        }
+            const autorId = document.getElementById('autor_id');
+            const autorInput = document.getElementById('autorInput');
+            const autorFeedback = autorId.nextElementSibling;
+
+            if(!autorId.value){
+                autorFeedback.textContent = 'Debes seleccionar un autor de la lista.';
+                autorInput.classList.add('is-invalid');
+                hasError = true;
+            } else {
+                autorFeedback.textContent = '';
+                autorInput.classList.remove('is-invalid');
+            }
+
+            if(hasError) e.preventDefault();
+        });
 
         function setupAutocomplete(inputId, resultsId, hiddenId, url, extraParams = {}) {
             const input = document.getElementById(inputId);
             const results = document.getElementById(resultsId);
             const hidden = document.getElementById(hiddenId);
+            const feedback = hidden.nextElementSibling;
 
             input.addEventListener('input', function () {
                 const query = this.value.trim();
@@ -377,6 +475,9 @@ unset($__errorArgs, $__bag); ?></div>
                                 input.value = emp.nombre + ' ' + emp.apellido;
                                 hidden.value = emp.id;
                                 results.innerHTML = '';
+
+                                input.classList.remove('is-invalid');
+                                feedback.textContent = '';
                             });
                             results.appendChild(item);
                         });
@@ -389,8 +490,12 @@ unset($__errorArgs, $__bag); ?></div>
             });
         }
 
-        setupAutocomplete('destinatarioInput', 'destinatarioResults', 'destinatario_id', '<?php echo e(route("empleados.buscar")); ?>', { tipo: 'todos' });
-        setupAutocomplete('autorInput', 'autorResults', 'autor_id', '<?php echo e(route("empleados.buscar")); ?>', { tipo: 'administracion' });
+        document.addEventListener('DOMContentLoaded', function() {
+            setupAutocomplete('destinatarioInput', 'destinatarioResults', 'destinatario_id', '<?php echo e(route("empleados.buscar")); ?>', { tipo: 'todos' });
+            setupAutocomplete('autorInput', 'autorResults', 'autor_id', '<?php echo e(route("empleados.buscar")); ?>', { tipo: 'administracion' });
+            actualizarVistaAdjunto();
+            ['contenido', 'sancion', 'observaciones'].forEach(id => autoResize(document.getElementById(id)));
+        });
     </script>
     </body>
 <?php $__env->stopSection(); ?>

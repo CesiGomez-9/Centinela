@@ -1,3 +1,7 @@
+index:
+
+
+
 <?php $__env->startSection('content'); ?>
     <style>
         .tabla-memorandos td {
@@ -93,12 +97,23 @@
                 </tr>
                 </thead>
                 <tbody>
+                <?php
+                    $contadorPorEmpleado = [];
+                ?>
                 <?php $__empty_1 = true; $__currentLoopData = $memorandos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $memorando): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                    <?php
+                        $empleadoId = $memorando->destinatario->id ?? 0;
+                        if (!isset($contadorPorEmpleado[$empleadoId])) {
+                            $contadorPorEmpleado[$empleadoId] = 1;
+                        } else {
+                            $contadorPorEmpleado[$empleadoId]++;
+                        }
+                    ?>
                     <tr>
                         <td><?php echo e($loop->iteration + ($memorandos->currentPage() - 1) * $memorandos->perPage()); ?></td>
                         <td><?php echo e($memorando->destinatario->nombre ?? '---'); ?> <?php echo e($memorando->destinatario->apellido ?? ''); ?></td>
                         <td><?php echo e($memorando->autor->nombre ?? '---'); ?> <?php echo e($memorando->autor->apellido ?? ''); ?></td>
-                        <td>Memorandum N° <?php echo e($memorando->id); ?></td>
+                        <td>Memorandum N° <?php echo e($contadorPorEmpleado[$empleadoId]); ?></td>
                         <td><?php echo e($memorando->tipo); ?></td>
                         <td><?php echo e(\Carbon\Carbon::parse($memorando->fecha)->format('d/m/Y')); ?></td>
                         <td class="text-center">
@@ -115,8 +130,7 @@
                 </tbody>
             </table>
 
-
-        <?php if(request('search') && $memorandos->total() > 0): ?>
+            <?php if(request('search') && $memorandos->total() > 0): ?>
                 <div class="mb-3 text-muted">
                     Mostrando <?php echo e($memorandos->count()); ?> de <?php echo e($memorandos->total()); ?> memorandums encontrados para
                     "<strong><?php echo e(request('search')); ?></strong>".
