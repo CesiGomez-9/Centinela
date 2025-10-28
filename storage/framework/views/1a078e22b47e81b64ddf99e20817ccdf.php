@@ -1,5 +1,4 @@
-@extends('plantilla')
-@section('content')
+<?php $__env->startSection('content'); ?>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -104,43 +103,43 @@
         .adjunto img, .adjunto iframe { max-width: 100%; margin-top: 0.5rem; border-radius: 0.5rem; box-shadow: 0 2px 8px rgb(205 163 79 / 0.15); }
     </style>
 
-    @php
+    <?php
         /** @var \App\Models\Memorando $memorando */
         $memNumeros = $memorando->destinatario->memorandosRecibidos->sortBy('created_at')->values();
         $numeroPorEmpleado = $memNumeros->search(fn($m) => $m->id === $memorando->id) + 1;
-    @endphp
+    ?>
 
     <div class="card">
         <div class="card-header">
-            <img src="{{ asset('centinela.jpg') }}" alt="Logo Centinela">
+            <img src="<?php echo e(asset('centinela.jpg')); ?>" alt="Logo Centinela">
             <h5>Memorandum</h5>
-            <small class="created">Creado: {{ $memorando->created_at->diffForHumans() }}</small>
+            <small class="created">Creado: <?php echo e($memorando->created_at->diffForHumans()); ?></small>
         </div>
 
         <div class="card-body">
             <div class="text-center mb-3">
                 <h5 class="fw-bold">GRUPO CENTINELA</h5>
-                <small>Memorandum N° {{ $numeroPorEmpleado }}</small>
+                <small>Memorandum N° <?php echo e($numeroPorEmpleado); ?></small>
             </div>
 
             <div class="info-container">
                 <div class="info-box">
-                    <p><i class="bi bi-person-fill me-2"></i><strong>Empleado Sancionado:</strong> {{ $memorando->destinatario->nombre ?? '' }} {{ $memorando->destinatario->apellido ?? '' }}</p>
-                    <p><i class="bi bi-person-fill me-2"></i><strong>Creador del memorandum:</strong> {{ $memorando->autor->nombre ?? '' }} {{ $memorando->autor->apellido ?? '' }}</p>
-                    <p><i class="bi bi-card-heading"></i><strong>Asunto:</strong> {{ $memorando->titulo }}</p>
+                    <p><i class="bi bi-person-fill me-2"></i><strong>Empleado Sancionado:</strong> <?php echo e($memorando->destinatario->nombre ?? ''); ?> <?php echo e($memorando->destinatario->apellido ?? ''); ?></p>
+                    <p><i class="bi bi-person-fill me-2"></i><strong>Creador del memorandum:</strong> <?php echo e($memorando->autor->nombre ?? ''); ?> <?php echo e($memorando->autor->apellido ?? ''); ?></p>
+                    <p><i class="bi bi-card-heading"></i><strong>Asunto:</strong> <?php echo e($memorando->titulo); ?></p>
                 </div>
 
                 <div class="info-box">
-                    <p><i class="bi bi-exclamation-triangle-fill"></i><strong>Tipo:</strong> {{ $memorando->tipo }}</p>
-                    <p><i class="bi bi-calendar-date-fill"></i><strong>Fecha:</strong> {{ \Carbon\Carbon::parse($memorando->fecha)->format('d/m/Y') }}</p>
-                    <p><i class="bi bi-hammer"></i><strong>Sanción:</strong> {{ $memorando->sancion }}</p>
+                    <p><i class="bi bi-exclamation-triangle-fill"></i><strong>Tipo:</strong> <?php echo e($memorando->tipo); ?></p>
+                    <p><i class="bi bi-calendar-date-fill"></i><strong>Fecha:</strong> <?php echo e(\Carbon\Carbon::parse($memorando->fecha)->format('d/m/Y')); ?></p>
+                    <p><i class="bi bi-hammer"></i><strong>Sanción:</strong> <?php echo e($memorando->sancion); ?></p>
                 </div>
             </div>
 
             <hr>
 
             <div class="mb-3">
-                <p><i class="bi bi-pencil-fill"></i><strong>Motivo del memorandum:</strong> {{ $memorando->contenido ?? '---' }}</p>
+                <p><i class="bi bi-pencil-fill"></i><strong>Motivo del memorandum:</strong> <?php echo e($memorando->contenido ?? '---'); ?></p>
             </div>
 
             <hr>
@@ -149,51 +148,55 @@
                 <div class="info-box mb-3 p-3 border rounded shadow-sm adjunto">
                     <p class="mb-2"><i class="bi bi-paperclip me-2"></i><strong>Adjunto:</strong></p>
 
-                    @if ($memorando->adjunto)
-                        @php
+                    <?php if($memorando->adjunto): ?>
+                        <?php
                             // Limpiar el prefijo 'public/' si existe
                             $rutaAdjunto = $memorando->adjunto ? str_replace('public/', '', $memorando->adjunto) : null;
-                        @endphp
+                        ?>
 
-                        @if ($rutaAdjunto && file_exists(storage_path('app/public/' . $rutaAdjunto)))
-                            @php $extension = strtolower(pathinfo($rutaAdjunto, PATHINFO_EXTENSION)); @endphp
+                        <?php if($rutaAdjunto && file_exists(storage_path('app/public/' . $rutaAdjunto))): ?>
+                            <?php $extension = strtolower(pathinfo($rutaAdjunto, PATHINFO_EXTENSION)); ?>
 
-                            @if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp']))
-                                <img src="{{ asset('storage/' . $rutaAdjunto) }}" alt="Adjunto" class="img-fluid rounded shadow" style="max-height:300px;">
-                            @elseif($extension === 'pdf')
-                                <iframe src="{{ asset('storage/' . $rutaAdjunto) }}" width="100%" height="400px" class="border rounded mt-2"></iframe>
-                            @else
-                                <a href="{{ asset('storage/' . $rutaAdjunto) }}" target="_blank" class="btn btn-outline-primary mt-2">
+                            <?php if(in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp'])): ?>
+                                <img src="<?php echo e(asset('storage/' . $rutaAdjunto)); ?>" alt="Adjunto" class="img-fluid rounded shadow" style="max-height:300px;">
+                            <?php elseif($extension === 'pdf'): ?>
+                                <iframe src="<?php echo e(asset('storage/' . $rutaAdjunto)); ?>" width="100%" height="400px" class="border rounded mt-2"></iframe>
+                            <?php else: ?>
+                                <a href="<?php echo e(asset('storage/' . $rutaAdjunto)); ?>" target="_blank" class="btn btn-outline-primary mt-2">
                                     <i class="bi bi-paperclip me-1"></i> Descargar adjunto
                                 </a>
-                            @endif
-                        @else
+                            <?php endif; ?>
+                        <?php else: ?>
                             <span class="text-danger ms-1">⚠️ El archivo adjunto no se encuentra o fue eliminado.</span>
-                        @endif
-                    @else
+                        <?php endif; ?>
+                    <?php else: ?>
                         <span class="text-muted ms-1">No hay archivo adjunto.</span>
-                    @endif
+                    <?php endif; ?>
                 </div>
 
                 <div class="info-box mb-3 p-2 border rounded shadow-sm" style="min-height: auto;">
                     <p class="text-muted mb-0"><i class="bi bi-chat-left-text-fill me-2"></i><strong>Observaciones:</strong></p>
-                    @if($memorando->observaciones)
-                        {{ $memorando->observaciones }}
-                    @else
+                    <?php if($memorando->observaciones): ?>
+                        <?php echo e($memorando->observaciones); ?>
+
+                    <?php else: ?>
                         <span class="text-muted">No hay observaciones</span>
-                    @endif
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
 
         <div class="card-footer">
-            Última actualización: {{ $memorando->updated_at->diffForHumans() }}
+            Última actualización: <?php echo e($memorando->updated_at->diffForHumans()); ?>
+
         </div>
     </div>
 
     <div class="d-flex justify-content-center align-items-center gap-3 mt-4 flex-wrap">
-        <a href="{{ route('memorandos.index') }}" class="btn btn-return">
+        <a href="<?php echo e(route('memorandos.index')); ?>" class="btn btn-return">
             <i class="bi bi-arrow-left me-2"></i>Volver a la lista
         </a>
     </div>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\cesig\Herd\sistemadeseguridadcentinela\resources\views/memorandos/show.blade.php ENDPATH**/ ?>
