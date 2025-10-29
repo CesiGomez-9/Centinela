@@ -36,6 +36,7 @@ Route::put('/facturas_ventas/{factura_venta}', [\App\Http\Controllers\FacturaVen
 Route::resource('memorandos', \App\Http\Controllers\MemorandoController::class);
 Route::get('/buscar-empleados', [EmpleadoController::class, 'buscar'])->name('empleados.buscar');
 Route::get('memorando/adjunto/{filename}', [\App\Http\Controllers\MemorandoController::class, 'descargarAdjunto'])->name('memorando.adjunto');
+Route::get('/memorandos/{memorando}', [\App\Http\Controllers\MemorandoController::class, 'show'])->name('memorandos.show');
 
 
 Route::resource('promociones', \App\Http\Controllers\PromocionController::class);
@@ -123,7 +124,7 @@ Route::get('/asistencias/index', [\App\Http\Controllers\AsistenciaController::cl
 Route::get('/asistencias/crear', [\App\Http\Controllers\AsistenciaController::class, 'create'])->name('asistencias.crear');
 Route::post('/asistencias', [\App\Http\Controllers\AsistenciaController::class, 'store'])->name('asistencias.store');
 Route::get('/asistencias/{id}', [\App\Http\Controllers\AsistenciaController::class, 'show'])->name('asistencias.show');
-
+Route::get('/asistencias/historial', [\App\Http\Controllers\AsistenciaController::class, 'historial'])->name('asistencias.historial');
 
 
 Route::get('/promociones', [\App\Http\Controllers\PromocionController::class, 'index'])->name('promociones.index');

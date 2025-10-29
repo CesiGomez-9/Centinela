@@ -13,14 +13,12 @@ class PromocionController extends Controller
     {
         $query = Promocion::query();
         $hoy = now();
-
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('nombre', 'like', "%{$search}%")
                     ->orWhere('descripcion', 'like', "%{$search}%");
             });
         }
-
 
         if ($request->filled('fecha_inicio')) {
             $query->whereDate('fecha_inicio', '>=', $request->fecha_inicio);
@@ -33,11 +31,9 @@ class PromocionController extends Controller
 
         if ($request->filled('activo')) {
             if ($request->activo == '1') {
-                // Promociones activas: fecha actual entre inicio y fin
                 $query->whereDate('fecha_inicio', '<=', $hoy)
                     ->whereDate('fecha_fin', '>=', $hoy);
             } elseif ($request->activo == '0') {
-
                 $query->where(function ($q) use ($hoy) {
                     $q->whereDate('fecha_fin', '<', $hoy)
                         ->orWhereDate('fecha_inicio', '>', $hoy);
@@ -45,10 +41,13 @@ class PromocionController extends Controller
             }
         }
 
-        $promociones = $query->orderBy('fecha_inicio', 'asc')->paginate(5);
+        $promociones = $query->orderBy('created_at', 'asc')
+            ->paginate(10)
+            ->withQueryString();
 
         return view('promociones.index', compact('promociones'));
     }
+
 
     public function create()
     {
@@ -57,11 +56,10 @@ class PromocionController extends Controller
 
     public function store(Request $request)
     {
-
         $validated = $request->validate([
             'nombre' => 'required|max:100|regex:/^[\p{L}\s]+$/u',
-            'descripcion' => 'required|max:250',
-            'restriccion' => 'required|max:150',
+            'descripcion' => 'required|max:250|regex:/^[\p{L}\s]+$/u',
+            'restriccion' => 'required|max:150|regex:/^[\p{L}\s]+$/u',
             'fecha_inicio' => 'required|date',
             'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
             'imagen' => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
@@ -69,18 +67,20 @@ class PromocionController extends Controller
             'nombre.required' => 'Debe ingresar el nombre de la promoción',
             'nombre.regex' => 'El nombre solo puede contener letras y espacios',
             'descripcion.required' => 'Debe ingresar una descripción',
+            'descripcion.regex' => 'La descripción solo puede contener letras y espacios',
             'restriccion.required' => 'Debe ingresar una restricción',
+            'restriccion.regex' => 'La restricción solo puede contener letras y espacios',
             'fecha_inicio.required' => 'Debe seleccionar una fecha',
             'fecha_fin.required' => 'Debe seleccionar una fecha',
             'fecha_fin.after_or_equal' => 'La fecha fin debe ser igual o posterior a la fecha inicio',
             'imagen.image' => 'El archivo debe ser una imagen válida (jpg, jpeg o png)',
         ]);
 
-
         $nombreImagen = null;
         if ($request->hasFile('imagen') && $request->file('imagen')->isValid()) {
             $nombreImagen = $request->file('imagen')->store('promociones', 'public');
         }
+
         Promocion::create([
             'nombre' => $validated['nombre'],
             'descripcion' => $validated['descripcion'],
@@ -90,16 +90,24 @@ class PromocionController extends Controller
             'imagen' => $nombreImagen,
         ]);
 
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => '¡Promoción guardada correctamente!'
+            ]);
+        }
+
         return redirect()->route('promociones.index')->with('success', '¡Promoción guardada correctamente!');
     }
 
 
-
     public function show(Promocion $promocion)
     {
+
         return view('promociones.show', compact('promocion'));
     }
 
+    // Mostrar el formulario de edición
     public function edit($id)
     {
         $promocion = Promocion::findOrFail($id);
@@ -151,7 +159,5 @@ class PromocionController extends Controller
 
         return redirect()->route('promociones.index')->with('success', '¡Promoción actualizada correctamente!');
     }
-
-
 
 }

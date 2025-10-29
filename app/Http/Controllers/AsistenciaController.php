@@ -165,6 +165,24 @@ class AsistenciaController extends Controller
 
         return view('asistencias.show', compact('asistencia', 'historial'));
     }
+    public function historial(Request $request)
+    {
+        $query = \App\Models\Asistencia::query();
+
+        // Si el usuario filtró fechas, aplicar rango
+        if ($request->filled('fecha_inicio') && $request->filled('fecha_fin')) {
+            $query->whereBetween('created_at', [
+                $request->fecha_inicio,
+                \Carbon\Carbon::parse($request->fecha_fin)->endOfDay()
+            ]);
+        }
+
+        $asistencias = $query->with('empleado')->orderByDesc('created_at')->get();
+
+        return view('asistencias.show', compact('asistencias'));
+    }
+
+
 
 
     /**
