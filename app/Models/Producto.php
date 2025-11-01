@@ -64,7 +64,7 @@ class Producto extends Model
         return $this->hasMany(DetalleFacturaVenta::class);
     }
 
-    // En App\Models\Producto.php
+
 
     public function scopeBuscar($query, $termino)
     {

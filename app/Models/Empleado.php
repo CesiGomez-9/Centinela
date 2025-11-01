@@ -47,5 +47,11 @@ class Empleado extends Model
         return $this->hasMany(Memorando::class, 'autor_id');
     }
 
+    public function incapacidades()
+    {
+        return $this->hasMany(Incapacidad::class, 'empleado_id');
+    }
+
+
 
 }

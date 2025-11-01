@@ -80,6 +80,9 @@
                         <li><hr class="dropdown-divider"></li> {{-- Separador--}}
                         <li><a class="dropdown-item" href="{{route('memorandos.index')}}">Listado de memorandum</a></li>
                         <li><a class="dropdown-item" href="{{route('memorandos.create')}}">Registrar memorandum</a></li>
+                        <li><hr class="dropdown-divider"></li> {{-- Separador--}}
+                        <li><a class="dropdown-item" href="{{route('incapacidades.index')}}">Listado de incapacidad</a></li>
+                        <li><a class="dropdown-item" href="{{route('incapacidades.create')}}">Registrar incapacidad</a></li>
                     </ul>
                 </li>
                 <li class="nav-item dropdown">
