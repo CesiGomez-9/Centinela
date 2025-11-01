@@ -107,14 +107,12 @@ class PromocionController extends Controller
         return view('promociones.show', compact('promocion'));
     }
 
-    // Mostrar el formulario de edición
     public function edit($id)
     {
         $promocion = Promocion::findOrFail($id);
         return view('promociones.edit', compact('promocion'));
     }
 
-    // Actualizar la promoción
     public function update(Request $request, $id)
     {
         $promocion = Promocion::findOrFail($id);
@@ -139,9 +137,8 @@ class PromocionController extends Controller
             'imagen.image' => 'El archivo debe ser una imagen válida (jpg, jpeg o png)',
         ]);
 
-        // Manejo de imagen si se sube una nueva
         if ($request->hasFile('imagen') && $request->file('imagen')->isValid()) {
-            // Opcional: eliminar la imagen anterior si existe
+
             if ($promocion->imagen) {
                 \Storage::disk('public')->delete($promocion->imagen);
             }
