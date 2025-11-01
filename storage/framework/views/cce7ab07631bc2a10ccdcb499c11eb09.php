@@ -149,7 +149,7 @@ $message = $__bag->first($__errorArgs[0]); ?> <?php echo e($message); ?> <?php u
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?></div>
-                           
+
                         </div>
                     </div>
 
@@ -220,7 +220,6 @@ unset($__errorArgs, $__bag); ?></div>
             const maxFinDate = new Date(hoy.getFullYear(), hoy.getMonth() + 5, 0);
             const maxFinGlobal = `${maxFinDate.getFullYear()}-${String(maxFinDate.getMonth() + 1).padStart(2, '0')}-${String(maxFinDate.getDate()).padStart(2, '0')}`;
 
-            // Inicializar fechas si están vacías
             if (!fechaInicio.value) fechaInicio.value = hoyStr;
             if (!fechaFin.value) fechaFin.value = hoyStr;
 
@@ -304,7 +303,6 @@ unset($__errorArgs, $__bag); ?></div>
                 }
             });
 
-            // Limpiar manualmente sin form.reset() para que las fechas se restablezcan a hoy
             document.getElementById('btnRestablecer').addEventListener('click', function(e){
                 e.preventDefault();
                 empleadoInput.value = '';

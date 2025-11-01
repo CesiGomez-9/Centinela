@@ -18,9 +18,8 @@
                 <i class="bi bi-file-earmark-medical me-2"></i>Lista de incapacidades
             </h3>
 
-            <!-- FILTRO -->
             <form method="GET" action="<?php echo e(route('incapacidades.index')); ?>" id="filtroForm" class="mb-4 row align-items-end">
-                <!-- Búsqueda por empleado -->
+
                 <div class="col-md-3">
                     <div class="input-group input-group-sm">
                         <input type="text" name="search" id="searchInput" class="form-control" placeholder="Buscar empleado..."
@@ -29,7 +28,6 @@
                     </div>
                 </div>
 
-                <!-- Estado -->
                 <div class="col-md-2">
                     <div class="input-group input-group-sm">
                         <span class="input-group-text">Estado</span>
@@ -41,7 +39,6 @@
                     </div>
                 </div>
 
-                <!-- Fechas (solo fecha_inicio) -->
                 <div class="col-md-3 d-flex flex-column gap-2">
                     <div class="input-group input-group-sm">
                         <span class="input-group-text">Desde</span>
@@ -55,7 +52,6 @@
                     </div>
                 </div>
 
-                <!-- Botones -->
                 <div class="col-md-2 d-flex flex-column gap-2 align-items-start">
                     <button type="submit" class="btn btn-sm btn-primary px-2 py-1">
                         <i class="bi bi-funnel me-1"></i> Filtrar
@@ -65,7 +61,6 @@
                     </a>
                 </div>
 
-                <!-- Nuevo registro -->
                 <div class="col-md-2 ms-auto">
                     <a href="<?php echo e(route('incapacidades.create')); ?>" class="btn btn-md btn-outline-primary w-100">
                         <i class="bi bi-pencil-square me-1"></i> Registrar incapacidad
@@ -82,7 +77,6 @@
                 </div>
             <?php endif; ?>
 
-            <!-- TABLA -->
             <div class="table-responsive">
                 <table class="table table-bordered table-striped tabla-incapacidades align-middle">
                     <thead class="table-dark">
@@ -167,7 +161,6 @@
 
             </div>
 
-            <!-- PAGINACIÓN -->
             <div class="d-flex justify-content-center mt-4">
                 <?php echo e($incapacidades->links('pagination::bootstrap-5')); ?>
 
@@ -181,13 +174,11 @@
             const estadoSelect = document.getElementById('estadoSelect');
             const filtroForm = document.getElementById('filtroForm');
 
-            // Mantener foco en buscador
             if (searchInput) {
                 searchInput.focus();
                 const length = searchInput.value.length;
                 searchInput.setSelectionRange(length, length);
 
-                // Búsqueda en tiempo real
                 let timer;
                 searchInput.addEventListener('input', function () {
                     clearTimeout(timer);
@@ -197,7 +188,6 @@
                 });
             }
 
-            // Filtrar automáticamente al cambiar estado
             if (estadoSelect) {
                 estadoSelect.addEventListener('change', function () {
                     filtroForm.submit();

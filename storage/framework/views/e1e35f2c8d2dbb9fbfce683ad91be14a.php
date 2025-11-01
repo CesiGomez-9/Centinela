@@ -62,6 +62,9 @@
                         <li><hr class="dropdown-divider"></li> 
                         <li><a class="dropdown-item" href="<?php echo e(route('turnos.create')); ?>">Venta de servicios</a></li>
                         <li><a class="dropdown-item" href="<?php echo e(route('turnos.index')); ?>">Listado de venta de servicios</a></li>
+                        <li><hr class="dropdown-divider"></li> 
+                        <li><a class="dropdown-item" href="<?php echo e(route('incidencias.formulario')); ?>">Registrar incidencia</a></li>
+                        <li><a class="dropdown-item" href="<?php echo e(route('incidencias.index')); ?>">Listado de incidencias</a></li>
                     </ul>
                 </li>
                 <li class="nav-item dropdown">
@@ -80,6 +83,9 @@
                         <li><hr class="dropdown-divider"></li> 
                         <li><a class="dropdown-item" href="<?php echo e(route('memorandos.index')); ?>">Listado de memorandum</a></li>
                         <li><a class="dropdown-item" href="<?php echo e(route('memorandos.create')); ?>">Registrar memorandum</a></li>
+                        <li><hr class="dropdown-divider"></li> 
+                        <li><a class="dropdown-item" href="<?php echo e(route('asistencias.index')); ?>">Listado de asistencias</a></li>
+                        <li><a class="dropdown-item" href="<?php echo e(route('asistencias.crear')); ?>">Registrar asistencias</a></li>
                         <li><hr class="dropdown-divider"></li> 
                         <li><a class="dropdown-item" href="<?php echo e(route('incapacidades.index')); ?>">Listado de incapacidad</a></li>
                         <li><a class="dropdown-item" href="<?php echo e(route('incapacidades.create')); ?>">Registrar incapacidad</a></li>
