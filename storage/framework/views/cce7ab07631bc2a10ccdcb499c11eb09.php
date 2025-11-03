@@ -209,22 +209,28 @@ unset($__errorArgs, $__bag); ?></div>
 
             const hoy = new Date();
             const año = hoy.getFullYear();
-            const mes = String(hoy.getMonth() + 1).padStart(2, '0');
-            const dia = String(hoy.getDate()).padStart(2, '0');
-            const hoyStr = `${año}-${mes}-${dia}`;
+            const mes = hoy.getMonth(); // 0-index
 
-            const primerDiaMes = `${año}-${mes}-01`;
-            const ultimoDiaDate = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0);
-            const ultimoDiaMes = `${ultimoDiaDate.getFullYear()}-${String(ultimoDiaDate.getMonth() + 1).padStart(2, '0')}-${String(ultimoDiaDate.getDate()).padStart(2, '0')}`;
+            // Fecha mínima de inicio: primer día del mes actual
+            const primerDiaMesActualDate = new Date(año, mes, 1);
+            const primerDiaMesActual = `${primerDiaMesActualDate.getFullYear()}-${String(primerDiaMesActualDate.getMonth() + 1).padStart(2, '0')}-01`;
 
-            const maxFinDate = new Date(hoy.getFullYear(), hoy.getMonth() + 5, 0);
-            const maxFinGlobal = `${maxFinDate.getFullYear()}-${String(maxFinDate.getMonth() + 1).padStart(2, '0')}-${String(maxFinDate.getDate()).padStart(2, '0')}`;
+            // Fecha máxima de inicio: último día del mes +2
+            const ultimoDiaMesMasDosDate = new Date(año, mes + 3, 0); // Mes+3 porque getMonth es 0-index y el 0 obtiene el último día del mes anterior
+            const ultimoDiaMesMasDos = `${ultimoDiaMesMasDosDate.getFullYear()}-${String(ultimoDiaMesMasDosDate.getMonth() + 1).padStart(2, '0')}-${String(ultimoDiaMesMasDosDate.getDate()).padStart(2, '0')}`;
+
+            // Fecha máxima de fin: 4 meses después de fecha_inicio
+            const maxFinGlobalDate = new Date(hoy.getFullYear(), hoy.getMonth() + 4, hoy.getDate());
+            const maxFinGlobal = `${maxFinGlobalDate.getFullYear()}-${String(maxFinGlobalDate.getMonth() + 1).padStart(2, '0')}-${String(maxFinGlobalDate.getDate()).padStart(2, '0')}`;
+
+            const hoyStr = `${año}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
 
             if (!fechaInicio.value) fechaInicio.value = hoyStr;
             if (!fechaFin.value) fechaFin.value = hoyStr;
 
-            fechaInicio.min = primerDiaMes;
-            fechaInicio.max = ultimoDiaMes;
+            fechaInicio.min = primerDiaMesActual;
+            fechaInicio.max = ultimoDiaMesMasDos;
+
             fechaFin.min = hoyStr;
             fechaFin.max = maxFinGlobal;
 
@@ -243,11 +249,14 @@ unset($__errorArgs, $__bag); ?></div>
                 const inicioValor = this.value;
                 if (inicioValor) {
                     fechaFin.min = inicioValor;
+                    const maxFinDateDynamic = new Date(new Date(inicioValor).getFullYear(), new Date(inicioValor).getMonth() + 4, new Date(inicioValor).getDate());
+                    fechaFin.max = `${maxFinDateDynamic.getFullYear()}-${String(maxFinDateDynamic.getMonth() + 1).padStart(2, '0')}-${String(maxFinDateDynamic.getDate()).padStart(2, '0')}`;
                     if (fechaFin.value && fechaFin.value < inicioValor) {
                         fechaFin.value = inicioValor;
                     }
                 } else {
                     fechaFin.min = hoyStr;
+                    fechaFin.max = maxFinGlobal;
                 }
             });
 
@@ -330,7 +339,6 @@ unset($__errorArgs, $__bag); ?></div>
                 if (fechaFin) fechaFin.value = hoyStr;
             });
 
-
             const empleados = <?php echo json_encode($empleados, 15, 512) ?>;
             empleadoInput.addEventListener('input', function() {
                 const query = this.value.toLowerCase().trim();
@@ -360,6 +368,7 @@ unset($__errorArgs, $__bag); ?></div>
             });
         });
     </script>
+
     </body>
 <?php $__env->stopSection(); ?>
 
