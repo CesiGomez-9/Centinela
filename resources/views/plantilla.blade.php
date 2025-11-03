@@ -86,6 +86,9 @@
                         <li><hr class="dropdown-divider"></li> {{-- Separador--}}
                         <li><a class="dropdown-item" href="{{route('asistencias.index')}}">Listado de asistencias</a></li>
                         <li><a class="dropdown-item" href="{{route('asistencias.crear')}}">Registrar asistencias</a></li>
+                        <li><hr class="dropdown-divider"></li> {{-- Separador--}}
+                        <li><a class="dropdown-item" href="{{route('capacitaciones.index')}}">Listado de capacitaciones</a></li>
+                        <li><a class="dropdown-item" href="{{route('capacitaciones.formulario')}}">Registrar capacitación</a></li>
                     </ul>
                 </li>
                 <li class="nav-item dropdown">

@@ -1,6 +1,3 @@
-index:
-
-
 @extends('plantilla')
 @section('content')
     <style>
