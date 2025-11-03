@@ -303,11 +303,9 @@ unset($__errorArgs, $__bag); ?></div>
                 }
             });
 
-            // Limpiar manualmente sin form.reset() para que las fechas se restablezcan a hoy
             document.getElementById('btnRestablecer').addEventListener('click', function(e){
                 e.preventDefault();
 
-                // Vaciar campos (comprueba que existan)
                 if (empleadoInput) empleadoInput.value = '';
                 if (empleadoId) empleadoId.value = '';
                 if (empleadoResults) empleadoResults.innerHTML = '';
@@ -315,16 +313,13 @@ unset($__errorArgs, $__bag); ?></div>
                 if (descripcion) descripcion.value = '';
                 if (documento) documento.value = '';
 
-                // Limpiar nombre de archivo si existe
                 if (typeof fileName !== 'undefined' && fileName && 'textContent' in fileName) {
                     fileName.textContent = '';
                 }
 
-                // Quitar clases/errores
                 document.querySelectorAll('.is-invalid').forEach(i => i.classList.remove('is-invalid'));
                 document.querySelectorAll('.invalid-feedback').forEach(f => f.textContent = '');
 
-                // Recalcular fecha de hoy y asignar
                 const hoy = new Date();
                 const año = hoy.getFullYear();
                 const mes = String(hoy.getMonth() + 1).padStart(2, '0');
