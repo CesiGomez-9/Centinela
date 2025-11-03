@@ -222,18 +222,31 @@
 
             document.getElementById('btnRestablecer').addEventListener('click', function(e){
                 e.preventDefault();
-                empleadoInput.value = '';
-                empleadoId.value = '';
-                empleadoResults.innerHTML = '';
-                motivo.value = '';
-                descripcion.value = '';
-                documento.value = '';
-                fileName.textContent = '';
+
+                if (empleadoInput) empleadoInput.value = '';
+                if (empleadoId) empleadoId.value = '';
+                if (empleadoResults) empleadoResults.innerHTML = '';
+                if (motivo) motivo.value = '';
+                if (descripcion) descripcion.value = '';
+                if (documento) documento.value = '';
+
+                if (typeof fileName !== 'undefined' && fileName && 'textContent' in fileName) {
+                    fileName.textContent = '';
+                }
+
                 document.querySelectorAll('.is-invalid').forEach(i => i.classList.remove('is-invalid'));
                 document.querySelectorAll('.invalid-feedback').forEach(f => f.textContent = '');
-                fechaInicio.value = hoyStr;
-                fechaFin.value = hoyStr;
+
+                const hoy = new Date();
+                const año = hoy.getFullYear();
+                const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+                const dia = String(hoy.getDate()).padStart(2, '0');
+                const hoyStr = `${año}-${mes}-${dia}`;
+
+                if (fechaInicio) fechaInicio.value = hoyStr;
+                if (fechaFin) fechaFin.value = hoyStr;
             });
+
 
             const empleados = @json($empleados);
             empleadoInput.addEventListener('input', function() {

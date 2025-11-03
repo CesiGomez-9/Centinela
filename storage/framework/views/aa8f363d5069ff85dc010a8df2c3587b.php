@@ -8,23 +8,47 @@
             background-color: #e6f0ff;
             margin: 0;
         }
+
+        .form-label,
+        .form-control,
+        .form-select,
+        .input-group-text,
+        .text-danger,
+        .small,
+        .form-check-label,
+        .btn {
+            font-size: 0.875rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            color: #09457f;
+        }
+
+        #tablaFacturaProductos th,
+        #tablaFacturaProductos td {
+            font-size: 0.875rem;
+        }
+
         .error-message {
             color: #dc3545;
-            font-size: 0.875em;
+            font-size: 0.875rem;
             margin-top: 0.25rem;
             display: none;
             width: 100%;
         }
+
         .field-error {
-            border-color: #dc3545;
+            border-color: #dc3545 !important;
         }
+
         .form-control.invalid {
             border-color: #dc3545;
         }
 
         #tablaFacturaBody td {
             color: black !important;
-            font-size: 1rem !important;
+            font-size: 0.875rem !important;
             visibility: visible !important;
             opacity: 1 !important;
             background-color: #ffffff !important;
@@ -39,6 +63,7 @@
         .modal:not(.show) {
             display: none !important;
         }
+
         .modal-backdrop:not(.show) {
             display: none !important;
             opacity: 0 !important;
@@ -47,55 +72,108 @@
         .summary-value-box {
             background-color: #e9ecef;
             border: 1px solid #ced4da;
-            border-radius: 0.25rem;
+            border-radius: 0.375rem;
             padding: 0.375rem 0.75rem;
             text-align: end;
-            font-weight: normal !important;
+            font-weight: bold !important;
             box-sizing: border-box;
             width: 100%;
+            font-size: 0.875rem;
         }
 
         #productosModal .modal-body {
-            font-size: 0.95rem;
+            font-size: 0.875rem;
         }
+
         #productosModal .table th,
         #productosModal .table td {
-            font-size: 0.9rem;
+            font-size: 0.875rem;
         }
+
         #productosModal .form-label {
-            font-size: 0.95rem;
+            font-size: 0.875rem;
         }
+
         #productosModal .form-control {
-            font-size: 0.95rem;
+            font-size: 0.875rem;
         }
 
-        .form-label {
-            font-size: 0.95rem;
-        }
-        .form-control, .form-select {
-            font-size: 0.95rem;
-        }
-        #tablaFacturaProductos th,
-        #tablaFacturaProductos td {
-            font-size: 0.9rem;
-        }
-        .summary-value-box {
-            font-size: 0.95rem;
+        .form-control,
+        .form-select,
+        .input-group-text,
+        .btn {
+            border-radius: 0.375rem;
         }
 
-        #productosModal .form-edicion-producto input[type="number"] {
-            max-width: 100px;
-            display: inline-block;
+        .shadow-lg {
+            box-shadow: 0 1rem 3rem rgba(0, 0, 0, .175) !important;
         }
 
-        #productosModal .modal-product-inputs-row > [class*="col-"] {
-            padding-left: 0 !important;
-            padding-right: 0 !important;
-        }
-        #productosModal .modal-product-inputs-row .cantidad {
-            margin-right: 0.5rem;
+        .modal-content {
+            border-radius: 0.5rem;
         }
 
+        .modal-header {
+            border-top-left-radius: 0.5rem;
+            border-top-right-radius: 0.5rem;
+        }
+
+        .fila-vacia {
+            border: 1px dashed #dee2e6;
+            background-color: #f8f9fa;
+            border-radius: 0.375rem;
+        }
+        .autocomplete-container {
+            position: relative;
+        }
+
+        .autocomplete-results {
+            position: absolute;
+            z-index: 1050;
+            width: 100%;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ced4da;
+            border-top: none;
+            background-color: white;
+            border-radius: 0 0 .25rem .25rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .autocomplete-results a {
+            display: block;
+            padding: .5rem 1rem;
+            text-decoration: none;
+            color: #212529;
+        }
+
+        .autocomplete-results a:hover {
+            background-color: #f8f9fa;
+        }
+
+        .search-icon-right .input-group-text:first-child {
+            border-right: 0;
+        }
+
+        .search-icon-right .form-control {
+            border-radius: 0;
+        }
+
+        .search-icon-right .input-group-text:last-child {
+            border-left: 0;
+            border-radius: 0 .25rem .25rem 0;
+        }
+
+        .search-icon-right .form-control:focus {
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 .25rem rgba(13, 110, 253, .25);
+        }
+
+        .search-icon-right .form-control:focus + .input-group-text {
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 .25rem rgba(13, 110, 253, .25);
+        }
     </style>
 
     <div class="container my-5">
@@ -116,13 +194,14 @@
                         <?php endif; ?>
                     </h3>
 
-                    <form method="POST" id="facturaForm" action="<?php echo e(isset($factura) ? route('facturas_compras.update', $factura->id) : route('facturas_compras.store')); ?>" novalidate>
+                    <form method="POST" id="facturaForm"
+                          action="<?php echo e(isset($factura) ? route('facturas_compras.update', $factura->id) : route('facturas_compras.store')); ?>"
+                          novalidate>
                         <?php echo csrf_field(); ?>
                         <?php if(isset($factura)): ?>
                             <?php echo method_field('PUT'); ?>
                         <?php endif; ?>
                         <div class="row g-4">
-                            
                             <div class="col-md-6">
                                 <label for="numeroFactura" class="form-label">Número de Factura</label>
                                 <div class="input-group">
@@ -136,7 +215,8 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                                           maxlength="20" value="<?php echo e(old('numero_factura', isset($factura) ? $factura->numero_factura : '')); ?>"
+                                           maxlength="20"
+                                           value="<?php echo e(old('numero_factura', isset($factura) ? $factura->numero_factura : '')); ?>"
                                            onkeypress="validarTexto(event)" required>
                                 </div>
                                 <div class="text-danger mt-1 small error-mensaje-js"></div>
@@ -152,7 +232,6 @@ endif;
 unset($__errorArgs, $__bag); ?>
                             </div>
 
-                            
                             <div class="col-md-6">
                                 <label for="fecha" class="form-label">Fecha</label>
                                 <div class="input-group">
@@ -182,12 +261,12 @@ endif;
 unset($__errorArgs, $__bag); ?>
                             </div>
 
-                            
                             <div class="col-md-6">
-                                <label for="proveedor_id" class="form-label">Proveedor</label>
+                                <label for="proveedorId" class="form-label">Proveedor</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-building"></i></span>
-                                    <select id="proveedor_id" name="proveedor_id" class="form-select <?php $__errorArgs = ['proveedor_id'];
+                                    <select name="proveedor_id" id="proveedorId"
+                                            class="form-select <?php $__errorArgs = ['proveedor_id'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -196,9 +275,10 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" required>
                                         <option value="">Seleccione un proveedor</option>
-                                        <?php $__currentLoopData = $proveedores; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $prov): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <option value="<?php echo e($prov->id); ?>" <?php echo e((old('proveedor_id', isset($factura) ? $factura->proveedor_id : '') == $prov->id) ? 'selected' : ''); ?>>
-                                                <?php echo e($prov->nombreEmpresa); ?>
+                                        <?php $__currentLoopData = $proveedores; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $proveedor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($proveedor->id); ?>"
+                                                <?php echo e((old('proveedor_id', isset($factura) ? $factura->proveedor_id : '') == $proveedor->id) ? 'selected' : ''); ?>>
+                                                <?php echo e($proveedor->nombreEmpresa); ?>
 
                                             </option>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -217,7 +297,6 @@ endif;
 unset($__errorArgs, $__bag); ?>
                             </div>
 
-                            
                             <div class="col-md-6">
                                 <label for="formaPago" class="form-label">Forma de Pago</label>
                                 <div class="input-group">
@@ -233,7 +312,8 @@ endif;
 unset($__errorArgs, $__bag); ?>" required>
                                         <option value="">Seleccione una opción</option>
                                         <?php $__currentLoopData = $formasPago; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $forma): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <option value="<?php echo e($forma); ?>" <?php echo e((old('forma_pago', isset($factura) ? $factura->forma_pago : '') === $forma) ? 'selected' : ''); ?>>
+                                            <option value="<?php echo e($forma); ?>"
+                                                <?php echo e((old('forma_pago', isset($factura) ? $factura->forma_pago : '') === $forma) ? 'selected' : ''); ?>>
                                                 <?php echo e($forma); ?>
 
                                             </option>
@@ -255,13 +335,15 @@ unset($__errorArgs, $__bag); ?>
 
                             <div class="col-12">
                                 <div class="d-flex justify-content-start mb-4">
-                                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#productosModal">
+                                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal"
+                                            data-bs-target="#productosModal">
                                         <i class="bi bi-search"></i> Buscar Productos
                                     </button>
                                 </div>
 
                                 <div class="table-responsive">
-                                    <table class="table table-bordered align-middle text-center" id="tablaFacturaProductos">
+                                    <table class="table table-bordered align-middle text-center"
+                                           id="tablaFacturaProductos">
                                         <thead class="table-light small">
                                         <tr>
                                             <th>N°</th>
@@ -276,12 +358,14 @@ unset($__errorArgs, $__bag); ?>
                                         </thead>
                                         <tbody id="tablaFacturaBody">
                                         <tr id="filaVacia" class="fila-vacia">
-                                            <td colspan="8" class="text-center text-muted py-4" style="border: 1px dashed #dee2e6; background-color: #f8f9fa;">
+                                            <td colspan="8" class="text-center text-muted py-4"
+                                                style="border: 1px dashed #dee2e6; background-color: #f8f9fa;">
                                                 <i class="bi bi-inbox" style="font-size: 2rem; opacity: 0.5;"></i>
                                                 <br>
                                                 <span style="font-size: 0.9rem;">No hay productos agregados</span>
                                                 <br>
-                                                <small style="font-size: 0.8rem; opacity: 0.7;">Haga clic en "Buscar Productos" para agregar productos a la factura</small>
+                                                <small style="font-size: 0.8rem; opacity: 0.7;">Haga clic en "Buscar
+                                                    Productos" para agregar productos a la factura</small>
                                             </td>
                                         </tr>
                                         </tbody>
@@ -292,62 +376,70 @@ unset($__errorArgs, $__bag); ?>
                                 </div>
                             </div>
 
-                            
                             <div class="row mt-4 justify-content-end">
                                 <div class="col-md-6 col-lg-4">
                                     <div class="row g-1">
 
-                                        
                                         <div class="col-8 text-start">
-                                            <label class="form-label mb-0" style="white-space: nowrap; font-weight: normal;">Importe Gravado (Lps)</label>
+                                            <label class="form-label mb-0"
+                                                   style="white-space: nowrap; font-weight: normal;">Importe Gravado
+                                                (Lps)</label>
                                         </div>
                                         <div class="col-4 text-end">
-                                            <label class="form-control summary-value-box" id="importeGravadoLabel">0.00</label>
+                                            <label class="form-control summary-value-box"
+                                                   id="importeGravadoLabel">0.00</label>
                                         </div>
 
-                                        
                                         <div class="col-8 text-start">
-                                            <label class="form-label mb-0" style="white-space: nowrap; font-weight: normal;">Importe Exento (Lps)</label>
+                                            <label class="form-label mb-0"
+                                                   style="white-space: nowrap; font-weight: normal;">Importe Exento
+                                                (Lps)</label>
                                         </div>
                                         <div class="col-4 text-end">
-                                            <label class="form-control summary-value-box" id="importeExentoLabel">0.00</label>
+                                            <label class="form-control summary-value-box"
+                                                   id="importeExentoLabel">0.00</label>
                                         </div>
 
-                                        
                                         <div class="col-8 text-start">
-                                            <label class="form-label mb-0" style="white-space: nowrap; font-weight: normal;">Importe Exonerado (Lps)</label>
+                                            <label class="form-label mb-0"
+                                                   style="white-space: nowrap; font-weight: normal;">Importe Exonerado
+                                                (Lps)</label>
                                         </div>
                                         <div class="col-4 text-end">
-                                            <label class="form-control summary-value-box" id="importeExoneradoLabel">0.00</label>
+                                            <label class="form-control summary-value-box"
+                                                   id="importeExoneradoLabel">0.00</label>
                                         </div>
 
-                                        
                                         <div class="col-8 text-start">
-                                            <label class="form-label mb-0" style="white-space: nowrap; font-weight: normal;">Subtotal (Lps)</label>
+                                            <label class="form-label mb-0"
+                                                   style="white-space: nowrap; font-weight: normal;">Subtotal
+                                                (Lps)</label>
                                         </div>
                                         <div class="col-4 text-end">
-                                            <label class="form-control summary-value-box" id="subtotalGeneralLabel">0.00</label>
+                                            <label class="form-control summary-value-box"
+                                                   id="subtotalGeneralLabel">0.00</label>
                                         </div>
 
-                                        
                                         <div class="col-8 text-start">
-                                            <label class="form-label mb-0" style="white-space: nowrap; font-weight: normal;">ISV 15% (Lps)</label>
+                                            <label class="form-label mb-0" style="white-space: nowrap; font-weight: normal;">ISV
+                                                15% (Lps)</label>
                                         </div>
                                         <div class="col-4 text-end">
                                             <label class="form-control summary-value-box" id="isv15Label">0.00</label>
                                         </div>
 
-                                        
                                         <div class="col-8 text-start">
-                                            <label class="form-label mb-0" style="white-space: nowrap; font-weight: normal;">ISV 18% (Lps)</label>
+                                            <label class="form-label mb-0" style="white-space: nowrap; font-weight: normal;">ISV
+                                                18% (Lps)</label>
                                         </div>
                                         <div class="col-4 text-end">
                                             <label class="form-control summary-value-box" id="isv18Label">0.00</label>
                                         </div>
 
-                                        
                                         <div class="col-8 text-start">
-                                            <label class="form-label mb-0" style="white-space: nowrap; font-weight: normal;">Total Final (Lps)</label>
+                                            <label class="form-label mb-0"
+                                                   style="white-space: nowrap; font-weight: bold;">Total Final
+                                                (Lps)</label>
                                         </div>
                                         <div class="col-4 text-end">
                                             <label class="form-control summary-value-box" id="totalGeneralLabel">0.00</label>
@@ -356,30 +448,18 @@ unset($__errorArgs, $__bag); ?>
                                 </div>
                             </div>
 
-
-                            
                             <div class="col-md-6">
-                                <label for="responsable_id" class="form-label">Responsable</label>
-                                <div class="input-group">
+                                <label for="responsable_search" class="form-label">Responsable</label>
+                                <div class="input-group search-icon-right">
                                     <span class="input-group-text"><i class="bi bi-person-check-fill"></i></span>
-                                    <select name="responsable_id" id="responsable_id"
-                                            class="form-select <?php $__errorArgs = ['responsable_id'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>" required>
-                                        <option value="">Seleccione un empleado</option>
-                                        <?php $__currentLoopData = $empleados; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $empleado): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <option value="<?php echo e($empleado->id); ?>" <?php echo e((old('responsable_id', isset($factura) ? $factura->responsable_id : '') == $empleado->id) ? 'selected' : ''); ?>>
-                                                <?php echo e($empleado->nombre); ?> <?php echo e($empleado->apellido); ?>
-
-                                            </option>
-                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                    </select>
+                                    <input type="text" id="responsable_search" class="form-control"
+                                           placeholder="Buscar por nombre del empleado..." autocomplete="off"
+                                           value="<?php echo e(old('responsable_id', isset($factura) ? ($factura->responsable->nombre . ' ' . $factura->responsable->apellido) : '')); ?>">
+                                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                    <input type="hidden" name="responsable_id" id="responsable_id"
+                                           value="<?php echo e(old('responsable_id', isset($factura) ? $factura->responsable_id : '')); ?>">
                                 </div>
+                                <div id="responsable_results" class="autocomplete-results"></div>
                                 <div class="text-danger mt-1 small error-mensaje-js"></div>
                                 <?php $__errorArgs = ['responsable_id'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -413,7 +493,8 @@ unset($__errorArgs, $__bag); ?>
         </div>
     </div>
 
-    <div class="modal fade" id="productosModal" tabindex="-1" aria-labelledby="productosModalLabel" aria-hidden="true">
+    <div class="modal fade" id="productosModal" tabindex="-1" aria-labelledby="productosModalLabel"
+         aria-hidden="true">
         <div class="modal-dialog-scrollablea modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header" style="background-color: #0A1F44; color: white;">
@@ -424,7 +505,8 @@ unset($__errorArgs, $__bag); ?>
                     <div class="row mb-3">
                         <div class="col-md-5">
                             <div class="input-group">
-                                <input type="text" id="searchInput" class="form-control" placeholder="Buscar producto por nombre...">
+                                <input type="text" id="searchInput" class="form-control"
+                                       placeholder="Buscar producto por nombre...">
                                 <span class="input-group-text"><i class="bi bi-search"></i></span>
                             </div>
                             <div id="searchResults" class="mt-2"></div>
@@ -448,14 +530,14 @@ unset($__errorArgs, $__bag); ?>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="cerrarModalProductos">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                            id="cerrarModalProductos">
                         <i class="bi bi-x-circle"></i> Cerrar
                     </button>
                 </div>
             </div>
         </div>
     </div>
-
 
     <script>
         let productoSeleccionadoActual = null;
@@ -501,18 +583,15 @@ unset($__errorArgs, $__bag); ?>
                 actualizarFilaVacia();
             }
 
-            // Limpiar los nuevos campos de resumen
             document.getElementById('importeGravadoLabel').textContent = '0.00';
             document.getElementById('importeExentoLabel').textContent = '0.00';
             document.getElementById('importeExoneradoLabel').textContent = '0.00';
             document.getElementById('isv15Label').textContent = '0.00';
             document.getElementById('isv18Label').textContent = '0.00';
 
-            // Subtotal y Total Final
             document.getElementById('subtotalGeneralLabel').textContent = '0.00';
             document.getElementById('totalGeneralLabel').textContent = '0.00';
 
-            // Limpiar los mensajes de error de Laravel y JS
             form.querySelectorAll('.text-danger.mt-1.small, .invalid-feedback').forEach(error => {
                 error.style.display = 'none';
                 error.textContent = '';
@@ -520,7 +599,6 @@ unset($__errorArgs, $__bag); ?>
             form.querySelectorAll('.form-control.is-invalid').forEach(input => {
                 input.classList.remove('is-invalid');
             });
-
 
             const errorProductos = document.getElementById('errorProductos');
             if (errorProductos) {
@@ -531,18 +609,21 @@ unset($__errorArgs, $__bag); ?>
             if (modal) {
                 const modalInstance = bootstrap.Modal.getInstance(modal);
                 if (modalInstance) {
-                    modalInstance.hide(); // Esto debería disparar hidden.bs.modal y limpiar el modal
+                    modalInstance.hide();
                 }
             }
 
-            // Ya no es necesario llamar limpiarFormulariosModal() aquí directamente
-            // porque el evento 'hidden.bs.modal' del modal se encarga de ello.
-
-            document.body.classList.remove('modal-open'); // Asegurar remoción de la clase
+            document.body.classList.remove('modal-open');
             document.body.style.overflow = '';
             document.body.style.paddingRight = '';
             document.documentElement.style.overflow = '';
 
+            document.getElementById('responsable_search').value = '';
+            document.getElementById('responsable_id').value = '';
+            const proveedorSelect = document.getElementById('proveedorId');
+            if (proveedorSelect) {
+                proveedorSelect.selectedIndex = 0;
+            }
 
             const primerCampo = form.querySelector('input[name="numero_factura"]');
             if (primerCampo) {
@@ -576,7 +657,6 @@ unset($__errorArgs, $__bag); ?>
             const searchInput = document.getElementById('searchInput');
             if (searchInput) {
                 searchInput.value = '';
-                // Recargar productos en el modal para mostrar todos de nuevo
                 cargarProductosEnModal();
                 const searchResults = document.getElementById('searchResults');
                 if (searchResults) {
@@ -643,7 +723,6 @@ unset($__errorArgs, $__bag); ?>
 
             let esValido = true;
 
-            // Limpiar mensajes de error previos
             form.querySelectorAll('.error-message').forEach(error => {
                 error.style.display = 'none';
             });
@@ -651,11 +730,10 @@ unset($__errorArgs, $__bag); ?>
                 field.classList.remove('field-error');
             });
 
-            const precioCompra = parseInt(precioCompraInput.value); // Parsear como entero
-            const precioVenta = parseInt(precioVentaInput.value);   // Parsear como entero
+            const precioCompra = parseInt(precioCompraInput.value);
+            const precioVenta = parseInt(precioVentaInput.value);
             const cantidad = parseInt(cantidadInput.value);
 
-            // Validar Precio Compra
             if (isNaN(precioCompra) || precioCompra <= 0) {
                 precioCompraInput.classList.add('field-error');
                 let errorDiv = precioCompraInput.parentNode.querySelector('.error-message');
@@ -669,7 +747,6 @@ unset($__errorArgs, $__bag); ?>
                 esValido = false;
             }
 
-            // Validar Precio Venta
             if (isNaN(precioVenta) || precioVenta <= 0) {
                 precioVentaInput.classList.add('field-error');
                 let errorDiv = precioVentaInput.parentNode.querySelector('.error-message');
@@ -694,7 +771,6 @@ unset($__errorArgs, $__bag); ?>
                 esValido = false;
             }
 
-            // Validar Cantidad (solo mayor que cero)
             if (isNaN(cantidad) || cantidad <= 0) {
                 cantidadInput.classList.add('field-error');
                 let errorDiv = cantidadInput.parentNode.querySelector('.error-message');
@@ -706,6 +782,37 @@ unset($__errorArgs, $__bag); ?>
                 errorDiv.textContent = 'Cantidad debe ser un número entero mayor que cero.';
                 errorDiv.style.display = 'block';
                 esValido = false;
+            }
+
+            return esValido;
+        }
+
+        function validarFormularioPrincipal() {
+            let esValido = true;
+            const form = document.getElementById('facturaForm');
+
+            form.querySelectorAll('.form-control.is-invalid, .form-select.is-invalid').forEach(input => input.classList.remove('is-invalid'));
+            form.querySelectorAll('.text-danger.mt-1.small.error-mensaje-js').forEach(error => error.style.display = 'none');
+
+            const campos = ['numeroFactura', 'fecha', 'proveedorId', 'formaPago', 'responsable_id'];
+            campos.forEach(campoId => {
+                const campo = document.getElementById(campoId);
+                if (campo && !campo.value) {
+                    mostrarError(campoId, 'Este campo es obligatorio.');
+                    esValido = false;
+                } else {
+                    ocultarError(campoId);
+                }
+            });
+
+            const tablaProductos = document.getElementById('tablaFacturaBody');
+            const productosAgregados = tablaProductos.querySelectorAll('tr:not(#filaVacia)');
+            if (productosAgregados.length === 0) {
+                const errorProductos = document.getElementById('errorProductos');
+                errorProductos.style.display = 'block';
+                esValido = false;
+            } else {
+                document.getElementById('errorProductos').style.display = 'none';
             }
 
             return esValido;
@@ -725,19 +832,16 @@ unset($__errorArgs, $__bag); ?>
                     }
 
                     console.log('Validación exitosa, enviando formulario...');
-                    // El formulario se enviará si esta función devuelve true
                     return true;
                 });
             }
         }
 
-        // --- Función para cargar productos en el modal desde la API ---
         async function cargarProductosEnModal(searchTerm = '') {
             const tbody = document.getElementById('tablaProductosBody');
             tbody.innerHTML = '<tr><td colspan="5" class="text-center py-3">Cargando productos...</td></tr>';
 
             try {
-                // Asegúrate de que tu ruta API devuelva el impuesto asociado al producto
                 const apiUrl = `/api/productos?search=${encodeURIComponent(searchTerm)}`;
                 const response = await fetch(apiUrl);
 
@@ -746,7 +850,7 @@ unset($__errorArgs, $__bag); ?>
                 }
                 const productos = await response.json();
 
-                tbody.innerHTML = ''; // Limpiar antes de añadir nuevos resultados
+                tbody.innerHTML = '';
 
                 if (productos.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="5" class="text-center py-3 text-muted">No se encontraron productos.</td></tr>';
@@ -760,26 +864,23 @@ unset($__errorArgs, $__bag); ?>
                     fila.setAttribute('data-id', producto.id);
                     fila.setAttribute('data-nombre', producto.nombre);
                     fila.setAttribute('data-categoria', producto.categoria);
-                    // Asegúrate de que 'cantidad' sea un entero al guardarlo en el data-attribute
                     fila.setAttribute('data-cantidad-disponible', Math.floor(producto.cantidad));
-                    // Asegúrate de que 'impuesto' esté cargado y el porcentaje sea accesible
                     fila.setAttribute('data-iva-porcentaje', producto.impuesto ? producto.impuesto.porcentaje : 0);
 
-                    // Determinar el texto a mostrar para el IVA
                     let ivaDisplay;
-                    const ivaPorcentaje = producto.impuesto ? parseFloat(producto.impuesto.porcentaje) : 0; // Asegurarse de que sea número
+                    const ivaPorcentaje = producto.impuesto ? parseFloat(producto.impuesto.porcentaje) : 0;
                     if (ivaPorcentaje === 0) {
                         ivaDisplay = '0% (Exento)';
                     } else if (ivaPorcentaje === 15 || ivaPorcentaje === 18) {
                         ivaDisplay = `${ivaPorcentaje}% (No exento)`;
                     } else {
-                        ivaDisplay = `${ivaPorcentaje}%`; // Para otros porcentajes no especificados
+                        ivaDisplay = `${ivaPorcentaje}%`;
                     }
 
                     fila.innerHTML = `
                         <td>${producto.nombre}</td>
                         <td>${producto.categoria}</td>
-                        <td><span class="badge bg-secondary">${Math.floor(producto.cantidad)}</span></td> 
+                        <td><span class="badge bg-secondary">${Math.floor(producto.cantidad)}</span></td>
                     <td>${ivaDisplay}</td>
                         <td>
                             <button type="button" class="btn btn-sm btn-info seleccionar-producto">
@@ -794,7 +895,7 @@ unset($__errorArgs, $__bag); ?>
                     filaEdicion.innerHTML = `
                         <td colspan="4">
                             <form class="p-2 form-edicion-producto" novalidate >
-                                <div class="row modal-product-inputs-row align-items-end"> <!-- Añadida la clase modal-product-inputs-row y eliminada g-1 -->
+                                <div class="row modal-product-inputs-row align-items-end">
                                     <div class="col-md-3">
                                         <label class="form-label">Precio Compra (Lps)</label>
                                         <input type="number" step="1" max="9999" class="form-control precioCompra" required>
@@ -825,7 +926,6 @@ unset($__errorArgs, $__bag); ?>
                     tbody.appendChild(fila);
                     tbody.appendChild(filaEdicion);
 
-                    // APLICAR handleNumericInput A LOS NUEVOS CAMPOS CREADOS
                     const form = filaEdicion.querySelector('.form-edicion-producto');
                     handleNumericInput(form.querySelector('.precioCompra'), 4, false);
                     handleNumericInput(form.querySelector('.precioVenta'), 4, false);
@@ -840,16 +940,7 @@ unset($__errorArgs, $__bag); ?>
             }
         }
 
-        /**
-         * Maneja la entrada de caracteres para campos numéricos (type="number").
-         * Permite solo dígitos y un punto decimal opcional para campos decimales.
-         * Formatea a 2 decimales en el evento 'blur' para campos decimales.
-         * Los límites numéricos (min/max) se manejan con los atributos HTML del input.
-         *
-         * @param {HTMLInputElement} input El elemento input.
-         * @param {number} maxIntegerDigits El número máximo de dígitos permitidos en la parte entera.
-         * @param {boolean} isDecimal Indica si el campo acepta decimales.
-         */
+
         function handleNumericInput(input, maxIntegerDigits, isDecimal) {
             input.addEventListener('keypress', function(e) {
                 const key = e.key;
@@ -871,7 +962,7 @@ unset($__errorArgs, $__bag); ?>
                     if (!/[0-9]/.test(key)) {
                         e.preventDefault();
                     }
-                    if (key === '.') { // No permitir punto decimal para enteros
+                    if (key === '.') {
                         e.preventDefault();
                     }
                 }
@@ -906,29 +997,24 @@ unset($__errorArgs, $__bag); ?>
             input.addEventListener('blur', function(e) {
                 let value = e.target.value;
                 let numValue = parseFloat(value);
-                // No usar min/max de atributos HTML para la lógica de blur, solo para validación al final
-                // let min = parseFloat(e.target.getAttribute('min'));
-                // let max = parseFloat(e.target.getAttribute('max'));
 
                 if (value === '') {
-                    return; // Permite dejar el campo vacío, la validación de formulario lo manejará
-                }
-
-                if (isNaN(numValue)) {
-                    e.target.value = ''; // Si no es un número válido, limpiar el campo
                     return;
                 }
 
-                // Si es un número válido, formatear según si es decimal o entero
+                if (isNaN(numValue)) {
+                    e.target.value = '';
+                    return;
+                }
+
                 if (isDecimal) {
                     e.target.value = numValue.toFixed(2);
                 } else {
-                    e.target.value = Math.floor(numValue); // Para enteros, asegurar que no haya decimales
+                    e.target.value = Math.floor(numValue);
                 }
             });
         }
 
-        // --- Función para configurar eventos de productos (la que añade productos desde el modal) ---
         function configurarEventosProductos() {
             document.querySelectorAll('.seleccionar-producto').forEach(btn => {
                 btn.addEventListener('click', function() {
@@ -954,8 +1040,6 @@ unset($__errorArgs, $__bag); ?>
 
                         const form = filaEdicion.querySelector('.form-edicion-producto');
                         form.reset();
-                        // No pre-llenar cantidad con 1, dejarla vacía o con el valor por defecto del HTML
-                        // form.querySelector('.cantidad').value = '';
 
                         form.querySelector('.precioCompra').focus();
                     } else {
@@ -977,7 +1061,6 @@ unset($__errorArgs, $__bag); ?>
                     });
                     form.classList.remove('was-validated');
                     form.querySelectorAll('.invalid-feedback, .valid-feedback, .error-message, .text-danger, .text-success').forEach(mensaje => {
-                        // Solo remover si el mensaje es un div de error dinámico
                         if (mensaje.classList.contains('error-message')) {
                             mensaje.remove();
                         }
@@ -1002,10 +1085,10 @@ unset($__errorArgs, $__bag); ?>
                     const product_id = filaProducto.dataset.id;
                     const nombre = filaProducto.dataset.nombre;
                     const categoria = filaProducto.dataset.categoria;
-                    const precioCompra = parseInt(this.querySelector('.precioCompra').value); // Parsear como entero
-                    const precioVenta = parseInt(this.querySelector('.precioVenta').value);   // Parsear como entero
+                    const precioCompra = parseInt(this.querySelector('.precioCompra').value);
+                    const precioVenta = parseInt(this.querySelector('.precioVenta').value);
                     const cantidad = parseInt(this.querySelector('.cantidad').value);
-                    const ivaPorcentaje = parseFloat(filaProducto.dataset.ivaPorcentaje); // Obtener el porcentaje de IVA real
+                    const ivaPorcentaje = parseFloat(filaProducto.dataset.ivaPorcentaje);
 
                     const tablaFactura = document.getElementById('tablaFacturaBody');
                     const productosExistentes = Array.from(tablaFactura.querySelectorAll('tr')).map(tr => {
@@ -1034,9 +1117,9 @@ unset($__errorArgs, $__bag); ?>
 
                     const nuevaFila = document.createElement('tr');
 
-                    const newRowIndex = tablaFactura.children.length; // Usar la longitud actual para el nuevo índice
+                    const newRowIndex = tablaFactura.children.length;
 
-                    nuevaFila.dataset.index = newRowIndex; // Asignar un índice al data-attribute de la fila
+                    nuevaFila.dataset.index = newRowIndex;
                     nuevaFila.innerHTML = `
                         <td>${newRowIndex + 1}</td>
                         <td>
@@ -1081,7 +1164,7 @@ unset($__errorArgs, $__bag); ?>
 
                     calcularTotalesGenerales();
                     document.getElementById('errorProductos').style.display = 'none';
-                    actualizarNumeracionFilas(); // Llama a la función para re-numerar
+                    actualizarNumeracionFilas();
                 });
             });
         }
@@ -1103,6 +1186,82 @@ unset($__errorArgs, $__bag); ?>
                     cargarProductosEnModal(termino);
                 }, 300);
             });
+        }
+
+        function configurarAutocomplete(inputId, resultsId, hiddenInputId, data) {
+            const searchInput = document.getElementById(inputId);
+            const resultsContainer = document.getElementById(resultsId);
+            const hiddenInput = document.getElementById(hiddenInputId);
+
+            let searchTimeout;
+
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                const searchTerm = this.value.toLowerCase().trim();
+
+                if (searchTerm.length === 0) {
+                    resultsContainer.style.display = 'none';
+                    hiddenInput.value = '';
+                    return;
+                }
+
+                searchTimeout = setTimeout(() => {
+                    const filteredData = data.filter(item =>
+                        (item.nombreEmpresa || (item.nombre + ' ' + item.apellido)).toLowerCase().includes(searchTerm)
+                    );
+
+                    filteredData.sort((a, b) => {
+                        const nombreA = (a.nombreEmpresa || (a.nombre + ' ' + a.apellido)).toLowerCase();
+                        const nombreB = (b.nombreEmpresa || (b.nombre + ' ' + b.apellido)).toLowerCase();
+                        return nombreA.localeCompare(nombreB);
+                    });
+
+                    mostrarResultadosAutocomplete(filteredData, resultsContainer, searchInput, hiddenInputId);
+                }, 250);
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!resultsContainer.contains(e.target) && e.target !== searchInput) {
+                    resultsContainer.style.display = 'none';
+                }
+            });
+
+            if(searchInput.value) {
+                const initialSearchTerm = searchInput.value.toLowerCase().trim();
+                const initialData = data.find(item => (item.nombreEmpresa || (item.nombre + ' ' + item.apellido)).toLowerCase() === initialSearchTerm);
+                if (initialData) {
+                    hiddenInput.value = initialData.id;
+                }
+            }
+        }
+
+        function mostrarResultadosAutocomplete(resultados, container, input, hiddenInputId) {
+            container.innerHTML = '';
+            container.className = 'autocomplete-results';
+
+            if (resultados.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+
+            resultados.forEach(item => {
+                const li = document.createElement('a');
+                li.className = 'list-group-item list-group-item-action';
+                li.href = '#';
+
+                const nombreCompleto = item.nombreEmpresa || (item.nombre + ' ' + item.apellido);
+                li.textContent = nombreCompleto;
+
+                li.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    input.value = nombreCompleto;
+                    document.getElementById(hiddenInputId).value = item.id;
+                    container.style.display = 'none';
+                });
+                container.appendChild(li);
+            });
+
+            container.style.display = 'block';
         }
 
         function resaltarTexto(elemento, termino) {
@@ -1167,45 +1326,116 @@ unset($__errorArgs, $__bag); ?>
             }
         }
 
-        function actualizarFilaVacia() {
-            const tablaFactura = document.getElementById('tablaFacturaBody');
-            let filaVacia = document.getElementById('filaVacia');
-            const productosReales = tablaFactura.querySelectorAll('tr:not(#filaVacia)');
+        function configurarEventosGenerales() {
+            document.getElementById('btnLimpiar').addEventListener('click', limpiarFormularioCompleto);
 
-            if (productosReales.length === 0) {
-                if (!filaVacia) {
-                    filaVacia = document.createElement('tr');
-                    filaVacia.id = 'filaVacia';
-                    filaVacia.className = 'fila-vacia';
-                    filaVacia.innerHTML = `
-                    <td colspan="8" class="text-center text-muted py-4" style="border: 1px dashed #dee2e6; background-color: #f8f9fa;">
-                        <i class="bi bi-inbox" style="font-size: 2rem; opacity: 0.5;"></i>
-                        <br>
-                        <span style="font-size: 0.9rem;">No hay productos agregados</span>
-                        <br>
-                        <small style="font-size: 0.8rem; opacity: 0.7;">Haga clic en "Buscar Productos" para agregar productos a la factura</small>
-                    </td>
-                `;
-                    tablaFactura.appendChild(filaVacia);
-                } else {
-                    filaVacia.style.display = 'table-row';
+            document.getElementById('tablaFacturaBody').addEventListener('click', function(e) {
+                if (e.target.closest('.btn-eliminar-producto')) {
+                    const fila = e.target.closest('tr');
+                    fila.remove();
+                    actualizarFilaVacia();
+                    calcularTotalesGenerales();
+                    actualizarNumeracionFilas();
+                }
+            });
+
+            document.getElementById('fecha').addEventListener('input', function() {
+                ocultarError('fecha');
+            });
+            document.getElementById('numeroFactura').addEventListener('input', function() {
+                ocultarError('numeroFactura');
+            });
+            document.getElementById('proveedorId').addEventListener('change', function() {
+                ocultarError('proveedorId');
+            });
+            document.getElementById('formaPago').addEventListener('change', function() {
+                ocultarError('formaPago');
+            });
+
+            const productosModalElement = document.getElementById('productosModal');
+            productosModalElement.addEventListener('shown.bs.modal', function() {
+                const searchInput = document.getElementById('searchInput');
+                searchInput.value = '';
+                cargarProductosEnModal('');
+                searchInput.focus();
+            });
+
+            productosModalElement.addEventListener('hidden.bs.modal', function() {
+                limpiarFormulariosModal();
+            });
+        }
+
+
+        function calcularTotalesGenerales() {
+            let importeGravado = 0;
+            let importeExento = 0;
+            let importeExonerado = 0;
+            let isv15 = 0;
+            let isv18 = 0;
+            let subtotalGeneral = 0;
+
+            const tablaFacturaBody = document.getElementById('tablaFacturaBody');
+            const filas = tablaFacturaBody.querySelectorAll('tr:not(#filaVacia)');
+
+            filas.forEach(fila => {
+                const precioCompra = parseFloat(fila.querySelector('.hidden-precio-compra').value);
+                const cantidad = parseFloat(fila.querySelector('.hidden-cantidad').value);
+                const ivaPorcentaje = parseFloat(fila.querySelector('.hidden-iva').value);
+                const baseCalculo = precioCompra * cantidad;
+
+                let impuesto = 0;
+
+                if (ivaPorcentaje > 0) {
+                    importeGravado += baseCalculo;
+                    impuesto = baseCalculo * (ivaPorcentaje / 100);
+
+                    if (ivaPorcentaje === 15) {
+                        isv15 += impuesto;
+                    } else if (ivaPorcentaje === 18) {
+                        isv18 += impuesto;
+                    }
+                } else if (ivaPorcentaje === 0) {
+                    importeExento += baseCalculo;
+                }
+            });
+
+            subtotalGeneral = importeGravado + importeExento + importeExonerado;
+            const totalFinal = subtotalGeneral + isv15 + isv18;
+
+            document.getElementById('importeGravadoLabel').textContent = importeGravado.toFixed(2);
+            document.getElementById('importeExentoLabel').textContent = importeExento.toFixed(2);
+            document.getElementById('importeExoneradoLabel').textContent = importeExonerado.toFixed(2);
+            document.getElementById('subtotalGeneralLabel').textContent = subtotalGeneral.toFixed(2);
+            document.getElementById('isv15Label').textContent = isv15.toFixed(2);
+            document.getElementById('isv18Label').textContent = isv18.toFixed(2);
+            document.getElementById('totalGeneralLabel').textContent = totalFinal.toFixed(2);
+        }
+
+        function actualizarFilaVacia() {
+            const tbody = document.getElementById('tablaFacturaBody');
+            const filasProductos = tbody.querySelectorAll('tr:not(#filaVacia)');
+            const filaVacia = document.getElementById('filaVacia');
+
+            if (filasProductos.length > 0) {
+                if (filaVacia) {
+                    filaVacia.style.display = 'none';
                 }
             } else {
                 if (filaVacia) {
-                    filaVacia.style.display = 'none';
+                    filaVacia.style.display = 'table-row';
                 }
             }
         }
 
         function actualizarNumeracionFilas() {
             const tablaFacturaBody = document.getElementById('tablaFacturaBody');
-            const filasProductos = tablaFacturaBody.querySelectorAll('tr:not(#filaVacia)');
-            filasProductos.forEach((fila, index) => {
+            const filas = tablaFacturaBody.querySelectorAll('tr:not(#filaVacia)');
+            filas.forEach((fila, index) => {
                 fila.querySelector('td:first-child').textContent = index + 1;
-                // También actualiza los índices en los atributos `name` de los inputs ocultos
-                fila.querySelectorAll('input[type="hidden"]').forEach(input => {
+
+                const hiddenInputs = fila.querySelectorAll('input[type="hidden"]');
+                hiddenInputs.forEach(input => {
                     const originalName = input.name;
-                    // Extrae la parte final del nombre (ej. '[product_id]', '[nombre]')
                     const nameSuffix = originalName.match(/\[[^\]]+\]$/)[0];
                     input.name = `productos[${index}]${nameSuffix}`;
                 });
@@ -1213,127 +1443,36 @@ unset($__errorArgs, $__bag); ?>
         }
 
 
-        function calcularTotalesGenerales() {
-            const tablaFacturaBody = document.getElementById('tablaFacturaBody');
-            const filasProductos = tablaFacturaBody.querySelectorAll('tr:not(#filaVacia)');
-            let importeGravado = 0;
-            let importeExento = 0;
-            let importeExonerado = 0; // Por ahora, se mantiene en 0 a menos que haya una lógica específica
-            let isv15 = 0;
-            let isv18 = 0;
-            let subtotalCalculado = 0; // Suma de bases imponibles (gravado + exento + exonerado)
-            let totalFinal = 0;
+        document.addEventListener('DOMContentLoaded', function() {
+            const empleados = <?php echo json_encode($empleados ?? [], 15, 512) ?>;
+            configurarAutocomplete('responsable_search', 'responsable_results', 'responsable_id', empleados);
 
-            filasProductos.forEach(fila => {
-                const precioCompra = parseInt(fila.querySelector('.hidden-precio-compra').value); // Parsear como entero
-                const cantidad = parseInt(fila.querySelector('.hidden-cantidad').value);
-                const ivaPorcentaje = parseInt(fila.querySelector('.hidden-iva').value);
+            const hoy = new Date().toISOString().split('T')[0];
+            document.getElementById('fecha').max = hoy;
 
-                const baseProducto = precioCompra * cantidad;
-                const impuestoCalculadoLinea = (ivaPorcentaje / 100) * baseProducto;
-
-                // Acumular Importe Gravado / Exento
-                if (ivaPorcentaje > 0) {
-                    importeGravado += baseProducto;
-                } else {
-                    importeExento += baseProducto;
-                }
-
-                // Acumular ISV por porcentaje
-                if (ivaPorcentaje === 15) {
-                    isv15 += impuestoCalculadoLinea;
-                } else if (ivaPorcentaje === 18) {
-                    isv18 += impuestoCalculadoLinea;
-                }
-                // Si hay otros porcentajes de IVA, se añadirían aquí
-
-                // Sumar al subtotal general (suma de bases imponibles)
-                subtotalCalculado += baseProducto;
-            });
-
-            // Calcular el total final (subtotal + ISV15 + ISV18)
-            totalFinal = subtotalCalculado + isv15 + isv18;
-
-            // Mostrar con dos decimales para precisión en los totales
-            document.getElementById('importeGravadoLabel').textContent = importeGravado.toFixed(2);
-            document.getElementById('importeExentoLabel').textContent = importeExento.toFixed(2);
-            document.getElementById('importeExoneradoLabel').textContent = importeExonerado.toFixed(2);
-            document.getElementById('isv15Label').textContent = isv15.toFixed(2);
-            document.getElementById('isv18Label').textContent = isv18.toFixed(2);
-
-            // Actualizar el Subtotal y Total Final
-            document.getElementById('subtotalGeneralLabel').textContent = subtotalCalculado.toFixed(2);
-            document.getElementById('totalGeneralLabel').textContent = totalFinal.toFixed(2);
-        }
-
-        // --- DOMContentLoaded Listener ---
-        document.addEventListener("DOMContentLoaded", function () {
-            const btnLimpiar = document.getElementById('btnLimpiar');
-            if (btnLimpiar) {
-                btnLimpiar.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    limpiarFormularioCompleto();
-                });
+            if (document.getElementById('numeroFactura').value === '') {
+                document.getElementById('numeroFactura').focus();
             }
 
+            // Al cargar la página, se inicializa la tabla y los eventos
+            actualizarFilaVacia();
+            calcularTotalesGenerales();
             configurarValidacionFormulario();
-            cargarProductosEnModal(); // Carga inicial de productos en el modal
+            configurarEventosGenerales();
             configurarBuscador();
 
-            const tablaFacturaBody = document.getElementById('tablaFacturaBody');
+            const productosModal = new bootstrap.Modal(document.getElementById('productosModal'));
 
-            // --- INICIO DE LA LÓGICA DE REPOBLACIÓN CORREGIDA ---
-
-            let productsToLoad = [];
-
-            // 1. Intentar cargar desde `old()` data primero (si hay errores de validación)
-            const oldProductsFromSession = <?php echo json_encode(session()->getOldInput('productos'), 15, 512) ?>;
-
-            if (oldProductsFromSession && Object.keys(oldProductsFromSession).length > 0) {
-                for (const key in oldProductsFromSession) {
-                    if (Object.hasOwnProperty.call(oldProductsFromSession, key)) {
-                        const prodData = oldProductsFromSession[key];
-                        productsToLoad.push({
-                            product_id: String(prodData.product_id || ''),
-                            nombre: String(prodData.nombre || ''),
-                            categoria: String(prodData.categoria || ''),
-                            precioCompra: parseInt(prodData.precioCompra || 0), // Parsear como entero
-                            precioVenta: parseInt(prodData.precioVenta || 0),   // Parsear como entero
-                            cantidad: parseInt(prodData.cantidad || 0),
-                            iva: parseFloat(prodData.iva || 0),
-                        });
-                    }
-                }
-                console.log('DEBUG: Productos cargados desde old() data:', productsToLoad);
-
-            } else {
-                const existingFacturaDetalles = <?php echo json_encode(isset($factura) ? $factura->detalles : null, 15, 512) ?>;
-                if (existingFacturaDetalles && existingFacturaDetalles.length > 0) {
-                    productsToLoad = existingFacturaDetalles.map(detail => ({
-                        product_id: String(detail.product_id || ''),
-                        nombre: String(detail.producto_inventario.nombre || ''),
-                        categoria: String(detail.producto_inventario.categoria || ''), // Acceder a producto_inventario.categoria
-                        precioCompra: parseInt(detail.precio_compra || 0),
-                        precioVenta: parseInt(detail.precio_venta || 0),
-                        cantidad: parseInt(detail.cantidad || 0),
-                        iva: parseFloat(detail.iva || 0),
-                        total: parseFloat(detail.total || 0)
-                    }));
-                    console.log('DEBUG: Cargando productos desde detalles de factura existentes:', productsToLoad);
-                }
-            }
-
-            productoIndexCounter = productsToLoad.length;
-
-            if (productsToLoad.length > 0) {
-                tablaFacturaBody.innerHTML = '';
-                productsToLoad.forEach((producto, index) => {
-                    const baseProductoRepoblado = producto.precioCompra * producto.cantidad;
-                    const impuestoProductoRepoblado = (producto.iva / 100) * baseProductoRepoblado;
-                    const subtotalDisplay = (baseProductoRepoblado + impuestoProductoRepoblado).toFixed(2);
-
+            // Pre-llenar la tabla de productos si hay datos antiguos
+            const productosAntiguos = <?php echo json_encode(old('productos', isset($factura) ? $factura->productos : []), 512) ?>;
+            if (productosAntiguos && productosAntiguos.length > 0) {
+                const tablaFacturaBody = document.getElementById('tablaFacturaBody');
+                productosAntiguos.forEach((producto, index) => {
                     const nuevaFila = document.createElement('tr');
-                    nuevaFila.dataset.index = index;
+                    const base = producto.precioCompra * producto.cantidad;
+                    const impuestoCalculado = (producto.iva / 100) * base;
+                    const subtotalLinea = base + impuestoCalculado;
+
                     nuevaFila.innerHTML = `
                         <td>${index + 1}</td>
                         <td>
@@ -1347,7 +1486,7 @@ unset($__errorArgs, $__bag); ?>
                         </td>
                         <td>
                             <input type="hidden" name="productos[${index}][precioCompra]" value="${producto.precioCompra}" class="hidden-precio-compra">
-                            ${producto.precioCompra}
+                            ${parseFloat(producto.precioCompra).toFixed(2)}
                         </td>
                         <td>
                             <input type="hidden" name="productos[${index}][cantidad]" value="${producto.cantidad}" class="hidden-cantidad">
@@ -1358,7 +1497,7 @@ unset($__errorArgs, $__bag); ?>
                             <input type="hidden" name="productos[${index}][iva]" value="${producto.iva}" class="hidden-iva">
                             ${producto.iva}%
                         </td>
-                        <td class="subtotal-producto">${subtotalDisplay}</td>
+                        <td class="subtotal-producto">${subtotalLinea.toFixed(2)}</td>
                         <td>
                             <button type="button" class="btn btn-danger btn-sm btn-eliminar-producto" title="Eliminar producto">
                                 <i class="bi bi-trash"></i>
@@ -1370,40 +1509,9 @@ unset($__errorArgs, $__bag); ?>
                 actualizarFilaVacia();
                 calcularTotalesGenerales();
                 actualizarNumeracionFilas();
-            } else {
-                actualizarFilaVacia();
-                calcularTotalesGenerales();
             }
-            // --- FIN DE LA LÓGICA DE REPOBLACIÓN CORREGIDA ---
+
         });
-
-        document.addEventListener('click', function(e) {
-            if (e.target.closest('.btn-eliminar-producto')) {
-                const fila = e.target.closest('tr');
-                fila.remove();
-                calcularTotalesGenerales();
-                actualizarFilaVacia();
-                actualizarNumeracionFilas();
-            }
-        });
-
-        const productosModalElement = document.getElementById('productosModal');
-        if (productosModalElement) {
-            productosModalElement.addEventListener('hidden.bs.modal', function () {
-                console.log('DEBUG: El modal de productos ha terminado de ocultarse (evento hidden.bs.modal disparado).');
-
-                document.body.classList.remove('modal-open');
-                console.log('DEBUG: Clase modal-open eliminada del body.');
-
-                document.body.style.overflow = '';
-                document.body.style.paddingRight = '';
-                document.documentElement.style.overflow = '';
-                console.log('DEBUG: Body overflow/padding-right restored.');
-
-                limpiarFormulariosModal();
-                console.log('DEBUG: Formularios del modal limpiados al cerrar.');
-            });
-        }
     </script>
 <?php $__env->stopSection(); ?>
 
