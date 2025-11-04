@@ -89,8 +89,8 @@ class CapacitacionController extends Controller
             'modalidad' => ['required', 'string'],
             'nivel' => ['required', 'string'],
             'duracion'=>['required','numeric','min:1'],
-            'fechaInicio' => ['required', 'date',  'after_or_equal:' . now()->subMonth()->format('Y-m-d'), ],
-            'fechaFin' => ['required', 'date', 'after_or_equal:fechaInicio'],
+            'fecha_inicio' => ['required', 'date',  'after_or_equal:' . now()->subMonth()->format('Y-m-d'), ],
+            'fecha_fin' => ['required', 'date', 'after_or_equal:fechaInicio'],
             'descripcion' => ['required', 'string','max:250'],
             'direccion' => ['required', 'string','max:250'],
 
@@ -113,8 +113,8 @@ class CapacitacionController extends Controller
             'contacto.required' => 'Debe ingresar el nombre del representante.',
             'contacto.regex' => 'El nombre del representante solo debe contener letras y espacios y tildes.',
 
-            'modalidad.required' => 'Debe seleccionar una categoría o rubro.',
-            'nivel.required' => 'Debe seleccionar un departamento.',
+            'modalidad.required' => 'Debe seleccionar la modalidad.',
+            'nivel.required' => 'Debe seleccionar el nivel.',
             'duracion.required' => 'Debe ingresar la duración.',
             'descripcion.required' => 'Debe ingresar la descripción.',
             'fecha_inicio.after_or_equal' => 'La fecha de inicio debe ser como mínimo hace un mes o más reciente.',

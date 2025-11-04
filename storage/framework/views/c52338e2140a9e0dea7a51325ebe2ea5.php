@@ -178,9 +178,11 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
                                        value="<?php echo e(old('telefono')); ?>"
-                                       maxlength="20"
+                                       maxlength="8"
+                                       onkeypress="soloNumeros(event)"
                                        onkeydown="bloquearEspacioAlInicio(event, this)"
                                        oninput="eliminarEspaciosIniciales(this)"
+                                       oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                        required>
                                 <?php $__errorArgs = ['telefono'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -525,6 +527,18 @@ unset($__errorArgs, $__bag); ?>
         const key = e.key;
         if (!/^[0-9]$/.test(key) && !['Backspace','Tab','ArrowLeft','ArrowRight','Delete'].includes(key)) {
             e.preventDefault();
+        }
+    }
+
+    function validarTelefono(input) {
+        input.value = input.value.replace(/[^0-9]/g, '');
+        if (input.value.length > 8) {
+            input.value = input.value.substring(0, 8);
+        }
+        if (input.value.length > 0 && !['2','3', '8', '9'].includes(input.value[0])) {
+            input.setCustomValidity("El teléfono debe iniciar con 2, 3, 8 o 9");
+        } else {
+            input.setCustomValidity("");
         }
     }
 
