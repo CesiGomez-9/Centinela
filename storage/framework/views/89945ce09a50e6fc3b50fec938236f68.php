@@ -1,6 +1,5 @@
-<?php $__env->startSection('titulo', 'Clientes'); ?>
-
 <?php $__env->startSection('content'); ?>
+
     <style>
         body{
             background-color: #e6f0ff;
@@ -24,7 +23,6 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
         </div>
     <?php endif; ?>
-
 
 
     <div class="container mt-5" style="max-width: 1100px;">
@@ -124,7 +122,7 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {

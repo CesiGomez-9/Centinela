@@ -97,15 +97,17 @@
 
             <div class="info-container">
                 <div class="info-box">
-                    <p><strong><i class="bi bi-person-fill me-2"></i>Empleado:</strong> <?php echo e($incapacidad->empleado?->nombre ?? '---'); ?> <?php echo e($incapacidad->empleado?->apellido ?? ''); ?></p>
-                    <p><strong><i class="bi bi-heart-pulse me-2"></i>Motivo:</strong> <?php echo e($incapacidad->motivo ?? '---'); ?></p>
-                    <p><strong><i class="bi bi-file-text me-2"></i>Descripción:</strong> <?php echo e($incapacidad->descripcion ?? 'Sin descripción'); ?></p>
+                    <p><strong><i class="bi bi-person-fill me-2"></i> Empleado:</strong> <?php echo e($incapacidad->empleado?->nombre ?? '---'); ?> <?php echo e($incapacidad->empleado?->apellido ?? ''); ?></p>
+                    <p><strong><i class="bi bi-card-heading me-2"></i> Identidad:</strong> <?php echo e($incapacidad->empleado?->identidad ?? '---'); ?></p>
+                    <p><strong><i class="bi bi-briefcase me-2"></i> Cargo:</strong> <?php echo e($incapacidad->empleado?->categoria ?? '---'); ?></p>
+                    <p><strong><i class="bi bi-heart-pulse me-2"></i> Motivo:</strong> <?php echo e($incapacidad->motivo ?? '---'); ?></p>
                 </div>
 
                 <div class="info-box">
                     <p><strong><i class="bi bi-calendar-event me-2"></i>Fecha inicio:</strong> <?php echo e($incapacidad->fecha_inicio ? \Carbon\Carbon::parse($incapacidad->fecha_inicio)->format('d/m/Y') : '---'); ?></p>
                     <p><strong><i class="bi bi-calendar-event me-2"></i>Fecha fin:</strong> <?php echo e($incapacidad->fecha_fin ? \Carbon\Carbon::parse($incapacidad->fecha_fin)->format('d/m/Y') : '---'); ?></p>
                     <p><strong><i class="bi bi-check-circle me-2"></i>Estado:</strong> <?php echo e($incapacidad->estado); ?></p>
+                    <p><strong><i class="bi bi-file-text me-2"></i>Descripción:</strong> <?php echo e($incapacidad->descripcion ?? 'Sin descripción'); ?></p>
                 </div>
             </div>
 
@@ -113,7 +115,7 @@
 
             <div class="info-container">
                 <div class="info-box adjunto">
-                    <p><strong><i class="bi bi-paperclip me-2"></i>Documento:</strong></p>
+                    <p><strong><i class="bi bi-paperclip me-2"></i>Comprobante médico:</strong></p>
                     <?php if($documento && file_exists(storage_path('app/public/' . $documento))): ?>
                         <?php $extension = strtolower(pathinfo($documento, PATHINFO_EXTENSION)); ?>
                         <?php if(in_array($extension, ['jpg','jpeg','png','gif','webp'])): ?>

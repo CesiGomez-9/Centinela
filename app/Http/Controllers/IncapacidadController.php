@@ -13,9 +13,12 @@ class IncapacidadController extends Controller
         $query = Incapacidad::query();
 
         if ($search = $request->input('search')) {
-            $query->whereHas('empleado', function($q) use ($search) {
-                $q->where('nombre', 'like', "%{$search}%")
-                    ->orWhere('apellido', 'like', "%{$search}%");
+            $query->where(function($q) use ($search) {
+                $q->whereHas('empleado', function($q2) use ($search) {
+                    $q2->where('nombre', 'like', "%{$search}%")
+                        ->orWhere('apellido', 'like', "%{$search}%");
+                })
+                    ->orWhere('institucion_medica', 'like', "%{$search}%");
             });
         }
 
@@ -36,8 +39,8 @@ class IncapacidadController extends Controller
             }
         }
 
-        $incapacidades = $query->orderBy('fecha_inicio', 'asc')
-            ->paginate(5)
+        $incapacidades = $query->orderBy('created_at','asc')
+            ->paginate(10)
             ->withQueryString();
 
         return view('incapacidades.index', compact('incapacidades'));
@@ -57,6 +60,7 @@ class IncapacidadController extends Controller
             'empleado_id' => 'required|exists:empleados,id',
             'motivo' => 'required|string|max:150',
             'descripcion' => 'nullable|string|max:250',
+            'institucion_medica' => 'required|string|max:150',
             'fecha_inicio' => 'required|date',
             'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
             'documento' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
@@ -66,6 +70,9 @@ class IncapacidadController extends Controller
 
             'motivo.required' => 'Debe ingresar el motivo de la incapacidad.',
             'motivo.max' => 'El motivo no puede exceder los 150 caracteres.',
+
+            'institucion_medica.required' => 'Debe ingresar la institución médica.',
+            'institucion_medica.max' => 'La institución médica no puede exceder los 150 .',
 
             'descripcion.max' => 'La descripción no puede exceder los 250 caracteres.',
 

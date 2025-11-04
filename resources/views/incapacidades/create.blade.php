@@ -21,8 +21,7 @@
                 @csrf
 
                 <div class="row g-3">
-
-                    <div class="col-md-4">
+                    <div class="col-md-5">
                         <label class="form-label fw-bold">Empleado:</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-search"></i></span>
@@ -37,6 +36,22 @@
                         </div>
                         <div class="invalid-feedback d-block">@error('empleado_id') {{ $message }} @enderror</div>
                         <div id="empleadoResults" class="list-group" style="max-height:200px; overflow-y:auto;"></div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Identidad:</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-card-heading"></i></span>
+                            <input type="text" id="identidad" name="identidad" class="form-control" readonly>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Cargo:</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-briefcase"></i></span>
+                            <input type="text" id="cargo" name="cargo" class="form-control" readonly>
+                        </div>
                     </div>
 
                     <div class="col-md-4">
@@ -61,11 +76,11 @@
                         <div class="invalid-feedback d-block">@error('fecha_fin') {{ $message }} @enderror</div>
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label class="form-label fw-bold">Motivo:</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-file-earmark-medical"></i></span>
-                            <textarea name="motivo" id="motivo" rows="3"
+                            <textarea name="motivo" id="motivo" rows="1" maxlength="150"
                                       class="form-control @error('motivo') is-invalid @enderror"
                                       style="overflow:hidden; resize:none;" required>{{ old('motivo') }}</textarea>
                             <div class="invalid-feedback d-block">@error('motivo') {{ $message }} @enderror</div>
@@ -73,6 +88,17 @@
                     </div>
 
                     <div class="col-md-6">
+                        <label class="form-label fw-bold">Institución Médica:</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-building"></i></span>
+                            <textarea name="institucion_medica" id="institucion_medica" rows="1" maxlength="150"
+                                      class="form-control @error('institucion_medica') is-invalid @enderror"
+                                      style="overflow:hidden; resize:none;">{{ old('institucion_medica') }}</textarea>
+                        </div>
+                        <div class="invalid-feedback d-block">@error('institucion_medica') {{ $message }} @enderror</div>
+                    </div>
+
+                    <div class="col-md-6 mt-3">
                         <label class="form-label fw-bold">Comprobante médico (opcional):</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-paperclip"></i></span>
@@ -80,18 +106,23 @@
                                    class="form-control @error('documento') is-invalid @enderror"
                                    accept=".pdf,.jpg,.jpeg,.png">
                             <div class="invalid-feedback d-block">@error('documento') {{ $message }} @enderror</div>
-
                         </div>
                     </div>
 
-                    <div class="col-md-12">
+                    <div class="col-md-6 mt-2">
                         <label class="form-label fw-bold">Descripción (opcional):</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-card-text"></i></span>
-                            <textarea name="descripcion" id="descripcion" rows="3"
+                            <textarea name="descripcion" id="descripcion" rows="3" maxlength="250"
                                       class="form-control @error('descripcion') is-invalid @enderror"
                                       style="overflow:hidden; resize:none;">{{ old('descripcion') }}</textarea>
                             <div class="invalid-feedback d-block">@error('descripcion') {{ $message }} @enderror</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mt-2">
+                        <label class="form-label fw-bold">Vista previa del comprobante:</label>
+                        <div id="previewContainer" class="border p-2" style="min-height:150px;">
                         </div>
                     </div>
 
@@ -116,30 +147,81 @@
             const empleadoInput = document.getElementById('empleadoInput');
             const empleadoResults = document.getElementById('empleadoResults');
             const empleadoId = document.getElementById('empleado_id');
+            const identidad = document.getElementById('identidad');
+            const cargo = document.getElementById('cargo');
             const fechaInicio = document.getElementById('fecha_inicio');
             const fechaFin = document.getElementById('fecha_fin');
             const documento = document.getElementById('documento');
-            const fileName = document.getElementById('fileName');
             const motivo = document.getElementById('motivo');
             const descripcion = document.getElementById('descripcion');
             const form = document.getElementById('incapacidadForm');
+            const institucion = document.getElementById('institucion_medica');
+            const previewContainer = document.getElementById('previewContainer');
+
+            documento.addEventListener('change', function() {
+                previewContainer.innerHTML = '';
+                const file = this.files[0];
+                if (!file) return;
+
+                if (file.type.startsWith('image/')) {
+                    const img = document.createElement('img');
+                    img.src = URL.createObjectURL(file);
+                    img.style.maxWidth = '300px';
+                    img.style.maxHeight = '300px';
+                    img.classList.add('img-thumbnail');
+                    previewContainer.appendChild(img);
+                }
+
+                else if (file.type === 'application/pdf') {
+                    const iframe = document.createElement('iframe');
+                    iframe.src = URL.createObjectURL(file);
+                    iframe.style.width = '100%';
+                    iframe.style.height = '400px';
+                    iframe.classList.add('border');
+                    previewContainer.appendChild(iframe);
+                }
+
+                else {
+                    const p = document.createElement('p');
+                    p.textContent = `Archivo seleccionado: ${file.name}`;
+                    previewContainer.appendChild(p);
+                }
+            });
+
+            document.getElementById('btnRestablecer').addEventListener('click', function(){
+                previewContainer.innerHTML = '';
+            });
+
+            function setupTextareaLimit(id, maxLength) {
+                const el = document.getElementById(id);
+                el.addEventListener('input', function() {
+                    if (this.value.length > maxLength) {
+                        this.value = this.value.slice(0, maxLength);
+                    }
+                    this.style.height = 'auto';
+                    this.style.height = (this.scrollHeight) + 'px';
+                });
+            }
+
+            setupTextareaLimit('motivo', 150);
+            setupTextareaLimit('descripcion', 250);
+            setupTextareaLimit('institucion_medica', 150);
+
+            institucion.addEventListener('input', function() {
+                if (this.value.length > 150) {
+                    this.value = this.value.slice(0, 150);
+                }
+            });
 
             const hoy = new Date();
             const año = hoy.getFullYear();
-            const mes = hoy.getMonth(); // 0-index
-
-            // Fecha mínima de inicio: primer día del mes actual
+            const mes = hoy.getMonth();
             const primerDiaMesActualDate = new Date(año, mes, 1);
             const primerDiaMesActual = `${primerDiaMesActualDate.getFullYear()}-${String(primerDiaMesActualDate.getMonth() + 1).padStart(2, '0')}-01`;
-
-            // Fecha máxima de inicio: último día del mes +2
-            const ultimoDiaMesMasDosDate = new Date(año, mes + 3, 0); // Mes+3 porque getMonth es 0-index y el 0 obtiene el último día del mes anterior
+            const ultimoDiaMesMasDosDate = new Date(año, mes + 3, 0);
             const ultimoDiaMesMasDos = `${ultimoDiaMesMasDosDate.getFullYear()}-${String(ultimoDiaMesMasDosDate.getMonth() + 1).padStart(2, '0')}-${String(ultimoDiaMesMasDosDate.getDate()).padStart(2, '0')}`;
-
-            // Fecha máxima de fin: 4 meses después de fecha_inicio
             const maxFinGlobalDate = new Date(hoy.getFullYear(), hoy.getMonth() + 4, hoy.getDate());
             const maxFinGlobal = `${maxFinGlobalDate.getFullYear()}-${String(maxFinGlobalDate.getMonth() + 1).padStart(2, '0')}-${String(maxFinGlobalDate.getDate()).padStart(2, '0')}`;
-
             const hoyStr = `${año}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
 
             if (!fechaInicio.value) fechaInicio.value = hoyStr;
@@ -151,23 +233,12 @@
             fechaFin.min = hoyStr;
             fechaFin.max = maxFinGlobal;
 
-            function forzarValorVacio(inputElement) {
-                inputElement.addEventListener('input', function() {
-                    if (!this.value) this.value = '';
-                });
-                inputElement.addEventListener('change', function() {
-                    if (!this.value) this.value = '';
-                });
-            }
-            forzarValorVacio(fechaInicio);
-            forzarValorVacio(fechaFin);
-
             fechaInicio.addEventListener('change', function() {
                 const inicioValor = this.value;
                 if (inicioValor) {
                     fechaFin.min = inicioValor;
                     const maxFinDateDynamic = new Date(new Date(inicioValor).getFullYear(), new Date(inicioValor).getMonth() + 4, new Date(inicioValor).getDate());
-                    fechaFin.max = `${maxFinDateDynamic.getFullYear()}-${String(maxFinDateDynamic.getMonth() + 1).padStart(2, '0')}-${String(maxFinDateDynamic.getDate()).padStart(2, '0')}`;
+                    fechaFin.max = `${maxFinDateDynamic.getFullYear()}-${String(maxFinDateDynamic.getMonth() + 1).padStart(2,'0')}-${String(maxFinDateDynamic.getDate()).padStart(2,'0')}`;
                     if (fechaFin.value && fechaFin.value < inicioValor) {
                         fechaFin.value = inicioValor;
                     }
@@ -177,90 +248,14 @@
                 }
             });
 
-            motivo.addEventListener('input', function() {
-                if (this.value.length > 150) this.value = this.value.slice(0, 150);
-            });
-
-            descripcion.addEventListener('input', function() {
-                if (this.value.length > 250) this.value = this.value.slice(0, 250);
-            });
-
-            documento.addEventListener('change', function() {
-                fileName.textContent = this.files.length ? "Archivo seleccionado: " + this.files[0].name : "";
-            });
-
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                document.querySelectorAll('.is-invalid').forEach(i => i.classList.remove('is-invalid'));
-                document.querySelectorAll('.invalid-feedback').forEach(f => f.textContent = '');
-
-                let isValid = true;
-
-                if (!empleadoId.value) {
-                    empleadoInput.classList.add('is-invalid');
-                    document.querySelector('.col-md-4 .invalid-feedback.d-block').textContent = 'Debe seleccionar un empleado.';
-                    isValid = false;
-                }
-
-                if (!motivo.value.trim()) {
-                    motivo.classList.add('is-invalid');
-                    motivo.nextElementSibling.textContent = 'Debe ingresar el motivo de la incapacidad.';
-                    isValid = false;
-                }
-
-                if (!fechaInicio.value) {
-                    fechaInicio.classList.add('is-invalid');
-                    fechaInicio.closest('.col-md-4').querySelector('.invalid-feedback.d-block').textContent = 'La fecha de inicio es obligatoria.';
-                    isValid = false;
-                }
-
-                if (!fechaFin.value) {
-                    fechaFin.classList.add('is-invalid');
-                    fechaFin.closest('.col-md-4').querySelector('.invalid-feedback.d-block').textContent = 'La fecha de fin es obligatoria.';
-                    isValid = false;
-                } else if (fechaInicio.value && fechaFin.value < fechaInicio.value) {
-                    fechaFin.classList.add('is-invalid');
-                    fechaFin.closest('.col-md-4').querySelector('.invalid-feedback.d-block').textContent = 'La fecha debe ser igual o posterior a la fecha de inicio.';
-                    isValid = false;
-                }
-
-                if (isValid) {
-                    form.submit();
-                }
-            });
-
-            document.getElementById('btnRestablecer').addEventListener('click', function(e){
-                e.preventDefault();
-
-                if (empleadoInput) empleadoInput.value = '';
-                if (empleadoId) empleadoId.value = '';
-                if (empleadoResults) empleadoResults.innerHTML = '';
-                if (motivo) motivo.value = '';
-                if (descripcion) descripcion.value = '';
-                if (documento) documento.value = '';
-
-                if (typeof fileName !== 'undefined' && fileName && 'textContent' in fileName) {
-                    fileName.textContent = '';
-                }
-
-                document.querySelectorAll('.is-invalid').forEach(i => i.classList.remove('is-invalid'));
-                document.querySelectorAll('.invalid-feedback').forEach(f => f.textContent = '');
-
-                const hoy = new Date();
-                const año = hoy.getFullYear();
-                const mes = String(hoy.getMonth() + 1).padStart(2, '0');
-                const dia = String(hoy.getDate()).padStart(2, '0');
-                const hoyStr = `${año}-${mes}-${dia}`;
-
-                if (fechaInicio) fechaInicio.value = hoyStr;
-                if (fechaFin) fechaFin.value = hoyStr;
-            });
-
             const empleados = @json($empleados);
+
             empleadoInput.addEventListener('input', function() {
                 const query = this.value.toLowerCase().trim();
                 empleadoResults.innerHTML = '';
                 empleadoId.value = '';
+                identidad.value = '';
+                cargo.value = '';
                 if (!query) return;
                 const filtrados = empleados.filter(e => (e.nombre + ' ' + e.apellido).toLowerCase().includes(query));
                 filtrados.forEach(emp => {
@@ -271,6 +266,8 @@
                     btn.addEventListener('click', function() {
                         empleadoInput.value = emp.nombre + ' ' + emp.apellido;
                         empleadoId.value = emp.id;
+                        identidad.value = emp.identidad;
+                        cargo.value = emp.categoria;
                         empleadoResults.innerHTML = '';
                         empleadoInput.classList.remove('is-invalid');
                     });
@@ -283,8 +280,73 @@
                     empleadoResults.innerHTML = '';
                 }
             });
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                let isValid = true;
+                document.querySelectorAll('.is-invalid').forEach(i => i.classList.remove('is-invalid'));
+                document.querySelectorAll('.invalid-feedback').forEach(f => f.textContent = '');
+
+                if (!empleadoId.value) {
+                    empleadoInput.classList.add('is-invalid');
+                    empleadoInput.closest('.col-md-5').querySelector('.invalid-feedback.d-block').textContent = 'Debe seleccionar un empleado.';
+                    isValid = false;
+                }
+
+                if (!institucion.value.trim()) {
+                    institucion.classList.add('is-invalid');
+                    institucion.closest('.col-md-6').querySelector('.invalid-feedback.d-block').textContent = 'Debe ingresar la institución médica.';
+                    isValid = false;
+                }
+
+
+                if (!motivo.value.trim()) {
+                    motivo.classList.add('is-invalid');
+                    motivo.nextElementSibling.textContent = 'Debe ingresar el motivo de la incapacidad.';
+                    isValid = false;
+                }
+
+                if (!fechaInicio.value) {
+                    fechaInicio.classList.add('is-invalid');
+                    fechaInicio.closest('.col-md-4').querySelector('.invalid-feedback.d-block').textContent = 'Debe de seleccionar una fecha.';
+                    isValid = false;
+                }
+
+                if (!fechaFin.value) {
+                    fechaFin.classList.add('is-invalid');
+                    fechaFin.closest('.col-md-4').querySelector('.invalid-feedback.d-block').textContent = 'Debe seleccionar una fecha.';
+                    isValid = false;
+                } else if (fechaInicio.value && fechaFin.value < fechaInicio.value) {
+                    fechaFin.classList.add('is-invalid');
+                    fechaFin.closest('.col-md-4').querySelector('.invalid-feedback.d-block').textContent = 'La fecha debe ser igual o posterior a la fecha de inicio.';
+                    isValid = false;
+                }
+
+                if (isValid) form.submit();
+            });
+
+            document.getElementById('btnRestablecer').addEventListener('click', function(e){
+                e.preventDefault();
+                empleadoInput.value = '';
+                empleadoId.value = '';
+                identidad.value = '';
+                cargo.value = '';
+                motivo.value = '';
+                descripcion.value = '';
+                institucion.value = '';
+
+                motivo.style.height = 'auto';
+                descripcion.style.height = 'auto';
+                institucion.style.height = 'auto';
+
+                documento.value = '';
+                document.querySelectorAll('.is-invalid').forEach(i => i.classList.remove('is-invalid'));
+                document.querySelectorAll('.invalid-feedback').forEach(f => f.textContent = '');
+                fechaInicio.value = hoyStr;
+                fechaFin.value = hoyStr;
+            });
+
         });
     </script>
-
     </body>
 @endsection

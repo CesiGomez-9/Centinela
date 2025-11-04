@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->date('fecha_inicio');
             $table->date('fecha_fin');
             $table->string('documento')->nullable();
+            $table->string('institucion_medica', 150);
             $table->timestamps();
         });
     }

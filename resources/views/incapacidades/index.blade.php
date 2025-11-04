@@ -15,23 +15,32 @@
     <body style="background-color: #e6f0ff;">
     <div class="container mt-5" style="max-width: 1100px;">
         <div class="card shadow p-4" style="background-color: #ffffff;">
-            <h3 class="text-center mb-4" style="color: #09457f;">
-                <i class="bi bi-file-earmark-medical me-2"></i>Lista de incapacidades
-            </h3>
+            <div class="position-relative mb-4">
+                <!-- Título centrado -->
+                <h3 class="text-center mb-0" style="color: #09457f;">
+                    <i class="bi bi-file-earmark-medical me-2"></i>Lista de incapacidades
+                </h3>
+
+                <a href="{{ route('incapacidades.create') }}"
+                   class="btn btn-md btn-outline-primary position-absolute end-0 top-50 translate-middle-y">
+                    <i class="bi bi-pencil-square me-1"></i> Registrar nueva incapacidad
+                </a>
+            </div>
 
             <form method="GET" action="{{ route('incapacidades.index') }}" id="filtroForm" class="mb-4 row align-items-end">
 
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <div class="input-group input-group-sm">
-                        <input type="text" name="search" id="searchInput" class="form-control" placeholder="Buscar empleado..."
+                        <input type="text" name="search" id="searchInput" class="form-control" placeholder="Buscar empleado, institución..."
                                value="{{ request('search') }}">
                         <span class="input-group-text"><i class="bi bi-search"></i></span>
                     </div>
                 </div>
 
-                <div class="col-md-2">
+                <div class="col-md-3">
                     <div class="input-group input-group-sm">
-                        <span class="input-group-text">Estado</span>
+                        <span class="input-group-text">
+                          <i class="bi bi-check-circle me-2"></i>  Estado </span>
                         <select name="estado" id="estadoSelect" class="form-select">
                             <option value="">Todos...</option>
                             <option value="vigente" {{ request('estado') == 'vigente' ? 'selected' : '' }}>Vigente</option>
@@ -62,11 +71,7 @@
                     </a>
                 </div>
 
-                <div class="col-md-2 ms-auto">
-                    <a href="{{ route('incapacidades.create') }}" class="btn btn-md btn-outline-primary w-100">
-                        <i class="bi bi-pencil-square me-1"></i> Registrar incapacidad
-                    </a>
-                </div>
+
             </form>
 
             @if(session('success'))
@@ -83,7 +88,7 @@
                     <tr>
                         <th>#</th>
                         <th>Empleado</th>
-                        <th>Motivo</th>
+                        <th>Institución</th>
                         <th>Fecha Inicio</th>
                         <th>Fecha Fin</th>
                         <th>Estado</th>
@@ -99,7 +104,7 @@
                         <tr class="{{ $estado == 'Finalizado' ? 'incapacidad-finalizada' : '' }}">
                             <td>{{ $loop->iteration + ($incapacidades->currentPage() - 1) * $incapacidades->perPage() }}</td>
                             <td>{{ $incapacidad->empleado->nombre }} {{ $incapacidad->empleado->apellido }}</td>
-                            <td>{{ $incapacidad->motivo }}</td>
+                            <td>{{ $incapacidad->institucion_medica }}</td>
                             <td>{{ \Carbon\Carbon::parse($incapacidad->fecha_inicio)->format('d/m/Y') }}</td>
                             <td>{{ \Carbon\Carbon::parse($incapacidad->fecha_fin)->format('d/m/Y') }}</td>
                             <td class="text-center">

@@ -133,10 +133,9 @@
                 </table>
             </div>
             @php
-                // Revisamos si hay algún filtro aplicado
+
                 $filtrosAplicados = request()->filled('search') || request()->filled('activo') || request()->filled('fecha_inicio') || request()->filled('fecha_fin');
 
-                // Preparar arreglo de filtros para mostrar
                 $filtros = [];
                 if(request('search')) $filtros[] = 'Nombre: "'.request('search').'"';
                 if(request('activo') !== null) $filtros[] = 'Activo: '.(request('activo') == '1' ? 'Sí' : 'No');
@@ -160,8 +159,6 @@
             </div>
         </div>
     </div>
-
-
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {

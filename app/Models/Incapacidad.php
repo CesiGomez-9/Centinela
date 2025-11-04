@@ -22,6 +22,7 @@ class Incapacidad extends Model
         'fecha_inicio',
         'fecha_fin',
         'documento',
+        'institucion_medica',
     ];
 
     public function empleado()
