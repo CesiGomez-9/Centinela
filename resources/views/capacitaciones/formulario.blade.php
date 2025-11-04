@@ -184,7 +184,7 @@
                                 <input type="number" name="duracion"
                                        class="form-control @error('duracion') is-invalid @enderror"
                                        value="{{ old('duracion') }}"
-                                       min="1" max="1000"
+                                       min="1" max="15"
                                        onkeypress="soloNumeros(event)"
                                        required>
                                 @error('duracion')
@@ -236,36 +236,35 @@
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-card-text"></i></span>
                                 <textarea name="descripcion"
-                                          class="form-control @error('descripcion') is-invalid @enderror"
-                                          maxlength="300"
-                                          style="height: 100px; resize: none;"
+                                          class="form-control auto-expand @error('descripcion') is-invalid @enderror"
+                                          maxlength="250"
                                           onkeydown="bloquearEspacioAlInicio(event, this)"
                                           oninput="eliminarEspaciosIniciales(this)"
-                                          required>{{ old('descripcion') }}</textarea>
+                                          required
+                                          style="overflow:hidden; min-height:80px; resize:none;">{{ old('descripcion') }}</textarea>
                                 @error('descripcion')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>
 
-                        <!-- Temario -->
+                        <!-- Dirección -->
                         <div class="col-md-6">
                             <label for="direccion" class="form-label">Dirección</label>
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-journal-text"></i></span>
                                 <textarea name="direccion"
-                                          class="form-control @error('direccion') is-invalid @enderror"
-                                          maxlength="500"
-                                          style="height: 100px; resize: none;"
+                                          class="form-control auto-expand @error('direccion') is-invalid @enderror"
+                                          maxlength="250"
                                           onkeydown="bloquearEspacioAlInicio(event, this)"
                                           oninput="eliminarEspaciosIniciales(this)"
-                                          required>{{ old('direccion') }}</textarea>
+                                          required
+                                          style="overflow:hidden; min-height:80px; resize:none;">{{ old('direccion') }}</textarea>
                                 @error('direccion')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>
-
 
         </div>
 
@@ -284,10 +283,14 @@
 
         <div class="text-center mt-5 d-flex justify-content-center gap-3">
 
+            <!-- Botón Cancelar -->
+            <a href="{{ route('capacitaciones.index') }}" class="btn btn-danger">
+                <i class="bi bi-x-circle me-2"></i> Cancelar
+            </a>
 
-                        <button type="button" class="btn btn-warning" onclick="limpiarFormulario()">
-                            <i class="bi bi-eraser-fill me-2"></i> Limpiar
-                        </button>
+            <button type="button" class="btn btn-warning" id="btnLimpiar">
+                <i class="bi bi-eraser-fill me-2"></i> Limpiar
+            </button>
 
                         <button type="submit" class="btn btn-primary">
                             <i class="bi bi-save-fill me-2"></i> Guardar
@@ -301,10 +304,11 @@
     </div>
 </div>
 
-<!-- Boton Limpiar -->
+
+
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        const resetBtn = document.querySelector('button[type="reset"]');
+        const resetBtn = document.getElementById('btnLimpiar');
 
         if (resetBtn) {
             resetBtn.addEventListener('click', function (e) {
@@ -313,26 +317,59 @@
                 const form = this.closest('form');
                 if (!form) return;
 
-                // Limpiar manualmente cada campo
-                form.querySelectorAll('input[type="text"], input[type="number"], textarea').forEach(el => {
-                    el.value = '';
+                // ✅ Limpia TODOS los campos excepto los ocultos
+                form.querySelectorAll('input:not([type="hidden"]), textarea, select').forEach(el => {
+                    const type = el.type ? el.type.toLowerCase() : '';
+
+                    switch (type) {
+                        case 'checkbox':
+                        case 'radio':
+                            el.checked = false;
+                            break;
+                        case 'select-one':
+                        case 'select-multiple':
+                            el.selectedIndex = 0;
+                            break;
+                        default:
+                            el.value = '';
+                            break;
+                    }
+
+                    // Si es textarea auto-expandible, reajusta altura
+                    if (el.tagName === 'TEXTAREA') {
+                        el.style.height = 'auto';
+                    }
                 });
 
-                form.querySelectorAll('select').forEach(el => {
-                    el.selectedIndex = 0;
-                });
-
-                // Remover clases de validación
+                // 🔹 Remueve clases de validación visual
                 form.querySelectorAll('.is-valid, .is-invalid').forEach(el => {
                     el.classList.remove('is-valid', 'is-invalid');
                 });
 
-                // Limpiar mensajes de error si hay
-                form.querySelectorAll('.text-danger').forEach(el => {
+                // 🔹 Limpia mensajes de error si hay
+                form.querySelectorAll('.text-danger, .invalid-feedback').forEach(el => {
                     el.innerText = '';
                 });
             });
         }
+    });
+</script>
+
+
+<script>
+    document.addEventListener('input', function (event) {
+        if (event.target.classList.contains('auto-expand')) {
+            event.target.style.height = 'auto'; // reinicia altura
+            event.target.style.height = event.target.scrollHeight + 'px'; // ajusta según contenido
+        }
+    });
+
+    // Expande automáticamente los campos al cargar si ya tienen texto (por ejemplo, al editar)
+    window.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.auto-expand').forEach(el => {
+            el.style.height = 'auto';
+            el.style.height = el.scrollHeight + 'px';
+        });
     });
 </script>
 

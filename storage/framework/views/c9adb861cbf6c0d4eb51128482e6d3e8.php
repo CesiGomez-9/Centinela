@@ -87,6 +87,9 @@
                         <li><a class="dropdown-item" href="<?php echo e(route('asistencias.index')); ?>">Listado de asistencias</a></li>
                         <li><a class="dropdown-item" href="<?php echo e(route('asistencias.crear')); ?>">Registrar asistencias</a></li>
                         <li><hr class="dropdown-divider"></li> 
+                        <li><a class="dropdown-item" href="<?php echo e(route('incapacidades.index')); ?>">Listado de incapacidad</a></li>
+                        <li><a class="dropdown-item" href="<?php echo e(route('incapacidades.create')); ?>">Registrar incapacidad</a></li>
+                        <li><hr class="dropdown-divider"></li> 
                         <li><a class="dropdown-item" href="<?php echo e(route('capacitaciones.index')); ?>">Listado de capacitaciones</a></li>
                         <li><a class="dropdown-item" href="<?php echo e(route('capacitaciones.formulario')); ?>">Registrar capacitación</a></li>
                     </ul>

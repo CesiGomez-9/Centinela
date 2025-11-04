@@ -89,6 +89,9 @@
                         <li><hr class="dropdown-divider"></li> {{-- Separador--}}
                         <li><a class="dropdown-item" href="{{route('incapacidades.index')}}">Listado de incapacidad</a></li>
                         <li><a class="dropdown-item" href="{{route('incapacidades.create')}}">Registrar incapacidad</a></li>
+                        <li><hr class="dropdown-divider"></li> {{-- Separador--}}
+                        <li><a class="dropdown-item" href="{{route('capacitaciones.index')}}">Listado de capacitaciones</a></li>
+                        <li><a class="dropdown-item" href="{{route('capacitaciones.formulario')}}">Registrar capacitación</a></li>
                     </ul>
                 </li>
                 <li class="nav-item dropdown">

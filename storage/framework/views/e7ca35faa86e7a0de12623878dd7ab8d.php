@@ -1,7 +1,6 @@
-@extends('plantilla')
-@section('titulo', 'Detalles del curso')
+<?php $__env->startSection('titulo', 'Detalles del curso'); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -116,35 +115,35 @@
                 <div class="card">
                     <div class="card-header position-relative">
                         <h5 class="mb-0"><i class="bi bi-building me-2"></i>Detalles del curso de capacitación</h5>
-                        <small class="position-absolute top-50 end-0 translate-middle-y me-3">Creado {{ $capacitacion->created_at->diffForHumans() }}</small>
+                        <small class="position-absolute top-50 end-0 translate-middle-y me-3">Creado <?php echo e($capacitacion->created_at->diffForHumans()); ?></small>
                     </div>
                     <div class="card-body">
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <p><i class="bi bi-building me-2"></i><strong>Nombre de la institución:</strong> {{$capacitacion->nombre}}</p>
-                                <p><i class="bi bi-person-lines-fill me-2"></i><strong>Contacto:</strong> {{$capacitacion->contacto}}</p>
-                                <p><i class="bi bi-envelope-fill me-2"></i><strong>Correo:</strong> {{ $capacitacion->correo }}</p>
-                                <p><i class="bi bi-journal-text me-2"></i><strong>Descripción:</strong> {{ $capacitacion->descripcion }}</p>
+                                <p><i class="bi bi-building me-2"></i><strong>Nombre de la institución:</strong> <?php echo e($capacitacion->nombre); ?></p>
+                                <p><i class="bi bi-person-lines-fill me-2"></i><strong>Contacto:</strong> <?php echo e($capacitacion->contacto); ?></p>
+                                <p><i class="bi bi-envelope-fill me-2"></i><strong>Correo:</strong> <?php echo e($capacitacion->correo); ?></p>
+                                <p><i class="bi bi-journal-text me-2"></i><strong>Descripción:</strong> <?php echo e($capacitacion->descripcion); ?></p>
                             </div>
 
                             <div class="col-md-6">
-                                <p><i class="bi bi-telephone-fill me-2"></i><strong>Teléfono de la institución:</strong> {{ $capacitacion->telefono}}</p>
-                                <p><i class="bi bi-laptop-fill me-2"></i><strong>Modalidad:</strong> {{ $capacitacion->modalidad}}</p>
-                                <p><i class="bi bi-award-fill me-2"></i><strong>Nivel:</strong> {{ $capacitacion->nivel}}</p>
-                                <p><i class="bi bi-clock-fill me-2"></i><strong>Duración:</strong> {{ $capacitacion->duracion}} días</p>
-                                <p><i class="bi bi-geo-alt-fill me-2"></i><strong>Dirección:</strong> {{ $capacitacion->direccion}}</p>
+                                <p><i class="bi bi-telephone-fill me-2"></i><strong>Teléfono de la institución:</strong> <?php echo e($capacitacion->telefono); ?></p>
+                                <p><i class="bi bi-laptop-fill me-2"></i><strong>Modalidad:</strong> <?php echo e($capacitacion->modalidad); ?></p>
+                                <p><i class="bi bi-award-fill me-2"></i><strong>Nivel:</strong> <?php echo e($capacitacion->nivel); ?></p>
+                                <p><i class="bi bi-clock-fill me-2"></i><strong>Duración:</strong> <?php echo e($capacitacion->duracion); ?> días</p>
+                                <p><i class="bi bi-geo-alt-fill me-2"></i><strong>Dirección:</strong> <?php echo e($capacitacion->direccion); ?></p>
                             </div>
 
 
                         </div>
                     </div>
                     <div class="card-footer text-end">
-                        <small>Última actualización: {{ $capacitacion->updated_at->diffForHumans() }}</small>
+                        <small>Última actualización: <?php echo e($capacitacion->updated_at->diffForHumans()); ?></small>
                     </div>
                 </div>
 
                 <div class="d-flex justify-content-center align-items-center gap-3 mt-4 flex-wrap">
-                    <a href="{{ route('capacitaciones.index') }}" class="btn btn-return">
+                    <a href="<?php echo e(route('capacitaciones.index')); ?>" class="btn btn-return">
                         <i class="bi bi-arrow-left me-2"></i>Volver a la lista
                     </a>
 
@@ -152,4 +151,6 @@
             </div>
         </div>
     </div>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\angel\PhpstormProjects\Centinela\resources\views/capacitaciones/detalle.blade.php ENDPATH**/ ?>

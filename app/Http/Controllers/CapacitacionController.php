@@ -33,13 +33,12 @@ class CapacitacionController extends Controller
         }
 
 
-        if ($fecha_inicio) {
-            $query->where('fecha', '>=', $fecha_inicio);
-        }
-
-
-        if ($fecha_fin) {
-            $query->where('fecha', '<=', $fecha_fin);
+        if ($fecha_inicio && $fecha_fin) {
+            $query->whereBetween('fecha_inicio', [$fecha_inicio, $fecha_fin]);
+        } elseif ($fecha_inicio) {
+            $query->where('fecha_inicio', '>=', $fecha_inicio);
+        } elseif ($fecha_fin) {
+            $query->where('fecha_inicio', '<=', $fecha_fin);
         }
 
 
@@ -155,6 +154,8 @@ class CapacitacionController extends Controller
     public function show(string $id)
     {
         //
+        $capacitacion = Capacitacion::findOrFail($id);
+        return view('capacitaciones.detalle', compact('capacitacion'));
     }
 
     /**
