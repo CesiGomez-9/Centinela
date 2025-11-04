@@ -24,7 +24,7 @@
         </div>
     @endif
 
-    <div class="container mt-5" style="max-width: 1100px;">
+    <div class="container mt-7" style="max-width: 1100px;">
         <div class="card shadow p-4" style="background-color: #ffffff;">
             <h3 class="text-center mb-4" style="color: #09457f;">
                 <i class="bi bi-people-fill me-2"></i>
@@ -41,7 +41,7 @@
                                 name="search"
                                 value="{{ request('search') }}"
                                 class="form-control"
-                                placeholder="Buscar por nombre"
+                                placeholder="Buscar por institución, modalidad, nivel"
                             >
                             <span class="input-group-text"><i class="bi bi-search"></i></span>
                         </div>
@@ -51,13 +51,13 @@
                         <div class="input-group input-group-sm">
                             <span class="input-group-text">Desde</span>
                             <input type="date" name="fecha_inicio" class="form-control"
-                                   style="min-width: 140px;"
+                                   style="min-width: 120px;"
                                    value="{{ request('fecha_inicio') }}">
                         </div>
                         <div class="input-group input-group-sm">
                             <span class="input-group-text">Hasta</span>
                             <input type="date" name="fecha_fin" class="form-control"
-                                   style="min-width: 140px;"
+                                   style="min-width: 120px;"
                                    value="{{ request('fecha_fin') }}">
                         </div>
                     </div>
@@ -72,10 +72,9 @@
                         </a>
                     </div>
 
-
                     <div class="col-auto d-flex flex-column align-items-end">
                         <a href="{{ route('capacitaciones.formulario') }}" class="btn btn-sm btn-outline-primary mb-2">
-                            <i class="bi bi-pencil-square me-2" ></i>Registrar una nueva capacitación
+                            <i class="bi bi-pencil-square me-1" ></i>Registrar una nueva capacitación
                         </a>
 
                     </div>
@@ -97,12 +96,11 @@
                 <tr>
                     <th>N°</th>
                     <th>Institución</th>
-                    <th>Correo</th>
                     <th>Contacto</th>
                     <th>Modalidad</th>
                     <th>Nivel</th>
-                    <th>Fecha de inicio</th>
-                    <th>Fecha de finalización</th>
+                    <th>Fecha inicio</th>
+                    <th>Fecha fin</th>
                     <th>Acciones</th>
                 </tr>
                 </thead>
@@ -111,8 +109,7 @@
                     <tr>
                         <td>{{ $loop->iteration }}</td>
                         <td>{{$capacitacion->nombre }}</td>
-                        <td>{{$capacitacion->correo }}</td>
-                        <td>{{$capacitacion->contacto}} </td>
+                        <td>{{$capacitacion->contacto }}</td>
                         <td>{{$capacitacion->modalidad}} </td>
                         <td>{{$capacitacion->nivel }}</td>
                         <td>{{ \Carbon\Carbon::parse($capacitacion->fecha_inicio)->format('d/m/Y') }}</td>
@@ -168,7 +165,7 @@
                 timer = setTimeout(() => {
                     const form = searchInput.closest('form');
                     form.submit();
-                }, 500);
+                }, 550);
             });
         });
     </script>
