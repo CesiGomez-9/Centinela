@@ -54,13 +54,11 @@
 
         .card-body hr {
             border: none;
-            height: 2px; /* más gruesa */
+            height: 2px;
             background-color: #cda34f;
-            opacity: 1;   /* asegurar que sea totalmente opaca */
+            opacity: 1;
             margin: 1.5rem 0;
         }
-
-
 
         .card-body { padding: 2.25rem 2rem; font-size: 1rem; box-shadow: inset 0 0 10px rgba(0,0,0,0.05); border-radius: 0; }
         .card-footer { background-color: #1b263b; padding: 0.9rem 1.5rem; font-size: 0.9rem; color: #f5f5f5; text-align: right; border-radius: 0 0 1.25rem 1.25rem; border: none; }
@@ -88,40 +86,28 @@
             transform: translateY(-50%);
             width: 3px;
             height: 70%;
-            background-color: #cda34f; /* palito amarillo */
+            background-color: #cda34f;
             border-radius: 1px;
         }
-        .btn-return {
-            background-color: #cda34f;/* color amarillo base */
+        .btn-return, .btn-edit {
+            background-color: #cda34f;
             color: #fff;
             border: none;
         }
-
-        .btn-return:hover,
-        .btn-return:focus {
-            background-color: #0d1b2a; /* color al pasar el mouse */
+        .btn-return:hover, .btn-return:focus,
+        .btn-edit:hover, .btn-edit:focus {
+            background-color: #0d1b2a;
             color: #ffffff;
         }
-
-        .btn-edit {
-            background-color: #cda34f;/* color azul base */
-            color: #fff;
-            border: none;
-        }
-
-        .btn-edit:hover,
-        .btn-edit:focus {
-            background-color: #0d1b2a; /* color al pasar el mouse */
-            color: #ffffff;
-        }
-
-
-
-
         .info-box strong { color: #0d1b2a; font-weight: 600; }
-
         .adjunto img, .adjunto iframe { max-width: 100%; margin-top: 0.5rem; border-radius: 0.5rem; box-shadow: 0 2px 8px rgb(205 163 79 / 0.15); }
     </style>
+
+    <?php
+        /** @var \App\Models\Memorando $memorando */
+        $memNumeros = $memorando->destinatario->memorandosRecibidos->sortBy('created_at')->values();
+        $numeroPorEmpleado = $memNumeros->search(fn($m) => $m->id === $memorando->id) + 1;
+    ?>
 
     <div class="card">
         <div class="card-header">
@@ -130,87 +116,77 @@
             <small class="created">Creado: <?php echo e($memorando->created_at->diffForHumans()); ?></small>
         </div>
 
-
         <div class="card-body">
             <div class="text-center mb-3">
                 <h5 class="fw-bold">GRUPO CENTINELA</h5>
-                <small>Memorandum N° <?php echo e($memorando->id); ?></small>
+                <small>Memorandum N° <?php echo e($numeroPorEmpleado); ?></small>
             </div>
 
             <div class="info-container">
-                <!-- Cuadro Empleado, Autor, Título -->
                 <div class="info-box">
                     <p><i class="bi bi-person-fill me-2"></i><strong>Empleado Sancionado:</strong> <?php echo e($memorando->destinatario->nombre ?? ''); ?> <?php echo e($memorando->destinatario->apellido ?? ''); ?></p>
                     <p><i class="bi bi-person-fill me-2"></i><strong>Creador del memorandum:</strong> <?php echo e($memorando->autor->nombre ?? ''); ?> <?php echo e($memorando->autor->apellido ?? ''); ?></p>
-                    <p><i class="bi bi-card-heading"></i><strong>  Asunto:</strong> <?php echo e($memorando->titulo); ?></p>
+                    <p><i class="bi bi-card-heading"></i><strong>Asunto:</strong> <?php echo e($memorando->titulo); ?></p>
                 </div>
 
-                <!-- Cuadro Fecha y Tipo -->
                 <div class="info-box">
-                    <p><i class="bi bi-exclamation-triangle-fill"></i><strong> Tipo:</strong> <?php echo e($memorando->tipo); ?></p>
-                    <p><i class="bi bi-calendar-date-fill"></i><strong>  Fecha:</strong> <?php echo e(\Carbon\Carbon::parse($memorando->fecha)->format('d/m/Y')); ?></p>
-                    <p><i class="bi bi-hammer"></i><strong>  Sancion:</strong> <?php echo e($memorando->sancion); ?></p>
+                    <p><i class="bi bi-exclamation-triangle-fill"></i><strong>Tipo:</strong> <?php echo e($memorando->tipo); ?></p>
+                    <p><i class="bi bi-calendar-date-fill"></i><strong>Fecha:</strong> <?php echo e(\Carbon\Carbon::parse($memorando->fecha)->format('d/m/Y')); ?></p>
+                    <p><i class="bi bi-hammer"></i><strong>Sanción:</strong> <?php echo e($memorando->sancion); ?></p>
                 </div>
             </div>
 
             <hr>
 
             <div class="mb-3">
-                <p><i class="bi bi-pencil-fill"></i><strong>  Motivo del memorandum:</strong> <?php echo e($memorando->contenido ?? '---'); ?></p>
+                <p><i class="bi bi-pencil-fill"></i><strong>Motivo del memorandum:</strong> <?php echo e($memorando->contenido ?? '---'); ?></p>
             </div>
 
             <hr>
 
             <div class="info-container">
-                
-                <div class="info-box mb-3 p-3 border rounded shadow-sm">
+                <div class="info-box mb-3 p-3 border rounded shadow-sm adjunto">
                     <p class="mb-2"><i class="bi bi-paperclip me-2"></i><strong>Adjunto:</strong></p>
 
                     <?php if($memorando->adjunto): ?>
                         <?php
-                            $extension = strtolower(pathinfo($memorando->adjunto, PATHINFO_EXTENSION));
+                            // Limpiar el prefijo 'public/' si existe
+                            $rutaAdjunto = $memorando->adjunto ? str_replace('public/', '', $memorando->adjunto) : null;
                         ?>
 
-                        <?php if(in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp'])): ?>
-                            <img src="<?php echo e(asset('storage/' . $memorando->adjunto)); ?>"
-                                 alt="Adjunto"
-                                 class="img-fluid rounded shadow"
-                                 style="max-height:300px;">
-                        <?php elseif($extension === 'pdf'): ?>
-                            <iframe src="<?php echo e(asset('storage/' . $memorando->adjunto)); ?>"
-                                    width="100%"
-                                    height="400px"
-                                    class="border rounded mt-2"></iframe>
+                        <?php if($rutaAdjunto && file_exists(storage_path('app/public/' . $rutaAdjunto))): ?>
+                            <?php $extension = strtolower(pathinfo($rutaAdjunto, PATHINFO_EXTENSION)); ?>
+
+                            <?php if(in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp'])): ?>
+                                <img src="<?php echo e(asset('storage/' . $rutaAdjunto)); ?>" alt="Adjunto" class="img-fluid rounded shadow" style="max-height:300px;">
+                            <?php elseif($extension === 'pdf'): ?>
+                                <iframe src="<?php echo e(asset('storage/' . $rutaAdjunto)); ?>" width="100%" height="400px" class="border rounded mt-2"></iframe>
+                            <?php else: ?>
+                                <a href="<?php echo e(asset('storage/' . $rutaAdjunto)); ?>" target="_blank" class="btn btn-outline-primary mt-2">
+                                    <i class="bi bi-paperclip me-1"></i> Descargar adjunto
+                                </a>
+                            <?php endif; ?>
                         <?php else: ?>
-                            <a href="<?php echo e(asset('storage/' . $memorando->adjunto)); ?>"
-                               target="_blank"
-                               class="btn btn-outline-primary mt-2">
-                                <i class="bi bi-paperclip me-1"></i> Descargar adjunto
-                            </a>
+                            <span class="text-danger ms-1">⚠️ El archivo adjunto no se encuentra o fue eliminado.</span>
                         <?php endif; ?>
                     <?php else: ?>
-                        <span class="text-muted ms-1"> No hay adjunto</span>
+                        <span class="text-muted ms-1">No hay archivo adjunto.</span>
                     <?php endif; ?>
                 </div>
 
-
-                
                 <div class="info-box mb-3 p-2 border rounded shadow-sm" style="min-height: auto;">
-                    <p class="text-muted mb-0">
-                        <i class="bi bi-chat-left-text-fill me-2"></i>
-                        <strong>Observaciones:</strong>  </p>
-                        <?php if($memorando->observaciones): ?>
-                            <?php echo e($memorando->observaciones); ?>
+                    <p class="text-muted mb-0"><i class="bi bi-chat-left-text-fill me-2"></i><strong>Observaciones:</strong></p>
+                    <?php if($memorando->observaciones): ?>
+                        <?php echo e($memorando->observaciones); ?>
 
-                        <?php else: ?>
-                            <span class="text-muted">No hay observaciones</span>
-                        <?php endif; ?>
+                    <?php else: ?>
+                        <span class="text-muted">No hay observaciones</span>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
 
-
-            <div class="card-footer">
+        <div class="card-footer">
             Última actualización: <?php echo e($memorando->updated_at->diffForHumans()); ?>
 
         </div>
@@ -221,7 +197,6 @@
             <i class="bi bi-arrow-left me-2"></i>Volver a la lista
         </a>
     </div>
-
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\angel\PhpstormProjects\Centinela\resources\views/memorandos/show.blade.php ENDPATH**/ ?>

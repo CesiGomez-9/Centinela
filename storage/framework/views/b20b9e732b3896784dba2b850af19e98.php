@@ -132,15 +132,26 @@
                     </tbody>
                 </table>
             </div>
+            <?php
+                // Revisamos si hay algún filtro aplicado
+                $filtrosAplicados = request()->filled('search') || request()->filled('activo') || request()->filled('fecha_inicio') || request()->filled('fecha_fin');
 
-            <?php if(request('search') && $promociones->total() > 0): ?>
+                // Preparar arreglo de filtros para mostrar
+                $filtros = [];
+                if(request('search')) $filtros[] = 'Nombre: "'.request('search').'"';
+                if(request('activo') !== null) $filtros[] = 'Activo: '.(request('activo') == '1' ? 'Sí' : 'No');
+                if(request('fecha_inicio')) $filtros[] = 'Fecha de inicio: '.\Carbon\Carbon::parse(request('fecha_inicio'))->format('d/m/Y');
+                if(request('fecha_fin')) $filtros[] = 'Fecha fin: '.\Carbon\Carbon::parse(request('fecha_fin'))->format('d/m/Y');
+            ?>
+
+            <?php if($filtrosAplicados && $promociones->total() > 0): ?>
                 <div class="mb-3 text-muted">
                     Mostrando <?php echo e($promociones->count()); ?> de <?php echo e($promociones->total()); ?> promociones encontradas para
-                    "<strong><?php echo e(request('search')); ?></strong>".
+                    "<strong><?php echo e(implode(', ', $filtros)); ?></strong>".
                 </div>
-            <?php elseif(request('search') && $promociones->total() === 0): ?>
+            <?php elseif($filtrosAplicados && $promociones->total() === 0): ?>
                 <div class="mb-3 text-danger">
-                    No se encontraron resultados para "<strong><?php echo e(request('search')); ?></strong>".
+                    No se encontraron resultados para "<strong><?php echo e(implode(', ', $filtros)); ?></strong>".
                 </div>
             <?php endif; ?>
 
@@ -150,6 +161,8 @@
             </div>
         </div>
     </div>
+
+
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {

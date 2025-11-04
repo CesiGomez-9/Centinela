@@ -1,7 +1,3 @@
-index:
-
-
-
 <?php $__env->startSection('content'); ?>
     <style>
         .tabla-memorandos td {

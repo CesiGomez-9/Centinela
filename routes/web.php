@@ -143,3 +143,10 @@ Route::get('/incidencias/{id}/editar', [\App\Http\Controllers\IncidenciaControll
 Route::put('/incidencias/{id}', [\App\Http\Controllers\IncidenciaController::class, 'update'])->name('incidencias.update');
 Route::get('/incidencias/reporte', [\App\Http\Controllers\IncidenciaController::class, 'reporte'])->name('incidencias.reporte');
 
+
+
+Route::get('/capacitaciones/crear', [\App\Http\Controllers\CapacitacionController::class, 'create'])->name('capacitaciones.formulario');
+Route::post('/capacitaciones/crear', [\App\Http\Controllers\CapacitacionController::class, 'store'])->name('capacitaciones.store');
+Route::get('/capacitaciones', [\App\Http\Controllers\CapacitacionController::class, 'index'])->name('capacitaciones.index');
+Route::get('/capacitaciones/{id}', [\App\Http\Controllers\CapacitacionController::class, 'show'])->name('capacitaciones.detalle')->whereNumber('id');
+Route::get('/capacitaciones/{id}/editar', [\App\Http\Controllers\CapacitacionController::class, 'edit'])->name('capacitaciones.edit');
