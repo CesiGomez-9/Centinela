@@ -144,9 +144,17 @@ Route::put('/incidencias/{id}', [\App\Http\Controllers\IncidenciaController::cla
 Route::get('/incidencias/reporte', [\App\Http\Controllers\IncidenciaController::class, 'reporte'])->name('incidencias.reporte');
 
 
+Route::get('/quienes_somos', function () {return view('quienes_somos');})->name('quienes_somos');
 
-Route::get('/capacitaciones/crear', [\App\Http\Controllers\CapacitacionController::class, 'create'])->name('capacitaciones.formulario');
-Route::post('/capacitaciones/crear', [\App\Http\Controllers\CapacitacionController::class, 'store'])->name('capacitaciones.store');
-Route::get('/capacitaciones', [\App\Http\Controllers\CapacitacionController::class, 'index'])->name('capacitaciones.index');
-Route::get('/capacitaciones/{id}', [\App\Http\Controllers\CapacitacionController::class, 'show'])->name('capacitaciones.detalle')->whereNumber('id');
-Route::get('/capacitaciones/{id}/editar', [\App\Http\Controllers\CapacitacionController::class, 'edit'])->name('capacitaciones.edit');
+use App\Http\Controllers\CapacitacionController;
+
+Route::get('/capacitaciones', [CapacitacionController::class, 'index'])->name('capacitaciones.index');
+Route::get('/capacitaciones/formulario', [CapacitacionController::class, 'create'])->name('capacitaciones.formulario');
+Route::post('/capacitaciones', [CapacitacionController::class, 'store'])->name('capacitaciones.store');
+Route::get('/capacitaciones/{id}/edit', [CapacitacionController::class, 'edit'])->name('capacitaciones.edit');
+Route::put('/capacitaciones/{id}', [CapacitacionController::class, 'update'])->name('capacitaciones.update');
+Route::get('/capacitaciones/{id}/detalle', [CapacitacionController::class, 'show'])->name('capacitaciones.detalle');
+Route::delete('/capacitaciones/{id}', [CapacitacionController::class, 'destroy'])->name('capacitaciones.destroy');
+
+Route::get('/empleados/buscar', [EmpleadoController::class, 'buscar'])->name('empleados.buscar');
+

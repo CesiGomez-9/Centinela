@@ -2,9 +2,10 @@
     <style>
         body {
             background-color: #e6f0ff;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
         }
+
 
         .btn-outline-custom {
             border: 2px solid #09457f;
@@ -159,8 +160,7 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
+     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const searchInput = document.getElementById('searchInput');
 

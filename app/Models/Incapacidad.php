@@ -25,6 +25,8 @@ class Incapacidad extends Model
         'institucion_medica',
     ];
 
+
+
     public function empleado()
     {
         return $this->belongsTo(Empleado::class);

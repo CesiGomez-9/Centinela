@@ -161,18 +161,77 @@ class CapacitacionController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    // Mostrar el formulario de edición
+    public function edit($id)
     {
-        //
+        $capacitacion = Capacitacion::findOrFail($id); // Trae la capacitación o falla
+        return view('capacitaciones.edit', compact('capacitacion'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+// Actualizar los datos de la capacitación
+    public function update(Request $request, $id)
     {
-        //
+        $capacitacion = Capacitacion::findOrFail($id);
+
+        $request->validate([
+            'nombre' => ['required', 'string', 'max:100', 'regex:/^[\p{L}\s]+$/u'],
+            'correo' => ['required', 'string', 'email', 'max:50', 'regex:/^[^@\s]+@[^@\s]+\.[^@\s]+$/', 'unique:capacitaciones,correo,' . $capacitacion->id],
+            'contacto' => ['required', 'string', 'max:100', 'regex:/^[\p{L}\s]+$/u'],
+            'telefono' => ['required', 'regex:/^[2389][0-9]{7}$/', 'size:8', 'unique:capacitaciones,telefono,' . $capacitacion->id],
+            'modalidad' => ['required', 'string'],
+            'nivel' => ['required', 'string'],
+            'duracion'=>['required','numeric','min:1'],
+            'fecha_inicio' => ['required', 'date',  'after_or_equal:' . now()->subMonth()->format('Y-m-d')],
+            'fecha_fin' => ['required', 'date', 'after_or_equal:fecha_inicio'],
+            'descripcion' => ['required', 'string','max:250'],
+            'direccion' => ['required', 'string','max:250'],
+        ], [
+            'nombre.required' => 'Debe ingresar el nombre la institución.',
+            'nombre.regex' => 'El nombre de la empresa solo debe contener letras, espacios y tildes.',
+            'direccion.required' => 'Debe ingresar la dirección.',
+
+            'telefono.required' => 'Debe ingresar el teléfono de la institución.',
+            'telefono.regex' => 'El teléfono debe comenzar con 2, 3, 8 o 9 y tener 8 dígitos.',
+            'telefono.size' => 'El teléfono debe tener exactamente 8 dígitos.',
+            'telefono.unique' => 'Este número de teléfono ya está registrado.',
+
+            'correo.required' => 'Debe ingresar el correo electrónico.',
+            'correo.email' => 'Debe ingresar un correo electrónico válido.',
+            'correo.unique' => 'Este correo ya está registrado.',
+
+            'contacto.required' => 'Debe ingresar el nombre del representante.',
+            'contacto.regex' => 'El nombre del representante solo debe contener letras y espacios y tildes.',
+
+            'modalidad.required' => 'Debe seleccionar la modalidad.',
+            'nivel.required' => 'Debe seleccionar el nivel.',
+            'duracion.required' => 'Debe ingresar la duración.',
+            'descripcion.required' => 'Debe ingresar la descripción.',
+            'fecha_inicio.after_or_equal' => 'La fecha de inicio debe ser como mínimo hace un mes o más reciente.',
+            'fecha_fin.after_or_equal' => 'La fecha de finalización debe ser igual o posterior a la fecha de inicio.',
+            'fecha_inicio.required' => 'Debe ingresar la fecha de inicio.',
+            'fecha_fin.required' => 'Debe ingresar la fecha de finalización.',
+        ]);
+
+        // Asignar valores actualizados
+        $capacitacion->nombre = $request->input('nombre');
+        $capacitacion->correo = $request->input('correo');
+        $capacitacion->contacto = $request->input('contacto');
+        $capacitacion->telefono = $request->input('telefono');
+        $capacitacion->modalidad = $request->input('modalidad');
+        $capacitacion->nivel = $request->input('nivel');
+        $capacitacion->duracion = $request->input('duracion');
+        $capacitacion->fecha_inicio = $request->input('fecha_inicio');
+        $capacitacion->fecha_fin = $request->input('fecha_fin');
+        $capacitacion->descripcion = $request->input('descripcion');
+        $capacitacion->direccion = $request->input('direccion');
+
+        if ($capacitacion->save()) {
+            return redirect()->route('capacitaciones.index')->with('exito', 'Los cambios se guardaron correctamente.');
+        } else {
+            return redirect()->route('capacitaciones.index')->with('fracaso', 'No se pudieron guardar los cambios.');
+        }
     }
+
 
     /**
      * Remove the specified resource from storage.

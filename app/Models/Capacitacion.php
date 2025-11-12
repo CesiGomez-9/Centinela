@@ -22,4 +22,8 @@ class Capacitacion extends Model
         'descripcion',
         'direccion'
     ];
+    protected $casts = [
+        'fecha_inicio' => 'date',
+        'fecha_fin' => 'date',
+    ];
 }

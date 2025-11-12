@@ -57,6 +57,7 @@ class IncapacidadController extends Controller
     {
 
         $validated = $request->validate([
+
             'empleado_id' => 'required|exists:empleados,id',
             'motivo' => 'required|string|max:150',
             'descripcion' => 'nullable|string|max:250',
@@ -93,6 +94,7 @@ class IncapacidadController extends Controller
             $validated['documento'] = $request->file('documento')->store('incapacidades', 'public');
         }
 
+
         Incapacidad::create($validated);
 
         return redirect()->route('incapacidades.index')->with('success', 'Incapacidad registrada correctamente.');
@@ -109,5 +111,70 @@ class IncapacidadController extends Controller
 
         return view('incapacidades.show', compact('incapacidad'));
     }
+
+    public function edit($id)
+    {
+        $incapacidad = Incapacidad::findOrFail($id);
+        $empleados = Empleado::all(); // Traemos todos los empleados
+
+        return view('incapacidades.edit', compact('incapacidad', 'empleados'));
+    }
+
+
+    public function update(Request $request, $id)
+    {
+        $incapacidad = Incapacidad::findOrFail($id);
+
+        $validated = $request->validate([
+            'empleado_id' => 'required|exists:empleados,id',
+            'motivo' => 'required|string|max:150',
+            'descripcion' => 'nullable|string|max:250',
+            'institucion_medica' => 'required|string|max:150',
+            'fecha_inicio' => 'required|date',
+            'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
+            'documento' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+        ], [
+            'empleado_id.required' => 'Debe seleccionar un empleado para la incapacidad.',
+            'empleado_id.exists' => 'El empleado seleccionado no existe en el sistema.',
+
+            'motivo.required' => 'Debe ingresar el motivo de la incapacidad.',
+            'motivo.max' => 'El motivo no puede exceder los 150 caracteres.',
+
+            'institucion_medica.required' => 'Debe ingresar la institución médica.',
+            'institucion_medica.max' => 'La institución médica no puede exceder los 150 caracteres.',
+
+            'descripcion.max' => 'La descripción no puede exceder los 250 caracteres.',
+
+            'fecha_inicio.required' => 'Debe seleccionar una fecha de inicio.',
+            'fecha_inicio.date' => 'La fecha no tiene un formato válido.',
+
+            'fecha_fin.required' => 'Debe seleccionar una fecha de finalización.',
+            'fecha_fin.date' => 'La fecha no tiene un formato válido.',
+            'fecha_fin.after_or_equal' => 'La fecha debe ser igual o posterior a la fecha de inicio.',
+
+            'documento.file' => 'El campo documento debe ser un archivo.',
+            'documento.mimes' => 'El documento debe ser de tipo: PDF, JPG, JPEG o PNG.',
+            'documento.max' => 'El tamaño del documento no debe ser superior a 2MB.',
+        ]);
+
+        // Manejo del archivo si se reemplaza el documento
+        if ($request->hasFile('documento')) {
+            // Si ya existía un archivo, lo eliminamos para no dejar basura
+            if ($incapacidad->documento && \Storage::disk('public')->exists($incapacidad->documento)) {
+                \Storage::disk('public')->delete($incapacidad->documento);
+            }
+
+            // Guardamos el nuevo archivo
+            $validated['documento'] = $request->file('documento')->store('incapacidades', 'public');
+        }
+
+        // Actualizamos el registro
+        $incapacidad->update($validated);
+
+        return redirect()->route('incapacidades.index')->with('success', 'Incapacidad actualizada correctamente.');
+    }
+
+
+
 
 }

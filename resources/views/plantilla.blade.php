@@ -115,7 +115,13 @@
                         <li><a class="dropdown-item" href="{{route('promociones.create')}}">Registrar promociones</a></li>
                     </ul>
                 </li>
-                <li class="nav-item"><a class="nav-link text-white" href="#">Registrate</a></li>
+                <li class="nav-item">
+                    <a class="nav-link text-white d-flex align-items-center" href="{{ route('quienes_somos') }}">¿Quiénes Somos?</a>
+                </li>
+
+
+            </ul>
+                </li>
             </ul>
         </div>
     </div>

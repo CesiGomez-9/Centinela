@@ -1,13 +1,13 @@
-@extends("plantilla")
-@section('titulo', 'Asistencias')
+@extends('plantilla')
 
 @section('content')
     <style>
         body {
             background-color: #e6f0ff;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
         }
+
 
         .btn-outline-custom {
             border: 2px solid #09457f;
@@ -97,7 +97,7 @@
                                 name="search"
                                 value="{{ request('search') }}"
                                 class="form-control"
-                                placeholder="Buscar por nombre"
+                                placeholder="Buscar por nombre, apellido o identidad"
                             >
                             <span class="input-group-text"><i class="bi bi-search"></i></span>
                         </div>
@@ -159,8 +159,7 @@
         </div>
     </div>
 
-
-    <script>
+     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const searchInput = document.getElementById('searchInput');
 
