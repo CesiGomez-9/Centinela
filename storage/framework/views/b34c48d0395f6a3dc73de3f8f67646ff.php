@@ -65,10 +65,25 @@
             border-radius: 1px;
         }
 
-        .btn-return {
-            background-color: #cda34f; color: #fff; border: none; padding: 0.45rem 1rem; border-radius: 0.5rem; font-weight: 600; margin: 0 0.5rem;
+        .btn-return,
+        .btn-edit {
+            background-color: #cda34f;
+            color: #fff;
+            border: none;
+            padding: 0.45rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            margin: 0 0.5rem;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            font-size: 0.9rem;
         }
-        .btn-return:hover { background-color: #0d1b2a; color: #fff; }
+
+        .btn-return:hover,
+        .btn-edit:hover {
+            background-color: #0d1b2a;
+            color: #fff;
+        }
 
         .adjunto img, .adjunto iframe { max-width: 100%; margin-top: 0.5rem; border-radius: 0.5rem; box-shadow: 0 2px 8px rgba(205,163,79,0.15); }
         .numero-incidencia { font-size: 0.85rem; color: #555; margin-top: -0.5rem; }
@@ -139,11 +154,15 @@
         </div>
     </div>
 
-    <div class="d-flex justify-content-center align-items-center gap-3 mt-4 flex-wrap">
+    <div class="d-flex justify-content-center align-items-center gap-3 mt-3 flex-wrap">
         <a href="<?php echo e(route('incapacidades.index')); ?>" class="btn btn-return">
             <i class="bi bi-arrow-left me-2"></i>Volver a la lista
         </a>
+        <a href="<?php echo e(route('incapacidades.edit', $incapacidad->id)); ?>" class="btn btn-edit">
+            <i class="bi bi-pencil-square me-2"></i>Editar incapacidad
+        </a>
     </div>
+
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\cesig\Herd\sistemadeseguridadcentinela\resources\views/incapacidades/show.blade.php ENDPATH**/ ?>

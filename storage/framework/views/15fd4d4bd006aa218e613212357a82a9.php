@@ -274,7 +274,7 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
                                        value="<?php echo e(old('duracion')); ?>"
-                                       min="1" max="1000"
+                                       min="1" max="15"
                                        onkeypress="soloNumeros(event)"
                                        required>
                                 <?php $__errorArgs = ['duracion'];
@@ -361,7 +361,7 @@ unset($__errorArgs, $__bag); ?>
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-card-text"></i></span>
                                 <textarea name="descripcion"
-                                          class="form-control <?php $__errorArgs = ['descripcion'];
+                                          class="form-control auto-expand <?php $__errorArgs = ['descripcion'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -369,11 +369,11 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                                          maxlength="300"
-                                          style="height: 100px; resize: none;"
+                                          maxlength="250"
                                           onkeydown="bloquearEspacioAlInicio(event, this)"
                                           oninput="eliminarEspaciosIniciales(this)"
-                                          required><?php echo e(old('descripcion')); ?></textarea>
+                                          required
+                                          style="overflow:hidden; min-height:80px; resize:none;"><?php echo e(old('descripcion')); ?></textarea>
                                 <?php $__errorArgs = ['descripcion'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -387,13 +387,13 @@ unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
-                        <!-- Temario -->
+                        <!-- Dirección -->
                         <div class="col-md-6">
                             <label for="direccion" class="form-label">Dirección</label>
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-journal-text"></i></span>
                                 <textarea name="direccion"
-                                          class="form-control <?php $__errorArgs = ['direccion'];
+                                          class="form-control auto-expand <?php $__errorArgs = ['direccion'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -401,11 +401,11 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                                          maxlength="500"
-                                          style="height: 100px; resize: none;"
+                                          maxlength="250"
                                           onkeydown="bloquearEspacioAlInicio(event, this)"
                                           oninput="eliminarEspaciosIniciales(this)"
-                                          required><?php echo e(old('direccion')); ?></textarea>
+                                          required
+                                          style="overflow:hidden; min-height:80px; resize:none;"><?php echo e(old('direccion')); ?></textarea>
                                 <?php $__errorArgs = ['direccion'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -418,7 +418,6 @@ endif;
 unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
-
 
         </div>
 
@@ -437,10 +436,14 @@ unset($__errorArgs, $__bag); ?>
 
         <div class="text-center mt-5 d-flex justify-content-center gap-3">
 
+            <!-- Botón Cancelar -->
+            <a href="<?php echo e(route('capacitaciones.index')); ?>" class="btn btn-danger">
+                <i class="bi bi-x-circle me-2"></i> Cancelar
+            </a>
 
-                        <button type="button" class="btn btn-warning" onclick="limpiarFormulario()">
-                            <i class="bi bi-eraser-fill me-2"></i> Limpiar
-                        </button>
+            <button type="button" class="btn btn-warning" id="btnLimpiar">
+                <i class="bi bi-eraser-fill me-2"></i> Limpiar
+            </button>
 
                         <button type="submit" class="btn btn-primary">
                             <i class="bi bi-save-fill me-2"></i> Guardar
@@ -454,10 +457,11 @@ unset($__errorArgs, $__bag); ?>
     </div>
 </div>
 
-<!-- Boton Limpiar -->
+
+
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        const resetBtn = document.querySelector('button[type="reset"]');
+        const resetBtn = document.getElementById('btnLimpiar');
 
         if (resetBtn) {
             resetBtn.addEventListener('click', function (e) {
@@ -466,26 +470,59 @@ unset($__errorArgs, $__bag); ?>
                 const form = this.closest('form');
                 if (!form) return;
 
-                // Limpiar manualmente cada campo
-                form.querySelectorAll('input[type="text"], input[type="number"], textarea').forEach(el => {
-                    el.value = '';
+                // ✅ Limpia TODOS los campos excepto los ocultos
+                form.querySelectorAll('input:not([type="hidden"]), textarea, select').forEach(el => {
+                    const type = el.type ? el.type.toLowerCase() : '';
+
+                    switch (type) {
+                        case 'checkbox':
+                        case 'radio':
+                            el.checked = false;
+                            break;
+                        case 'select-one':
+                        case 'select-multiple':
+                            el.selectedIndex = 0;
+                            break;
+                        default:
+                            el.value = '';
+                            break;
+                    }
+
+                    // Si es textarea auto-expandible, reajusta altura
+                    if (el.tagName === 'TEXTAREA') {
+                        el.style.height = 'auto';
+                    }
                 });
 
-                form.querySelectorAll('select').forEach(el => {
-                    el.selectedIndex = 0;
-                });
-
-                // Remover clases de validación
+                // 🔹 Remueve clases de validación visual
                 form.querySelectorAll('.is-valid, .is-invalid').forEach(el => {
                     el.classList.remove('is-valid', 'is-invalid');
                 });
 
-                // Limpiar mensajes de error si hay
-                form.querySelectorAll('.text-danger').forEach(el => {
+                // 🔹 Limpia mensajes de error si hay
+                form.querySelectorAll('.text-danger, .invalid-feedback').forEach(el => {
                     el.innerText = '';
                 });
             });
         }
+    });
+</script>
+
+
+<script>
+    document.addEventListener('input', function (event) {
+        if (event.target.classList.contains('auto-expand')) {
+            event.target.style.height = 'auto'; // reinicia altura
+            event.target.style.height = event.target.scrollHeight + 'px'; // ajusta según contenido
+        }
+    });
+
+    // Expande automáticamente los campos al cargar si ya tienen texto (por ejemplo, al editar)
+    window.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.auto-expand').forEach(el => {
+            el.style.height = 'auto';
+            el.style.height = el.scrollHeight + 'px';
+        });
     });
 </script>
 

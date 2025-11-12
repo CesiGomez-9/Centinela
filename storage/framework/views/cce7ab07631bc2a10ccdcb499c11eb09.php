@@ -71,7 +71,7 @@ unset($__errorArgs, $__bag); ?></div>
                         <label class="form-label fw-bold">Fecha inicio:</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
-                            <input type="date" name="fecha_inicio" id="fecha_inicio"
+                            <input type="date" name="fecha_inicio"  id="fecha_inicio"
                                    class="form-control <?php $__errorArgs = ['fecha_inicio'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
