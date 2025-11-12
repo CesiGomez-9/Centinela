@@ -99,6 +99,9 @@
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="{{route('Clientes.indexCliente')}}">Listado de clientes</a></li>
                         <li><a class="dropdown-item" href="{{route('Clientes.formulariocliente')}}">Registrar cliente</a></li>
+                        <li><hr class="dropdown-divider"></li> {{-- Separador--}}
+                        <li><a class="dropdown-item" href="{{route('promociones.index')}}">Listado de promociones</a></li>
+                        <li><a class="dropdown-item" href="{{route('promociones.create')}}">Registrar promociones</a></li>
                     </ul>
                 </li>
                 <li class="nav-item dropdown">
@@ -108,19 +111,8 @@
                         <li><a class="dropdown-item" href="{{route('Proveedores.nuevo')}}">Registrar proveedor</a></li>
                     </ul>
                 </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Promociones</a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{{route('promociones.index')}}">Listado de promociones</a></li>
-                        <li><a class="dropdown-item" href="{{route('promociones.create')}}">Registrar promociones</a></li>
-                    </ul>
-                </li>
                 <li class="nav-item">
                     <a class="nav-link text-white d-flex align-items-center" href="{{ route('quienes_somos') }}">¿Quiénes Somos?</a>
-                </li>
-
-
-            </ul>
                 </li>
             </ul>
         </div>
