@@ -101,6 +101,7 @@
                     <p><strong><i class="bi bi-card-heading me-2"></i> Identidad:</strong> <?php echo e($incapacidad->empleado?->identidad ?? '---'); ?></p>
                     <p><strong><i class="bi bi-briefcase me-2"></i> Cargo:</strong> <?php echo e($incapacidad->empleado?->categoria ?? '---'); ?></p>
                     <p><strong><i class="bi bi-heart-pulse me-2"></i> Motivo:</strong> <?php echo e($incapacidad->motivo ?? '---'); ?></p>
+                    <p><strong><i class="bi bi-building me-2"></i> Institución médica:</strong> <?php echo e($incapacidad->institucion_medica ?? '---'); ?></p>
                 </div>
 
                 <div class="info-box">
