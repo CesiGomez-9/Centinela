@@ -10,12 +10,12 @@ return new class extends Migration {
         Schema::create('incapacidades', function (Blueprint $table) {
             $table->id();
             $table->foreignId('empleado_id')->constrained('empleados')->onDelete('cascade');
-            $table->string('motivo', 150);
-            $table->text('descripcion')->nullable();
+            $table->string('motivo', 50);
+            $table->text('descripcion');
             $table->date('fecha_inicio');
             $table->date('fecha_fin');
-            $table->string('documento')->nullable();
-            $table->string('institucion_medica', 150);
+            $table->string('documento');
+            $table->string('institucion_medica', 50);
             $table->timestamps();
         });
     }

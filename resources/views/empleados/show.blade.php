@@ -183,7 +183,6 @@
                                         <li>
                                             {{ $alergia }}
 
-                                            {{-- Mostrar detalles si aplica --}}
                                             @if($alergia === 'Alimentos' && !empty($empleado->alergiaAlimentos))
                                                 : {{ $empleado->alergiaAlimentos }}
                                             @elseif($alergia === 'Medicamentos' && !empty($empleado->alergiaMedicamentos))

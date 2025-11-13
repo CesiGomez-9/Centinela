@@ -59,23 +59,27 @@ class IncapacidadController extends Controller
         $validated = $request->validate([
 
             'empleado_id' => 'required|exists:empleados,id',
-            'motivo' => 'required|string|max:150',
-            'descripcion' => 'nullable|string|max:250',
-            'institucion_medica' => 'required|string|max:150',
+            'motivo' => ['required', 'string', 'max:150', 'regex:/^[\p{L}\s]+$/u'],
+            'descripcion' => ['required', 'string', 'max:250', 'regex:/^[\p{L}\s]+$/u'],
+            'institucion_medica' => ['required', 'string', 'max:50', 'regex:/^[\p{L}\s]+$/u'],
             'fecha_inicio' => 'required|date',
             'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
-            'documento' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'documento' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
         ], [
             'empleado_id.required' => 'Debe seleccionar un empleado para la incapacidad.',
             'empleado_id.exists' => 'El empleado seleccionado no existe en el sistema.',
 
             'motivo.required' => 'Debe ingresar el motivo de la incapacidad.',
             'motivo.max' => 'El motivo no puede exceder los 150 caracteres.',
+            'motivo.regex' => 'El motivo no permite números ni caracteres especiales.',
+
+            'descripcion.required' => 'Debe ingresar una descripción.',
+            'descripcion.max' => 'La descripción no puede exceder los 250 caracteres.',
+            'descripcion.regex' => 'La descripción no permite números ni caracteres especiales.',
 
             'institucion_medica.required' => 'Debe ingresar la institución médica.',
-            'institucion_medica.max' => 'La institución médica no puede exceder los 150 .',
-
-            'descripcion.max' => 'La descripción no puede exceder los 250 caracteres.',
+            'institucion_medica.max' => 'La institución médica no puede exceder los 50 caracteres.',
+            'institucion_medica.regex' => 'La institución médica no permite caracteres especiales.',
 
             'fecha_inicio.required' => 'Debe seleccionar una fecha.',
             'fecha_inicio.date' => 'La fecha no tiene un formato válido.',
@@ -84,10 +88,28 @@ class IncapacidadController extends Controller
             'fecha_fin.date' => 'La fecha no tiene un formato válido.',
             'fecha_fin.after_or_equal' => 'La fecha debe ser igual o posterior a la fecha de inicio.',
 
+            'documento.required' => 'Debe ingresar un comprobante.',
             'documento.file' => 'El campo documento debe ser un archivo.',
             'documento.mimes' => 'El documento debe ser de tipo: PDF, JPG, JPEG o PNG.',
             'documento.max' => 'El tamaño del documento no debe ser superior a 2MB.',
         ]);
+
+        $duplicado = Incapacidad::where('empleado_id', $request->empleado_id)
+            ->where(function($query) use ($request) {
+                $query->whereBetween('fecha_inicio', [$request->fecha_inicio, $request->fecha_fin])
+                    ->orWhereBetween('fecha_fin', [$request->fecha_inicio, $request->fecha_fin])
+                    ->orWhere(function($q) use ($request) {
+                        $q->where('fecha_inicio', '<=', $request->fecha_inicio)
+                            ->where('fecha_fin', '>=', $request->fecha_fin);
+                    });
+            })
+            ->exists();
+
+        if ($duplicado) {
+            return back()
+                ->withInput()
+                ->withErrors(['empleado_id' => 'El empleado ya posee una incapacidad dentro de las fechas seleccionadas.']);
+        }
 
 
         if ($request->hasFile('documento')) {

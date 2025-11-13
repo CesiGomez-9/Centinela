@@ -4,13 +4,14 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
+
     <body style="background-color: #e6f0ff;">
     <div class="container mt-5" style="max-width:900px;">
         <div class="card shadow p-4 bg-white position-relative">
             <i class="bi bi-hospital position-absolute top-0 end-0 p-3 text-secondary opacity-25" style="font-size:3rem;"></i>
 
             <h3 class="text-center mb-4" style="color:#09457f;">
-                <i class="bi bi-clipboard2-pulse me-2"></i>Registrar Incapacidad
+                <i class="bi bi-clipboard2-pulse me-2"></i>Registrar incapacidad
             </h3>
 
             @if(session('success'))
@@ -77,29 +78,32 @@
                     </div>
 
                     <div class="col-md-4">
-                        <label class="form-label fw-bold">Motivo:</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-file-earmark-medical"></i></span>
-                            <textarea name="motivo" id="motivo" rows="1" maxlength="150"
-                                      class="form-control @error('motivo') is-invalid @enderror"
-                                      style="overflow:hidden; resize:none;" required>{{ old('motivo') }}</textarea>
-                            <div class="invalid-feedback d-block">@error('motivo') {{ $message }} @enderror</div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">Institución Médica:</label>
+                        <label class="form-label fw-bold">Institución médica:</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-building"></i></span>
-                            <textarea name="institucion_medica" id="institucion_medica" rows="1" maxlength="150"
+                            <textarea name="institucion_medica" id="institucion_medica" rows="1" maxlength="50"
                                       class="form-control @error('institucion_medica') is-invalid @enderror"
                                       style="overflow:hidden; resize:none;">{{ old('institucion_medica') }}</textarea>
                         </div>
                         <div class="invalid-feedback d-block">@error('institucion_medica') {{ $message }} @enderror</div>
                     </div>
 
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Asunto:</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-file-earmark-medical"></i></span>
+                            <textarea name="motivo" id="motivo" rows="1" maxlength="50"
+                                      class="form-control @error('motivo') is-invalid @enderror"
+                                      placeholder="Ingresar un asunto pequeño..."
+                                      style="overflow:hidden; resize:none;"
+                                      required>{{ old('motivo') ?? '' }}</textarea>
+
+                            <div class="invalid-feedback d-block">@error('motivo') {{ $message }} @enderror</div>
+                        </div>
+                    </div>
+
                     <div class="col-md-6 mt-3">
-                        <label class="form-label fw-bold">Comprobante médico (opcional):</label>
+                        <label class="form-label fw-bold">Comprobante médico:</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-paperclip"></i></span>
                             <input type="file" name="documento" id="documento"
@@ -110,7 +114,7 @@
                     </div>
 
                     <div class="col-md-6 mt-2">
-                        <label class="form-label fw-bold">Descripción (opcional):</label>
+                        <label class="form-label fw-bold">Motivo:</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-card-text"></i></span>
                             <textarea name="descripcion" id="descripcion" rows="3" maxlength="250"
@@ -203,15 +207,20 @@
                 });
             }
 
-            setupTextareaLimit('motivo', 150);
-            setupTextareaLimit('descripcion', 250);
-            setupTextareaLimit('institucion_medica', 150);
+            function setupTextareaLimit(id, maxLength, regex) {
+                const el = document.getElementById(id);
+                el.addEventListener('input', function() {
+                    this.value = this.value.replace(regex, '');
+                    if (this.value.length > maxLength) this.value = this.value.slice(0, maxLength);
+                    this.style.height = 'auto';
+                    this.style.height = this.scrollHeight + 'px';
+                });
+            }
 
-            institucion.addEventListener('input', function() {
-                if (this.value.length > 150) {
-                    this.value = this.value.slice(0, 150);
-                }
-            });
+            setupTextareaLimit('motivo', 150, /[^\p{L}0-9\s]/gu);
+            setupTextareaLimit('descripcion', 250, /[^\p{L}0-9\s]/gu);
+            setupTextareaLimit('institucion_medica', 50, /[^\p{L}0-9\s]/gu);
+
 
             const hoy = new Date();
             const año = hoy.getFullYear();
@@ -295,20 +304,30 @@
 
                 if (!institucion.value.trim()) {
                     institucion.classList.add('is-invalid');
-                    institucion.closest('.col-md-6').querySelector('.invalid-feedback.d-block').textContent = 'Debe ingresar la institución médica.';
+                    institucion.closest('.col-md-4').querySelector('.invalid-feedback.d-block').textContent = 'Debe ingresar una institución médica.';
                     isValid = false;
                 }
 
 
                 if (!motivo.value.trim()) {
                     motivo.classList.add('is-invalid');
-                    motivo.nextElementSibling.textContent = 'Debe ingresar el motivo de la incapacidad.';
+                    motivo.nextElementSibling.textContent = 'Debe ingresar un asunto.';
+                    isValid = false;
+                }
+                if (!descripcion.value.trim()) {
+                    descripcion.classList.add('is-invalid');
+                    descripcion.nextElementSibling.textContent = 'Debe ingresar un motivo.';
+                    isValid = false;
+                }
+                if (!documento.value.trim()) {
+                    documento.classList.add('is-invalid');
+                    documento.nextElementSibling.textContent = 'Debe ingresar un comprobante médico.';
                     isValid = false;
                 }
 
                 if (!fechaInicio.value) {
                     fechaInicio.classList.add('is-invalid');
-                    fechaInicio.closest('.col-md-4').querySelector('.invalid-feedback.d-block').textContent = 'Debe de seleccionar una fecha.';
+                    fechaInicio.closest('.col-md-4').querySelector('.invalid-feedback.d-block').textContent = 'Debe seleccionar una fecha.';
                     isValid = false;
                 }
 

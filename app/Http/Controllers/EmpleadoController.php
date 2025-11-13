@@ -113,7 +113,7 @@ class EmpleadoController extends Controller
             'alergiaOtros' => 'nullable|string|max:150|regex:/^[\pL\s]+$/u',
             'alergiaAlimentos' => 'nullable|string|max:150|regex:/^[\pL\s]+$/u',
             'alergiaMedicamentos' => 'nullable|string|max:150|regex:/^[\pL\s]+$/u',
-            'categoria' => 'required|in:Administracion,Tecnico,Vigilancia',
+            'categoria' => 'required|in:Administración,Técnico,Vigilancia',
 
         ];
 
@@ -270,7 +270,7 @@ class EmpleadoController extends Controller
             'alergiaOtros' => 'nullable|string|max:150|regex:/^[\pL\s]+$/u',
             'alergiaAlimentos' => 'nullable|string|max:150|regex:/^[\pL\s]+$/u',
             'alergiaMedicamentos' => 'nullable|string|max:150|regex:/^[\pL\s]+$/u',
-            'categoria' => 'required|in:Administracion,Tecnico,Vigilancia',
+            'categoria' => 'required|in:Administración,Técnico,Vigilancia',
         ];
 
         $messages = [
@@ -374,8 +374,8 @@ class EmpleadoController extends Controller
 
         $empleados = Empleado::query();
 
-        if ($tipo === 'administracion') {
-            $empleados->where('categoria', 'Administracion');
+        if ($tipo === 'administración') {
+            $empleados->where('categoria', 'Administración');
         }
 
         if ($query) {

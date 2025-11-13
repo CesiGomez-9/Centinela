@@ -213,8 +213,8 @@
             </span>
                             <select name="categoria" id="categoria" class="form-select @error('categoria') is-invalid @enderror" required>
                                 <option value=""> Seleccione un puesto...</option>
-                                <option value="Administracion" {{ old('categoria') == 'Administracion' ? 'selected' : '' }}>Administración</option>
-                                <option value="Tecnico" {{ old('categoria') == 'Tecnico' ? 'selected' : '' }}>Técnico</option>
+                                <option value="Administración" {{ old('categoria') == 'Administración' ? 'selected' : '' }}>Administración</option>
+                                <option value="Técnico" {{ old('categoria') == 'Técnico' ? 'selected' : '' }}>Técnico</option>
                                 <option value="Vigilancia" {{ old('categoria') == 'Vigilancia' ? 'selected' : '' }}>Vigilancia</option>
                             </select>
                             <div class="invalid-feedback">@error('categoria') {{ $message }} @enderror</div>
