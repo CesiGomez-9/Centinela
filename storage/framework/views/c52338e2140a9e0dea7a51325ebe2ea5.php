@@ -197,8 +197,8 @@ unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
-                        <!-- Modalidad -->
-                        <div class="col-md-6">
+
+                        <div class="col-md-4">
                             <label for="modalidad" class="form-label">Modalidad</label>
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-laptop"></i></span>
@@ -229,7 +229,7 @@ unset($__errorArgs, $__bag); ?>
                         </div>
 
                         <!-- Nivel -->
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label for="nivel" class="form-label">Nivel</label>
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-bar-chart-fill"></i></span>
@@ -260,7 +260,7 @@ unset($__errorArgs, $__bag); ?>
                         </div>
 
                         <!-- Duración -->
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label for="duracion" class="form-label">Duración (días)</label>
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-hourglass-split"></i></span>
@@ -276,6 +276,7 @@ unset($__errorArgs, $__bag); ?>"
                                        value="<?php echo e(old('duracion')); ?>"
                                        min="1" max="15"
                                        onkeypress="soloNumeros(event)"
+                                       oninput="if(this.value.length > 2) this.value = this.value.slice(0,2)"
                                        required>
                                 <?php $__errorArgs = ['duracion'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -290,8 +291,7 @@ unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
-                        <div class="col-md-6">
-                        </div>
+
 
 
                         <!-- Fecha de inicio -->
@@ -614,13 +614,63 @@ unset($__errorArgs, $__bag); ?>
             msg.textContent = '';
         });
 
-
-
-
     }
 
 
+</script>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const fechaInicio = document.querySelector('input[name="fecha_inicio"]');
+        const fechaFin = document.querySelector('input[name="fecha_fin"]');
+
+        const hoy = new Date();
+        const año = hoy.getFullYear();
+        const mes = hoy.getMonth();
+
+        // Primer día del mes actual
+        const primerDiaMesActualDate = new Date(año, mes, 1);
+        const primerDiaMesActual = `${primerDiaMesActualDate.getFullYear()}-${String(primerDiaMesActualDate.getMonth() + 1).padStart(2, '0')}-01`;
+
+        // Último día de dos meses después
+        const ultimoDiaMesMasDosDate = new Date(año, mes + 3, 0);
+        const ultimoDiaMesMasDos = `${ultimoDiaMesMasDosDate.getFullYear()}-${String(ultimoDiaMesMasDosDate.getMonth() + 1).padStart(2, '0')}-${String(ultimoDiaMesMasDosDate.getDate()).padStart(2, '0')}`;
+
+        // Máximo global para fecha fin
+        const maxFinGlobalDate = new Date(año, mes + 4, hoy.getDate());
+        const maxFinGlobal = `${maxFinGlobalDate.getFullYear()}-${String(maxFinGlobalDate.getMonth() + 1).padStart(2, '0')}-${String(maxFinGlobalDate.getDate()).padStart(2, '0')}`;
+
+        // Fecha de hoy
+        const hoyStr = `${año}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
+
+        // Asignar valores por defecto si están vacíos
+        if (!fechaInicio.value) fechaInicio.value = hoyStr;
+        if (!fechaFin.value) fechaFin.value = hoyStr;
+
+        // Configurar rangos
+        fechaInicio.min = primerDiaMesActual;
+        fechaInicio.max = ultimoDiaMesMasDos;
+
+        fechaFin.min = hoyStr;
+        fechaFin.max = maxFinGlobal;
+
+        // Actualizar fechaFin al cambiar fechaInicio
+        fechaInicio.addEventListener('change', function() {
+            const inicioValor = this.value;
+            if (inicioValor) {
+                fechaFin.min = inicioValor;
+                const maxFinDateDynamic = new Date(new Date(inicioValor).getFullYear(), new Date(inicioValor).getMonth() + 4, new Date(inicioValor).getDate());
+                fechaFin.max = `${maxFinDateDynamic.getFullYear()}-${String(maxFinDateDynamic.getMonth() + 1).padStart(2,'0')}-${String(maxFinDateDynamic.getDate()).padStart(2,'0')}`;
+
+                if (fechaFin.value && fechaFin.value < inicioValor) {
+                    fechaFin.value = inicioValor;
+                }
+            } else {
+                fechaFin.min = hoyStr;
+                fechaFin.max = maxFinGlobal;
+            }
+        });
+    });
 </script>
 
 

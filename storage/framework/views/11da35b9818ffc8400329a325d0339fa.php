@@ -1,5 +1,4 @@
-@extends('plantilla')
-@section('content')
+<?php $__env->startSection('content'); ?>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -90,40 +89,41 @@
         .numero-incidencia { font-size: 0.85rem; color: #555; margin-top: -0.5rem; }
     </style>
 
-    @php
+    <?php
         $incidenciasEmpleado = $incapacidad->empleado->incapacidades ?? collect();
         $incidenciasEmpleado = $incidenciasEmpleado->sortBy('created_at')->values();
         $numeroPorEmpleado = $incidenciasEmpleado->search(fn($i) => $i->id === $incapacidad->id) + 1;
 
         $documento = $incapacidad->documento ?? null;
-    @endphp
+    ?>
 
     <div class="card">
         <div class="card-header">
             <h5>Detalle de incapacidad</h5>
-            <small class="created">Creada: {{ $incapacidad->created_at?->diffForHumans() ?? 'Fecha no disponible' }}</small>
+            <small class="created">Creada: <?php echo e($incapacidad->created_at?->diffForHumans() ?? 'Fecha no disponible'); ?></small>
         </div>
         <div class="card-body">
             <div class="text-center mb-3">
             <span class="numero-incidencia" style="font-size: 1.2rem; font-weight: 600; color: #0d1b2a;">
-                Incapacidad N° {{ $numeroPorEmpleado }}
+                Incapacidad N° <?php echo e($numeroPorEmpleado); ?>
+
             </span>
             </div>
 
             <div class="info-container">
                 <div class="info-box">
-                    <p><strong><i class="bi bi-person-fill me-2"></i> Empleado:</strong> {{ $incapacidad->empleado?->nombre ?? '---' }} {{ $incapacidad->empleado?->apellido ?? '' }}</p>
-                    <p><strong><i class="bi bi-card-heading me-2"></i> Identidad:</strong> {{ $incapacidad->empleado?->identidad ?? '---' }}</p>
-                    <p><strong><i class="bi bi-briefcase me-2"></i> Cargo:</strong> {{ $incapacidad->empleado?->categoria ?? '---' }}</p>
-                    <p><strong><i class="bi bi-heart-pulse me-2"></i> Motivo:</strong> {{ $incapacidad->motivo ?? '---' }}</p>
-                    <p><strong><i class="bi bi-building me-2"></i> Institución médica:</strong> {{ $incapacidad->institucion_medica ?? '---' }}</p>
+                    <p><strong><i class="bi bi-person-fill me-2"></i> Empleado:</strong> <?php echo e($incapacidad->empleado?->nombre ?? '---'); ?> <?php echo e($incapacidad->empleado?->apellido ?? ''); ?></p>
+                    <p><strong><i class="bi bi-card-heading me-2"></i> Identidad:</strong> <?php echo e($incapacidad->empleado?->identidad ?? '---'); ?></p>
+                    <p><strong><i class="bi bi-briefcase me-2"></i> Cargo:</strong> <?php echo e($incapacidad->empleado?->categoria ?? '---'); ?></p>
+                    <p><strong><i class="bi bi-heart-pulse me-2"></i> Motivo:</strong> <?php echo e($incapacidad->motivo ?? '---'); ?></p>
+                    <p><strong><i class="bi bi-building me-2"></i> Institución médica:</strong> <?php echo e($incapacidad->institucion_medica ?? '---'); ?></p>
                 </div>
 
                 <div class="info-box">
-                    <p><strong><i class="bi bi-calendar-event me-2"></i>Fecha inicio:</strong> {{ $incapacidad->fecha_inicio ? \Carbon\Carbon::parse($incapacidad->fecha_inicio)->format('d/m/Y') : '---' }}</p>
-                    <p><strong><i class="bi bi-calendar-event me-2"></i>Fecha fin:</strong> {{ $incapacidad->fecha_fin ? \Carbon\Carbon::parse($incapacidad->fecha_fin)->format('d/m/Y') : '---' }}</p>
-                    <p><strong><i class="bi bi-check-circle me-2"></i>Estado:</strong> {{ $incapacidad->estado }}</p>
-                    <p><strong><i class="bi bi-file-text me-2"></i>Descripción:</strong> {{ $incapacidad->descripcion ?? 'Sin descripción' }}</p>
+                    <p><strong><i class="bi bi-calendar-event me-2"></i>Fecha inicio:</strong> <?php echo e($incapacidad->fecha_inicio ? \Carbon\Carbon::parse($incapacidad->fecha_inicio)->format('d/m/Y') : '---'); ?></p>
+                    <p><strong><i class="bi bi-calendar-event me-2"></i>Fecha fin:</strong> <?php echo e($incapacidad->fecha_fin ? \Carbon\Carbon::parse($incapacidad->fecha_fin)->format('d/m/Y') : '---'); ?></p>
+                    <p><strong><i class="bi bi-check-circle me-2"></i>Estado:</strong> <?php echo e($incapacidad->estado); ?></p>
+                    <p><strong><i class="bi bi-file-text me-2"></i>Descripción:</strong> <?php echo e($incapacidad->descripcion ?? 'Sin descripción'); ?></p>
                 </div>
             </div>
 
@@ -132,34 +132,37 @@
             <div class="info-container">
                 <div class="info-box adjunto">
                     <p><strong><i class="bi bi-paperclip me-2"></i>Comprobante médico:</strong></p>
-                    @if($documento && file_exists(storage_path('app/public/' . $documento)))
-                        @php $extension = strtolower(pathinfo($documento, PATHINFO_EXTENSION)); @endphp
-                        @if(in_array($extension, ['jpg','jpeg','png','gif','webp']))
-                            <img src="{{ asset('storage/' . $documento) }}" alt="Documento">
-                        @elseif($extension === 'pdf')
-                            <iframe src="{{ asset('storage/' . $documento) }}" width="100%" height="300px"></iframe>
-                        @else
-                            <a href="{{ asset('storage/' . $documento) }}" target="_blank" class="btn btn-outline-primary mt-2">Descargar archivo</a>
-                        @endif
-                    @else
+                    <?php if($documento && file_exists(storage_path('app/public/' . $documento))): ?>
+                        <?php $extension = strtolower(pathinfo($documento, PATHINFO_EXTENSION)); ?>
+                        <?php if(in_array($extension, ['jpg','jpeg','png','gif','webp'])): ?>
+                            <img src="<?php echo e(asset('storage/' . $documento)); ?>" alt="Documento">
+                        <?php elseif($extension === 'pdf'): ?>
+                            <iframe src="<?php echo e(asset('storage/' . $documento)); ?>" width="100%" height="300px"></iframe>
+                        <?php else: ?>
+                            <a href="<?php echo e(asset('storage/' . $documento)); ?>" target="_blank" class="btn btn-outline-primary mt-2">Descargar archivo</a>
+                        <?php endif; ?>
+                    <?php else: ?>
                         <span class="text-muted">No hay documento</span>
-                    @endif
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
 
         <div class="card-footer">
-            Última actualización: {{ $incapacidad->updated_at?->diffForHumans() ?? 'Fecha no disponible' }}
+            Última actualización: <?php echo e($incapacidad->updated_at?->diffForHumans() ?? 'Fecha no disponible'); ?>
+
         </div>
     </div>
 
     <div class="d-flex justify-content-center align-items-center gap-3 mt-4 flex-wrap">
-        <a href="{{ route('incapacidades.index') }}" class="btn btn-return">
+        <a href="<?php echo e(route('incapacidades.index')); ?>" class="btn btn-return">
             <i class="bi bi-arrow-left me-2"></i>Volver a la lista
         </a>
 
-        <a href="{{ route('incapacidades.edit', $incapacidad->id) }}" class="btn btn-edit">
+        <a href="<?php echo e(route('incapacidades.edit', $incapacidad->id)); ?>" class="btn btn-edit">
             <i class="bi bi-pencil-square me-2"></i>Editar incapacidad
         </a>
     </div>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\angel\PhpstormProjects\Centinela\resources\views/incapacidades/show.blade.php ENDPATH**/ ?>
