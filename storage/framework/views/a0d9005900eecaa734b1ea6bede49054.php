@@ -16,7 +16,7 @@
                 GRUPO CENTINELA
             </h1>
             <p class="lead text-gold-dark fw-bold border-bottom pb-2 mx-auto" style="max-width: 600px;">
-                Protección total: vigilancia, productos y soporte técnico.
+                Protección Total: Vigilancia, Productos y Soporte Técnico.
             </p>
         </div>
     </section>
@@ -27,7 +27,7 @@
     <section class="py-5 bg-white">
         <div class="container">
             <h2 class="text-center mb-5 fw-bold" style="color: #0A1F44;">
-                Nuestra esencia
+                Nuestra Esencia
             </h2>
 
             <div class="row g-5 align-items-stretch">
@@ -38,7 +38,7 @@
                         <i class="bi bi-bullseye display-6 mb-3" style="color: #0A1F44;"></i>
                         <h4 class="fw-bold mb-3" style="color: #0A1F44;">Misión</h4>
                         <p class="text-muted">
-                            Proporcionar soluciones de seguridad integrales y de la más alta calidad, protegiendo los activos y la integridad de nuestros clientes a través de personal capacitado, tecnología de punta y un servicio técnico excepcional.
+                            **Proporcionar** soluciones de seguridad integrales y de la más alta calidad, **protegiendo** los activos y la integridad de nuestros clientes a través de personal **capacitado**, tecnología de punta y un servicio técnico excepcional.
                         </p>
                     </div>
                 </div>
@@ -49,7 +49,7 @@
                         <i class="bi bi-eye-fill display-6 mb-3" style="color: #DAA520;"></i>
                         <h4 class="fw-bold mb-3" style="color: #0A1F44;">Visión</h4>
                         <p class="text-muted">
-                            Ser la empresa líder en soluciones de seguridad en nuestra región, reconocida por nuestra excelencia operativa, ética profesional y la capacidad de adaptarnos proactivamente a los desafíos de seguridad del futuro.
+                            Ser la empresa líder en soluciones de seguridad en nuestra región, **reconocida** por nuestra excelencia operativa, ética profesional y la capacidad de **adaptarnos proactivamente** a los desafíos de seguridad del futuro.
                         </p>
                     </div>
                 </div>
@@ -60,7 +60,7 @@
                         <i class="bi bi-clock-history display-6 mb-3 text-danger"></i>
                         <h4 class="fw-bold mb-3" style="color: #0A1F44;">Trayectoria</h4>
                         <p class="text-muted">
-                            Con 2 años de experiencia en el mercado, Grupo Centinela ha evolucionado desde una empresa de vigilancia local hasta un proveedor integral. Nuestro compromiso es constante con la seguridad y la innovación tecnológica.
+                            Con 2 años de experiencia en el mercado, Grupo Centinela ha evolucionado desde una empresa de vigilancia local hasta un proveedor integral. Nuestro **compromiso** es constante con la seguridad y la innovación tecnológica.
                         </p>
                     </div>
                 </div>
@@ -76,7 +76,7 @@
     <section class="py-5" style="background-color: #f8f9fa;">
         <div class="container">
             <h2 class="text-center mb-5 fw-bold" style="color: #0A1F44;">
-                Nuestros valores y servicios
+                Nuestros Valores y Servicios
             </h2>
 
             
@@ -85,7 +85,7 @@
                 
                 <div class="col-md-6">
                     <h3 class="h4 fw-bold mb-4 border-bottom pb-2" style="color: #0A1F44; border-color: #DAA520 !important;">
-                        Principios fundamentales
+                        Principios Fundamentales
                     </h3>
                     <ul class="list-unstyled space-y-3">
                         <li class="d-flex align-items-start mb-3">
@@ -97,7 +97,7 @@
                         <li class="d-flex align-items-start mb-3">
                             <i class="bi bi-hand-thumbs-up-fill fs-5 me-3" style="color: #0A1F44;"></i>
                             <div>
-                                <strong class="d-block">Honestidad y ética:</strong> Rigor moral y transparencia en todas nuestras operaciones.
+                                <strong class="d-block">Honestidad y Ética:</strong> Rigor moral y transparencia en todas nuestras operaciones.
                             </div>
                         </li>
                         <li class="d-flex align-items-start mb-3">
@@ -126,7 +126,7 @@
                 
                 <div class="col-md-6">
                     <h3 class="h4 fw-bold mb-4 border-bottom pb-2" style="color: #0A1F44; border-color: #DAA520 !important;">
-                        Pilares de nuestro servicio integral
+                        Pilares de Nuestro Servicio Integral
                     </h3>
                     <ul class="list-unstyled space-y-3">
                         <li class="d-flex align-items-start mb-3">
@@ -138,13 +138,13 @@
                         <li class="d-flex align-items-start mb-3">
                             <i class="bi bi-laptop-fill fs-5 me-3 text-danger"></i>
                             <div>
-                                <strong class="d-block">Venta y tecnología:</strong> Suministro e instalación de sistemas CCTV, Alarmas y Perimetrales.
+                                <strong class="d-block">Venta y Tecnología:</strong> Suministro e instalación de sistemas CCTV, Alarmas y Perimetrales.
                             </div>
                         </li>
                         <li class="d-flex align-items-start mb-3">
                             <i class="bi bi-headset fs-5 me-3 text-danger"></i>
                             <div>
-                                <strong class="d-block">Servicio técnico y soporte:</strong> Instalación, mantenimiento y respuesta rápida.
+                                <strong class="d-block">Servicio Técnico y Soporte:</strong> Instalación, mantenimiento y respuesta rápida.
                             </div>
                         </li>
                     </ul>
@@ -161,7 +161,7 @@
     <section class="py-5 bg-white">
         <div class="container">
             <h2 class="text-center mb-5 fw-bold" style="color: #0A1F44;">
-                Contáctenos y ubíquenos
+                Contáctenos y Ubíquenos
             </h2>
 
             <div class="row g-5">
@@ -169,7 +169,7 @@
                 
                 <div class="col-lg-5">
                     <h3 class="h4 fw-bold mb-4 border-bottom pb-2" style="color: #0A1F44; border-color: #DAA520 !important;">
-                        Información de contacto
+                        Información de Contacto
                     </h3>
 
                     <div class="d-flex align-items-start mb-4 p-3 rounded" style="background-color: #f0f0f0;">
@@ -219,4 +219,4 @@
 
 <?php $__env->stopSection(); ?>
 
-<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Admin\PhpstormProjects\Centinela\resources\views/quienes_somos.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\angel\PhpstormProjects\Centinela\resources\views/quienes_somos.blade.php ENDPATH**/ ?>

@@ -147,6 +147,10 @@
                         <i class="bi bi-arrow-left me-2"></i>Volver a la lista
                     </a>
 
+                    <a href="<?php echo e(route('capacitaciones.edit', $capacitacion->id)); ?>" class="btn btn-edit">
+                        <i class="bi bi-pencil-square me-2"></i>Editar capacitación
+                    </a>
+
                 </div>
             </div>
         </div>

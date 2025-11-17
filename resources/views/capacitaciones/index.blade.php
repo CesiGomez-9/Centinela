@@ -28,7 +28,7 @@
         <div class="card shadow p-4" style="background-color: #ffffff;">
             <h3 class="text-center mb-4" style="color: #09457f;">
                 <i class="bi bi-people-fill me-2"></i>
-                Lista de Capacitaciones
+                Lista de capacitaciones
             </h3>
 
             <form method="GET" action="{{ route('capacitaciones.index') }}">
@@ -100,7 +100,6 @@
                     <th>Modalidad</th>
                     <th>Nivel</th>
                     <th>Fecha inicio</th>
-                    <th>Fecha fin</th>
                     <th>Acciones</th>
                 </tr>
                 </thead>
@@ -113,7 +112,6 @@
                         <td>{{$capacitacion->modalidad}} </td>
                         <td>{{$capacitacion->nivel }}</td>
                         <td>{{ \Carbon\Carbon::parse($capacitacion->fecha_inicio)->format('d/m/Y') }}</td>
-                        <td>{{ \Carbon\Carbon::parse($capacitacion->fecha_fin)->format('d/m/Y') }}</td>
                         <td class="text-center">
                             <a href="{{ route('capacitaciones.detalle', $capacitacion->id) }}" class="btn btn-sm btn-outline-info">
                                 <i class="bi bi-eye"></i> Ver

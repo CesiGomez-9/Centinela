@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Capacitacion;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class CapacitacionController extends Controller
 {
@@ -81,24 +82,25 @@ class CapacitacionController extends Controller
         //
         $request->validate([
 
-            'nombre' => ['required', 'string', 'max:100', 'regex:/^[\p{L}\s]+$/u'],
-            'correo' => ['required', 'string', 'email', 'max:50', 'unique:capacitaciones,correo', 'regex:/^[^@\s]+@[^@\s]+\.[^@\s]+$/'],
+            'nombre' => ['required', 'string', 'max:100', 'regex:/^[\p{L}\p{N}\s]+$/u'],
+            'correo' => ['required', 'string', 'email', 'max:50','regex:/^[^@\s]+@[^@\s]+\.[^@\s]+$/'],
             'contacto' => ['required', 'string', 'max:100', 'regex:/^[\p{L}\s]+$/u'],
-            'telefono' => ['required', 'regex:/^[2389][0-9]{7}$/', 'size:8', 'unique:capacitaciones,telefono'],
+            'telefono' => ['required', 'regex:/^[2389][0-9]{7}$/', 'size:8'],
             'modalidad' => ['required', 'string'],
             'nivel' => ['required', 'string'],
-            'duracion'=>['required','numeric','min:1'],
-            'fecha_inicio' => ['required', 'date',  'after_or_equal:' . now()->subMonth()->format('Y-m-d'), ],
+            'duracion'=>['required','numeric','min:1','max:99'],
+            'fecha_inicio' => ['required', 'date', 'after_or_equal:' . now()->format('Y-m-d')],
             'fecha_fin' => ['required', 'date', 'after_or_equal:fechaInicio'],
             'descripcion' => ['required', 'string','max:250'],
-            'direccion' => ['required', 'string','max:250'],
+            'direccion' => ['nullable', 'string', 'max:250', 'required_if:modalidad,Presencial,Mixto'],
 
 
 
         ], [
             'nombre.required' => 'Debe ingresar el nombre la institución.',
             'nombre.regex' => 'El nombre de la empresa solo debe contener letras, espacios y tildes.',
-            'direccion.required' => 'Debe ingresar la dirección.',
+            'direccion.required_if' => 'Debe ingresar la dirección.',
+            
 
             'telefono.required' => 'Debe ingresar el teléfono de la institución.',
             'telefono.regex' => 'El teléfono debe comenzar con 2, 3, 8 o 9 y tener 8 dígitos.',
@@ -107,24 +109,32 @@ class CapacitacionController extends Controller
 
             'correo.required' => 'Debe ingresar el correo electrónico.',
             'correo.email' => 'Debe ingresar un correo electrónico válido.',
-            'correo.unique' => 'Este correo ya está registrado.',
+            'correo.regex'=>'Debe ingresar un correo valido',
 
-            'contacto.required' => 'Debe ingresar el nombre del representante.',
+
+
+            'contacto.required' => 'Debe ingresar el nombre del contacto.',
             'contacto.regex' => 'El nombre del representante solo debe contener letras y espacios y tildes.',
 
             'modalidad.required' => 'Debe seleccionar la modalidad.',
             'nivel.required' => 'Debe seleccionar el nivel.',
             'duracion.required' => 'Debe ingresar la duración.',
             'descripcion.required' => 'Debe ingresar la descripción.',
-            'fecha_inicio.after_or_equal' => 'La fecha de inicio debe ser como mínimo hace un mes o más reciente.',
+            'fecha_inicio.after_or_equal' => 'La fecha de inicio no puede ser anterior a la fecha actual.',
             'fecha_fin.after_or_equal' => 'La fecha de finalización debe ser igual o posterior a la fecha de inicio.',
             'fecha_inicio.required' => 'Debe ingresar la fecha de inicio.',
             'fecha_fin.required' => 'Debe ingresar la fecha de finalización.',
+            'duracion.min'=>'La duración no puede ser menor a 1',
+            'duracion.max'=>'La duración no puede ser mayor a 99',
 
 
         ], [
 
+
+
         ]);
+
+
 
 
         $capacitacion = new Capacitacion();
@@ -139,6 +149,8 @@ class CapacitacionController extends Controller
         $capacitacion->fecha_fin = $request->input('fecha_fin');
         $capacitacion->descripcion = $request->input('descripcion');
         $capacitacion->direccion = $request->input('direccion');
+
+
 
         if ($capacitacion->save()) {
             return redirect()->route('capacitaciones.index')->with('exito', 'El curso se registro exitosamente.');
@@ -174,21 +186,33 @@ class CapacitacionController extends Controller
         $capacitacion = Capacitacion::findOrFail($id);
 
         $request->validate([
-            'nombre' => ['required', 'string', 'max:100', 'regex:/^[\p{L}\s]+$/u'],
-            'correo' => ['required', 'string', 'email', 'max:50', 'regex:/^[^@\s]+@[^@\s]+\.[^@\s]+$/', 'unique:capacitaciones,correo,' . $capacitacion->id],
+            'nombre' => ['required', 'string', 'max:100', 'regex:/^[\p{L}\p{N}\s]+$/u'],
+            'correo' => [
+                'required',
+                'string',
+                'email',
+                'max:50',
+                'regex:/^[^@\s]+@[^@\s]+\.[^@\s]+$/',
+                Rule::unique('capacitaciones', 'correo')->ignore($id),
+            ],
             'contacto' => ['required', 'string', 'max:100', 'regex:/^[\p{L}\s]+$/u'],
-            'telefono' => ['required', 'regex:/^[2389][0-9]{7}$/', 'size:8', 'unique:capacitaciones,telefono,' . $capacitacion->id],
+            'telefono' => [
+                'required',
+                'regex:/^[2389][0-9]{7}$/',
+                'size:8',
+                Rule::unique('capacitaciones', 'telefono')->ignore($id),
+            ],
             'modalidad' => ['required', 'string'],
             'nivel' => ['required', 'string'],
-            'duracion'=>['required','numeric','min:1'],
-            'fecha_inicio' => ['required', 'date',  'after_or_equal:' . now()->subMonth()->format('Y-m-d')],
+            'duracion' => ['required','numeric','min:1','max:99'],
+            'fecha_inicio' => ['required', 'date', 'after_or_equal:' . now()->format('Y-m-d')],
             'fecha_fin' => ['required', 'date', 'after_or_equal:fecha_inicio'],
             'descripcion' => ['required', 'string','max:250'],
-            'direccion' => ['required', 'string','max:250'],
+            'direccion' => ['nullable', 'string', 'max:250', 'required_if:modalidad,Presencial,Mixto'],
         ], [
             'nombre.required' => 'Debe ingresar el nombre la institución.',
             'nombre.regex' => 'El nombre de la empresa solo debe contener letras, espacios y tildes.',
-            'direccion.required' => 'Debe ingresar la dirección.',
+            'direccion.required_if' => 'Debe ingresar la dirección.',
 
             'telefono.required' => 'Debe ingresar el teléfono de la institución.',
             'telefono.regex' => 'El teléfono debe comenzar con 2, 3, 8 o 9 y tener 8 dígitos.',
@@ -197,22 +221,25 @@ class CapacitacionController extends Controller
 
             'correo.required' => 'Debe ingresar el correo electrónico.',
             'correo.email' => 'Debe ingresar un correo electrónico válido.',
-            'correo.unique' => 'Este correo ya está registrado.',
+            'correo.regex'=>'Debe ingresar un correo valido',
+            'correo.unique'=>'Este correo ya está registrado.',
 
-            'contacto.required' => 'Debe ingresar el nombre del representante.',
+            'contacto.required' => 'Debe ingresar el nombre del contacto.',
             'contacto.regex' => 'El nombre del representante solo debe contener letras y espacios y tildes.',
 
             'modalidad.required' => 'Debe seleccionar la modalidad.',
             'nivel.required' => 'Debe seleccionar el nivel.',
             'duracion.required' => 'Debe ingresar la duración.',
+            'duracion.min'=>'La duración no puede ser menor a 1',
+            'duracion.max'=>'La duración no puede ser mayor a 99',
+
             'descripcion.required' => 'Debe ingresar la descripción.',
-            'fecha_inicio.after_or_equal' => 'La fecha de inicio debe ser como mínimo hace un mes o más reciente.',
+            'fecha_inicio.after_or_equal' => 'La fecha de inicio no puede ser anterior a la fecha actual.',
             'fecha_fin.after_or_equal' => 'La fecha de finalización debe ser igual o posterior a la fecha de inicio.',
             'fecha_inicio.required' => 'Debe ingresar la fecha de inicio.',
             'fecha_fin.required' => 'Debe ingresar la fecha de finalización.',
         ]);
 
-        // Asignar valores actualizados
         $capacitacion->nombre = $request->input('nombre');
         $capacitacion->correo = $request->input('correo');
         $capacitacion->contacto = $request->input('contacto');
@@ -226,9 +253,9 @@ class CapacitacionController extends Controller
         $capacitacion->direccion = $request->input('direccion');
 
         if ($capacitacion->save()) {
-            return redirect()->route('capacitaciones.index')->with('exito', 'Los cambios se guardaron correctamente.');
+            return redirect()->route('capacitaciones.index')->with('exito', 'El curso se actualizó exitosamente.');
         } else {
-            return redirect()->route('capacitaciones.index')->with('fracaso', 'No se pudieron guardar los cambios.');
+            return redirect()->route('capacitaciones.index')->with('fracaso', 'El curso no se pudo actualizar.');
         }
     }
 

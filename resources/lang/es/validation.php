@@ -14,6 +14,9 @@ return [
     'size' => [
         'string' => 'El campo :attribute debe tener exactamente :size dígitos.',
     ],
+    'regex'=>[
+        'email'=>'Debe ingresar un correo valido.',
+    ],
 
     'attributes' => [
         'serie' => 'Serie',
