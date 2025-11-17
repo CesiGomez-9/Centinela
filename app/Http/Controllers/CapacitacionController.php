@@ -87,8 +87,8 @@ class CapacitacionController extends Controller
             'telefono' => ['required', 'regex:/^[2389][0-9]{7}$/', 'size:8', 'unique:capacitaciones,telefono'],
             'modalidad' => ['required', 'string'],
             'nivel' => ['required', 'string'],
-            'duracion'=>['required','numeric','min:1'],
-            'fecha_inicio' => ['required', 'date',  'after_or_equal:' . now()->subMonth()->format('Y-m-d'), ],
+            'duracion'=>['required','numeric','min:1','max:15'],
+            'fecha_inicio' => ['required', 'date', 'after_or_equal:' . now()->format('Y-m-d')],
             'fecha_fin' => ['required', 'date', 'after_or_equal:fechaInicio'],
             'descripcion' => ['required', 'string','max:250'],
             'direccion' => ['required', 'string','max:250'],
@@ -116,10 +116,12 @@ class CapacitacionController extends Controller
             'nivel.required' => 'Debe seleccionar el nivel.',
             'duracion.required' => 'Debe ingresar la duración.',
             'descripcion.required' => 'Debe ingresar la descripción.',
-            'fecha_inicio.after_or_equal' => 'La fecha de inicio debe ser como mínimo hace un mes o más reciente.',
+            'fecha_inicio.after_or_equal' => 'La fecha de inicio no puede ser anterior a la fecha actual.',
             'fecha_fin.after_or_equal' => 'La fecha de finalización debe ser igual o posterior a la fecha de inicio.',
             'fecha_inicio.required' => 'Debe ingresar la fecha de inicio.',
             'fecha_fin.required' => 'Debe ingresar la fecha de finalización.',
+            'duracion.min'=>'La duración no puede ser menor a 1',
+            'duracion.max'=>'La duración no puede ser mayor a 15',
 
 
         ], [
@@ -180,7 +182,7 @@ class CapacitacionController extends Controller
             'telefono' => ['required', 'regex:/^[2389][0-9]{7}$/', 'size:8', 'unique:capacitaciones,telefono,' . $capacitacion->id],
             'modalidad' => ['required', 'string'],
             'nivel' => ['required', 'string'],
-            'duracion'=>['required','numeric','min:1'],
+            'duracion'=>['required','numeric','min:1','max:15'],
             'fecha_inicio' => ['required', 'date',  'after_or_equal:' . now()->subMonth()->format('Y-m-d')],
             'fecha_fin' => ['required', 'date', 'after_or_equal:fecha_inicio'],
             'descripcion' => ['required', 'string','max:250'],
@@ -210,6 +212,9 @@ class CapacitacionController extends Controller
             'fecha_fin.after_or_equal' => 'La fecha de finalización debe ser igual o posterior a la fecha de inicio.',
             'fecha_inicio.required' => 'Debe ingresar la fecha de inicio.',
             'fecha_fin.required' => 'Debe ingresar la fecha de finalización.',
+            'duracion.min'=>'La duración no puede ser menor a 1',
+            'duracion.max'=>'La duración no puede ser mayor a 15',
+
         ]);
 
         // Asignar valores actualizados
