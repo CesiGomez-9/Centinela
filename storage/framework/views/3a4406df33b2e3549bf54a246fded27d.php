@@ -401,8 +401,8 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" required>
                                 <option value=""> Seleccione un puesto...</option>
-                                <option value="Administracion" <?php echo e(old('categoria') == 'Administracion' ? 'selected' : ''); ?>>Administración</option>
-                                <option value="Tecnico" <?php echo e(old('categoria') == 'Tecnico' ? 'selected' : ''); ?>>Técnico</option>
+                                <option value="Administración" <?php echo e(old('categoria') == 'Administración' ? 'selected' : ''); ?>>Administración</option>
+                                <option value="Técnico" <?php echo e(old('categoria') == 'Técnico' ? 'selected' : ''); ?>>Técnico</option>
                                 <option value="Vigilancia" <?php echo e(old('categoria') == 'Vigilancia' ? 'selected' : ''); ?>>Vigilancia</option>
                             </select>
                             <div class="invalid-feedback"><?php $__errorArgs = ['categoria'];

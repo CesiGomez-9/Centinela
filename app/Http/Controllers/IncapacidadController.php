@@ -50,7 +50,9 @@ class IncapacidadController extends Controller
     public function create()
     {
         $empleados = Empleado::orderBy('nombre')->get();
-        return view('incapacidades.create', compact('empleados'));
+        $incapacidades = Incapacidad::select('empleado_id', 'fecha_inicio', 'fecha_fin')->get();
+
+        return view('incapacidades.create', compact('empleados', 'incapacidades'));
     }
 
     public function store(Request $request)

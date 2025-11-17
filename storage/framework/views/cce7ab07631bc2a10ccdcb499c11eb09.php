@@ -244,6 +244,8 @@ unset($__errorArgs, $__bag); ?></div>
     </div>
 
     <script>
+        const incapacidades = <?php echo json_encode($incapacidades, 15, 512) ?>;
+
         document.addEventListener('DOMContentLoaded', function() {
             const empleadoInput = document.getElementById('empleadoInput');
             const empleadoResults = document.getElementById('empleadoResults');
@@ -376,7 +378,57 @@ unset($__errorArgs, $__bag); ?></div>
                         cargo.value = emp.categoria;
                         empleadoResults.innerHTML = '';
                         empleadoInput.classList.remove('is-invalid');
+
+                        // 🟥 LIMPIAR ALERTA ANTERIOR
+                        const alerta = empleadoInput.closest('.col-md-5').querySelector('.invalid-feedback.d-block');
+                        alerta.textContent = "";
+
+                        // ====== ⛔ VALIDACIONES DE FECHAS ======
+                        const fechaSeleccionadaInicio = fechaInicio.value;
+                        const fechaSeleccionadaFin = fechaFin.value;
+
+                        if (!fechaSeleccionadaInicio || !fechaSeleccionadaFin) {
+                            return; // Si no hay fechas, no validamos aún
+                        }
+
+                        // Filtrar incapacidades del empleado seleccionado
+                        const historial = incapacidades.filter(i => i.empleado_id == emp.id);
+
+                        // VALIDAR TRASLAPE
+                        const coincideFecha = historial.some(i =>
+                            (fechaSeleccionadaInicio >= i.fecha_inicio && fechaSeleccionadaInicio <= i.fecha_fin) ||
+                            (fechaSeleccionadaFin >= i.fecha_inicio && fechaSeleccionadaFin <= i.fecha_fin)
+                        );
+
+                        // FUNCIÓN PARA OBTENER NUMERO DE SEMANA
+                        function numeroSemana(fecha) {
+                            let f = new Date(fecha);
+                            f.setHours(0,0,0,0);
+                            const primerDia = new Date(f.getFullYear(), 0, 1);
+                            const dias = Math.floor((f - primerDia) / (24 * 60 * 60 * 1000));
+                            return Math.ceil((dias + primerDia.getDay() + 1) / 7);
+                        }
+
+                        const semanaActual = numeroSemana(fechaSeleccionadaInicio);
+                        const añoActual = new Date(fechaSeleccionadaInicio).getFullYear();
+
+                        const incidenciasSemana = historial.filter(i =>
+                            numeroSemana(i.fecha_inicio) === semanaActual &&
+                            new Date(i.fecha_inicio).getFullYear() === añoActual
+                        ).length;
+
+                        // ====== MOSTRAR ALERTAS ======
+                        if (coincideFecha) {
+                            alerta.textContent = "Este empleado ya tiene una incapacidad registrada que se traslapa con estas fechas.";
+                            empleadoInput.classList.add("is-invalid");
+                        }
+
+                        if (incidenciasSemana >= 2) {
+                            alerta.textContent = "Este empleado ya tiene dos incapacidades registradas en esta semana.";
+                            empleadoInput.classList.add("is-invalid");
+                        }
                     });
+
                     empleadoResults.appendChild(btn);
                 });
             });
@@ -389,6 +441,10 @@ unset($__errorArgs, $__bag); ?></div>
 
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
+
+                if (empleadoInput.classList.contains('is-invalid')) {
+                    return; // ← No enviar, no recargar, no borrar comprobante
+                }
                 let isValid = true;
                 document.querySelectorAll('.is-invalid').forEach(i => i.classList.remove('is-invalid'));
                 document.querySelectorAll('.invalid-feedback').forEach(f => f.textContent = '');
