@@ -154,15 +154,15 @@
         </div>
     </div>
 
-    <div class="d-flex justify-content-center align-items-center gap-3 mt-4 flex-wrap">
+    <div class="d-flex justify-content-center align-items-center gap-3 mt-3 flex-wrap">
         <a href="<?php echo e(route('incapacidades.index')); ?>" class="btn btn-return">
             <i class="bi bi-arrow-left me-2"></i>Volver a la lista
         </a>
-
         <a href="<?php echo e(route('incapacidades.edit', $incapacidad->id)); ?>" class="btn btn-edit">
             <i class="bi bi-pencil-square me-2"></i>Editar incapacidad
         </a>
     </div>
+
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\angel\PhpstormProjects\Centinela\resources\views/incapacidades/show.blade.php ENDPATH**/ ?>
