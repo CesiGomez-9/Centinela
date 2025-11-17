@@ -41,6 +41,7 @@ Route::get('/memorandos/{memorando}', [\App\Http\Controllers\MemorandoController
 
 Route::resource('promociones', \App\Http\Controllers\PromocionController::class);
 Route::resource('incapacidades', \App\Http\Controllers\IncapacidadController::class);
+Route::put('/incapacidades/{id}', [\App\Http\Controllers\IncapacidadController::class, 'update'])->name('incapacidades.update');
 
 Route::get('/clientes/buscar', [App\Http\Controllers\ClienteController::class, 'buscar'])->name('clientes.buscar');
 

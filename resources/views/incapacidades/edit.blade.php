@@ -22,128 +22,135 @@
 
                 <div class="row g-4">
 
-                    {{-- 🔹 Empleado --}}
+                    {{-- EMPLEADO --}}
                     <div class="col-md-6 position-relative">
                         <label class="form-label fw-bold">Empleado:</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-search"></i></span>
-                            <input type="text" id="empleadoInput" name="empleado_nombre"
-                                   class="form-control @error('empleado_id') is-invalid @enderror"
-                                   placeholder="Buscar empleado..."
-                                   value="{{ old('empleado_nombre', $incapacidad->empleado->nombre . ' ' . $incapacidad->empleado->apellido) }}"
-                                   data-original-name="{{ $incapacidad->empleado->nombre }} {{ $incapacidad->empleado->apellido }}"
-                                   data-original-id="{{ $incapacidad->empleado_id }}">
+                            <input type="text" id="empleadoInput" readonly
+                                   class="form-control"
+                                   value="{{ $incapacidad->empleado->nombre }} {{ $incapacidad->empleado->apellido }}"
+                                   data-original-name="{{ $incapacidad->empleado->nombre }} {{ $incapacidad->empleado->apellido }}">
                             <input type="hidden" name="empleado_id" id="empleado_id"
-                                   value="{{ old('empleado_id', $incapacidad->empleado_id) }}"
+                                   value="{{ $incapacidad->empleado_id }}"
                                    data-original-id="{{ $incapacidad->empleado_id }}">
-                        </div>
-                        <div class="invalid-feedback">Debe seleccionar un empleado válido antes de guardar.</div>
-                        @error('empleado_id')
-                        <div class="invalid-feedback d-block">{{ $message }}</div>
-                        @enderror
-                        <div id="empleadoResults" class="list-group"
-                             style="max-height:200px; overflow-y:auto; position:absolute; z-index:1000; width:100%;">
                         </div>
                     </div>
 
-                    {{-- 🔹 Identidad --}}
+                    {{-- IDENTIDAD --}}
                     <div class="col-md-3">
                         <label class="form-label fw-bold">Identidad:</label>
                         <input type="text" id="identidad" class="form-control" readonly
-                               value="{{ old('empleado_identidad', $incapacidad->empleado->identidad) }}"
+                               value="{{ $incapacidad->empleado->identidad }}"
                                data-original="{{ $incapacidad->empleado->identidad }}">
                     </div>
 
-                    {{-- 🔹 Cargo --}}
+                    {{-- CARGO --}}
                     <div class="col-md-3">
                         <label class="form-label fw-bold">Cargo:</label>
                         <input type="text" id="cargo" class="form-control" readonly
-                               value="{{ old('empleado_cargo', $incapacidad->empleado->categoria) }}"
+                               value="{{ $incapacidad->empleado->categoria }}"
                                data-original="{{ $incapacidad->empleado->categoria }}">
                     </div>
 
-                    {{-- 🔹 Fecha inicio --}}
+                    {{-- FECHA INICIO --}}
                     <div class="col-md-4">
                         <label class="form-label fw-bold">Fecha inicio:</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
-                            <input type="date" name="fecha_inicio"
-                                   class="form-control"
-                                   value="{{ old('fecha_inicio', \Carbon\Carbon::parse($incapacidad->fecha_inicio)->format('Y-m-d')) }}"
+                            <input type="date" name="fecha_inicio" class="form-control"
+                                   value="{{ \Carbon\Carbon::parse($incapacidad->fecha_inicio)->format('Y-m-d') }}"
+                                   min="{{ \Carbon\Carbon::now()->format('Y-m-d') }}"
+                                   max="{{ \Carbon\Carbon::now()->addMonths(2)->format('Y-m-d') }}"
                                    data-original="{{ \Carbon\Carbon::parse($incapacidad->fecha_inicio)->format('Y-m-d') }}">
                         </div>
-                        <div class="invalid-feedback">Este campo es obligatorio.</div>
+                        <div class="invalid-feedback">Seleccione una fecha de inicio válida (hoy hasta 2 meses).</div>
                     </div>
 
-                    {{-- 🔹 Fecha fin --}}
+                    {{-- FECHA FIN --}}
                     <div class="col-md-4">
                         <label class="form-label fw-bold">Fecha fin:</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-calendar-check"></i></span>
-                            <input type="date" name="fecha_fin"
-                                   class="form-control"
-                                   value="{{ old('fecha_fin', \Carbon\Carbon::parse($incapacidad->fecha_fin)->format('Y-m-d')) }}"
+                            <input type="date" name="fecha_fin" class="form-control"
+                                   value="{{ \Carbon\Carbon::parse($incapacidad->fecha_fin)->format('Y-m-d') }}"
+                                   min="{{ \Carbon\Carbon::now()->format('Y-m-d') }}"
+                                   max="{{ \Carbon\Carbon::now()->addMonths(2)->format('Y-m-d') }}"
                                    data-original="{{ \Carbon\Carbon::parse($incapacidad->fecha_fin)->format('Y-m-d') }}">
                         </div>
-                        <div class="invalid-feedback">Este campo es obligatorio.</div>
+                        <div class="invalid-feedback">Seleccione una fecha de fin válida (no antes de inicio y hasta 2 meses).</div>
                     </div>
 
-                    {{-- 🔹 Motivo --}}
+                    {{-- INSTITUCIÓN MEDICA --}}
                     <div class="col-md-4">
+                        <label class="form-label fw-bold">Institución Médica:</label>
+                        <textarea maxlength="50"
+                                  name="institucion_medica" rows="1"
+                                  class="form-control solo-texto"
+                                  style="overflow:hidden; resize:none;"
+                                  data-original="{{ $incapacidad->institucion_medica }}">{{ $incapacidad->institucion_medica }}</textarea>
+                        <div class="invalid-feedback">Institución médica obligatoria (máx 50 caracteres, sin símbolos).</div>
+                    </div>
+
+                    {{-- MOTIVO --}}
+                    <div class="col-md-6">
                         <label class="form-label fw-bold">Motivo:</label>
-                        <textarea name="motivo" rows="1" maxlength="150"
+                        <textarea maxlength="50"
+                                  name="motivo" rows="1"
+                                  class="form-control solo-texto"
+                                  style="overflow:hidden; resize:none;"
+                                  data-original="{{ $incapacidad->motivo }}">{{ $incapacidad->motivo }}</textarea>
+                        <div class="invalid-feedback">Debe ingresar un motivo válido.</div>
+                    </div>
+
+                    {{-- COMPROBANTE --}}
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Comprobante médico:</label>
+                        <input type="file" name="documento" class="form-control"
+                               accept=".pdf,.jpg,.jpeg,.png" id="documentoInput">
+                        <div class="invalid-feedback">Debe adjuntar un comprobante válido.</div>
+                    </div>
+
+                    {{-- DESCRIPCIÓN --}}
+                    <div class="col-md-6 ">
+                        <label class="form-label fw-bold">Descripción:</label>
+                        <textarea maxlength="250" name="descripcion" rows="4"
                                   class="form-control"
                                   style="overflow:hidden; resize:none;"
-                                  data-original="{{ $incapacidad->motivo }}">{{ old('motivo', $incapacidad->motivo) }}</textarea>
-                        <div class="invalid-feedback">Este campo es obligatorio.</div>
+                                  data-original="{{ $incapacidad->descripcion }}">{{ $incapacidad->descripcion }}</textarea>
+                        <div class="invalid-feedback">La descripción es obligatoria.</div>
                     </div>
 
-                    {{-- 🔹 Fila 1: Institución médica y Comprobante --}}
-                    <div class="col-md-12 row g-4">
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold">Institución Médica:</label>
-                            <textarea name="institucion_medica" rows="1" maxlength="150"
-                                      class="form-control"
-                                      style="overflow:hidden; resize:none;"
-                                      data-original="{{ $incapacidad->institucion_medica }}">{{ old('institucion_medica', $incapacidad->institucion_medica) }}</textarea>
-                            <div class="invalid-feedback">Este campo es obligatorio.</div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold">Comprobante médico:</label>
-                            <input type="file" name="documento" class="form-control" accept=".pdf,.jpg,.jpeg,.png" id="documentoInput">
-                            <div class="invalid-feedback">Debe subir un documento válido.</div>
-                        </div>
-                    </div>
-
-                    {{-- 🔹 Fila 2: Descripción y vista previa --}}
-                    <div class="col-md-12 row g-4 mt-2">
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold">Descripción (opcional):</label>
-                            <textarea name="descripcion" rows="4" maxlength="250"
-                                      class="form-control"
-                                      style="overflow:hidden; resize:none;"
-                                      data-original="{{ $incapacidad->descripcion }}">{{ old('descripcion', $incapacidad->descripcion) }}</textarea>
-                            <div class="invalid-feedback">Este campo es obligatorio.</div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold">Vista previa del comprobante:</label>
-                            <div id="vistaDocumento" class="border p-2 text-center mt-2">
-                                @if($incapacidad->documento)
-                                    @if(Str::endsWith($incapacidad->documento, ['.jpg','.jpeg','.png']))
-                                        <img src="{{ asset('storage/'.$incapacidad->documento) }}" class="img-fluid rounded" style="max-height:200px;">
-                                    @elseif(Str::endsWith($incapacidad->documento, '.pdf'))
-                                        <iframe src="{{ asset('storage/'.$incapacidad->documento) }}" width="100%" height="200px" class="border"></iframe>
-                                    @endif
-                                @else
-                                    <p class="text-muted">No hay documento cargado</p>
+                    {{-- VISTA PREVIA --}}
+                    <div class="col-md-6 ">
+                        <label class="form-label fw-bold">Vista previa:</label>
+                        <div id="vistaDocumento" class="border p-2 text-center mt-2">
+                            @if($incapacidad->documento)
+                                @if(Str::endsWith($incapacidad->documento, ['.jpg','.jpeg','.png']))
+                                    <img src="{{ asset('storage/'.$incapacidad->documento) }}" class="img-fluid rounded" style="max-height:200px;">
+                                @elseif(Str::endsWith($incapacidad->documento, '.pdf'))
+                                    <iframe src="{{ asset('storage/'.$incapacidad->documento) }}" width="100%" height="200px" class="border"></iframe>
                                 @endif
-                            </div>
+                            @else
+                                <p class="text-muted">No hay documento cargado</p>
+                            @endif
+                        </div>
+
+                        {{-- Contenedor oculto con la vista original para restaurar sin problemas --}}
+                        <div id="originalVista" class="d-none">
+                            @if($incapacidad->documento)
+                                @if(Str::endsWith($incapacidad->documento, ['.jpg','.jpeg','.png']))
+                                    {!! '<img src="'.asset('storage/'.$incapacidad->documento).'" class="img-fluid rounded" style="max-height:200px;">' !!}
+                                @elseif(Str::endsWith($incapacidad->documento, '.pdf'))
+                                    {!! '<iframe src="'.asset('storage/'.$incapacidad->documento).'" width="100%" height="200px" class="border"></iframe>' !!}
+                                @endif
+                            @else
+                                {!! '<p class="text-muted">No hay documento cargado</p>' !!}
+                            @endif
                         </div>
                     </div>
 
-                    {{-- 🔹 Botones --}}
+                    {{-- BOTONES --}}
                     <div class="text-center mt-4 col-12">
                         <a href="{{ route('incapacidades.index') }}" class="btn btn-danger me-2">
                             <i class="bi bi-x-circle me-2"></i>Cancelar
@@ -162,219 +169,168 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const empleados = @json($empleados);
-            const inputEmpleado = document.getElementById('empleadoInput');
-            const results = document.getElementById('empleadoResults');
-            const empleadoId = document.getElementById('empleado_id');
-            const identidad = document.getElementById('identidad');
-            const cargo = document.getElementById('cargo');
-            const form = document.getElementById('incapacidadForm');
-            const vistaDocumento = document.getElementById('vistaDocumento');
+        document.addEventListener("DOMContentLoaded", () => {
+
+            // NO PERMITIR CARACTERES ESPECIALES
+            document.querySelectorAll(".solo-texto").forEach(input => {
+                input.addEventListener("input", () => {
+                    input.value = input.value.replace(/[^A-Za-z0-9ÁÉÍÓÚáéíóúñÑ,.() ]/g, "");
+                });
+            });
+
+            const form = document.getElementById("incapacidadForm");
             const documentoInput = document.getElementById('documentoInput');
-            const originalDoc = @json($incapacidad->documento);
+            const vista = document.getElementById("vistaDocumento");
+            const fechaInicioInput = form.querySelector('[name="fecha_inicio"]');
+            const fechaFinInput = form.querySelector('[name="fecha_fin"]');
 
-            // Mensajes personalizados
-            const mensajes = {
-                empleado: "Debe seleccionar un empleado válido.",
-                fecha_inicio: "La fecha de inicio es obligatoria.",
-                fecha_fin: "La fecha de fin es obligatoria.",
-                motivo: "Debe ingresar el motivo de la incapacidad.",
-                institucion_medica: "Debe indicar la institución médica.",
-                documento: "Debe subir un documento válido."
-            };
+            // Guardar HTML original de la vista (para restablecer)
+            const originalVistaEl = document.getElementById('originalVista');
+            const originalVistaHtml = originalVistaEl ? originalVistaEl.innerHTML : vista.innerHTML;
 
-            // Función para mostrar mensaje de error debajo del campo
-            function mostrarError(element, mensaje) {
-                element.classList.add('is-invalid');
-                let feedback = element.nextElementSibling;
-                if(!feedback || !feedback.classList.contains('invalid-feedback')){
-                    feedback = document.createElement('div');
-                    feedback.classList.add('invalid-feedback');
-                    element.parentNode.appendChild(feedback);
+            let tempPreviewHtml = vista.innerHTML;
+
+            // PREVISUALIZAR ARCHIVO NUEVO
+            documentoInput.addEventListener("change", () => {
+                const file = documentoInput.files[0];
+                if (!file) return;
+
+                const url = URL.createObjectURL(file);
+
+                if (file.type.includes("pdf")) {
+                    vista.innerHTML = `<iframe src="${url}" width="100%" height="200" class="border"></iframe>`;
+                } else {
+                    vista.innerHTML = `<img src="${url}" class="img-fluid rounded" style="max-height:200px;">`;
                 }
-                feedback.textContent = mensaje;
-            }
 
-            // Función para quitar error
-            function quitarError(element) {
-                element.classList.remove('is-invalid');
-                let feedback = element.nextElementSibling;
-                if(feedback && feedback.classList.contains('invalid-feedback')){
-                    feedback.textContent = '';
-                }
-            }
+                tempPreviewHtml = vista.innerHTML;
+            });
 
-            // Validar campos obligatorios
-            // Validar campos obligatorios + lógica de fecha
-            function validarCampos() {
+            // QUITAR INVALID AL ESCRIBIR
+            [fechaInicioInput, fechaFinInput].forEach(input => {
+                input.addEventListener("input", () => input.classList.remove("is-invalid"));
+            });
+
+            form.addEventListener("submit", (e) => {
                 let valido = true;
 
-                // Validar empleado
-                const nombre = inputEmpleado.value.trim().toLowerCase();
-                const empleadoValido = empleados.some(emp => (emp.nombre + ' ' + emp.apellido).toLowerCase() === nombre);
-                if(!empleadoValido){
-                    mostrarError(inputEmpleado, mensajes.empleado);
+                const requeridos = ["motivo", "institucion_medica", "descripcion"];
+                requeridos.forEach(name => {
+                    const campo = form.querySelector(`[name="${name}"]`);
+                    let feedback = campo.nextElementSibling;
+                    if (!feedback || !feedback.classList.contains("invalid-feedback")) {
+                        feedback = document.createElement("div");
+                        feedback.className = "invalid-feedback";
+                        campo.parentNode.appendChild(feedback);
+                    }
+
+                    if (!campo.value.trim()) {
+                        campo.classList.add("is-invalid");
+                        // Mensajes personalizados
+                        if (name === "motivo") feedback.textContent = "Debe ingresar el motivo de la incapacidad.";
+                        if (name === "institucion_medica") feedback.textContent = "Debe ingresar la institución médica.";
+                        if (name === "descripcion") feedback.textContent = "Debe ingresar una descripción.";
+                        valido = false;
+                    } else {
+                        campo.classList.remove("is-invalid");
+                    }
+                });
+
+                // FECHAS
+                let fi = fechaInicioInput.value ? new Date(fechaInicioInput.value) : null;
+                let ff = fechaFinInput.value ? new Date(fechaFinInput.value) : null;
+
+                let feedbackInicio = fechaInicioInput.nextElementSibling;
+                if (!feedbackInicio || !feedbackInicio.classList.contains("invalid-feedback")) {
+                    feedbackInicio = document.createElement("div");
+                    feedbackInicio.className = "invalid-feedback";
+                    fechaInicioInput.parentNode.appendChild(feedbackInicio);
+                }
+
+                let feedbackFin = fechaFinInput.nextElementSibling;
+                if (!feedbackFin || !feedbackFin.classList.contains("invalid-feedback")) {
+                    feedbackFin = document.createElement("div");
+                    feedbackFin.className = "invalid-feedback";
+                    fechaFinInput.parentNode.appendChild(feedbackFin);
+                }
+
+                if (!fechaInicioInput.value) {
+                    fechaInicioInput.classList.add("is-invalid");
+                    feedbackInicio.textContent = "Debe seleccionar una fecha de inicio.";
                     valido = false;
                 } else {
-                    quitarError(inputEmpleado);
+                    fechaInicioInput.classList.remove("is-invalid");
                 }
 
-                // Campos obligatorios
-                const campos = ['fecha_inicio', 'fecha_fin', 'motivo', 'institucion_medica'];
-                campos.forEach(name => {
-                    const campo = form.querySelector(`[name="${name}"]`);
-                    if(campo && !campo.value.trim()){
-                        mostrarError(campo, mensajes[name]);
-                        valido = false;
-                    } else if(campo) {
-                        quitarError(campo);
-                    }
-                });
-
-                // Validar fecha fin >= fecha inicio
-                const fechaInicioInput = form.querySelector('[name="fecha_inicio"]');
-                const fechaFinInput = form.querySelector('[name="fecha_fin"]');
-                if(fechaInicioInput.value && fechaFinInput.value){
-                    const fechaInicio = new Date(fechaInicioInput.value);
-                    const fechaFin = new Date(fechaFinInput.value);
-                    if(fechaFin < fechaInicio){
-                        mostrarError(fechaFinInput, "La fecha fin no puede ser anterior a la fecha inicio.");
-                        valido = false;
-                    } else {
-                        quitarError(fechaFinInput);
-                    }
-                }
-
-                return valido;
-            }
-
-            // Vista previa al seleccionar archivo
-            documentoInput.addEventListener('change', function(){
-                const file = this.files[0];
-                vistaDocumento.innerHTML = '';
-                if(file){
-                    const ext = file.name.split('.').pop().toLowerCase();
-                    if(['jpg','jpeg','png'].includes(ext)){
-                        const img = document.createElement('img');
-                        img.src = URL.createObjectURL(file);
-                        img.classList.add('img-fluid','rounded');
-                        img.style.maxHeight = '200px';
-                        vistaDocumento.appendChild(img);
-                    } else if(ext === 'pdf'){
-                        const iframe = document.createElement('iframe');
-                        iframe.src = URL.createObjectURL(file);
-                        iframe.width = '100%';
-                        iframe.height = '200px';
-                        iframe.classList.add('border');
-                        vistaDocumento.appendChild(iframe);
-                    } else {
-                        vistaDocumento.innerHTML = '<p class="text-muted">Formato no soportado</p>';
-                    }
+                if (!fechaFinInput.value) {
+                    fechaFinInput.classList.add("is-invalid");
+                    feedbackFin.textContent = "Debe seleccionar una fecha de fin.";
+                    valido = false;
                 } else {
-                    // Restaurar original
-                    if(originalDoc){
-                        const ext = originalDoc.split('.').pop().toLowerCase();
-                        if(['jpg','jpeg','png'].includes(ext)){
-                            const img = document.createElement('img');
-                            img.src = `/storage/${originalDoc}`;
-                            img.classList.add('img-fluid','rounded');
-                            img.style.maxHeight = '200px';
-                            vistaDocumento.appendChild(img);
-                        } else if(ext === 'pdf'){
-                            const iframe = document.createElement('iframe');
-                            iframe.src = `/storage/${originalDoc}`;
-                            iframe.width = '100%';
-                            iframe.height = '200px';
-                            iframe.classList.add('border');
-                            vistaDocumento.appendChild(iframe);
-                        }
-                    } else {
-                        vistaDocumento.innerHTML = '<p class="text-muted">No hay documento cargado</p>';
-                    }
+                    fechaFinInput.classList.remove("is-invalid");
                 }
-            });
 
-            // Buscar empleados
-            inputEmpleado.addEventListener('input', function() {
-                const value = this.value.toLowerCase();
-                results.innerHTML = '';
-                if(!value.trim()){
-                    empleadoId.value = '';
-                    identidad.value = '';
-                    cargo.value = '';
-                    quitarError(inputEmpleado);
-                    return;
+                if (fi && ff && ff < fi) {
+                    fechaFinInput.classList.add("is-invalid");
+                    feedbackFin.textContent = "La fecha fin debe ser igual o posterior a la fecha de inicio.";
+                    valido = false;
                 }
-                const filtered = empleados.filter(emp => (emp.nombre + ' ' + emp.apellido).toLowerCase().includes(value));
-                filtered.forEach(emp => {
-                    const div = document.createElement('div');
-                    div.classList.add('list-group-item','list-group-item-action');
-                    div.style.cursor = 'pointer';
-                    div.textContent = emp.nombre + ' ' + emp.apellido;
-                    div.addEventListener('click', () => {
-                        inputEmpleado.value = emp.nombre + ' ' + emp.apellido;
-                        empleadoId.value = emp.id;
-                        identidad.value = emp.identidad;
-                        cargo.value = emp.categoria;
-                        results.innerHTML = '';
-                        quitarError(inputEmpleado);
-                    });
-                    results.appendChild(div);
-                });
-            });
 
-            // Validación al enviar
-            form.addEventListener('submit', function(e) {
-                if(!validarCampos()){
+                // DOCUMENTO
+                let feedbackDoc = documentoInput.nextElementSibling;
+                if (!feedbackDoc || !feedbackDoc.classList.contains("invalid-feedback")) {
+                    feedbackDoc = document.createElement("div");
+                    feedbackDoc.className = "invalid-feedback";
+                    documentoInput.parentNode.appendChild(feedbackDoc);
+                }
+
+                if (!documentoInput.files.length && !@json($incapacidad->documento)) {
+                    documentoInput.classList.add("is-invalid");
+                    feedbackDoc.textContent = "Debe ingresar un comprobante.";
+                    valido = false;
+                } else {
+                    documentoInput.classList.remove("is-invalid");
+                }
+
+                // DUPLICADO
+                @php
+                    $duplicada = \App\Models\Incapacidad::where('empleado_id', $incapacidad->empleado_id)
+                        ->where('id','!=',$incapacidad->id)
+                        ->whereDate('fecha_inicio', \Carbon\Carbon::parse($incapacidad->fecha_inicio)->format('Y-m-d'))
+                        ->exists();
+                @endphp
+                if (@json($duplicada)) {
+                    alert("Este empleado ya tiene una incapacidad registrada para esta fecha.");
+                    valido = false;
+                }
+
+                if (!valido) {
                     e.preventDefault();
+                    vista.innerHTML = tempPreviewHtml;
                 }
             });
 
-            // Botón Restablecer
-            document.getElementById('btnRestablecer').addEventListener('click', function(e){
+            // RESTABLECER
+            document.getElementById("btnRestablecer").addEventListener("click", (e) => {
                 e.preventDefault();
-
-                // Restaurar valores originales
-                form.querySelectorAll('[data-original]').forEach(el => {
-                    el.value = el.dataset.original;
-                    quitarError(el);
+                form.querySelectorAll("[data-original]").forEach(el => {
+                    if (el.dataset.original !== undefined) {
+                        el.value = el.dataset.original;
+                    } else if (el.dataset.originalId !== undefined) {
+                        el.value = el.dataset.originalId;
+                    } else if (el.dataset.originalName !== undefined) {
+                        el.value = el.dataset.originalName;
+                    }
+                    el.classList.remove("is-invalid");
                 });
 
-                inputEmpleado.value = inputEmpleado.dataset.originalName;
-                empleadoId.value = empleadoId.dataset.originalId;
-                identidad.value = identidad.dataset.original;
-                cargo.value = cargo.dataset.original;
-                results.innerHTML = '';
-                quitarError(inputEmpleado);
-
-                // Restaurar vista previa
-                vistaDocumento.innerHTML = '';
-                if(originalDoc){
-                    const ext = originalDoc.split('.').pop().toLowerCase();
-                    if(['jpg','jpeg','png'].includes(ext)){
-                        const img = document.createElement('img');
-                        img.src = `/storage/${originalDoc}`;
-                        img.classList.add('img-fluid','rounded');
-                        img.style.maxHeight = '200px';
-                        vistaDocumento.appendChild(img);
-                    } else if(ext === 'pdf'){
-                        const iframe = document.createElement('iframe');
-                        iframe.src = `/storage/${originalDoc}`;
-                        iframe.width = '100%';
-                        iframe.height = '200px';
-                        iframe.classList.add('border');
-                        vistaDocumento.appendChild(iframe);
-                    }
-                } else {
-                    vistaDocumento.innerHTML = '<p class="text-muted">No hay documento cargado</p>';
-                }
-
-                // Limpiar input de archivo
-                documentoInput.value = '';
+                documentoInput.value = "";
+                vista.innerHTML = originalVistaHtml;
+                tempPreviewHtml = originalVistaHtml;
             });
-        });
 
+        });
     </script>
+
     </body>
 @endsection

@@ -62,14 +62,13 @@
                 </div>
 
                 <div class="col-md-2 d-flex flex-column gap-2 align-items-start">
-                    <button type="submit" class="btn btn-sm btn-primary px-2 py-1">
+                    <button type="submit" class="btn btn-sm btn-primary w-75 px-2 py-1">
                         <i class="bi bi-funnel me-1"></i> Filtrar
                     </button>
-                    <a href="<?php echo e(route('incapacidades.index')); ?>" class="btn btn-sm btn-secondary px-2 py-1">
+                    <a href="<?php echo e(route('incapacidades.index')); ?>" class="btn btn-sm btn-secondary w-75 px-2 py-1">
                         <i class="bi bi-x-circle me-1"></i> Limpiar
                     </a>
                 </div>
-
 
             </form>
 
@@ -90,7 +89,6 @@
                         <th>Empleado</th>
                         <th>Institución</th>
                         <th>Fecha Inicio</th>
-                        <th>Fecha Fin</th>
                         <th>Estado</th>
                         <th class="text-center">Acciones</th>
                     </tr>
@@ -106,7 +104,6 @@
                             <td><?php echo e($incapacidad->empleado->nombre); ?> <?php echo e($incapacidad->empleado->apellido); ?></td>
                             <td><?php echo e($incapacidad->institucion_medica); ?></td>
                             <td><?php echo e(\Carbon\Carbon::parse($incapacidad->fecha_inicio)->format('d/m/Y')); ?></td>
-                            <td><?php echo e(\Carbon\Carbon::parse($incapacidad->fecha_fin)->format('d/m/Y')); ?></td>
                             <td class="text-center">
                             <span class="badge <?php echo e($estado == 'Vigente' ? 'bg-success' : 'bg-danger'); ?>">
                                 <?php echo e($estado); ?>
@@ -145,7 +142,6 @@
                                 if(request('fecha_inicio') || request('fecha_fin')) {
                                     $fechas = [];
                                     if(request('fecha_inicio')) $fechas[] = 'desde '.\Carbon\Carbon::parse(request('fecha_inicio'))->format('d/m/Y');
-                                    if(request('fecha_fin')) $fechas[] = 'hasta '.\Carbon\Carbon::parse(request('fecha_fin'))->format('d/m/Y');
                                     $filtros[] = 'Fechas: '.implode(' ', $fechas);
                                 }
                             ?>
@@ -159,7 +155,6 @@
                         <?php if(request('estado')): ?> con estado "<strong><?php echo e(ucfirst(request('estado'))); ?></strong>" <?php endif; ?>
                         <?php if(request('fecha_inicio') || request('fecha_fin')): ?> en fechas
                         <?php if(request('fecha_inicio')): ?> desde <strong><?php echo e(\Carbon\Carbon::parse(request('fecha_inicio'))->format('d/m/Y')); ?></strong> <?php endif; ?>
-                        <?php if(request('fecha_fin')): ?> hasta <strong><?php echo e(\Carbon\Carbon::parse(request('fecha_fin'))->format('d/m/Y')); ?></strong> <?php endif; ?>
                         <?php endif; ?>.
                     </div>
                 <?php endif; ?>
