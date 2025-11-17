@@ -74,9 +74,8 @@
                                 <input type="text" name="nombre"
                                        class="form-control @error('nombre') is-invalid @enderror"
                                        value="{{ old('nombre') }}"
-                                       maxlength="100"
-                                       onkeypress="soloLetras(event)"
-                                       onkeydown="bloquearEspacioAlInicio(event, this)"
+                                       maxlength="50"
+                                       onkeydown="soloLetrasNumeros(event);bloquearEspacioAlInicio(event, this)"
                                        oninput="eliminarEspaciosIniciales(this)"
                                        required>
                                 @error('nombre')
@@ -104,13 +103,13 @@
 
                         <!-- contacto -->
                         <div class="col-md-6">
-                            <label for="contacto" class="form-label">Contacto</label>
+                            <label for="contacto" class="form-label">Nombre del contacto</label>
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-person-badge-fill"></i></span>
                                 <input type="text" name="contacto"
                                        class="form-control @error('contacto') is-invalid @enderror"
                                        value="{{ old('contacto') }}"
-                                       maxlength="100"
+                                       maxlength="60"
                                        onkeypress="soloLetras(event)"
                                        onkeydown="bloquearEspacioAlInicio(event, this)"
                                        oninput="eliminarEspaciosIniciales(this)"
@@ -414,6 +413,19 @@
         }
     }
 
+    function soloLetrasNumeros(e) {
+        const key = e.key;
+        // Permite letras, números, acentos, ñ y espacios
+        const regex = /^[A-Za-z0-9áéíóúÁÉÍÓÚñÑ\s]$/;
+
+        // Teclas de control permitidas
+        const teclasPermitidas = ['Backspace','Tab','Enter','ArrowLeft','ArrowRight','Delete','Shift','Control','Alt','Escape'];
+
+        if (!regex.test(key) && !teclasPermitidas.includes(key)) {
+            e.preventDefault(); // Bloquea el carácter no permitido
+        }
+    }
+
     function validarTelefono(input) {
         input.value = input.value.replace(/[^0-9]/g, '');
         if (input.value.length > 8) {
@@ -432,6 +444,9 @@
         }
     }
 
+
+
+
     function eliminarEspaciosIniciales(input) {
         input.value = input.value.replace(/^\s+/, '');
     }
@@ -448,6 +463,10 @@
                 elemento.value = "";
             }
         });
+
+
+
+
 
         // Quitar clases de error
         const inputsInvalidos = formulario.querySelectorAll('.form-control.is-invalid');
