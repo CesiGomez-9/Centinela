@@ -99,6 +99,7 @@ class CapacitacionController extends Controller
             'nombre.required' => 'Debe ingresar el nombre la institución.',
             'nombre.regex' => 'El nombre de la empresa solo debe contener letras, espacios y tildes.',
             'direccion.required_if' => 'Debe ingresar la dirección.',
+            
 
             'telefono.required' => 'Debe ingresar el teléfono de la institución.',
             'telefono.regex' => 'El teléfono debe comenzar con 2, 3, 8 o 9 y tener 8 dígitos.',
@@ -108,6 +109,7 @@ class CapacitacionController extends Controller
             'correo.required' => 'Debe ingresar el correo electrónico.',
             'correo.email' => 'Debe ingresar un correo electrónico válido.',
             'correo.regex'=>'Debe ingresar un correo valido',
+
 
 
             'contacto.required' => 'Debe ingresar el nombre del contacto.',
