@@ -161,5 +161,4 @@
             <i class="bi bi-pencil-square me-2"></i>Editar incapacidad
         </a>
     </div>
-
 @endsection

@@ -43,16 +43,14 @@
                         <label class="form-label fw-bold">Identidad:</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-card-heading"></i></span>
-                            <input type="text" id="identidad" name="identidad" class="form-control" readonly>
-                        </div>
+                            <input type="text" id="identidad" name="identidad" class="form-control" readonly value="{{ old('identidad') }}">                        </div>
                     </div>
 
                     <div class="col-md-3">
                         <label class="form-label fw-bold">Cargo:</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-briefcase"></i></span>
-                            <input type="text" id="cargo" name="cargo" class="form-control" readonly>
-                        </div>
+                            <input type="text" id="cargo" name="cargo" class="form-control" readonly value="{{ old('cargo') }}">                        </div>
                     </div>
 
                     <div class="col-md-4">
@@ -97,7 +95,6 @@
                                       placeholder="Ingresar un asunto pequeño..."
                                       style="overflow:hidden; resize:none;"
                                       required>{{ old('motivo') ?? '' }}</textarea>
-
                             <div class="invalid-feedback d-block">@error('motivo') {{ $message }} @enderror</div>
                         </div>
                     </div>
@@ -145,7 +142,6 @@
             </form>
         </div>
     </div>
-
     <script>
         const incapacidades = @json($incapacidades);
 
@@ -223,7 +219,6 @@
             setupTextareaLimit('descripcion', 250, /[^\p{L}0-9\s]/gu);
             setupTextareaLimit('institucion_medica', 50, /[^\p{L}0-9\s]/gu);
 
-
             const hoy = new Date();
             const año = hoy.getFullYear();
             const mes = hoy.getMonth();
@@ -282,28 +277,23 @@
                         empleadoResults.innerHTML = '';
                         empleadoInput.classList.remove('is-invalid');
 
-                        // 🟥 LIMPIAR ALERTA ANTERIOR
                         const alerta = empleadoInput.closest('.col-md-5').querySelector('.invalid-feedback.d-block');
                         alerta.textContent = "";
 
-                        // ====== ⛔ VALIDACIONES DE FECHAS ======
                         const fechaSeleccionadaInicio = fechaInicio.value;
                         const fechaSeleccionadaFin = fechaFin.value;
 
                         if (!fechaSeleccionadaInicio || !fechaSeleccionadaFin) {
-                            return; // Si no hay fechas, no validamos aún
+                            return;
                         }
 
-                        // Filtrar incapacidades del empleado seleccionado
                         const historial = incapacidades.filter(i => i.empleado_id == emp.id);
 
-                        // VALIDAR TRASLAPE
                         const coincideFecha = historial.some(i =>
                             (fechaSeleccionadaInicio >= i.fecha_inicio && fechaSeleccionadaInicio <= i.fecha_fin) ||
                             (fechaSeleccionadaFin >= i.fecha_inicio && fechaSeleccionadaFin <= i.fecha_fin)
                         );
 
-                        // FUNCIÓN PARA OBTENER NUMERO DE SEMANA
                         function numeroSemana(fecha) {
                             let f = new Date(fecha);
                             f.setHours(0,0,0,0);
@@ -320,7 +310,6 @@
                             new Date(i.fecha_inicio).getFullYear() === añoActual
                         ).length;
 
-                        // ====== MOSTRAR ALERTAS ======
                         if (coincideFecha) {
                             alerta.textContent = "Este empleado ya tiene una incapacidad registrada que se traslapa con estas fechas.";
                             empleadoInput.classList.add("is-invalid");
@@ -342,15 +331,42 @@
                 }
             });
 
+            function existeDuplicadoLocal(empleado_id, fecha_inicio_val, fecha_fin_val) {
+                if (!empleado_id || !fecha_inicio_val || !fecha_fin_val) return false;
+                return incapacidades.some(i =>
+                        i.empleado_id == empleado_id && (
+                            (fecha_inicio_val >= i.fecha_inicio && fecha_inicio_val <= i.fecha_fin) ||
+                            (fecha_fin_val >= i.fecha_inicio && fecha_fin_val <= i.fecha_fin) ||
+                            (i.fecha_inicio <= fecha_inicio_val && i.fecha_fin >= fecha_fin_val)
+                        )
+                );
+            }
+
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
 
                 if (empleadoInput.classList.contains('is-invalid')) {
-                    return; // ← No enviar, no recargar, no borrar comprobante
+                    return;
                 }
+
+                if (existeDuplicadoLocal(empleadoId.value, fechaInicio.value, fechaFin.value)) {
+                    empleadoInput.classList.add('is-invalid');
+                    empleadoInput.closest('.col-md-5').querySelector('.invalid-feedback.d-block').textContent = 'El empleado ya posee una incapacidad dentro de las fechas seleccionadas.';
+                    return;
+                }
+
                 let isValid = true;
-                document.querySelectorAll('.is-invalid').forEach(i => i.classList.remove('is-invalid'));
-                document.querySelectorAll('.invalid-feedback').forEach(f => f.textContent = '');
+                document.querySelectorAll('.invalid-feedback.d-block').forEach(f => {
+                    if (f !== empleadoInput.closest('.col-md-5').querySelector('.invalid-feedback.d-block')) {
+                        f.textContent = '';
+                    }
+                });
+
+                document.querySelectorAll('.is-invalid').forEach(i => {
+                    if (i !== empleadoInput) {
+                        i.classList.remove('is-invalid');
+                    }
+                });
 
                 if (!empleadoId.value) {
                     empleadoInput.classList.add('is-invalid');
@@ -363,7 +379,6 @@
                     institucion.closest('.col-md-4').querySelector('.invalid-feedback.d-block').textContent = 'Debe ingresar una institución médica.';
                     isValid = false;
                 }
-
 
                 if (!motivo.value.trim()) {
                     motivo.classList.add('is-invalid');
@@ -397,7 +412,9 @@
                     isValid = false;
                 }
 
-                if (isValid) form.submit();
+                if (isValid) {
+                    form.submit();
+                }
             });
 
             document.getElementById('btnRestablecer').addEventListener('click', function(e){
