@@ -157,7 +157,6 @@ unset($__errorArgs, $__bag); ?>"
                                       placeholder="Ingresar un asunto pequeño..."
                                       style="overflow:hidden; resize:none;"
                                       required><?php echo e(old('motivo') ?? ''); ?></textarea>
-
                             <div class="invalid-feedback d-block"><?php $__errorArgs = ['motivo'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -317,7 +316,6 @@ unset($__errorArgs, $__bag); ?></div>
             setupTextareaLimit('descripcion', 250, /[^\p{L}0-9\s]/gu);
             setupTextareaLimit('institucion_medica', 50, /[^\p{L}0-9\s]/gu);
 
-
             const hoy = new Date();
             const año = hoy.getFullYear();
             const mes = hoy.getMonth();
@@ -430,7 +428,6 @@ unset($__errorArgs, $__bag); ?></div>
                 }
             });
 
-            // Helper: verifica duplicado localmente (mismo criterio que en el servidor)
             function existeDuplicadoLocal(empleado_id, fecha_inicio_val, fecha_fin_val) {
                 if (!empleado_id || !fecha_inicio_val || !fecha_fin_val) return false;
                 return incapacidades.some(i =>
@@ -443,15 +440,12 @@ unset($__errorArgs, $__bag); ?></div>
             }
 
             form.addEventListener('submit', function(e) {
-                e.preventDefault(); // siempre prevenir submit por defecto para controlar validaciones client-side
+                e.preventDefault();
 
-                // Si hay marca previa de invalid en empleado (por selección previa), evitamos envío
                 if (empleadoInput.classList.contains('is-invalid')) {
-                    // dejamos el mensaje ya mostrado y no hacemos submit para evitar recarga y pérdida de archivo
                     return;
                 }
 
-                // chequeo de duplicado local antes de enviar al servidor (previene que el servidor devuelva un back() y borre el archivo)
                 if (existeDuplicadoLocal(empleadoId.value, fechaInicio.value, fechaFin.value)) {
                     empleadoInput.classList.add('is-invalid');
                     empleadoInput.closest('.col-md-5').querySelector('.invalid-feedback.d-block').textContent = 'El empleado ya posee una incapacidad dentro de las fechas seleccionadas.';
@@ -459,15 +453,12 @@ unset($__errorArgs, $__bag); ?></div>
                 }
 
                 let isValid = true;
-
-                // Limpiar mensajes excepto el del empleado (no queremos borrar la alerta de empleado)
                 document.querySelectorAll('.invalid-feedback.d-block').forEach(f => {
                     if (f !== empleadoInput.closest('.col-md-5').querySelector('.invalid-feedback.d-block')) {
                         f.textContent = '';
                     }
                 });
 
-                // Limpiar clases is-invalid excepto la del empleado
                 document.querySelectorAll('.is-invalid').forEach(i => {
                     if (i !== empleadoInput) {
                         i.classList.remove('is-invalid');
@@ -519,8 +510,6 @@ unset($__errorArgs, $__bag); ?></div>
                 }
 
                 if (isValid) {
-                    // finalmente enviar el formulario de forma normal (esto recargará la página porque es un submit real)
-                    // pero sólo se hace si pasaron todas las validaciones client-side (evita que el server devuelva back() por duplicado)
                     form.submit();
                 }
             });
@@ -548,7 +537,6 @@ unset($__errorArgs, $__bag); ?></div>
 
         });
     </script>
-
     </body>
 <?php $__env->stopSection(); ?>
 
