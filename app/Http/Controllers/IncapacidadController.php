@@ -113,11 +113,9 @@ class IncapacidadController extends Controller
                 ->withErrors(['empleado_id' => 'El empleado ya posee una incapacidad dentro de las fechas seleccionadas.']);
         }
 
-
         if ($request->hasFile('documento')) {
             $validated['documento'] = $request->file('documento')->store('incapacidades', 'public');
         }
-
 
         Incapacidad::create($validated);
 
@@ -139,11 +137,10 @@ class IncapacidadController extends Controller
     public function edit($id)
     {
         $incapacidad = Incapacidad::findOrFail($id);
-        $empleados = Empleado::all(); // Traemos todos los empleados
+        $empleados = Empleado::all();
 
         return view('incapacidades.edit', compact('incapacidad', 'empleados'));
     }
-
 
     public function update(Request $request, Incapacidad $incapacidad)
     {
@@ -184,7 +181,6 @@ class IncapacidadController extends Controller
             'documento.max' => 'El tamaño del documento no debe ser superior a 2MB.',
         ]);
 
-        // Verificar duplicados, excluyendo la incapacidad actual
         $duplicado = Incapacidad::where('empleado_id', $request->empleado_id)
             ->where('id', '<>', $incapacidad->id)
             ->where(function($query) use ($request) {
@@ -203,11 +199,10 @@ class IncapacidadController extends Controller
                 ->withErrors(['empleado_id' => 'El empleado ya posee una incapacidad dentro de las fechas seleccionadas.']);
         }
 
-        // Si se sube un archivo nuevo, guardarlo
         if ($request->hasFile('documento')) {
             $validated['documento'] = $request->file('documento')->store('incapacidades', 'public');
         } else {
-            // Si no se sube archivo, mantener el existente
+
             $validated['documento'] = $incapacidad->documento;
         }
 
@@ -216,9 +211,4 @@ class IncapacidadController extends Controller
         return redirect()->route('incapacidades.index')
             ->with('success', 'Incapacidad actualizada correctamente.');
     }
-
-
-
-
-
 }
