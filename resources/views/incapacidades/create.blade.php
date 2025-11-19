@@ -438,7 +438,35 @@
                 fechaFin.value = hoyStr;
             });
 
+            function limpiarAlEscribir(campo) {
+                campo.addEventListener("input", function() {
+                    campo.classList.remove("is-invalid");
+                    const feedback = campo.closest('.col-md-4, .col-md-5, .col-md-6')?.querySelector(".invalid-feedback.d-block");
+                    if (feedback) feedback.textContent = "";
+                });
+            }
+
+            limpiarAlEscribir(document.getElementById("institucion_medica"));
+            limpiarAlEscribir(document.getElementById("motivo"));
+            limpiarAlEscribir(document.getElementById("descripcion"));
+            limpiarAlEscribir(document.getElementById("documento"));
+            limpiarAlEscribir(document.getElementById("fecha_inicio"));
+            limpiarAlEscribir(document.getElementById("fecha_fin"));
+            limpiarAlEscribir(document.getElementById("empleadoInput"));
+
+            function limpiarAlCambiarFecha() {
+                const alertaEmpleado = empleadoInput
+                    .closest('.col-md-5')
+                    .querySelector('.invalid-feedback.d-block');
+
+                empleadoInput.classList.remove("is-invalid");
+                alertaEmpleado.textContent = "";
+            }
+
+            fechaInicio.addEventListener("change", limpiarAlCambiarFecha);
+            fechaFin.addEventListener("change", limpiarAlCambiarFecha);
+
         });
-    </script>
-    </body>
+</script>
+</body>
 @endsection

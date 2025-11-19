@@ -535,9 +535,37 @@ unset($__errorArgs, $__bag); ?></div>
                 fechaFin.value = hoyStr;
             });
 
+            function limpiarAlEscribir(campo) {
+                campo.addEventListener("input", function() {
+                    campo.classList.remove("is-invalid");
+                    const feedback = campo.closest('.col-md-4, .col-md-5, .col-md-6')?.querySelector(".invalid-feedback.d-block");
+                    if (feedback) feedback.textContent = "";
+                });
+            }
+
+            limpiarAlEscribir(document.getElementById("institucion_medica"));
+            limpiarAlEscribir(document.getElementById("motivo"));
+            limpiarAlEscribir(document.getElementById("descripcion"));
+            limpiarAlEscribir(document.getElementById("documento"));
+            limpiarAlEscribir(document.getElementById("fecha_inicio"));
+            limpiarAlEscribir(document.getElementById("fecha_fin"));
+            limpiarAlEscribir(document.getElementById("empleadoInput"));
+
+            function limpiarAlCambiarFecha() {
+                const alertaEmpleado = empleadoInput
+                    .closest('.col-md-5')
+                    .querySelector('.invalid-feedback.d-block');
+
+                empleadoInput.classList.remove("is-invalid");
+                alertaEmpleado.textContent = "";
+            }
+
+            fechaInicio.addEventListener("change", limpiarAlCambiarFecha);
+            fechaFin.addEventListener("change", limpiarAlCambiarFecha);
+
         });
-    </script>
-    </body>
+</script>
+</body>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\cesig\Herd\sistemadeseguridadcentinela\resources\views/incapacidades/create.blade.php ENDPATH**/ ?>

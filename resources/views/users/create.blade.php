@@ -6,15 +6,12 @@
         <div class="card shadow p-4 bg-white position-relative">
             <i class="bi bi-person-badge position-absolute top-0 end-0 p-3 text-secondary opacity-25" style="font-size:4rem;"></i>
             <div class="position-relative mb-4" style="padding-top: 5px;">
-
-                <!-- BOTÓN A LA IZQUIERDA -->
+                
                 <button type="button"
                         class="btn btn-sm btn-outline-primary position-absolute"
                         style="top: 0; left: 0; transform: translateY(2px);">
                     <i class="bi bi-box-arrow-in-right me-1"></i> Iniciar sesión
                 </button>
-
-                <!-- TÍTULO CENTRADO -->
                 <h3 class="text-center m-0" style="color:#09457f; line-height:1;">
                     <i class="bi bi-person-fill me-2"></i>
                     @isset($user) Editar usuario @else Registrar usuario @endisset
