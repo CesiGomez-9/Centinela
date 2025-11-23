@@ -52,6 +52,12 @@ class Empleado extends Model
         return $this->hasMany(Incapacidad::class, 'empleado_id');
     }
 
+    public function user()
+    {
+        return $this->hasOne(User::class);
+    }
+
+
 
 
 }
