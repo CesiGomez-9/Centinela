@@ -119,26 +119,56 @@
 </head>
 <body>
 
+
+
 <div class="login-card">
     <i class="bi bi-shield-lock-fill icon"></i>
     <h2>Bienvenido</h2>
     <p>Grupo Centinela</p>
 
-    <form action="{{ route('auth.process') }}" method="POST">
+    <form action="{{ route('login.process') }}" method="POST">
         @csrf
+        <!-- Usuario -->
         <div class="mb-3">
             <label for="usuario" class="form-label">Usuario</label>
-            <input type="text" class="form-control" id="usuario" name="usuario" placeholder="Ingrese su usuario" required>
+            <input type="text"
+                   class="form-control"
+                   id="usuario"
+                   name="usuario"
+                   maxlength="30"
+                   placeholder="Ingrese su usuario"
+                   value="{{ old('usuario') }}">
+            @error('usuario')
+            <div class="text-danger mt-1" style="font-size: 0.9rem;">
+                {{ $message }}
+            </div>
+            @enderror
         </div>
+
+        <!-- Contraseña -->
         <div class="mb-3">
             <label for="password" class="form-label">Contraseña</label>
-            <input type="password" class="form-control" id="password" name="password" placeholder="Ingrese su contraseña" required>
+            <input type="password"
+                   class="form-control"
+                   id="password"
+                   name="password"
+                   maxlength="8"
+                   placeholder="Ingrese su contraseña">
+            @error('password')
+            <div class="text-danger mt-1" style="font-size: 0.9rem;">
+                {{ $message }}
+            </div>
+            @enderror
         </div>
-        <button class="btn btn-login" type="submit"><i class="bi bi-box-arrow-in-right"></i> Ingresar</button>
+
+        <button class="btn btn-login" type="submit">
+            <i class="bi bi-box-arrow-in-right"></i> Ingresar
+        </button>
     </form>
 
     <p class="text-small">¿Olvidaste tu contraseña?</p>
 </div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js
 "></script>

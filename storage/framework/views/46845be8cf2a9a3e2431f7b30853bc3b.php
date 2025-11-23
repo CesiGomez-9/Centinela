@@ -119,26 +119,72 @@
 </head>
 <body>
 
+
+
 <div class="login-card">
     <i class="bi bi-shield-lock-fill icon"></i>
     <h2>Bienvenido</h2>
     <p>Grupo Centinela</p>
 
-    <form action="<?php echo e(route('auth.process')); ?>" method="POST">
+    <form action="<?php echo e(route('login.process')); ?>" method="POST">
         <?php echo csrf_field(); ?>
+        <!-- Usuario -->
         <div class="mb-3">
             <label for="usuario" class="form-label">Usuario</label>
-            <input type="text" class="form-control" id="usuario" name="usuario" placeholder="Ingrese su usuario" required>
+            <input type="text"
+                   class="form-control"
+                   id="usuario"
+                   name="usuario"
+                   maxlength="30"
+                   placeholder="Ingrese su usuario"
+                   value="<?php echo e(old('usuario')); ?>">
+            <?php $__errorArgs = ['usuario'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+            <div class="text-danger mt-1" style="font-size: 0.9rem;">
+                <?php echo e($message); ?>
+
+            </div>
+            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
         </div>
+
+        <!-- Contraseña -->
         <div class="mb-3">
             <label for="password" class="form-label">Contraseña</label>
-            <input type="password" class="form-control" id="password" name="password" placeholder="Ingrese su contraseña" required>
+            <input type="password"
+                   class="form-control"
+                   id="password"
+                   name="password"
+                   maxlength="8"
+                   placeholder="Ingrese su contraseña">
+            <?php $__errorArgs = ['password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+            <div class="text-danger mt-1" style="font-size: 0.9rem;">
+                <?php echo e($message); ?>
+
+            </div>
+            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
         </div>
-        <button class="btn btn-login" type="submit"><i class="bi bi-box-arrow-in-right"></i> Ingresar</button>
+
+        <button class="btn btn-login" type="submit">
+            <i class="bi bi-box-arrow-in-right"></i> Ingresar
+        </button>
     </form>
 
     <p class="text-small">¿Olvidaste tu contraseña?</p>
 </div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js
 "></script>

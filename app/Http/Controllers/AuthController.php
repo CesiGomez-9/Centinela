@@ -16,19 +16,24 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required']
+            'usuario' => ['required', 'string'],
+            'password' => ['required', 'string', 'max:8'],
+        ], [
+            'usuario.required'  => 'Debe ingresar su usuario.',
+            'password.required' => 'Debe ingresar su contraseña.',
+            'password.max'=>'La contraseña no puede ser mayor a 8 caracteres.',
         ]);
 
-        $credentials = $request->only('email', 'password');
+        $credentials = $request->only('usuario', 'password');
 
         if (Auth::attempt($credentials, $request->filled('remember'))) {
             $request->session()->regenerate();
-            return redirect()->intended('dashboard');
+            return redirect()->intended('/');
         }
 
+
         return back()->withErrors([
-            'email' => 'Credenciales incorrectas.',
+            'usuario' => 'Credenciales incorrectas.',
         ]);
     }
 
