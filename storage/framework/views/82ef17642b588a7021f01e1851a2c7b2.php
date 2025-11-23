@@ -1,12 +1,11 @@
-<?php $__env->startSection('titulo', 'Asistencias'); ?>
-
 <?php $__env->startSection('content'); ?>
     <style>
         body {
             background-color: #e6f0ff;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
         }
+
 
         .btn-outline-custom {
             border: 2px solid #09457f;
@@ -96,7 +95,7 @@
                                 name="search"
                                 value="<?php echo e(request('search')); ?>"
                                 class="form-control"
-                                placeholder="Buscar por nombre"
+                                placeholder="Buscar por nombre, apellido o identidad"
                             >
                             <span class="input-group-text"><i class="bi bi-search"></i></span>
                         </div>
@@ -161,8 +160,7 @@
         </div>
     </div>
 
-
-    <script>
+     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const searchInput = document.getElementById('searchInput');
 
@@ -189,4 +187,4 @@
     </script>
 <?php $__env->stopSection(); ?>
 
-<?php echo $__env->make("plantilla", array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\angel\PhpstormProjects\Centinela\resources\views/asistencias/index.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\angel\PhpstormProjects\Centinela\resources\views/asistencias/index.blade.php ENDPATH**/ ?>

@@ -94,7 +94,7 @@
 
                     {{-- MOTIVO --}}
                     <div class="col-md-6">
-                        <label class="form-label fw-bold">Motivo:</label>
+                        <label class="form-label fw-bold">Asunto:</label>
                         <textarea maxlength="50"
                                   name="motivo" rows="1"
                                   class="form-control solo-texto"
