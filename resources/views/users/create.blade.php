@@ -1,159 +1,289 @@
 @extends('plantilla')
-@section('content')
 
-    <body style="background-color: #e6f0ff;">
-    <div class="container mt-5" style="max-width:900px;">
-        <div class="card shadow p-4 bg-white position-relative">
-            <i class="bi bi-person-badge position-absolute top-0 end-0 p-3 text-secondary opacity-25" style="font-size:4rem;"></i>
-            <div class="position-relative mb-4" style="padding-top: 5px;">
-                
-                <button type="button"
-                        class="btn btn-sm btn-outline-primary position-absolute"
-                        style="top: 0; left: 0; transform: translateY(2px);">
-                    <i class="bi bi-box-arrow-in-right me-1"></i> Iniciar sesión
-                </button>
-                <h3 class="text-center m-0" style="color:#09457f; line-height:1;">
-                    <i class="bi bi-person-fill me-2"></i>
-                    @isset($user) Editar usuario @else Registrar usuario @endisset
-                </h3>
+@section('content')
+    <head>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    </head>
+
+    <style>
+        body {
+            background-color: #e6f0ff;
+            color: #000000;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 750px;
+            margin: 0 auto;
+            padding: 25px 30px;
+            border-radius: 15px;
+            background-color: #1a2340;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            color: #ffffff;
+        }
+
+        h1 {
+            font-size: 26px;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            margin-bottom: 4px;
+            background-color: #2a3357;
+            color: #fff;
+            font-size: 15px;
+        }
+
+        select option {
+            color: #000;
+        }
+
+        input::placeholder {
+            color: #aaa;
+        }
+
+        .error {
+            color: #ffc107;
+            font-size: 13px;
+            text-align: left;
+            margin-bottom: 10px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            text-align: left;
+        }
+
+        .full {
+            grid-column: span 2;
+        }
+
+        .botones {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn i {
+            vertical-align: middle;
+        }
+
+        .input-icon {
+            position: relative;
+            margin-bottom: 5px;
+        }
+
+        .input-icon i {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #ccc;
+            font-size: 1rem;
+            pointer-events: none;
+        }
+
+        .input-icon input,
+        .input-icon select {
+            width: 100%;
+            padding-left: 35px;
+            border-radius: 8px;
+            border: none;
+            background-color: #2a3357;
+            color: #fff;
+            font-size: 15px;
+        }
+
+        .input-icon select {
+            color: #fff;
+        }
+
+        .input-icon input::placeholder,
+        .input-icon select option {
+            color: #aaa;
+        }
+
+        .input-icon input:focus,
+        .input-icon select:focus {
+            background-color: #2a3357 !important;
+            color: #fff !important;
+            outline: none;
+        }
+
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:active,
+        select:-webkit-autofill,
+        select:-webkit-autofill:hover,
+        select:-webkit-autofill:focus,
+        select:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0px 1000px #2a3357 inset !important;
+            -webkit-text-fill-color: #fff !important;
+        }
+
+        /* Lista de resultados de búsqueda */
+        .results {
+            background-color: #2a3357;
+            max-height: 150px;
+            overflow-y: auto;
+            border-radius: 8px;
+            margin-top: 2px;
+            position: absolute;
+            width: calc(100% - 20px);
+            z-index: 1000;
+        }
+
+        .results div {
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        .results div:hover {
+            background-color: #3a4467;
+        }
+    </style>
+
+    <div class="container">
+        <h1 style="display: flex; align-items: center; justify-content: center; gap: 10px; color: #ffffff;">
+            Registrar usuario
+            <i class="bi bi-person-fill" style="font-size: 2rem;"></i>
+        </h1>
+
+        <form id="formUsuarios" method="POST" action="{{ route('users.store') }}">
+            @csrf
+
+            <div class="grid-2">
+
+                {{-- Buscar Empleado --}}
+                <div class="full" style="position: relative;">
+                    <div class="input-icon">
+                        <i class="bi bi-search"></i>
+                        <input type="text" id="buscarEmpleado" placeholder="Buscar empleado...">
+                    </div>
+                    <div class="results" id="results"></div>
+                    <div class="error" id="error-empleado"></div>
+                </div>
+
+                {{-- Correo (autocompletado) --}}
+                <div class="full">
+                    <div class="input-icon">
+                        <i class="bi bi-envelope-fill"></i>
+                        <input type="email" name="email" id="email" placeholder="Correo electrónico" readonly>
+                    </div>
+                    <div class="error" id="error-email">@error('email') ⚠️ {{ $message }} @enderror</div>
+                </div>
+
+                {{-- Usuario (autogenerado) --}}
+                <div class="full">
+                    <div class="input-icon">
+                        <i class="bi bi-person-badge-fill"></i>
+                        <input type="text" name="usuario" id="usuario" placeholder="Usuario" readonly>
+                    </div>
+                    <div class="error" id="error-usuario">@error('usuario') ⚠️ {{ $message }} @enderror</div>
+                </div>
+
+                {{-- Contraseña (autogenerada) --}}
+                <div class="full">
+                    <div class="input-icon">
+                        <i class="bi bi-lock-fill"></i>
+                        <input type="text" name="password" id="password" placeholder="Contraseña temporal" readonly>
+                    </div>
+                    <div class="error" id="error-password"></div>
+                </div>
+
+                {{-- Rol --}}
+                <div class="full">
+                    <div class="input-icon">
+                        <i class="bi bi-shield-lock-fill"></i>
+                        <select name="rol" id="rol">
+                            <option value="">Seleccione un rol</option>
+                            @foreach($roles as $rol)
+                                <option value="{{ $rol }}" {{ old('rol') == $rol ? 'selected' : '' }}>
+                                    {{ $rol }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="error" id="error-rol">@error('rol') ⚠️ {{ $message }} @enderror</div>
+                </div>
 
             </div>
 
+            <div class="botones">
+                <a href="{{ route('users.index') }}" class="btn btn-danger w-100">
+                    <i class="bi bi-x-circle me-2"></i> Cancelar
+                </a>
 
-        @if(session('guardado'))
-                <div class="alert alert-success">¡Usuario guardado correctamente!</div>
-            @endif
-            <form method="POST" action="{{ isset($user) ? route('users.update', $user->id) : route('users.store') }}" id="userForm" novalidate>
-                @csrf
-                @isset($user) @method('PUT') @endisset
+                <button type="button" class="btn btn-secondary w-100" id="btnLimpiar">
+                    <i class="bi bi-eraser-fill me-2"></i> Limpiar
+                </button>
 
-                <div class="row g-3">
+                <button type="submit" class="btn btn-warning w-100 text-white fw-normal">
+                    <i class="bi bi-save-fill me-2"></i> Guardar
+                </button>
+            </div>
 
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">Nombre:</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                            <input type="text" id="name" name="name" maxlength="50"
-                                   value="{{ old('name', $user->name ?? '') }}"
-                                   class="form-control @error('name') is-invalid @enderror"
-                                   oninput="validarTexto(this,50)" />
-                            <div class="invalid-feedback">@error('name') {{ $message }} @enderror</div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">Apellido:</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                            <input type="text" id="apellido" name="apellido" maxlength="50"
-                                   value="{{ old('apellido', $user->apellido ?? '') }}"
-                                   class="form-control @error('apellido') is-invalid @enderror"
-                                   oninput="validarTexto(this,50)" />
-                            <div class="invalid-feedback">@error('apellido') {{ $message }} @enderror</div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">Usuario:</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                            <input type="text" id="apellido" name="apellido" maxlength="50"
-                                   value="{{ old('apellido', $user->apellido ?? '') }}"
-                                   class="form-control @error('apellido') is-invalid @enderror"
-                                   oninput="validarTexto(this,50)" />
-                            <div class="invalid-feedback">@error('apellido') {{ $message }} @enderror</div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">Teléfono:</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-telephone-fill"></i></span>
-                            <input type="text" id="telefono" name="telefono" maxlength="8"
-                                   value="{{ old('telefono') }}"
-                                   class="form-control @error('telefono') is-invalid @enderror"
-                                   oninput="formatearTelefono(this)" />
-                            <div class="invalid-feedback">@error('telefono') {{ $message }} @enderror</div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label fw-bold">Correo electrónico:</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
-                            <input type="email" id="email" name="email" maxlength="50"
-                                   value="{{ old('email', $user->email ?? '') }}"
-                                   class="form-control @error('email') is-invalid @enderror" />
-                            <div class="invalid-feedback" id="emailError">
-                                @error('email') {{ $message }} @enderror
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label fw-bold">Contraseña:</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
-                            <input type="password" id="password" name="password" maxlength="50"
-                                   class="form-control @error('password') is-invalid @enderror"
-                                   value="{{ old('password') }}"
-                                   @isset($user) placeholder="Dejar vacío si no desea cambiar" @endisset />
-
-                            <div class="invalid-feedback" id="passwordError">
-                                @error('password') {{ $message }} @enderror
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label fw-bold">Confirmar contraseña:</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
-                            <input type="password" id="password" name="password" maxlength="50"
-                                   class="form-control @error('password') is-invalid @enderror"
-                                   value="{{ old('password') }}"
-                                   @isset($user) placeholder="Dejar vacío si no desea cambiar" @endisset />
-
-                            <div class="invalid-feedback" id="passwordError">
-                                @error('password') {{ $message }} @enderror
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div class="text-center mt-4 col-12">
-                        <a href="{{ route('users.index') }}" class="btn btn-danger me-2">
-                            <i class="bi bi-x-circle me-2"></i>Cancelar
-                        </a>
-                        <button type="reset" class="btn btn-warning me-2"><i class="bi bi-eraser-fill me-2"></i>Limpiar</button>
-                        <button type="submit" class="btn btn-primary"><i class="bi bi-save-fill me-2"></i>Guardar</button>
-                    </div>
-                </div>
-            </form>
-        </div>
+            <input type="hidden" name="empleado_id" id="empleado_id">
+        </form>
     </div>
 
     <script>
-        function validarTexto(input, max) {
-            input.value = input.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s.,\-]/g, '')
-                .replace(/\s+/g,' ')
-                .slice(0, max);
-        }
+        const btnLimpiar = document.getElementById("btnLimpiar");
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const formulario = document.getElementById('userForm');
+        btnLimpiar.addEventListener("click", () => {
+            document.querySelectorAll("input, select").forEach(e => e.value = "");
+            document.querySelectorAll(".error").forEach(e => e.textContent = "");
+            document.getElementById("buscarEmpleado").focus();
+        });
 
-            formulario.addEventListener('reset', function () {
-                setTimeout(() => {
-                    const campos = formulario.querySelectorAll('input');
-                    campos.forEach(campo => {
-                        if (campo.type !== 'hidden' && campo.name !== '_token') {
-                            campo.value = '';
-                            campo.classList.remove('is-invalid');
-                        }
+        // Búsqueda AJAX de empleados
+        const buscarEmpleado = document.getElementById("buscarEmpleado");
+        const results = document.getElementById("results");
+        const email = document.getElementById("email");
+        const usuario = document.getElementById("usuario");
+        const password = document.getElementById("password");
+        const empleado_id = document.getElementById("empleado_id");
+
+        buscarEmpleado.addEventListener("input", function() {
+            const q = this.value;
+
+            if(q.length === 0){
+                results.innerHTML = "";
+                return;
+            }
+
+            fetch("{{ route('ajax.empleados') }}?q=" + q)
+                .then(response => response.json())
+                .then(data => {
+                    results.innerHTML = "";
+                    data.forEach(emp => {
+                        const div = document.createElement("div");
+                        div.textContent = emp.nombre + " " + emp.apellido + " - " + emp.identidad;
+                        div.dataset.email = emp.email;
+                        div.dataset.nombre = emp.nombre;
+                        div.dataset.apellido = emp.apellido;
+                        div.dataset.id = emp.id;
+                        div.addEventListener("click", () => {
+                            buscarEmpleado.value = emp.nombre + " " + emp.apellido;
+                            email.value = emp.email;
+                            usuario.value = (emp.nombre.charAt(0) + "." + emp.apellido).toLowerCase().replace(/\s+/g, '');
+                            password.value = Math.random().toString(36).slice(-10);
+                            empleado_id.value = emp.id;
+                            results.innerHTML = "";
+                        });
+                        results.appendChild(div);
                     });
-                }, 10);
-            });
+                });
         });
     </script>
 @endsection
-

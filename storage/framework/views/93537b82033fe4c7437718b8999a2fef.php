@@ -9,7 +9,7 @@
             color: #000000;
             font-family: Arial, sans-serif;
             text-align: center;
-            padding-top: 50px;
+
         }
 
         .container {
@@ -100,6 +100,8 @@
             margin-bottom: 5px;
             color: #ffffff;
         }
+
+
 
 
     </style>

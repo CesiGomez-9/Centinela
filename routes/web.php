@@ -43,7 +43,12 @@ Route::resource('promociones', \App\Http\Controllers\PromocionController::class)
 Route::resource('incapacidades', \App\Http\Controllers\IncapacidadController::class);
 Route::put('/incapacidades/{id}', [\App\Http\Controllers\IncapacidadController::class, 'update'])->name('incapacidades.update');
 Route::resource('users', \App\Http\Controllers\UserController::class);
+Route::middleware(['auth', 'role:super_admin'])->group(function () {
+    Route::resource('usuarios', \App\Http\Controllers\UserController::class);
+});
 
+// Ruta AJAX para buscar empleados
+Route::get('ajax/empleados', [\App\Http\Controllers\UserController::class, 'searchEmpleados'])->name('ajax.empleados');
 
 Route::get('/clientes/buscar', [App\Http\Controllers\ClienteController::class, 'buscar'])->name('clientes.buscar');
 

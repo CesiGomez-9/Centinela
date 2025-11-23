@@ -8,38 +8,60 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     */
     protected $fillable = [
-        'name',
-        'apellido',
+        'empleado_id',
+        'usuario',
         'email',
         'password',
         'rol',
-        'telefono',
-        'cargo',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     */
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed', // Laravel auto-hash
+            'password' => 'hashed',
         ];
     }
+
+    public function empleado()
+    {
+        return $this->belongsTo(Empleado::class);
+    }
+
+    protected static function booted()
+    {
+        static::creating(function ($user) {
+            if (empty($user->usuario) && $user->empleado) {
+                $nombre = strtolower(explode(' ', $user->empleado->nombre)[0]);
+                $apellido = strtolower(explode(' ', $user->empleado->apellido)[0]);
+                $user->usuario = $nombre . '.' . $apellido;
+
+                // Evitar duplicados
+                $base = $user->usuario;
+                $contador = 1;
+                while (User::where('usuario', $user->usuario)->exists()) {
+                    $user->usuario = $base . $contador;
+                    $contador++;
+                }
+            }
+        });
+    }
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class);
+    }
+
+    public function hasRole($role)
+    {
+        return $this->roles()->where('nombre', $role)->exists();
+    }
+
 }
