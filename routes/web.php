@@ -161,3 +161,14 @@ Route::delete('/capacitaciones/{id}', [CapacitacionController::class, 'destroy']
 
 Route::get('/empleados/buscar', [EmpleadoController::class, 'buscar'])->name('empleados.buscar');
 
+Route::get('/login', [\App\Http\Controllers\AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [\App\Http\Controllers\AuthController::class, 'login'])->name('login.process');
+Route::post('/logout', [\App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
+
+
+Route::get('/forgotpassword', [\App\Http\Controllers\PasswordResetController::class, 'showLinkForm'])->name('password.request');
+Route::post('/forgotpassword', [\App\Http\Controllers\PasswordResetController::class, 'sendResetLink'])->name('password.email');
+Route::get('/resetpassword/{token}', [\App\Http\Controllers\PasswordResetController::class, 'showResetForm'])->name('password.reset');
+Route::post('/resetpassword', [\App\Http\Controllers\PasswordResetController::class, 'resetPassword'])->name('password.update');
+
+
