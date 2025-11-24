@@ -7,15 +7,16 @@ use Illuminate\Http\Request;
 
 class RoleMiddleware
 {
-    public function handle(Request $request, Closure $next, $role)
+
+    public function handle(Request $request, Closure $next, ...$roles)
     {
-        // Usuario no autenticado
+        // Si no está logeado
         if (!auth()->check()) {
             abort(403, 'Debes iniciar sesión.');
         }
 
-        // Verificar rol del usuario
-        if (auth()->user()->rol !== $role) {
+        // Si el rol del usuario no está dentro de la lista permitida
+        if (!in_array(auth()->user()->rol, $roles)) {
             abort(403, 'No tienes permiso para acceder a esta sección.');
         }
 

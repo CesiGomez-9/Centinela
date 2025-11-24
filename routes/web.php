@@ -194,4 +194,23 @@ Route::get('/users', [UserController::class, 'index'])->name('users.index');
 Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
 // AJAX para búsqueda de empleados
 Route::get('/ajax/empleados', [UserController::class, 'searchEmpleados'])->name('ajax.empleados');
+// SOLO Administrador
+Route::middleware(['auth', 'role:Administrador'])->group(function () {
+    Route::resource('users', UserController::class);
+    Route::resource('empleados', EmpleadoController::class);
+    Route::get('/reportes', [ReporteController::class, 'index'])->name('reportes.index');
+});
+
+// SOLO Vigilante
+Route::middleware(['auth', 'role:Vigilante'])->group(function () {
+    Route::get('/asistencias', [AsistenciaController::class, 'index'])->name('asistencia.index');
+    Route::get('/turnos', [TurnoController::class, 'index'])->name('turnos.index');
+});
+
+// SOLO Técnico
+Route::middleware(['auth', 'role:Técnico'])->group(function () {
+    Route::get('/instalaciones', [InstalacionesController::class, 'index'])->name('instalaciones.index');
+    Route::get('/turnos', [TurnoController::class, 'index'])->name('tecnico.turnos');
+});
+
 
