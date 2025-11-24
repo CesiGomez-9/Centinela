@@ -194,23 +194,50 @@ Route::get('/users', [UserController::class, 'index'])->name('users.index');
 Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
 // AJAX para búsqueda de empleados
 Route::get('/ajax/empleados', [UserController::class, 'searchEmpleados'])->name('ajax.empleados');
-// SOLO Administrador
+
+
 Route::middleware(['auth', 'role:Administrador'])->group(function () {
+
+    Route::resource('users', \App\Http\Controllers\UserController::class);
+    Route::resource('empleados', \App\Http\Controllers\EmpleadoController::class);
+    Route::resource('memorandos', \App\Http\Controllers\MemorandoController::class);
+    Route::resource('promociones', \App\Http\Controllers\PromocionController::class);
+    Route::resource('productos', \App\Http\Controllers\ProductoController::class);
+    Route::resource('incapacidades', \App\Http\Controllers\IncapacidadController::class);
+    Route::resource('servicios', \App\Http\Controllers\ServicioController::class);
+    Route::resource('Proveedores', \App\Http\Controllers\ProveedorController::class);
+
+});
+Route::middleware(['auth'])->group(function () {
+    Route::get('/clientes', [\App\Http\Controllers\ClienteController::class, 'index'])
+        ->name('Clientes.indexCliente')
+        ->middleware('can:ver-clientes');
+
+    Route::get('/proveedores', [ProveedorController::class, 'index'])
+        ->name('Proveedores.indexProveedor')
+        ->middleware('can:ver-proveedores');
+
+    // Rutas de usuarios
     Route::resource('users', UserController::class);
-    Route::resource('empleados', EmpleadoController::class);
-    Route::get('/reportes', [ReporteController::class, 'index'])->name('reportes.index');
 });
 
-// SOLO Vigilante
+
 Route::middleware(['auth', 'role:Vigilante'])->group(function () {
-    Route::get('/asistencias', [AsistenciaController::class, 'index'])->name('asistencia.index');
-    Route::get('/turnos', [TurnoController::class, 'index'])->name('turnos.index');
+
+    Route::get('/asistencias/index', [\App\Http\Controllers\AsistenciaController::class, 'index'])->name('asistencias.index');
+    Route::get('/asistencias/crear', [\App\Http\Controllers\AsistenciaController::class, 'create'])->name('asistencias.crear');
+    Route::post('/asistencias', [\App\Http\Controllers\AsistenciaController::class, 'store'])->name('asistencias.store');
+
+    Route::get('/turnos', [\App\Http\Controllers\TurnoController::class, 'index'])->name('turnos.index');
+    Route::get('/turnos/{id}', [\App\Http\Controllers\TurnoController::class, 'show'])->name('turnos.show');
 });
 
-// SOLO Técnico
+
 Route::middleware(['auth', 'role:Técnico'])->group(function () {
-    Route::get('/instalaciones', [InstalacionesController::class, 'index'])->name('instalaciones.index');
-    Route::get('/turnos', [TurnoController::class, 'index'])->name('tecnico.turnos');
+
+    Route::get('/turnos', [\App\Http\Controllers\TurnoController::class, 'index'])->name('turnos.index');
+
+    Route::get('/asistencias/index', [\App\Http\Controllers\AsistenciaController::class, 'index'])->name('asistencias.index');
+    Route::get('/instalaciones', [\App\Http\Controllers\InstalacionController::class, 'index'])->name('instalaciones.index');
+
 });
-
-
