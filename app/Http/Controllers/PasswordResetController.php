@@ -59,6 +59,14 @@ class PasswordResetController extends Controller
             }
         );
 
+
+        if ($status === Password::PASSWORD_RESET) {
+            // Aquí aseguramos que la sesión 'status' exista
+            return redirect()->route('login')
+                ->with('status', '¡Contraseña restablecida correctamente!');
+        }
+
+
         return $status === Password::PASSWORD_RESET
             ? redirect()->route('login')->with('status', 'Contraseña restablecida correctamente')
             : back()->withErrors(['email' => 'Error al restablecer la contraseña']);
