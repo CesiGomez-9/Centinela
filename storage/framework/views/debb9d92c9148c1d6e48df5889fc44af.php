@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesión | Sistema de Seguridad Centinela</title>
+    <title>Recuperar Contraseña | Grupo Centinela</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <style>
@@ -15,12 +15,9 @@
             align-items: center;
             font-family: 'Segoe UI', sans-serif;
             position: relative;
-            overflow: hidden;
-            /* Fondo con degradado y glow radial */
             background: linear-gradient(135deg, #0f2c5c, #1b3e80);
         }
 
-        /* Glow radial detrás de la tarjeta */
         body::before {
             content: '';
             position: absolute;
@@ -33,7 +30,7 @@
             z-index: 0;
         }
 
-        .login-card {
+        .card-reset {
             width: 400px;
             padding: 3rem;
             background: #112b52;
@@ -41,9 +38,9 @@
             box-shadow: 0 12px 30px rgba(0,0,0,0.5);
             color: #ffffff;
             text-align: center;
-            animation: fadeIn 0.8s ease-out;
             position: relative;
             z-index: 1;
+            animation: fadeIn 0.8s ease-out;
         }
 
         @keyframes fadeIn {
@@ -51,18 +48,12 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .login-card .icon {
-            font-size: 4rem;
-            margin-bottom: 20px;
-            color: #3b82f6;
-        }
-
-        .login-card h2 {
+        .card-reset h2 {
             font-weight: 700;
             margin-bottom: 0.5rem;
         }
 
-        .login-card p {
+        .card-reset p {
             margin-bottom: 1.5rem;
             color: #cbd5e1;
         }
@@ -81,7 +72,7 @@
             color: #ffffff;
         }
 
-        .btn-login {
+        .btn-reset {
             width: 100%;
             background: #3b82f6;
             color: #ffffff;
@@ -93,9 +84,13 @@
             transition: 0.3s;
         }
 
-        .btn-login:hover {
+        .btn-reset:hover {
             background: #1e40af;
+        }
+
+        .form-control::placeholder {
             color: #ffffff;
+            opacity: 1;
         }
 
         .text-small {
@@ -103,78 +98,37 @@
             opacity: 0.8;
             margin-top: 15px;
         }
-
-        @media (max-width: 450px) {
-            .login-card {
-                width: 90%;
-                padding: 2.5rem;
-            }
-        }
-
-        .form-control::placeholder {
-            color: #ffffff; /* blanco */
-            opacity: 1;     /* evita que se vea gris tenue */
-        }
     </style>
 </head>
 <body>
 
 
 
-<div class="login-card">
-    <i class="bi bi-shield-lock-fill icon"></i>
-    <h2>Bienvenido</h2>
-    <p>Grupo Centinela</p>
+<div class="card-reset">
+    <i class="bi bi-shield-lock-fill" style="font-size:4rem;color:#3b82f6;margin-bottom:20px;"></i>
+    <h2>Recuperar Contraseña</h2>
+    <p>Ingresa tu correo registrado</p>
 
-    <form action="{{ route('login.process') }}" method="POST">
-        @csrf
-        <!-- Usuario -->
+    <?php if(session('status')): ?>
+        <div class="alert alert-success"><?php echo e(session('status')); ?></div>
+    <?php endif; ?>
+
+    <?php if($errors->any()): ?>
+        <div class="alert alert-danger"><?php echo e($errors->first()); ?></div>
+    <?php endif; ?>
+
+    <form action="<?php echo e(route('password.email')); ?>" method="POST">
+        <?php echo csrf_field(); ?>
         <div class="mb-3">
-            <label for="usuario" class="form-label">Usuario</label>
-            <input type="text"
-                   class="form-control"
-                   id="usuario"
-                   name="usuario"
-                   maxlength="30"
-                   placeholder="Ingrese su usuario"
-                   value="{{ old('usuario') }}">
-            @error('usuario')
-            <div class="text-danger mt-1" style="font-size: 0.9rem;">
-                {{ $message }}
-            </div>
-            @enderror
+            <input type="email" name="email" class="form-control" placeholder="Correo electrónico" required>
         </div>
-
-        <!-- Contraseña -->
-        <div class="mb-3">
-            <label for="password" class="form-label">Contraseña</label>
-            <input type="password"
-                   class="form-control"
-                   id="password"
-                   name="password"
-                   maxlength="8"
-                   placeholder="Ingrese su contraseña">
-            @error('password')
-            <div class="text-danger mt-1" style="font-size: 0.9rem;">
-                {{ $message }}
-            </div>
-            @enderror
-        </div>
-
-        <button class="btn btn-login" type="submit">
-            <i class="bi bi-box-arrow-in-right"></i> Ingresar
-        </button>
+        <button type="submit" class="btn btn-reset"><i class="bi bi-envelope-fill"></i> Enviar enlace</button>
     </form>
 
-    <p class="text-small">
-        <a href="{{ route('password.request') }}" style="color:#3b82f6; text-decoration: none;">
-            ¿Olvidaste tu contraseña?
-        </a>
-    </p>
+    <p class="text-small"><a href="<?php echo e(route('login')); ?>" style="color:#3b82f6;">Volver al login</a></p>
 </div>
 
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js
-"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+<?php /**PATH C:\Users\angel\PhpstormProjects\Centinela\resources\views/auth/forgotpassword.blade.php ENDPATH**/ ?>

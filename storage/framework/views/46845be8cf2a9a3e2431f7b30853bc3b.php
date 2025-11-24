@@ -126,8 +126,8 @@
     <h2>Bienvenido</h2>
     <p>Grupo Centinela</p>
 
-    <form action="{{ route('login.process') }}" method="POST">
-        @csrf
+    <form action="<?php echo e(route('login.process')); ?>" method="POST">
+        <?php echo csrf_field(); ?>
         <!-- Usuario -->
         <div class="mb-3">
             <label for="usuario" class="form-label">Usuario</label>
@@ -137,12 +137,20 @@
                    name="usuario"
                    maxlength="30"
                    placeholder="Ingrese su usuario"
-                   value="{{ old('usuario') }}">
-            @error('usuario')
+                   value="<?php echo e(old('usuario')); ?>">
+            <?php $__errorArgs = ['usuario'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
             <div class="text-danger mt-1" style="font-size: 0.9rem;">
-                {{ $message }}
+                <?php echo e($message); ?>
+
             </div>
-            @enderror
+            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
         </div>
 
         <!-- Contraseña -->
@@ -154,11 +162,19 @@
                    name="password"
                    maxlength="8"
                    placeholder="Ingrese su contraseña">
-            @error('password')
+            <?php $__errorArgs = ['password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
             <div class="text-danger mt-1" style="font-size: 0.9rem;">
-                {{ $message }}
+                <?php echo e($message); ?>
+
             </div>
-            @enderror
+            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
         </div>
 
         <button class="btn btn-login" type="submit">
@@ -167,7 +183,7 @@
     </form>
 
     <p class="text-small">
-        <a href="{{ route('password.request') }}" style="color:#3b82f6; text-decoration: none;">
+        <a href="<?php echo e(route('password.request')); ?>" style="color:#3b82f6; text-decoration: none;">
             ¿Olvidaste tu contraseña?
         </a>
     </p>
@@ -178,3 +194,4 @@
 "></script>
 </body>
 </html>
+<?php /**PATH C:\Users\angel\PhpstormProjects\Centinela\resources\views/auth/login.blade.php ENDPATH**/ ?>
