@@ -109,6 +109,8 @@
     <h2>Recuperar Contraseña</h2>
     <p>Ingresa tu correo registrado</p>
 
+
+
     @if (session('status'))
         <div class="alert alert-success">{{ session('status') }}</div>
     @endif

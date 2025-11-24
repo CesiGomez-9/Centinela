@@ -1,4 +1,31 @@
 <?php $__env->startSection('content'); ?>
+    <style>
+        .btn-outline-success-custom {
+            color: #28a745;
+            border: 1px solid #28a745;
+            background-color: transparent;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .btn-outline-success-custom:hover,
+        .btn-outline-success-custom:focus {
+            background-color: #55ca6f;
+            color: #155724;
+            border-color: #28a745;
+        }
+
+        /* Campos y botones uniformes */
+        .date-filter input,
+        .date-filter button,
+        .date-filter a {
+            min-width: 150px;
+            font-size: 12px;
+        }
+
+        .date-filter .d-flex {
+            gap: 5px;
+        }
+    </style>
 
     <div class="container mt-5" style="max-width: 1100px;">
         <div class="card shadow p-4" style="background-color: #ffffff;">
@@ -7,10 +34,16 @@
                 Lista de usuarios
             </h3>
 
-            <div class="row mb-4 align-items-center">
-                <div class="col-md-6 d-flex justify-content-start">
-                    <div class="w-100" style="max-width: 400px;">
-                        <form method="GET" action="<?php echo e(route('users.index')); ?>">
+            <?php
+                $hoy = date('Y-m-d');
+                $maxFecha = date('Y-m-d', strtotime('+2 months'));
+            ?>
+
+            <form method="GET" action="<?php echo e(route('users.index')); ?>">
+                <div class="row mb-4 align-items-center">
+                    <!-- Buscador -->
+                    <div class="col-md-4 d-flex justify-content-start">
+                        <div class="w-100">
                             <div class="input-group">
                                 <input
                                     type="text"
@@ -23,15 +56,31 @@
                                 />
                                 <span class="input-group-text"><i class="bi bi-search"></i></span>
                             </div>
-                        </form>
+                        </div>
+                    </div>
+
+                    <!-- Filtro por fecha centrado -->
+                    <div class="col-md-4 date-filter d-flex flex-column align-items-center">
+                        <div class="d-flex mb-2 justify-content-center">
+                            <input type="date" name="fecha_inicio" class="form-control form-control-sm"
+                                   value="<?php echo e(request('fecha_inicio', $hoy)); ?>" min="<?php echo e($hoy); ?>" max="<?php echo e($maxFecha); ?>">
+                            <button type="submit" class="btn btn-sm btn-primary">Filtrar</button>
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            <input type="date" name="fecha_fin" class="form-control form-control-sm"
+                                   value="<?php echo e(request('fecha_fin', $hoy)); ?>" min="<?php echo e($hoy); ?>" max="<?php echo e($maxFecha); ?>">
+                            <a href="<?php echo e(route('users.index')); ?>" class="btn btn-sm btn-secondary">Limpiar</a>
+                        </div>
+                    </div>
+
+                    <!-- Registrar nuevo usuario -->
+                    <div class="col-md-4 d-flex justify-content-end">
+                        <a href="<?php echo e(route('users.create')); ?>" class="btn btn-md btn-outline-primary">
+                            <i class="bi bi-pencil-square me-2"></i> Registrar nuevo usuario
+                        </a>
                     </div>
                 </div>
-                <div class="col-md-6 d-flex justify-content-end">
-                    <a href="<?php echo e(route('users.create')); ?>" class="btn btn-md btn-outline-primary">
-                        <i class="bi bi-pencil-square me-2"></i>Registrar nuevo usuario
-                    </a>
-                </div>
-            </div>
+            </form>
 
             <?php if(session('mensaje')): ?>
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -48,8 +97,7 @@
                     <th>#</th>
                     <th>Nombre</th>
                     <th>Usuario</th>
-                    <th>Teléfono</th>
-                    <th>Creado</th>
+                     <th>Creado</th>
                     <th>Acciones</th>
                 </tr>
                 </thead>
@@ -58,21 +106,23 @@
                     <tr>
                         <td><?php echo e($users->firstItem() + $loop->index); ?></td>
                         <td style="max-width: 200px; word-wrap: break-word; white-space: normal;">
-                            <?php echo e($user->name); ?> <?php echo e($user->apellido); ?>
+                            <?php echo e($user->empleado->nombre ?? $user->name); ?> <?php echo e($user->empleado->apellido ?? $user->apellido); ?>
 
                         </td>
                         <td><?php echo e($user->usuario ?? '—'); ?></td>
-                        <td><?php echo e($user->telefono ?? '—'); ?></td>
-                        <td><?php echo e($user->created_at->format('d/m/Y')); ?></td>
+                         <td><?php echo e($user->created_at->format('d/m/Y')); ?></td>
                         <td class="text-center">
                             <a href="<?php echo e(route('users.show', $user->id)); ?>" class="btn btn-sm btn-outline-info">
                                 <i class="bi bi-eye"></i> Ver
+                            </a>
+                            <a href="<?php echo e(route('users.verpermisos', $user->id)); ?>" class="btn btn-sm btn-outline-success-custom">
+                                <i class="bi bi-eye-fill me-1"></i> Ver permisos
                             </a>
                         </td>
                     </tr>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <tr>
-                        <td colspan="5" class="text-center text-muted">No hay usuarios registrados.</td>
+                        <td colspan="6" class="text-center text-muted">No hay usuarios registrados.</td>
                     </tr>
                 <?php endif; ?>
                 </tbody>
@@ -95,50 +145,6 @@
             </div>
         </div>
     </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const searchInput = document.getElementById('searchInput');
-            const form = searchInput.closest('form');
-
-            if (searchInput) {
-                searchInput.focus();
-                const length = searchInput.value.length;
-                searchInput.setSelectionRange(length, length);
-            }
-
-            if (form) {
-                form.addEventListener('submit', e => e.preventDefault());
-            }
-            searchInput.addEventListener('keydown', e => {
-                if (e.key === 'Enter') e.preventDefault();
-            });
-
-            let timeout = null;
-
-            searchInput.addEventListener('input', function () {
-                this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "");
-                this.value = this.value.replace(/\s+/g, " ");
-
-                clearTimeout(timeout);
-
-                timeout = setTimeout(() => {
-                    const search = this.value;
-                    const url = new URL(window.location.href);
-
-                    if (search.trim() !== "") {
-                        url.searchParams.set('search', search);
-                    } else {
-                        url.searchParams.delete('search');
-                    }
-
-                    window.location.href = url.toString();
-                }, 500);
-            });
-        });
-    </script>
-
 <?php $__env->stopSection(); ?>
-
 
 <?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\angel\PhpstormProjects\Centinela\resources\views/users/index.blade.php ENDPATH**/ ?>
