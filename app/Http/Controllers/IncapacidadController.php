@@ -144,71 +144,59 @@ class IncapacidadController extends Controller
 
     public function update(Request $request, Incapacidad $incapacidad)
     {
-        $validated = $request->validate([
 
+        // Validación básica
+        $rules = [
             'empleado_id' => 'required|exists:empleados,id',
-            'motivo' => ['required', 'string', 'max:150', 'regex:/^[\p{L}\s]+$/u'],
-            'descripcion' => ['required', 'string', 'max:250', 'regex:/^[\p{L}\s]+$/u'],
-            'institucion_medica' => ['required', 'string', 'max:50', 'regex:/^[\p{L}\s]+$/u'],
-            'fecha_inicio' => 'required|date',
+            'motivo' => ['required','string','max:50','regex:/^[\p{L}\s]+$/u'],
+            'descripcion' => ['required','string','max:200','regex:/^[\p{L}\s]+$/u'],
+            'institucion_medica' => ['required','string','max:50','regex:/^[\p{L}\s]+$/u'],
+            'fecha_inicio' => 'required|date|after_or_equal:today',
             'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
-            'documento' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048', // archivo opcional
-        ], [
-            'empleado_id.required' => 'Debe seleccionar un empleado para la incapacidad.',
-            'empleado_id.exists' => 'El empleado seleccionado no existe en el sistema.',
+            'documento' => $request->hasFile('documento') ? 'file|mimes:pdf,jpg,jpeg,png|max:2048' : 'nullable',
+        ];
 
-            'motivo.required' => 'Debe ingresar el motivo de la incapacidad.',
-            'motivo.max' => 'El motivo no puede exceder los 150 caracteres.',
-            'motivo.regex' => 'El motivo no permite números ni caracteres especiales.',
+        $request->validate($rules);
 
-            'descripcion.required' => 'Debe ingresar una descripción.',
-            'descripcion.max' => 'La descripción no puede exceder los 250 caracteres.',
-            'descripcion.regex' => 'La descripción no permite números ni caracteres especiales.',
+        // Convertir fechas a Carbon para evitar problemas
+        $fecha_inicio = \Carbon\Carbon::parse($request->fecha_inicio)->toDateString();
+        $fecha_fin = \Carbon\Carbon::parse($request->fecha_fin)->toDateString();
 
-            'institucion_medica.required' => 'Debe ingresar la institución médica.',
-            'institucion_medica.max' => 'La institución médica no puede exceder los 50 caracteres.',
-            'institucion_medica.regex' => 'La institución médica no permite caracteres especiales.',
-
-            'fecha_inicio.required' => 'Debe seleccionar una fecha.',
-            'fecha_inicio.date' => 'La fecha no tiene un formato válido.',
-
-            'fecha_fin.required' => 'Debe seleccionar una fecha.',
-            'fecha_fin.date' => 'La fecha no tiene un formato válido.',
-            'fecha_fin.after_or_equal' => 'La fecha debe ser igual o posterior a la fecha de inicio.',
-
-            'documento.file' => 'El campo documento debe ser un archivo.',
-            'documento.mimes' => 'El documento debe ser de tipo: PDF, JPG, JPEG o PNG.',
-            'documento.max' => 'El tamaño del documento no debe ser superior a 2MB.',
-        ]);
-
+        // Validar duplicados: SOLO otros registros
         $duplicado = Incapacidad::where('empleado_id', $request->empleado_id)
-            ->where('id', '<>', $incapacidad->id)
-            ->where(function($query) use ($request) {
-                $query->whereBetween('fecha_inicio', [$request->fecha_inicio, $request->fecha_fin])
-                    ->orWhereBetween('fecha_fin', [$request->fecha_inicio, $request->fecha_fin])
-                    ->orWhere(function($q) use ($request) {
-                        $q->where('fecha_inicio', '<=', $request->fecha_inicio)
-                            ->where('fecha_fin', '>=', $request->fecha_fin);
-                    });
+            ->where('id', '<>', $incapacidad->id) // ignora el registro actual
+            ->where(function($q) use ($fecha_inicio, $fecha_fin) {
+                $q->where('fecha_inicio', '<=', $fecha_fin)
+                    ->where('fecha_fin', '>=', $fecha_inicio);
             })
             ->exists();
 
-        if ($duplicado) {
-            return back()
-                ->withInput()
-                ->withErrors(['empleado_id' => 'El empleado ya posee una incapacidad dentro de las fechas seleccionadas.']);
+        if($duplicado){
+            return redirect()->back()
+                ->withErrors(['empleado_id' => 'El empleado ya posee una incapacidad en esas fechas.'])
+                ->withInput();
         }
 
-        if ($request->hasFile('documento')) {
-            $validated['documento'] = $request->file('documento')->store('incapacidades', 'public');
-        } else {
+        // Actualizar campos
+        $incapacidad->empleado_id = $request->empleado_id;
+        $incapacidad->motivo = $request->motivo;
+        $incapacidad->descripcion = $request->descripcion;
+        $incapacidad->institucion_medica = $request->institucion_medica;
+        $incapacidad->fecha_inicio = $fecha_inicio;
+        $incapacidad->fecha_fin = $fecha_fin;
 
-            $validated['documento'] = $incapacidad->documento;
+        // Guardar archivo nuevo si se subió
+        if($request->hasFile('documento')){
+            $incapacidad->documento = $request->file('documento')->store('incapacidades','public');
         }
 
-        $incapacidad->update($validated);
+        // Guardar cambios
+        $incapacidad->save();
 
         return redirect()->route('incapacidades.index')
             ->with('success', 'Incapacidad actualizada correctamente.');
     }
+
+
+
 }

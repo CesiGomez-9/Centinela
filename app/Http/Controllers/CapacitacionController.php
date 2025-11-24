@@ -251,11 +251,9 @@ class CapacitacionController extends Controller
         $capacitacion->descripcion = $request->input('descripcion');
         $capacitacion->direccion = $request->input('direccion');
 
-        if ($capacitacion->save()) {
-            return redirect()->route('capacitaciones.index')->with('exito', 'El curso se actualizó exitosamente.');
-        } else {
-            return redirect()->route('capacitaciones.index')->with('fracaso', 'El curso no se pudo actualizar.');
-        }
+        return redirect()->route('capacitaciones.index')
+            ->with('success', 'El curso se actualizó exitosamente.');
+
     }
 
 

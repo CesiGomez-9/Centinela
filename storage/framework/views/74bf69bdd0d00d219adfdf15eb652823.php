@@ -15,7 +15,7 @@
     <div class="container mt-5" style="max-width: 1100px;">
         <div class="card shadow p-4" style="background-color: #ffffff;">
             <div class="position-relative mb-4">
-                <!-- Título centrado -->
+
                 <h3 class="text-center mb-0" style="color: #09457f;">
                     <i class="bi bi-file-earmark-medical me-2"></i>Lista de incapacidades
                 </h3>
@@ -69,7 +69,6 @@
                         <i class="bi bi-x-circle me-1"></i> Limpiar
                     </a>
                 </div>
-
             </form>
 
             <?php if(session('success')): ?>

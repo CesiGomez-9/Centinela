@@ -16,9 +16,13 @@
                 <div class="alert alert-success text-center">¡Cambios guardados correctamente!</div>
             @endif
 
-            <form action="{{ route('incapacidades.update', $incapacidad->id) }}" method="POST" enctype="multipart/form-data" id="incapacidadForm" novalidate>
+            <form action="{{ route('incapacidades.update', $incapacidad->id) }}"
+                  method="POST"
+                  enctype="multipart/form-data"
+                  id="incapacidadForm">
                 @csrf
                 @method('PUT')
+
 
                 <div class="row g-4">
 
@@ -87,6 +91,8 @@
                         <textarea maxlength="50"
                                   name="institucion_medica" rows="1"
                                   class="form-control solo-texto"
+                                  onkeydown="bloquearEspacioAlInicio(event, this)"
+                                  oninput="eliminarEspaciosIniciales(this)"
                                   style="overflow:hidden; resize:none;"
                                   data-original="{{ $incapacidad->institucion_medica }}">{{ $incapacidad->institucion_medica }}</textarea>
                         <div class="invalid-feedback">Institución médica obligatoria (máx 50 caracteres, sin símbolos).</div>
@@ -98,6 +104,8 @@
                         <textarea maxlength="50"
                                   name="motivo" rows="1"
                                   class="form-control solo-texto"
+                                  onkeydown="bloquearEspacioAlInicio(event, this)"
+                                  oninput="eliminarEspaciosIniciales(this)"
                                   style="overflow:hidden; resize:none;"
                                   data-original="{{ $incapacidad->motivo }}">{{ $incapacidad->motivo }}</textarea>
                         <div class="invalid-feedback">Debe ingresar un motivo válido.</div>
@@ -113,9 +121,11 @@
 
                     {{-- DESCRIPCIÓN --}}
                     <div class="col-md-6 ">
-                        <label class="form-label fw-bold">Descripción:</label>
+                        <label class="form-label fw-bold">Motivo:</label>
                         <textarea maxlength="250" name="descripcion" rows="4"
                                   class="form-control"
+                                  onkeydown="bloquearEspacioAlInicio(event, this)"
+                                  oninput="eliminarEspaciosIniciales(this)"
                                   style="overflow:hidden; resize:none;"
                                   data-original="{{ $incapacidad->descripcion }}">{{ $incapacidad->descripcion }}</textarea>
                         <div class="invalid-feedback">La descripción es obligatoria.</div>
@@ -165,68 +175,91 @@
 
                 </div>
             </form>
+
+            @if ($errors->any())
+                <div style="background: red; color: white; padding: 10px;">
+                    <strong>Errores:</strong>
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
         </div>
     </div>
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
 
-            // NO PERMITIR CARACTERES ESPECIALES
-            document.querySelectorAll(".solo-texto").forEach(input => {
+            // --- Helpers ---
+            const soloTextoSelector = ".solo-texto";
+            // Booleano si existe documento guardado previamente (true/false)
+            const tieneDocumentoAnterior = @json($incapacidad->documento ? true : false);
+
+            // --- Elementos ---
+            const form = document.getElementById("incapacidadForm");
+            const documentoInput = document.getElementById('documentoInput');
+            const vista = document.getElementById("vistaDocumento");
+            const originalVistaEl = document.getElementById('originalVista');
+            const originalVistaHtml = originalVistaEl ? originalVistaEl.innerHTML : vista.innerHTML;
+            const fechaInicioInput = form.querySelector('[name="fecha_inicio"]');
+            const fechaFinInput = form.querySelector('[name="fecha_fin"]');
+
+            // Evitar caracteres no deseados en campos con clase .solo-texto
+            document.querySelectorAll(soloTextoSelector).forEach(input => {
                 input.addEventListener("input", () => {
+                    // Permite letras, números y signos básicos (ajusta si quieres quitar números)
                     input.value = input.value.replace(/[^A-Za-z0-9ÁÉÍÓÚáéíóúñÑ,.() ]/g, "");
                 });
             });
 
-            const form = document.getElementById("incapacidadForm");
-            const documentoInput = document.getElementById('documentoInput');
-            const vista = document.getElementById("vistaDocumento");
-            const fechaInicioInput = form.querySelector('[name="fecha_inicio"]');
-            const fechaFinInput = form.querySelector('[name="fecha_fin"]');
 
-            // Guardar HTML original de la vista (para restablecer)
-            const originalVistaEl = document.getElementById('originalVista');
-            const originalVistaHtml = originalVistaEl ? originalVistaEl.innerHTML : vista.innerHTML;
-
+            // Vista previa de archivo nuevo
             let tempPreviewHtml = vista.innerHTML;
-
-            // PREVISUALIZAR ARCHIVO NUEVO
             documentoInput.addEventListener("change", () => {
                 const file = documentoInput.files[0];
-                if (!file) return;
-
+                if (!file) {
+                    // si quita selección, restaurar preview temporal (no el original)
+                    vista.innerHTML = tempPreviewHtml;
+                    return;
+                }
                 const url = URL.createObjectURL(file);
-
-                if (file.type.includes("pdf")) {
+                if (file.type === "application/pdf" || file.type.includes("pdf")) {
                     vista.innerHTML = `<iframe src="${url}" width="100%" height="200" class="border"></iframe>`;
                 } else {
                     vista.innerHTML = `<img src="${url}" class="img-fluid rounded" style="max-height:200px;">`;
                 }
-
                 tempPreviewHtml = vista.innerHTML;
             });
 
-            // QUITAR INVALID AL ESCRIBIR
+            // Quitar 'is-invalid' al escribir en fechas
             [fechaInicioInput, fechaFinInput].forEach(input => {
                 input.addEventListener("input", () => input.classList.remove("is-invalid"));
             });
 
+            // Función auxiliar para crear/obtener invalid-feedback
+            function getOrCreateFeedback(elem) {
+                let fb = elem.nextElementSibling;
+                if (!fb || !fb.classList.contains("invalid-feedback")) {
+                    fb = document.createElement("div");
+                    fb.className = "invalid-feedback";
+                    elem.parentNode.appendChild(fb);
+                }
+                return fb;
+            }
+
+            // Submit: validación cliente
             form.addEventListener("submit", (e) => {
                 let valido = true;
 
+                // Campos requeridos
                 const requeridos = ["motivo", "institucion_medica", "descripcion"];
                 requeridos.forEach(name => {
                     const campo = form.querySelector(`[name="${name}"]`);
-                    let feedback = campo.nextElementSibling;
-                    if (!feedback || !feedback.classList.contains("invalid-feedback")) {
-                        feedback = document.createElement("div");
-                        feedback.className = "invalid-feedback";
-                        campo.parentNode.appendChild(feedback);
-                    }
-
-                    if (!campo.value.trim()) {
+                    const feedback = getOrCreateFeedback(campo);
+                    if (!campo.value || !campo.value.trim()) {
                         campo.classList.add("is-invalid");
-                        // Mensajes personalizados
                         if (name === "motivo") feedback.textContent = "Debe ingresar el motivo de la incapacidad.";
                         if (name === "institucion_medica") feedback.textContent = "Debe ingresar la institución médica.";
                         if (name === "descripcion") feedback.textContent = "Debe ingresar una descripción.";
@@ -236,23 +269,12 @@
                     }
                 });
 
-                // FECHAS
-                let fi = fechaInicioInput.value ? new Date(fechaInicioInput.value) : null;
-                let ff = fechaFinInput.value ? new Date(fechaFinInput.value) : null;
+                // Fechas
+                const feedbackInicio = getOrCreateFeedback(fechaInicioInput);
+                const feedbackFin = getOrCreateFeedback(fechaFinInput);
 
-                let feedbackInicio = fechaInicioInput.nextElementSibling;
-                if (!feedbackInicio || !feedbackInicio.classList.contains("invalid-feedback")) {
-                    feedbackInicio = document.createElement("div");
-                    feedbackInicio.className = "invalid-feedback";
-                    fechaInicioInput.parentNode.appendChild(feedbackInicio);
-                }
-
-                let feedbackFin = fechaFinInput.nextElementSibling;
-                if (!feedbackFin || !feedbackFin.classList.contains("invalid-feedback")) {
-                    feedbackFin = document.createElement("div");
-                    feedbackFin.className = "invalid-feedback";
-                    fechaFinInput.parentNode.appendChild(feedbackFin);
-                }
+                const fi = fechaInicioInput.value ? new Date(fechaInicioInput.value) : null;
+                const ff = fechaFinInput.value ? new Date(fechaFinInput.value) : null;
 
                 if (!fechaInicioInput.value) {
                     fechaInicioInput.classList.add("is-invalid");
@@ -276,15 +298,9 @@
                     valido = false;
                 }
 
-                // DOCUMENTO
-                let feedbackDoc = documentoInput.nextElementSibling;
-                if (!feedbackDoc || !feedbackDoc.classList.contains("invalid-feedback")) {
-                    feedbackDoc = document.createElement("div");
-                    feedbackDoc.className = "invalid-feedback";
-                    documentoInput.parentNode.appendChild(feedbackDoc);
-                }
-
-                if (!documentoInput.files.length && !@json($incapacidad->documento)) {
+                // Documento: obligatorio SOLO si no hay documento previo y no se sube uno nuevo
+                const feedbackDoc = getOrCreateFeedback(documentoInput);
+                if (!documentoInput.files.length && !tieneDocumentoAnterior) {
                     documentoInput.classList.add("is-invalid");
                     feedbackDoc.textContent = "Debe ingresar un comprobante.";
                     valido = false;
@@ -292,28 +308,22 @@
                     documentoInput.classList.remove("is-invalid");
                 }
 
-                // DUPLICADO
-                @php
-                    $duplicada = \App\Models\Incapacidad::where('empleado_id', $incapacidad->empleado_id)
-                        ->where('id','!=',$incapacidad->id)
-                        ->whereDate('fecha_inicio', \Carbon\Carbon::parse($incapacidad->fecha_inicio)->format('Y-m-d'))
-                        ->exists();
-                @endphp
-                if (@json($duplicada)) {
-                    alert("Este empleado ya tiene una incapacidad registrada para esta fecha.");
-                    valido = false;
-                }
-
+                // Si no es válido, prevenir envío y restaurar preview temporal
                 if (!valido) {
                     e.preventDefault();
                     vista.innerHTML = tempPreviewHtml;
+                    return false;
                 }
+
+                // Si es válido, permitimos el envío. No llamar e.preventDefault()
             });
 
-            // RESTABLECER
+            // RESTABLECER: restaurar valores originales guardados en data-*
             document.getElementById("btnRestablecer").addEventListener("click", (e) => {
                 e.preventDefault();
-                form.querySelectorAll("[data-original]").forEach(el => {
+
+                // Para cada elemento que tenga cualquier data-original*, restaurarlo si existe
+                form.querySelectorAll("[data-original],[data-original-id],[data-original-name]").forEach(el => {
                     if (el.dataset.original !== undefined) {
                         el.value = el.dataset.original;
                     } else if (el.dataset.originalId !== undefined) {
@@ -324,6 +334,7 @@
                     el.classList.remove("is-invalid");
                 });
 
+                // limpiar input file y restaurar vista original
                 documentoInput.value = "";
                 vista.innerHTML = originalVistaHtml;
                 tempPreviewHtml = originalVistaHtml;
@@ -331,6 +342,7 @@
 
         });
     </script>
+
 
     </body>
 @endsection

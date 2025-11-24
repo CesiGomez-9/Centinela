@@ -16,25 +16,39 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
+        $fechaInicio = $request->input('fecha_inicio');
+        $fechaFin = $request->input('fecha_fin');
 
         $users = User::query()
-            ->with('empleado') // <---- mostrar empleado asociado
+            ->with('empleado')
             ->when($search, function ($query) use ($search) {
-                $query->where('name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%");
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('apellido', 'like', "%{$search}%")
+                        ->orWhere('usuario', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%");
+                });
+            })
+            ->when($fechaInicio, function ($query) use ($fechaInicio) {
+                $query->whereDate('created_at', '>=', $fechaInicio);
+            })
+            ->when($fechaFin, function ($query) use ($fechaFin) {
+                $query->whereDate('created_at', '<=', $fechaFin);
             })
             ->orderBy('id', 'desc')
-            ->paginate(10);
+            ->paginate(10)
+            ->withQueryString(); // <-- mantiene parámetros de búsqueda en paginación
 
-        return view('users.index', compact('users', 'search'));
+        return view('users.index', compact('users', 'search', 'fechaInicio', 'fechaFin'));
     }
+
 
     /**
      * FORMULARIO DE CREACIÓN
      */
     public function create()
     {
-        $roles = ['Administrador', 'Vigilante', 'Técnico', 'Cliente'];
+        $roles = ['Administrador', 'Vigilante', 'Técnico'];
 
         // Obtener empleados registrados
         $empleados = Empleado::orderBy('nombre')->get();
@@ -96,7 +110,7 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
         $empleados = Empleado::all();
-        $roles = ['Administrador', 'Vigilante', 'Técnico', 'Cliente'];
+        $roles = ['Administrador', 'Vigilante', 'Técnico'];
 
         return view('users.edit', compact('user', 'empleados', 'roles'));
     }
@@ -138,6 +152,37 @@ class UserController extends Controller
         User::findOrFail($id)->delete();
         return redirect()->route('users.index')->with('success', 'Usuario eliminado correctamente.');
     }
+    /**
+     * DASHBOARD SEGÚN ROL
+     */
+    public function dashboard()
+    {
+        $user = auth()->user();
+
+        if ($user->rol === 'Administrador') {
+            return view('dashboard.admin'); // vista para Admin
+        }
+
+        if ($user->rol === 'Vigilante') {
+            return view('dashboard.vigilante'); // vista para Vigilante
+        }
+
+        if ($user->rol === 'Técnico') {
+            return view('dashboard.tecnico'); // vista para Técnico
+        }
+
+        abort(403, 'Acceso no autorizado');
+    }
+    public function verpermisos($id)
+    {
+        $user = User::findOrFail($id);
+
+        // Por ahora como el rol está en users, solo mostramos el rol
+        $rol = $user->rol;
+
+        return view('users.verPermisos', compact('user', 'rol'));
+    }
+
 
 
     public function searchEmpleados(Request $request)

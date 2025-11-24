@@ -1,5 +1,4 @@
-@extends('plantilla')
-@section('content')
+<?php $__env->startSection('content'); ?>
     <style>
         .btn-outline-success-custom {
             color: #28a745;
@@ -35,12 +34,12 @@
                 Lista de usuarios
             </h3>
 
-            @php
+            <?php
                 $hoy = date('Y-m-d');
                 $maxFecha = date('Y-m-d', strtotime('+2 months'));
-            @endphp
+            ?>
 
-            <form method="GET" action="{{ route('users.index') }}">
+            <form method="GET" action="<?php echo e(route('users.index')); ?>">
                 <div class="row mb-4 align-items-center">
                     <!-- Buscador -->
                     <div class="col-md-4 d-flex justify-content-start">
@@ -50,7 +49,7 @@
                                     type="text"
                                     id="searchInput"
                                     name="search"
-                                    value="{{ request('search') }}"
+                                    value="<?php echo e(request('search')); ?>"
                                     class="form-control"
                                     placeholder="Buscar por nombre o usuario..."
                                     autocomplete="off"
@@ -64,32 +63,33 @@
                     <div class="col-md-4 date-filter d-flex flex-column align-items-center">
                         <div class="d-flex mb-2 justify-content-center">
                             <input type="date" name="fecha_inicio" class="form-control form-control-sm"
-                                   value="{{ request('fecha_inicio', $hoy) }}" min="{{ $hoy }}" max="{{ $maxFecha }}">
+                                   value="<?php echo e(request('fecha_inicio', $hoy)); ?>" min="<?php echo e($hoy); ?>" max="<?php echo e($maxFecha); ?>">
                             <button type="submit" class="btn btn-sm btn-primary">Filtrar</button>
                         </div>
                         <div class="d-flex justify-content-center">
                             <input type="date" name="fecha_fin" class="form-control form-control-sm"
-                                   value="{{ request('fecha_fin', $hoy) }}" min="{{ $hoy }}" max="{{ $maxFecha }}">
-                            <a href="{{ route('users.index') }}" class="btn btn-sm btn-secondary">Limpiar</a>
+                                   value="<?php echo e(request('fecha_fin', $hoy)); ?>" min="<?php echo e($hoy); ?>" max="<?php echo e($maxFecha); ?>">
+                            <a href="<?php echo e(route('users.index')); ?>" class="btn btn-sm btn-secondary">Limpiar</a>
                         </div>
                     </div>
 
                     <!-- Registrar nuevo usuario -->
                     <div class="col-md-4 d-flex justify-content-end">
-                        <a href="{{ route('users.create') }}" class="btn btn-md btn-outline-primary">
+                        <a href="<?php echo e(route('users.create')); ?>" class="btn btn-md btn-outline-primary">
                             <i class="bi bi-pencil-square me-2"></i> Registrar nuevo usuario
                         </a>
                     </div>
                 </div>
             </form>
 
-            @if(session('mensaje'))
+            <?php if(session('mensaje')): ?>
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     <i class="bi bi-check-circle-fill me-2"></i>
-                    {{ session('mensaje') }}
+                    <?php echo e(session('mensaje')); ?>
+
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
                 </div>
-            @endif
+            <?php endif; ?>
 
             <table class="table table-bordered table-striped">
                 <thead class="table-dark">
@@ -102,45 +102,49 @@
                 </tr>
                 </thead>
                 <tbody>
-                @forelse ($users as $user)
+                <?php $__empty_1 = true; $__currentLoopData = $users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $user): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                     <tr>
-                        <td>{{ $users->firstItem() + $loop->index }}</td>
+                        <td><?php echo e($users->firstItem() + $loop->index); ?></td>
                         <td style="max-width: 200px; word-wrap: break-word; white-space: normal;">
-                            {{ $user->empleado->nombre ?? $user->name }} {{ $user->empleado->apellido ?? $user->apellido }}
+                            <?php echo e($user->empleado->nombre ?? $user->name); ?> <?php echo e($user->empleado->apellido ?? $user->apellido); ?>
+
                         </td>
-                        <td>{{ $user->usuario ?? '—' }}</td>
-                         <td>{{ $user->created_at->format('d/m/Y') }}</td>
+                        <td><?php echo e($user->usuario ?? '—'); ?></td>
+                         <td><?php echo e($user->created_at->format('d/m/Y')); ?></td>
                         <td class="text-center">
-                            <a href="{{ route('users.show', $user->id) }}" class="btn btn-sm btn-outline-info">
+                            <a href="<?php echo e(route('users.show', $user->id)); ?>" class="btn btn-sm btn-outline-info">
                                 <i class="bi bi-eye"></i> Ver
                             </a>
-                            <a href="{{ route('users.verpermisos', $user->id) }}" class="btn btn-sm btn-outline-success-custom">
+                            <a href="<?php echo e(route('users.verpermisos', $user->id)); ?>" class="btn btn-sm btn-outline-success-custom">
                                 <i class="bi bi-eye-fill me-1"></i> Ver permisos
                             </a>
                         </td>
                     </tr>
-                @empty
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <tr>
                         <td colspan="6" class="text-center text-muted">No hay usuarios registrados.</td>
                     </tr>
-                @endforelse
+                <?php endif; ?>
                 </tbody>
             </table>
 
-            @if(request('search') && $users->total() > 0)
+            <?php if(request('search') && $users->total() > 0): ?>
                 <div class="mb-3 text-muted">
-                    Mostrando {{ $users->count() }} de {{ $users->total() }} usuarios encontrados para
-                    "<strong>{{ request('search') }}</strong>".
+                    Mostrando <?php echo e($users->count()); ?> de <?php echo e($users->total()); ?> usuarios encontrados para
+                    "<strong><?php echo e(request('search')); ?></strong>".
                 </div>
-            @elseif(request('search') && $users->total() === 0)
+            <?php elseif(request('search') && $users->total() === 0): ?>
                 <div class="mb-3 text-danger">
-                    No se encontraron resultados para "<strong>{{ request('search') }}</strong>".
+                    No se encontraron resultados para "<strong><?php echo e(request('search')); ?></strong>".
                 </div>
-            @endif
+            <?php endif; ?>
 
             <div class="d-flex justify-content-center mt-4">
-                {{ $users->links('pagination::bootstrap-5') }}
+                <?php echo e($users->links('pagination::bootstrap-5')); ?>
+
             </div>
         </div>
     </div>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Admin\PhpstormProjects\Centinela\resources\views/users/index.blade.php ENDPATH**/ ?>

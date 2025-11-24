@@ -9,7 +9,6 @@
             color: #000000;
             font-family: Arial, sans-serif;
             text-align: center;
-            padding-top: 50px;
         }
 
         .container {
@@ -146,19 +145,19 @@ unset($__errorArgs, $__bag); ?>
 
 
             <input type="text" name="identidad" id="identidad" maxlength="13" value="<?php echo e(old('identidad')); ?>" placeholder="DNI / Identidad">
-                    <div class="error" id="error-identidad">
-                        <?php $__errorArgs = ['identidad'];
+            <div class="error" id="error-identidad">
+                <?php $__errorArgs = ['identidad'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
-                        ⚠️ <?php echo e($message); ?>
+                ⚠️ <?php echo e($message); ?>
 
-                        <?php unset($message);
+                <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
-                    </div>
+            </div>
 
             <div class="botones">
                 <a href="<?php echo e(route('asistencias.index')); ?>" class="btn btn-danger w-100">

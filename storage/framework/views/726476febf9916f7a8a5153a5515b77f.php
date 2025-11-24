@@ -29,6 +29,11 @@
                     <i class="bi bi-person-plus-fill me-2"></i> Editar una capacitación
                 </h3>
 
+                
+                <?php if(session('success')): ?>
+                    <div class="alert alert-success text-center"><?php echo e(session('success')); ?></div>
+                <?php endif; ?>
+
                 <form id="form-curso" action="<?php echo e(route('capacitaciones.update', $capacitacion->id)); ?>" method="POST" enctype="multipart/form-data" novalidate>
                     <?php echo csrf_field(); ?>
                     <?php echo method_field('PUT'); ?>
@@ -204,7 +209,6 @@ unset($__errorArgs, $__bag); ?></div>
                         </div>
 
                         <!-- Duración -->
-                        <!-- Duración -->
                         <div class="col-md-4">
                             <label for="duracion" class="form-label">Duración (días)</label>
                             <div class="input-group has-validation">
@@ -232,7 +236,6 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?></div>
                         </div>
-
 
                         <!-- Fecha inicio -->
                         <div class="col-md-6">
@@ -429,7 +432,6 @@ unset($__errorArgs, $__bag); ?></div>
             el.addEventListener("change", ()=>limpiarError(el));
         });
 
-        // --- Dirección obligatoria según modalidad ---
         const modalidad = document.getElementById("modalidad");
         const direccion = document.getElementById("direccion");
 
@@ -453,7 +455,6 @@ unset($__errorArgs, $__bag); ?></div>
                 if(!el.value.trim()){ mostrarError(el, mensajes[el.name]); valido=false; }
             });
 
-            // Validación teléfono
             const telefono = form.querySelector('input[name="telefono"]');
             if (!/^[2389]\d{7}$/.test(telefono.value)) { mostrarError(telefono, mensajes.telefono); valido=false; }
 
@@ -463,43 +464,32 @@ unset($__errorArgs, $__bag); ?></div>
                 valido = false;
             }
 
-            // Validación fechas
+            const fi = form.querySelector('input[name="fecha_inicio"]');
+            const ff = form.querySelector('input[name="fecha_fin"]');
             const fiDate = new Date(fi.value);
             const ffDate = new Date(ff.value);
-
-// Crear fechas sin hora para comparación
-            const hoyDate = new Date();
-            hoyDate.setHours(0,0,0,0);
-
-            const maxFecha = new Date();
-            maxFecha.setMonth(hoyDate.getMonth()+2);
-            maxFecha.setHours(0,0,0,0);
+            const hoyDate = new Date(); hoyDate.setHours(0,0,0,0);
+            const maxFecha = new Date(); maxFecha.setMonth(hoyDate.getMonth()+2); maxFecha.setHours(0,0,0,0);
 
             if(fiDate < hoyDate){ mostrarError(fi,mensajes.fecha_inicio); valido=false; }
             if(fiDate > maxFecha){ mostrarError(fi,mensajes.fecha_inicio); valido=false; }
             if(ffDate < fiDate){ mostrarError(ff,"La fecha final no puede ser anterior a la fecha de inicio."); valido=false; }
             if(ffDate > maxFecha){ mostrarError(ff,mensajes.fecha_fin); valido=false; }
 
-            // Validación extra del correo
             const correo = form.querySelector('input[name="correo"]');
-            if(correo.value && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(correo.value)) {
-                mostrarError(correo, "Debe ingresar un correo válido");
-                valido = false;
-            }
+            if(correo.value && !/^\S+@\S+\.\S+$/.test(correo.value)){ mostrarError(correo,mensajes.correo); valido=false; }
 
             if(!valido) e.preventDefault();
         });
 
-        restablecerBtn.addEventListener("click", function(e){
-            e.preventDefault();
-            form.querySelectorAll("input, textarea, select").forEach(el=>{
-                if(valoresOriginales.hasOwnProperty(el.name)) el.value = valoresOriginales[el.name];
+        restablecerBtn.addEventListener("click", function(){
+            Object.keys(valoresOriginales).forEach(k => {
+                const el = form.querySelector(`[name="${k}"]`);
+                if(el) el.value = valoresOriginales[k];
                 limpiarError(el);
-                if(el.tagName==="TEXTAREA") ajustarAltura(el);
             });
             actualizarRequeridoDireccion();
         });
-
     });
 </script>
 

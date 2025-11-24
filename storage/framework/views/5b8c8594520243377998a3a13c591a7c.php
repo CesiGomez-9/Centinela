@@ -167,7 +167,7 @@ unset($__errorArgs, $__bag); ?></div>
                         </div>
                     </div>
 
-
+                    
                     <input type="hidden" name="previewImagen" id="previewImagenHidden"
                            value="<?php echo e(old('previewImagen', $promocion->imagen ? asset('storage/'.$promocion->imagen) : asset('imagenes/plantilla_promocion.jpg'))); ?>">
 
@@ -210,7 +210,7 @@ unset($__errorArgs, $__bag); ?></div>
         </div>
     </div>
 
-
+    
     <div class="modal fade" id="previewModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-fullscreen">
             <div class="modal-content bg-dark">

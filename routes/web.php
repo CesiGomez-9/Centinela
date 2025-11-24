@@ -40,8 +40,10 @@ Route::get('/memorandos/{memorando}', [\App\Http\Controllers\MemorandoController
 
 
 Route::resource('promociones', \App\Http\Controllers\PromocionController::class);
-Route::resource('incapacidades', \App\Http\Controllers\IncapacidadController::class);
-Route::put('/incapacidades/{id}', [\App\Http\Controllers\IncapacidadController::class, 'update'])->name('incapacidades.update');
+Route::resource('incapacidades', \App\Http\Controllers\IncapacidadController::class)->parameters([
+    'incapacidades' => 'incapacidad'
+]);
+
 Route::resource('users', \App\Http\Controllers\UserController::class);
 Route::middleware(['auth', 'role:super_admin'])->group(function () {
     Route::resource('usuarios', \App\Http\Controllers\UserController::class);
@@ -176,4 +178,20 @@ Route::post('/forgotpassword', [\App\Http\Controllers\PasswordResetController::c
 Route::get('/resetpassword/{token}', [\App\Http\Controllers\PasswordResetController::class, 'showResetForm'])->name('password.reset');
 Route::post('/resetpassword', [\App\Http\Controllers\PasswordResetController::class, 'resetPassword'])->name('password.update');
 
+
+use App\Http\Controllers\UserController;
+
+// Dashboard según rol (para redirección después del login)
+Route::get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard');
+
+// Ver permisos de un usuario
+Route::get('/users/{user}/permisos', [UserController::class, 'verpermisos'])->name('users.verpermisos');
+
+// Resto de rutas existentes
+Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
+Route::post('/users/store', [UserController::class, 'store'])->name('users.store');
+Route::get('/users', [UserController::class, 'index'])->name('users.index');
+Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
+// AJAX para búsqueda de empleados
+Route::get('/ajax/empleados', [UserController::class, 'searchEmpleados'])->name('ajax.empleados');
 

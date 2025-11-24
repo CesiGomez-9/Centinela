@@ -11,7 +11,6 @@
             color: #000000;
             font-family: Arial, sans-serif;
             text-align: center;
-
         }
 
         .container {
@@ -102,8 +101,6 @@
             margin-bottom: 5px;
             color: #ffffff;
         }
-
-
 
 
     </style>
