@@ -104,17 +104,17 @@
     <h2>Restablecer Contraseña</h2>
     <p>Introduce tu nueva contraseña</p>
 
-    @if (session('status'))
-        <div class="alert alert-success">{{ session('status') }}</div>
-    @endif
+    <?php if(session('status')): ?>
+        <div class="alert alert-success"><?php echo e(session('status')); ?></div>
+    <?php endif; ?>
 
-    @if ($errors->any())
-        <div class="alert alert-danger">{{ $errors->first() }}</div>
-    @endif
+    <?php if($errors->any()): ?>
+        <div class="alert alert-danger"><?php echo e($errors->first()); ?></div>
+    <?php endif; ?>
 
-    <form action="{{ route('password.update') }}" method="POST">
-        @csrf
-        <input type="hidden" name="token" value="{{ $token }}">
+    <form action="<?php echo e(route('password.update')); ?>" method="POST">
+        <?php echo csrf_field(); ?>
+        <input type="hidden" name="token" value="<?php echo e($token); ?>">
 
         <div class="mb-3">
             <input type="email" name="email" class="form-control" placeholder="Correo electrónico" required>
@@ -128,9 +128,10 @@
         <button type="submit" class="btn btn-reset"> Restablecer</button>
     </form>
 
-    <p class="text-small"><a href="{{ route('login') }}" style="color:#60a5fa;">Volver al login</a></p>
+    <p class="text-small"><a href="<?php echo e(route('login')); ?>" style="color:#60a5fa;">Volver al login</a></p>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+<?php /**PATH C:\Users\angel\PhpstormProjects\Centinela\resources\views/auth/resetpassword.blade.php ENDPATH**/ ?>

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Hash;
@@ -17,16 +19,18 @@ class PasswordResetController extends Controller
     public function sendResetLink(Request $request)
     {
         $request->validate([
-            'email' => ['required', 'email']
+            'email' => 'required|email|exists:users,email',
+        ], [
+            'email.required' => 'Debes ingresar tu correo',
+            'email.email' => 'El correo debe ser válido',
+            'email.exists' => 'No existe un usuario con este correo',
         ]);
 
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
+        $status = Password::sendResetLink($request->only('email'));
 
         return $status === Password::RESET_LINK_SENT
-            ? back()->with('status', 'Se envió un enlace a tu correo.')
-            : back()->withErrors(['email' => 'No pudimos enviar el enlace.']);
+            ? back()->with('status', 'Se ha enviado un enlace de recuperación a tu correo')
+            : back()->withErrors(['email' => 'Error al enviar el enlace. Intenta de nuevo']);
     }
 
     public function showResetForm($token)
@@ -37,22 +41,26 @@ class PasswordResetController extends Controller
     public function resetPassword(Request $request)
     {
         $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required', 'confirmed', 'min:8'],
-            'password_confirmation' => ['required']
+            'token' => 'required',
+            'email' => 'required|email|exists:users,email',
+            'password' => 'required|min:8|max:8|confirmed',
+        ], [
+            'password.required' => 'Debes ingresar tu nueva contraseña',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres',
+            'password.max' => 'La contraseña no puede tener más de 8 caracteres',
+            'password.confirmed' => 'La confirmación no coincide',
         ]);
 
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user) use ($request) {
-                $user->forceFill([
-                    'password' => Hash::make($request->password),
-                ])->save();
+            function (User $user, string $password) {
+                $user->password = Hash::make($password);
+                $user->save();
             }
         );
 
         return $status === Password::PASSWORD_RESET
-            ? redirect('/login')->with('status', 'Contraseña restablecida.')
-            : back()->withErrors(['email' => 'Error al restablecer contraseña.']);
+            ? redirect()->route('login')->with('status', 'Contraseña restablecida correctamente')
+            : back()->withErrors(['email' => 'Error al restablecer la contraseña']);
     }
 }

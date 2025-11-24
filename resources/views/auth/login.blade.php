@@ -166,7 +166,11 @@
         </button>
     </form>
 
-    <p class="text-small">¿Olvidaste tu contraseña?</p>
+    <p class="text-small">
+        <a href="{{ route('password.request') }}" style="color:#3b82f6; text-decoration: none;">
+            ¿Olvidaste tu contraseña?
+        </a>
+    </p>
 </div>
 
 

@@ -102,6 +102,8 @@
 </head>
 <body>
 
+
+
 <div class="card-reset">
     <i class="bi bi-shield-lock-fill" style="font-size:4rem;color:#3b82f6;margin-bottom:20px;"></i>
     <h2>Recuperar Contraseña</h2>
