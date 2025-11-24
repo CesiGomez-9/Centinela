@@ -15,6 +15,10 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
+        if (!in_array(auth()->user()->rol, ['Técnico', 'Vigilante'])) {
+            abort(403, 'No tienes permiso para ver esta página');
+        }
+
         $search = $request->input('search');
         $fechaInicio = $request->input('fecha_inicio');
         $fechaFin = $request->input('fecha_fin');

@@ -222,22 +222,18 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
-Route::middleware(['auth', 'role:Vigilante'])->group(function () {
-
-    Route::get('/asistencias/index', [\App\Http\Controllers\AsistenciaController::class, 'index'])->name('asistencias.index');
-    Route::get('/asistencias/crear', [\App\Http\Controllers\AsistenciaController::class, 'create'])->name('asistencias.crear');
-    Route::post('/asistencias', [\App\Http\Controllers\AsistenciaController::class, 'store'])->name('asistencias.store');
-
-    Route::get('/turnos', [\App\Http\Controllers\TurnoController::class, 'index'])->name('turnos.index');
-    Route::get('/turnos/{id}', [\App\Http\Controllers\TurnoController::class, 'show'])->name('turnos.show');
-});
-
-
+// Rutas para Técnico
 Route::middleware(['auth', 'role:Técnico'])->group(function () {
-
-    Route::get('/turnos', [\App\Http\Controllers\TurnoController::class, 'index'])->name('turnos.index');
-
-    Route::get('/asistencias/index', [\App\Http\Controllers\AsistenciaController::class, 'index'])->name('asistencias.index');
     Route::get('/instalaciones', [\App\Http\Controllers\InstalacionController::class, 'index'])->name('instalaciones.index');
-
+    Route::get('/asistencia', [\App\Http\Controllers\AsistenciaController::class, 'index'])->name('asistencia.index');
+    Route::get('/turnos', [TurnoController::class, 'index'])->name('turnos.index');
+    Route::get('/turnos/{id}', [TurnoController::class, 'show'])->name('turnos.show');
 });
+
+// Rutas para Vigilante
+Route::middleware(['auth', 'role:Vigilante'])->group(function () {
+    Route::get('/asistencia', [\App\Http\Controllers\AsistenciaController::class, 'index'])->name('asistencia.index');
+    Route::get('/turnos', [TurnoController::class, 'index'])->name('turnos.index');
+    Route::get('/turnos/{id}', [TurnoController::class, 'show'])->name('turnos.show');
+});
+

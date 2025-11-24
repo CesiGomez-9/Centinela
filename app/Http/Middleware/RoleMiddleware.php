@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 
 class RoleMiddleware
 {
+    protected $routeMiddleware = [
+        // otros middlewares
+        'role' => \App\Http\Middleware\CheckRole::class,
+    ];
 
     public function handle(Request $request, Closure $next, ...$roles)
     {
