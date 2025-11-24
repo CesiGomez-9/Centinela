@@ -469,8 +469,8 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" required>
                             <option value="">Seleccione una categoría...</option>
-                            <option value="Administracion" <?php echo e(old('categoria', $empleado->categoria) == 'Administracion' ? 'selected' : ''); ?>>Administración</option>
-                            <option value="Tecnico" <?php echo e(old('categoria', $empleado->categoria) == 'Tecnico' ? 'selected' : ''); ?>>Técnico</option>
+                            <option value="Administración" <?php echo e(old('categoria', $empleado->categoria) == 'Administración' ? 'selected' : ''); ?>>Administración</option>
+                            <option value="Técnico" <?php echo e(old('categoria', $empleado->categoria) == 'Técnico' ? 'selected' : ''); ?>>Técnico</option>
                             <option value="Vigilancia" <?php echo e(old('categoria', $empleado->categoria) == 'Vigilancia' ? 'selected' : ''); ?>>Vigilancia</option>
                         </select>
 

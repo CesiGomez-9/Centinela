@@ -177,3 +177,4 @@ Route::get('/resetpassword/{token}', [\App\Http\Controllers\PasswordResetControl
 Route::post('/resetpassword', [\App\Http\Controllers\PasswordResetController::class, 'resetPassword'])->name('password.update');
 
 
+

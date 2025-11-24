@@ -186,7 +186,6 @@
                                             <?php echo e($alergia); ?>
 
 
-                                            
                                             <?php if($alergia === 'Alimentos' && !empty($empleado->alergiaAlimentos)): ?>
                                                 : <?php echo e($empleado->alergiaAlimentos); ?>
 
