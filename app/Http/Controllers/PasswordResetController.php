@@ -43,11 +43,11 @@ class PasswordResetController extends Controller
         $request->validate([
             'token' => 'required',
             'email' => 'required|email|exists:users,email',
-            'password' => 'required|min:8|max:8|confirmed',
+            'password' => 'required|min:6|max:20|confirmed',
         ], [
             'password.required' => 'Debes ingresar tu nueva contraseña',
-            'password.min' => 'La contraseña debe tener al menos 8 caracteres',
-            'password.max' => 'La contraseña no puede tener más de 8 caracteres',
+            'password.min' => 'La contraseña debe tener al menos 6 caracteres',
+            'password.max' => 'La contraseña no puede tener más de 20 caracteres',
             'password.confirmed' => 'La confirmación no coincide',
         ]);
 
@@ -58,14 +58,6 @@ class PasswordResetController extends Controller
                 $user->save();
             }
         );
-
-
-        if ($status === Password::PASSWORD_RESET) {
-            // Aquí aseguramos que la sesión 'status' exista
-            return redirect()->route('login')
-                ->with('status', '¡Contraseña restablecida correctamente!');
-        }
-
 
         return $status === Password::PASSWORD_RESET
             ? redirect()->route('login')->with('status', 'Contraseña restablecida correctamente')

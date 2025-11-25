@@ -42,6 +42,9 @@
         <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item">
+                    <a class="nav-link text-white d-flex align-items-center" href="{{ route('login') }}">Login</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link text-white d-flex align-items-center" href="{{ route('users.create') }}">Regístrate</a>
                 </li>
                 <li class="nav-item dropdown">

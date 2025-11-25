@@ -9,15 +9,13 @@ use App\Http\Controllers\ServicioController;
 use App\Http\Controllers\PromocionController;
 use App\Http\Controllers\TurnoController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
 
-Route::get('/', function () {
-    return redirect()->route('empleados.index');
-});
+// Route::get('/', function () {
+    // return redirect()->route('empleados.index');
+// });
 
-Route::get('/', function () {
-    return view('index');
 
-});
 
 
 Route::get('/empleados', [EmpleadoController::class, 'index'])->name('empleados.index');
@@ -40,10 +38,8 @@ Route::get('/memorandos/{memorando}', [\App\Http\Controllers\MemorandoController
 
 
 Route::resource('promociones', \App\Http\Controllers\PromocionController::class);
-Route::resource('incapacidades', \App\Http\Controllers\IncapacidadController::class)->parameters([
-    'incapacidades' => 'incapacidad'
-]);
-
+Route::resource('incapacidades', \App\Http\Controllers\IncapacidadController::class);
+Route::put('/incapacidades/{id}', [\App\Http\Controllers\IncapacidadController::class, 'update'])->name('incapacidades.update');
 Route::resource('users', \App\Http\Controllers\UserController::class);
 Route::middleware(['auth', 'role:super_admin'])->group(function () {
     Route::resource('usuarios', \App\Http\Controllers\UserController::class);
@@ -179,7 +175,7 @@ Route::get('/resetpassword/{token}', [\App\Http\Controllers\PasswordResetControl
 Route::post('/resetpassword', [\App\Http\Controllers\PasswordResetController::class, 'resetPassword'])->name('password.update');
 
 
-use App\Http\Controllers\UserController;
+
 
 // Dashboard según rol (para redirección después del login)
 Route::get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard');
@@ -187,13 +183,13 @@ Route::get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard'
 // Ver permisos de un usuario
 Route::get('/users/{user}/permisos', [UserController::class, 'verpermisos'])->name('users.verpermisos');
 
-// Resto de rutas existentes
-Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
-Route::post('/users/store', [UserController::class, 'store'])->name('users.store');
-Route::get('/users', [UserController::class, 'index'])->name('users.index');
-Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
-// AJAX para búsqueda de empleados
-Route::get('/ajax/empleados', [UserController::class, 'searchEmpleados'])->name('ajax.empleados');
+Route::get('/', function () {
+    return redirect()->route('login');
+});
+
+Route::get('/index', function () {
+    return view('index');
+})->name('index')->middleware('auth');
 
 
 Route::middleware(['auth', 'role:Administrador'])->group(function () {
@@ -222,22 +218,17 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
-Route::middleware(['auth', 'role:Vigilante'])->group(function () {
-
-    Route::get('/asistencias/index', [\App\Http\Controllers\AsistenciaController::class, 'index'])->name('asistencias.index');
-    Route::get('/asistencias/crear', [\App\Http\Controllers\AsistenciaController::class, 'create'])->name('asistencias.crear');
-    Route::post('/asistencias', [\App\Http\Controllers\AsistenciaController::class, 'store'])->name('asistencias.store');
-
-    Route::get('/turnos', [\App\Http\Controllers\TurnoController::class, 'index'])->name('turnos.index');
-    Route::get('/turnos/{id}', [\App\Http\Controllers\TurnoController::class, 'show'])->name('turnos.show');
+// Rutas para Técnico
+Route::middleware(['auth', 'role:Técnico'])->group(function () {
+    Route::get('/instalaciones', [\App\Http\Controllers\InstalacionController::class, 'index'])->name('instalaciones.index');
+    Route::get('/asistencia', [\App\Http\Controllers\AsistenciaController::class, 'index'])->name('asistencia.index');
+    Route::get('/turnos', [TurnoController::class, 'index'])->name('turnos.index');
+    Route::get('/turnos/{id}', [TurnoController::class, 'show'])->name('turnos.show');
 });
 
-
-Route::middleware(['auth', 'role:Técnico'])->group(function () {
-
-    Route::get('/turnos', [\App\Http\Controllers\TurnoController::class, 'index'])->name('turnos.index');
-
-    Route::get('/asistencias/index', [\App\Http\Controllers\AsistenciaController::class, 'index'])->name('asistencias.index');
-    Route::get('/instalaciones', [\App\Http\Controllers\InstalacionController::class, 'index'])->name('instalaciones.index');
-
+// Rutas para Vigilante
+Route::middleware(['auth', 'role:Vigilante'])->group(function () {
+    Route::get('/asistencia', [\App\Http\Controllers\AsistenciaController::class, 'index'])->name('asistencia.index');
+    Route::get('/turnos', [TurnoController::class, 'index'])->name('turnos.index');
+    Route::get('/turnos/{id}', [TurnoController::class, 'show'])->name('turnos.show');
 });
