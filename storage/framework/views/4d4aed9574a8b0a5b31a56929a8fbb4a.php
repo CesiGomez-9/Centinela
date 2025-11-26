@@ -1,5 +1,4 @@
-@extends('plantilla')
-@section('content')
+<?php $__env->startSection('content'); ?>
     <head>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     </head>
@@ -120,7 +119,7 @@
                     <label>Empleado:</label>
                     <div class="input-icon">
                         <i class="bi bi-person-fill"></i>
-                        <input type="text" value="{{ $user->empleado->nombre ?? $user->name }} {{ $user->empleado->apellido ?? $user->apellido }}" readonly>
+                        <input type="text" value="<?php echo e($user->empleado->nombre ?? $user->name); ?> <?php echo e($user->empleado->apellido ?? $user->apellido); ?>" readonly>
                     </div>
                 </div>
 
@@ -128,7 +127,7 @@
                     <label>Identidad:</label>
                     <div class="input-icon">
                         <i class="bi bi-card-list"></i>
-                        <input type="text" value="{{ $user->empleado->identidad ?? '—' }}" readonly>
+                        <input type="text" value="<?php echo e($user->empleado->identidad ?? '—'); ?>" readonly>
                     </div>
                 </div>
 
@@ -136,7 +135,7 @@
                     <label>Correo electrónico:</label>
                     <div class="input-icon">
                         <i class="bi bi-envelope-fill"></i>
-                        <input type="email" value="{{ $user->email }}" readonly>
+                        <input type="email" value="<?php echo e($user->email); ?>" readonly>
                     </div>
                 </div>
             </div>
@@ -148,7 +147,7 @@
                     <label>Usuario:</label>
                     <div class="input-icon">
                         <i class="bi bi-person-badge-fill"></i>
-                        <input type="text" value="{{ $user->usuario }}" readonly>
+                        <input type="text" value="<?php echo e($user->usuario); ?>" readonly>
                     </div>
                 </div>
 
@@ -156,7 +155,7 @@
                     <label>Rol:</label>
                     <div class="input-icon">
                         <i class="bi bi-shield-lock-fill"></i>
-                        <input type="text" value="{{ $user->rol }}" readonly>
+                        <input type="text" value="<?php echo e($user->rol); ?>" readonly>
                     </div>
                 </div>
 
@@ -164,19 +163,21 @@
                     <label>Fecha de creación:</label>
                     <div class="input-icon">
                         <i class="bi bi-calendar-fill"></i>
-                        <input type="text" value="{{ $user->created_at->format('d/m/Y') }}" readonly>
+                        <input type="text" value="<?php echo e($user->created_at->format('d/m/Y')); ?>" readonly>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="botones">
-            <a href="{{ route('users.index') }}" class="btn w-30" style="background-color:#cda34f; color:#1a2340;">
+            <a href="<?php echo e(route('users.index')); ?>" class="btn w-30" style="background-color:#cda34f; color:#1a2340;">
                 <i class="bi bi-arrow-left me-2"></i> Volver a la lista
             </a>
-            <a href="{{ route('users.verpermisos', $user->id) }}" class="btn w-40" style="background-color:#cda34f; color:#1a2340;">
+            <a href="<?php echo e(route('users.verpermisos', $user->id)); ?>" class="btn w-40" style="background-color:#cda34f; color:#1a2340;">
                 <i class="bi bi-eye-fill me-2"></i> Ver permisos
             </a>
         </div>
     </div>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\cesig\Herd\sistemadeseguridadcentinela\resources\views/users/show.blade.php ENDPATH**/ ?>

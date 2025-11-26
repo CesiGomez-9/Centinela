@@ -47,7 +47,7 @@ Route::middleware(['auth', 'role:super_admin'])->group(function () {
 
 // Ruta AJAX para buscar empleados
 Route::get('ajax/empleados', [\App\Http\Controllers\UserController::class, 'searchEmpleados'])->name('ajax.empleados');
-
+Route::get('/ajax/check-user/{empleado}', [UserController::class, 'checkUser']);
 Route::get('/clientes/buscar', [App\Http\Controllers\ClienteController::class, 'buscar'])->name('clientes.buscar');
 
 

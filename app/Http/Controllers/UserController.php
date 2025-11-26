@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\Empleado; // <--- importante
+use App\Models\Empleado;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -16,18 +16,25 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
+        $rolFilter = $request->input('rol');
         $fechaInicio = $request->input('fecha_inicio');
         $fechaFin = $request->input('fecha_fin');
 
         $users = User::query()
             ->with('empleado')
+            ->where('id', '!=', 1)
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%")
-                        ->orWhere('apellido', 'like', "%{$search}%")
-                        ->orWhere('usuario', 'like', "%{$search}%")
-                        ->orWhere('email', 'like', "%{$search}%");
+                    $q->where('usuario', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhereHas('empleado', function($q2) use ($search) {
+                            $q2->where('nombre', 'like', "%{$search}%")
+                                ->orWhere('apellido', 'like', "%{$search}%");
+                        });
                 });
+            })
+            ->when($rolFilter, function ($query) use ($rolFilter) {
+                $query->where('rol', $rolFilter);
             })
             ->when($fechaInicio, function ($query) use ($fechaInicio) {
                 $query->whereDate('created_at', '>=', $fechaInicio);
@@ -35,11 +42,13 @@ class UserController extends Controller
             ->when($fechaFin, function ($query) use ($fechaFin) {
                 $query->whereDate('created_at', '<=', $fechaFin);
             })
-            ->orderBy('id', 'desc')
+            ->orderBy('id', 'asc')
             ->paginate(10)
-            ->withQueryString(); // <-- mantiene parámetros de búsqueda en paginación
+            ->withQueryString();
 
-        return view('users.index', compact('users', 'search', 'fechaInicio', 'fechaFin'));
+        $roles = ['Administrador', 'Vigilante', 'Técnico'];
+
+        return view('users.index', compact('users', 'search', 'rolFilter', 'roles', 'fechaInicio', 'fechaFin'));
     }
 
 
@@ -49,8 +58,6 @@ class UserController extends Controller
     public function create()
     {
         $roles = ['Administrador', 'Vigilante', 'Técnico'];
-
-        // Obtener empleados registrados
         $empleados = Empleado::orderBy('nombre')->get();
 
         return view('users.create', compact('roles', 'empleados'));
@@ -91,9 +98,6 @@ class UserController extends Controller
         return redirect()->route('users.index')
             ->with('success', "Usuario creado correctamente. Contraseña temporal: <strong>{$request->password}</strong>");
     }
-
-
-
     /**
      * VER USUARIO
      */
@@ -183,8 +187,6 @@ class UserController extends Controller
         return view('users.verPermisos', compact('user', 'rol'));
     }
 
-
-
     public function searchEmpleados(Request $request)
     {
         $q = $request->get('q', '');
@@ -201,4 +203,11 @@ class UserController extends Controller
 
         return response()->json($empleados);
     }
+
+    public function checkUser($empleadoId)
+    {
+        $existe = User::where('empleado_id', $empleadoId)->exists();
+        return response()->json(['tiene_usuario' => $existe]);
+    }
+
 }
