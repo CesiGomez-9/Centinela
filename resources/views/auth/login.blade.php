@@ -125,6 +125,7 @@
     <i class="bi bi-shield-lock-fill icon"></i>
     <h2>Bienvenido</h2>
     <p>Grupo Centinela</p>
+    
 
     <form action="{{ route('login.process') }}" method="POST">
         @csrf
@@ -135,7 +136,7 @@
                    class="form-control"
                    id="usuario"
                    name="usuario"
-                   maxlength="30"
+                   maxlength="50"
                    placeholder="Ingrese su usuario"
                    value="{{ old('usuario') }}">
             @error('usuario')
@@ -152,7 +153,7 @@
                    class="form-control"
                    id="password"
                    name="password"
-                   maxlength="8"
+                   maxlength="20"
                    placeholder="Ingrese su contraseña">
             @error('password')
             <div class="text-danger mt-1" style="font-size: 0.9rem;">
