@@ -194,7 +194,7 @@
 
             <div class="grid-2">
                 <div class="columna">
-                    <h5 class="mt-2 mb-3" style="opacity:0;">Espaciador</h5>
+                    <h5 class="mt-2 mb-3" style="font-weight: bold; text-align: center;">Datos del empleado</h5>
 
                     <div class="full" style="position: relative;">
                         <label>Empleado:</label>
@@ -389,13 +389,17 @@
             } else {
                 errorEmpleado.textContent = "";
             }
-
-            if (document.getElementById("rol").value === "") {
-                errorRol.textContent = "Debe seleccionar un rol.";
-                hayError = true;
+            if (!empleadoTieneUsuario) {
+                if (document.getElementById("rol").value === "") {
+                    errorRol.textContent = "Debe seleccionar un rol.";
+                    hayError = true;
+                } else {
+                    errorRol.textContent = "";
+                }
             } else {
                 errorRol.textContent = "";
             }
+
 
             if (hayError) {
                 e.preventDefault();
