@@ -115,9 +115,12 @@
                             <a href="<?php echo e(route('users.show', $user->id)); ?>" class="btn btn-sm btn-outline-info">
                                 <i class="bi bi-eye"></i> Ver
                             </a>
-                            <a href="<?php echo e(route('users.verpermisos', $user->id)); ?>" class="btn btn-sm btn-outline-success-custom">
-                                <i class="bi bi-eye-fill me-1"></i> Ver permisos
+                            <a href="<?php echo e(route('roles.asignar', $user->id)); ?>"
+                               class="btn btn-sm btn-warning">
+                                Asignar Rol
                             </a>
+
+
                         </td>
                     </tr>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>

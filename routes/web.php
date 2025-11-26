@@ -182,10 +182,20 @@ Route::post('/resetpassword', [\App\Http\Controllers\PasswordResetController::cl
 use App\Http\Controllers\UserController;
 
 // Dashboard según rol (para redirección después del login)
-Route::get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard');
+//Route::get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard');
 
 // Ver permisos de un usuario
 Route::get('/users/{user}/permisos', [UserController::class, 'verpermisos'])->name('users.verpermisos');
+
+use App\Http\Controllers\RoleController;
+
+Route::get('/usuarios/{user}/asignar-rol', [RoleController::class, 'asignarRol'])
+    ->name('roles.asignar');
+
+Route::post('/usuarios/{user}/asignar-rol', [RoleController::class, 'guardarRol'])
+    ->name('roles.guardar');
+
+
 
 // Resto de rutas existentes
 Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
@@ -194,4 +204,3 @@ Route::get('/users', [UserController::class, 'index'])->name('users.index');
 Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
 // AJAX para búsqueda de empleados
 Route::get('/ajax/empleados', [UserController::class, 'searchEmpleados'])->name('ajax.empleados');
-
