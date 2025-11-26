@@ -416,13 +416,17 @@ unset($__errorArgs, $__bag); ?>
             } else {
                 errorEmpleado.textContent = "";
             }
-
-            if (document.getElementById("rol").value === "") {
-                errorRol.textContent = "Debe seleccionar un rol.";
-                hayError = true;
+            if (!empleadoTieneUsuario) {
+                if (document.getElementById("rol").value === "") {
+                    errorRol.textContent = "Debe seleccionar un rol.";
+                    hayError = true;
+                } else {
+                    errorRol.textContent = "";
+                }
             } else {
-                errorRol.textContent = "";
+                errorRol.textContent = ""; 
             }
+
 
             if (hayError) {
                 e.preventDefault();
