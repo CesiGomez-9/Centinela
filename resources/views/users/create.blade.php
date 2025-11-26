@@ -194,7 +194,7 @@
 
             <div class="grid-2">
                 <div class="columna">
-                    <h5 class="mt-2 mb-3" style="opacity:0;">Espaciador</h5>
+                    <h5 class="mt-2 mb-3" style="font-weight: bold; text-align: center;">Datos del empleado</h5>
 
                     <div class="full" style="position: relative;">
                         <label>Empleado:</label>
