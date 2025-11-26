@@ -114,9 +114,8 @@
                             <a href="{{ route('users.show', $user->id) }}" class="btn btn-sm btn-outline-info">
                                 <i class="bi bi-eye"></i> Ver
                             </a>
-                            <a href="{{ route('roles.asignar', $user->id) }}"
-                               class="btn btn-sm btn-warning">
-                                Asignar Rol
+                            <a href="{{ route('roles_permisos.asignar', $user->id) }}" class="btn btn-sm btn-outline-warning">
+                                <i class="bi bi-pencil-fill"></i> Asignar rol
                             </a>
 
 

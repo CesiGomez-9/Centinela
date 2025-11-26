@@ -188,12 +188,12 @@ use App\Http\Controllers\UserController;
 Route::get('/users/{user}/permisos', [UserController::class, 'verpermisos'])->name('users.verpermisos');
 
 use App\Http\Controllers\RoleController;
-
-Route::get('/usuarios/{user}/asignar-rol', [RoleController::class, 'asignarRol'])
-    ->name('roles.asignar');
-
-Route::post('/usuarios/{user}/asignar-rol', [RoleController::class, 'guardarRol'])
-    ->name('roles.guardar');
+Route::get('/roles_permisos', [RoleController::class, 'index'])->name('roles_permisos.index');
+Route::get('/usuarios/{user}/asignar-rol', [RoleController::class, 'asignarRol'])->name('roles_permisos.asignar');
+Route::post('/usuarios/{user}/asignar-rol', [RoleController::class, 'guardarRol'])->name('roles_permisos.guardar');
+Route::get('/roles_permisos/{user}/ver', [RoleController::class, 'ver'])->name('roles_permisos.ver');
+Route::get('/roles_permisos/{user}/editar', [RoleController::class, 'editar'])->name('roles_permisos.editar');
+Route::put('/roles_permisos/{user}', [RoleController::class, 'actualizar'])->name('roles_permisos.actualizar');
 
 
 
