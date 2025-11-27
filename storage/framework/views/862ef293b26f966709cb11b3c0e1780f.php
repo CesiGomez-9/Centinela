@@ -1,8 +1,8 @@
 <?php $__env->startSection('content'); ?>
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
     <head>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     </head>
-
     <style>
         body {
             background-color: #e6f0ff;
@@ -118,18 +118,11 @@
         }
 
         input:-webkit-autofill,
-        input:-webkit-autofill:hover,
-        input:-webkit-autofill:focus,
-        input:-webkit-autofill:active,
-        select:-webkit-autofill,
-        select:-webkit-autofill:hover,
-        select:-webkit-autofill:focus,
-        select:-webkit-autofill:active {
+        select:-webkit-autofill {
             -webkit-box-shadow: 0 0 0px 1000px #2a3357 inset !important;
             -webkit-text-fill-color: #fff !important;
         }
 
-        /* Lista de resultados de búsqueda */
         .results {
             background-color: #2a3357;
             max-height: 150px;
@@ -149,6 +142,44 @@
         .results div:hover {
             background-color: #3a4467;
         }
+
+        .grid-2 {
+            position: relative;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .grid-2::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            width: 2px;
+            background: linear-gradient(to bottom, #d4af37, #b8962e, #d4af37);
+            opacity: 0.7;
+            border-radius: 10px;
+        }
+
+        .columna {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            align-items: start;
+        }
+
+        .columna {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
     </style>
 
     <div class="container">
@@ -161,149 +192,245 @@
             <?php echo csrf_field(); ?>
 
             <div class="grid-2">
+                <div class="columna">
+                    <h5 class="mt-2 mb-3" style="font-weight: bold; text-align: center;">Datos del empleado</h5>
 
-                
-                <div class="full" style="position: relative;">
-                    <div class="input-icon">
-                        <i class="bi bi-search"></i>
-                        <input type="text" id="buscarEmpleado" placeholder="Buscar empleado...">
-                    </div>
-                    <div class="results" id="results"></div>
-                    <div class="error" id="error-empleado"></div>
-                </div>
-
-                
-                <div class="full">
-                    <div class="input-icon">
-                        <i class="bi bi-envelope-fill"></i>
-                        <input type="email" name="email" id="email" placeholder="Correo electrónico" readonly>
-                    </div>
-                    <div class="error" id="error-email"><?php $__errorArgs = ['email'];
+                    <div class="full" style="position: relative;">
+                        <label>Empleado:</label>
+                        <div class="input-icon">
+                            <i class="bi bi-search"></i>
+                            <input type="text" id="buscarEmpleado" name="empleado_nombre" placeholder="Buscar empleado..." value="<?php echo e(old('empleado_nombre')); ?>">
+                        </div>
+                        <div class="results" id="results"></div>
+                        <div class="error" id="error-empleado">
+                            <?php $__errorArgs = ['empleado_id'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> ⚠️ <?php echo e($message); ?> <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?></div>
-                </div>
-
-                
-                <div class="full">
-                    <div class="input-icon">
-                        <i class="bi bi-person-badge-fill"></i>
-                        <input type="text" name="usuario" id="usuario" placeholder="Usuario" readonly>
+unset($__errorArgs, $__bag); ?>
+                        </div>
+                        <input type="hidden" name="empleado_id" id="empleado_id" value="<?php echo e(old('empleado_id')); ?>">
                     </div>
-                    <div class="error" id="error-usuario"><?php $__errorArgs = ['usuario'];
+
+                    <div class="full">
+                        <label>Identidad:</label>
+                        <div class="input-icon">
+                            <i class="bi bi-card-list"></i>
+                            <input type="text" id="identidad" placeholder="Identidad" readonly>
+                        </div>
+                    </div>
+
+                    <div class="full">
+                        <label>Correo electrónico:</label>
+                        <div class="input-icon">
+                            <i class="bi bi-envelope-fill"></i>
+                            <input type="email" name="email" id="email" placeholder="Correo" readonly>
+                        </div>
+                        <div class="error" id="error-email">
+                            <?php $__errorArgs = ['email'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> ⚠️ <?php echo e($message); ?> <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?></div>
+unset($__errorArgs, $__bag); ?>
+                        </div>
+                    </div>
                 </div>
 
-                
-                <div class="full">
-                    <div class="input-icon">
-                        <i class="bi bi-lock-fill"></i>
-                        <input type="text" name="password" id="password" placeholder="Contraseña temporal" readonly>
-                    </div>
-                    <div class="error" id="error-password"></div>
-                </div>
+                <div class="columna">
+                    <h5 class="mt-2 mb-3" style="font-weight: bold; text-align: center;">Datos para iniciar sesión</h5>
 
-                
-                <div class="full">
-                    <div class="input-icon">
-                        <i class="bi bi-shield-lock-fill"></i>
-                        <select name="rol" id="rol">
-                            <option value="">Seleccione un rol</option>
-                            <?php $__currentLoopData = $roles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $rol): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <option value="<?php echo e($rol); ?>" <?php echo e(old('rol') == $rol ? 'selected' : ''); ?>>
-                                    <?php echo e($rol); ?>
-
-                                </option>
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                        </select>
-                    </div>
-                    <div class="error" id="error-rol"><?php $__errorArgs = ['rol'];
+                    <div class="full">
+                        <label>Usuario:</label>
+                        <div class="input-icon">
+                            <i class="bi bi-person-badge-fill"></i>
+                            <input type="text" name="usuario" id="usuario" placeholder="Usuario" readonly>
+                        </div>
+                        <div class="error" id="error-usuario">
+                            <?php $__errorArgs = ['usuario'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> ⚠️ <?php echo e($message); ?> <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?></div>
-                </div>
+unset($__errorArgs, $__bag); ?>
+                        </div>
+                    </div>
 
+                    <div class="full">
+                        <label>Contraseña temporal:</label>
+                        <div class="input-icon">
+                            <i class="bi bi-lock-fill"></i>
+                            <input type="text" name="password" id="password" placeholder="Contraseña" readonly>
+                        </div>
+                        <div class="error" id="error-password"></div>
+                    </div>
+
+                    <div class="full">
+                        <label>Rol:</label>
+                        <div class="input-icon">
+                            <i class="bi bi-shield-lock-fill"></i>
+                            <select name="rol" id="rol">
+                                <option value="">Seleccione un rol</option>
+                                <?php $__currentLoopData = $roles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $rol): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($rol); ?>" <?php echo e(old('rol') == $rol ? 'selected' : ''); ?>><?php echo e($rol); ?></option>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            </select>
+                        </div>
+                        <div class="error" id="error-rol">
+                            <?php $__errorArgs = ['rol'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> ⚠️ <?php echo e($message); ?> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="botones">
                 <a href="<?php echo e(route('users.index')); ?>" class="btn btn-danger w-100">
                     <i class="bi bi-x-circle me-2"></i> Cancelar
                 </a>
-
                 <button type="button" class="btn btn-secondary w-100" id="btnLimpiar">
                     <i class="bi bi-eraser-fill me-2"></i> Limpiar
                 </button>
-
                 <button type="submit" class="btn btn-warning w-100 text-white fw-normal">
                     <i class="bi bi-save-fill me-2"></i> Guardar
                 </button>
             </div>
-
-            <input type="hidden" name="empleado_id" id="empleado_id">
         </form>
     </div>
 
     <script>
         const btnLimpiar = document.getElementById("btnLimpiar");
-
-        btnLimpiar.addEventListener("click", () => {
-            document.querySelectorAll("input, select").forEach(e => e.value = "");
-            document.querySelectorAll(".error").forEach(e => e.textContent = "");
-            document.getElementById("buscarEmpleado").focus();
-        });
-
-        // Búsqueda AJAX de empleados
         const buscarEmpleado = document.getElementById("buscarEmpleado");
         const results = document.getElementById("results");
         const email = document.getElementById("email");
+        const identidad = document.getElementById("identidad");
         const usuario = document.getElementById("usuario");
         const password = document.getElementById("password");
         const empleado_id = document.getElementById("empleado_id");
+        const errorEmpleado = document.getElementById("error-empleado");
+        const errorRol = document.getElementById("error-rol");
+        const formUsuarios = document.getElementById("formUsuarios");
 
-        buscarEmpleado.addEventListener("input", function() {
-            const q = this.value;
+        let empleadoTieneUsuario = false;
 
-            if(q.length === 0){
+        btnLimpiar.addEventListener("click", () => {
+            document.querySelectorAll("input, select").forEach(e => {
+                if (e.id !== "empleado_id") e.value = "";
+            });
+
+            document.querySelectorAll(".error").forEach(e => e.textContent = "");
+            empleado_id.value = "";
+            empleadoTieneUsuario = false;
+            results.innerHTML = "";
+            buscarEmpleado.focus();
+        });
+
+        buscarEmpleado.addEventListener("input", function () {
+            const q = this.value.trim();
+
+            if (q.length === 0) {
                 results.innerHTML = "";
+                empleado_id.value = "";
+                empleadoTieneUsuario = false;
+                errorEmpleado.textContent = "";
                 return;
             }
 
-            fetch("<?php echo e(route('ajax.empleados')); ?>?q=" + q)
-                .then(response => response.json())
+            fetch(`/ajax/empleados?q=${encodeURIComponent(q)}`, {
+                headers: {
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+                }
+            })
+                .then(res => res.json())
                 .then(data => {
                     results.innerHTML = "";
+
                     data.forEach(emp => {
                         const div = document.createElement("div");
-                        div.textContent = emp.nombre + " " + emp.apellido + " - " + emp.identidad;
-                        div.dataset.email = emp.email;
-                        div.dataset.nombre = emp.nombre;
-                        div.dataset.apellido = emp.apellido;
-                        div.dataset.id = emp.id;
+                        div.textContent = `${emp.nombre} ${emp.apellido} - ${emp.identidad}`;
+
                         div.addEventListener("click", () => {
+
                             buscarEmpleado.value = emp.nombre + " " + emp.apellido;
-                            email.value = emp.email;
-                            usuario.value = (emp.nombre.charAt(0) + "." + emp.apellido).toLowerCase().replace(/\s+/g, '');
-                            password.value = Math.random().toString(36).slice(-10);
-                            empleado_id.value = emp.id;
-                            results.innerHTML = "";
+
+                            fetch(`/ajax/check-user/${emp.id}`, {
+                                headers: {
+                                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+                                }
+                            })
+                                .then(r => r.json())
+                                .then(resp => {
+
+                                    if (resp.tiene_usuario) {
+                                        errorEmpleado.textContent = "Este empleado ya tiene un usuario.";
+                                        empleadoTieneUsuario = true;
+
+                                        identidad.value = "";
+                                        email.value = "";
+                                        usuario.value = "";
+                                        password.value = "";
+                                        empleado_id.value = "";
+                                    } else {
+                                        errorEmpleado.textContent = "";
+                                        empleadoTieneUsuario = false;
+
+                                        identidad.value = emp.identidad;
+                                        email.value = emp.email;
+                                        usuario.value = (emp.nombre.charAt(0) + "." + emp.apellido)
+                                            .toLowerCase().replace(/\s+/g, '');
+                                        password.value = Math.random().toString(36).slice(-10);
+                                        empleado_id.value = emp.id;
+                                    }
+
+                                    results.innerHTML = "";
+                                });
                         });
+
                         results.appendChild(div);
                     });
                 });
+        });
+
+        formUsuarios.addEventListener("submit", e => {
+            let hayError = false;
+
+            if (empleadoTieneUsuario) {
+                errorEmpleado.textContent = "Este empleado ya tiene un usuario.";
+                hayError = true;
+            } else if (empleado_id.value.trim() === "") {
+                errorEmpleado.textContent = "Debe seleccionar un empleado.";
+                hayError = true;
+            } else {
+                errorEmpleado.textContent = "";
+            }
+            if (!empleadoTieneUsuario) {
+                if (document.getElementById("rol").value === "") {
+                    errorRol.textContent = "Debe seleccionar un rol.";
+                    hayError = true;
+                } else {
+                    errorRol.textContent = "";
+                }
+            } else {
+                errorRol.textContent = "";
+            }
+
+
+            if (hayError) {
+                e.preventDefault();
+            }
         });
     </script>
 <?php $__env->stopSection(); ?>

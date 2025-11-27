@@ -1,0 +1,15 @@
+stash@{0}: WIP on Ana: 65dc825 Subiendo Asignación de roles y permisos, sprint 4
+stash@{1}: WIP on main: a307a79 Subiendo cambios de roles y permisos de nuevo
+stash@{2}: WIP on Ana: 517b6f3 Merge branch 'Cesi'
+stash@{3}: WIP on Ana: 733e69d Arregle las fechas de incapacidades
+stash@{4}: WIP on Ana: 5e3d30d Actualizar vista de editar promoción
+stash@{5}: WIP on main: 5042d4d Merge branch 'Ana' into main
+stash@{6}: WIP on Ana: 7529950 Merge completado: conflictos resueltos
+stash@{7}: WIP on main: 3ed1905 Merge Ana into main, resolved conflicts in routes/web.php
+stash@{8}: WIP on main: b1b1f87 Resolviendo merge pendiente
+stash@{9}: WIP on main: e2a8ce2 Actualización de la vista show del servicio
+stash@{10}: On Ana: Cambios locales antes de aplicar stash
+stash@{11}: WIP on main: 79a4c02 Agregar migraciones servicios: creación, producto_id y nullable
+stash@{12}: On Ana: Cambios antes del pull
+stash@{13}: WIP on main: 29feeb3 Merge branch 'main' of https://github.com/CesiGomez-9/Centinela
+stash@{14}: WIP on Ana: e776de8 se realizo actualizacion en los campos

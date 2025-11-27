@@ -163,24 +163,7 @@ class UserController extends Controller
     /**
      * DASHBOARD SEGÚN ROL
      */
-    public function dashboard()
-    {
-        $user = auth()->user();
 
-        if ($user->rol === 'Administrador') {
-            return view('dashboard.admin'); // vista para Admin
-        }
-
-        if ($user->rol === 'Vigilante') {
-            return view('dashboard.vigilante'); // vista para Vigilante
-        }
-
-        if ($user->rol === 'Técnico') {
-            return view('dashboard.tecnico'); // vista para Técnico
-        }
-
-        abort(403, 'Acceso no autorizado');
-    }
     public function verpermisos($id)
     {
         $user = User::findOrFail($id);

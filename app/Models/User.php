@@ -65,7 +65,7 @@ class User extends Authenticatable
 
     public function hasRole($role)
     {
-        return $this->roles()->where('nombre', $role)->exists();
+        return $this->roles()->where('name', $role)->exists();
     }
 
     public function username()
@@ -73,6 +73,10 @@ class User extends Authenticatable
         return 'usuario';
     }
 
+    public function permissions()
+    {
+        return $this->belongsToMany(Permission::class, 'user_permissions');
+    }
 
 
 }

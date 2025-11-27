@@ -1,0 +1,208 @@
+@extends('plantilla')
+
+@section('content')
+    <div class="row justify-content-center py-5">
+        <div class="col-lg-7 col-md-8">
+            <div class="card border-0 shadow-lg rounded-4">
+                <div class="card-header text-white rounded-top-4 py-3 text-center" style="background-color: #1a2340;">
+                    <h4 class="mb-0">
+                        <i class="bi bi-shield-lock-fill me-2"></i>Asignar rol
+                    </h4>
+                </div>
+
+                <form id="formRoles" action="{{ route('roles_permisos.guardar', $user->id) }}" method="POST" class="p-4 bg-white rounded-bottom-4 text-start">
+                    @csrf
+
+                    {{-- Seleccionar Rol --}}
+                    <div class="mb-4 position-relative">
+                        <label class="form-label fw-bold">Nombre del rol</label>
+                        <div class="input-group shadow-sm rounded">
+                        <span class="input-group-text bg-light border-0">
+                            <i class="bi bi-person-badge-fill text-primary"></i>
+                        </span>
+                            <select name="role" id="roleSelect" class="form-select border-0">
+                                <option value="">Seleccione un rol</option>
+                                @foreach($roles as $role)
+                                    @if($role->name !== 'super_admin')
+                                        <option value="{{ $role->name }}" {{ $user->hasRole($role->name) ? 'selected' : '' }}>
+                                            {{ ucfirst($role->name) }}
+                                        </option>
+                                    @endif
+                                @endforeach
+                            </select>
+                        </div>
+                        <div id="alertaRol" class="form-text text-danger d-none mt-1">
+                            Debe seleccionar un rol antes de guardar.
+                        </div>
+                    </div>
+
+                    {{-- Permisos --}}
+                    <div class="mb-4 position-relative">
+                        <label class="form-label fw-bold">Permisos de este rol</label>
+
+                        {{-- Checkbox "Seleccionar todos" --}}
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="selectAll">
+                            <label class="form-check-label fw-bold" for="selectAll">
+                                <i class="bi bi-check2-all me-1 text-primary"></i> Seleccionar todos
+                            </label>
+                        </div>
+
+                        <div class="border rounded-4 p-3 bg-light shadow-sm" style="max-height: 260px; overflow-y:auto; column-count:2;">
+                            @foreach($permissions as $permission)
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input permission-checkbox"
+                                           type="checkbox"
+                                           name="permissions[]"
+                                           value="{{ $permission->id }}"
+                                           id="perm-{{ $permission->id }}"
+                                            {{ in_array($permission->id, $userPermissions) ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="perm-{{ $permission->id }}">
+                                        <i class="bi bi-key-fill me-1 text-secondary"></i>
+                                        {{ ucfirst($permission->name) }}
+                                    </label>
+                                </div>
+                            @endforeach
+                        </div>
+                        <div id="alertaPermisos" class="form-text text-danger d-none mt-1">
+                            Seleccione al menos un permiso.
+                        </div>
+                    </div>
+
+                    {{-- Botones --}}
+                    <div class="d-flex justify-content-between gap-2 botones">
+                        <a href="{{ route('roles_permisos.index') }}" class="btn btn-outline-danger w-100 fw-bold hover-shadow">
+                            <i class="bi bi-x-circle me-2"></i> Cancelar
+                        </a>
+
+                        <button type="button" class="btn btn-outline-secondary w-100 fw-bold hover-shadow" id="btnLimpiar">
+                            <i class="bi bi-eraser-fill me-2"></i> Limpiar
+                        </button>
+
+                        <button type="submit" class="btn btn-primary w-100 fw-bold hover-shadow text-white">
+                            <i class="bi bi-save-fill me-2"></i> Guardar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- Estilos --}}
+    <style>
+        body {
+            background-color: #e6f0ff;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        .form-check-input:checked {
+            background-color: #192e4c;
+            border-color: #03284c;
+        }
+
+        .form-select:focus, .form-check-input:focus {
+            box-shadow: 0 0 0 0.2rem rgba(25, 46, 76, 0.25);
+        }
+
+        .input-group {
+            border: 1px solid #ced4da;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .form-select {
+            border: none;
+        }
+
+        .form-text.text-danger {
+            font-size: 0.85rem;
+            text-align: left;
+        }
+
+        .btn:hover {
+            filter: brightness(0.95);
+            transition: 0.3s;
+        }
+
+        .hover-shadow:hover {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .card {
+            border-radius: 1rem;
+        }
+
+        .bg-light {
+            background-color: #f7f9fc !important;
+        }
+
+        .card-header {
+            font-weight: 600;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+        }
+
+        /* Scroll elegante */
+        .border::-webkit-scrollbar {
+            width: 6px;
+        }
+        .border::-webkit-scrollbar-thumb {
+            background-color: rgba(25,46,76,0.5);
+            border-radius: 3px;
+        }
+    </style>
+
+    {{-- Scripts --}}
+    <script>
+        const form = document.getElementById('formRoles');
+        const roleSelect = document.getElementById('roleSelect');
+        const alertaRol = document.getElementById('alertaRol');
+        const permisos = form.querySelectorAll('.permission-checkbox');
+        const alertaPermisos = document.getElementById('alertaPermisos');
+        const selectAllCheckbox = document.getElementById('selectAll');
+
+        // Validación del formulario
+        form.addEventListener('submit', function(e) {
+            let valid = true;
+
+            if (roleSelect.value === "") {
+                e.preventDefault();
+                alertaRol.classList.remove('d-none');
+                valid = false;
+            } else {
+                alertaRol.classList.add('d-none');
+            }
+
+            let anyChecked = Array.from(permisos).some(cb => cb.checked);
+            if (!anyChecked) {
+                e.preventDefault();
+                alertaPermisos.classList.remove('d-none');
+                valid = false;
+            } else {
+                alertaPermisos.classList.add('d-none');
+            }
+
+            return valid;
+        });
+
+        // Botón Limpiar
+        document.getElementById('btnLimpiar').addEventListener('click', function() {
+            form.reset();
+            permisos.forEach(cb => cb.checked = false);
+            selectAllCheckbox.checked = false;
+            alertaRol.classList.add('d-none');
+            alertaPermisos.classList.add('d-none');
+        });
+
+        // Lógica "Seleccionar todos"
+        selectAllCheckbox.addEventListener('change', function() {
+            permisos.forEach(cb => cb.checked = this.checked);
+        });
+
+        permisos.forEach(cb => {
+            cb.addEventListener('change', function() {
+                selectAllCheckbox.checked = Array.from(permisos).every(c => c.checked);
+            });
+        });
+    </script>
+@endsection

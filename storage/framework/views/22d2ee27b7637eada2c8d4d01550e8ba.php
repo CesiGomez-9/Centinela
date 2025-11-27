@@ -125,6 +125,10 @@
     <i class="bi bi-shield-lock-fill icon"></i>
     <h2>Bienvenido</h2>
     <p>Grupo Centinela</p>
+<<<<<<< HEAD
+=======
+    
+>>>>>>> Ana
 
     <form action="<?php echo e(route('login.process')); ?>" method="POST">
         <?php echo csrf_field(); ?>
@@ -135,7 +139,11 @@
                    class="form-control"
                    id="usuario"
                    name="usuario"
+<<<<<<< HEAD
                    maxlength="30"
+=======
+                   maxlength="50"
+>>>>>>> Ana
                    placeholder="Ingrese su usuario"
                    value="<?php echo e(old('usuario')); ?>">
             <?php $__errorArgs = ['usuario'];
@@ -160,7 +168,11 @@ unset($__errorArgs, $__bag); ?>
                    class="form-control"
                    id="password"
                    name="password"
+<<<<<<< HEAD
                    maxlength="8"
+=======
+                   maxlength="20"
+>>>>>>> Ana
                    placeholder="Ingrese su contraseña">
             <?php $__errorArgs = ['password'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
