@@ -9,15 +9,14 @@ use App\Http\Controllers\ServicioController;
 use App\Http\Controllers\PromocionController;
 use App\Http\Controllers\TurnoController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\RoleController;
 
-Route::get('/', function () {
-    return redirect()->route('empleados.index');
-});
+// Route::get('/', function () {
+    // return redirect()->route('empleados.index');
+// });
 
-Route::get('/', function () {
-    return view('index');
 
-});
 
 
 Route::get('/empleados', [EmpleadoController::class, 'index'])->name('empleados.index');
@@ -40,10 +39,8 @@ Route::get('/memorandos/{memorando}', [\App\Http\Controllers\MemorandoController
 
 
 Route::resource('promociones', \App\Http\Controllers\PromocionController::class);
-Route::resource('incapacidades', \App\Http\Controllers\IncapacidadController::class)->parameters([
-    'incapacidades' => 'incapacidad'
-]);
-
+Route::resource('incapacidades', \App\Http\Controllers\IncapacidadController::class);
+Route::put('/incapacidades/{id}', [\App\Http\Controllers\IncapacidadController::class, 'update'])->name('incapacidades.update');
 Route::resource('users', \App\Http\Controllers\UserController::class);
 Route::middleware(['auth', 'role:super_admin'])->group(function () {
     Route::resource('usuarios', \App\Http\Controllers\UserController::class);
@@ -179,28 +176,31 @@ Route::get('/resetpassword/{token}', [\App\Http\Controllers\PasswordResetControl
 Route::post('/resetpassword', [\App\Http\Controllers\PasswordResetController::class, 'resetPassword'])->name('password.update');
 
 
-use App\Http\Controllers\UserController;
+
 
 // Dashboard según rol (para redirección después del login)
-//Route::get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard');
+Route::get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard');
 
 // Ver permisos de un usuario
 Route::get('/users/{user}/permisos', [UserController::class, 'verpermisos'])->name('users.verpermisos');
 
-use App\Http\Controllers\RoleController;
+Route::get('/', function () {
+    return redirect()->route('login');
+});
+
+Route::get('/index', function () {
+    return view('index');
+})->name('index')->middleware('auth');
+
+
+Route::get('ajax/empleados', [\App\Http\Controllers\UserController::class, 'searchEmpleados'])->name('ajax.empleados');
+Route::get('/ajax/check-user/{empleado}', [UserController::class, 'checkUser']);
+
+
+
 Route::get('/roles_permisos', [RoleController::class, 'index'])->name('roles_permisos.index');
 Route::get('/usuarios/{user}/asignar-rol', [RoleController::class, 'asignarRol'])->name('roles_permisos.asignar');
 Route::post('/usuarios/{user}/asignar-rol', [RoleController::class, 'guardarRol'])->name('roles_permisos.guardar');
 Route::get('/roles_permisos/{user}/ver', [RoleController::class, 'ver'])->name('roles_permisos.ver');
 Route::get('/roles_permisos/{user}/editar', [RoleController::class, 'editar'])->name('roles_permisos.editar');
 Route::put('/roles_permisos/{user}', [RoleController::class, 'actualizar'])->name('roles_permisos.actualizar');
-
-
-
-// Resto de rutas existentes
-Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
-Route::post('/users/store', [UserController::class, 'store'])->name('users.store');
-Route::get('/users', [UserController::class, 'index'])->name('users.index');
-Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
-// AJAX para búsqueda de empleados
-Route::get('/ajax/empleados', [UserController::class, 'searchEmpleados'])->name('ajax.empleados');

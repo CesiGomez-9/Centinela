@@ -1,6 +1,5 @@
-@extends('plantilla')
-@section('content')
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+<?php $__env->startSection('content'); ?>
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
     <head>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     </head>
@@ -189,8 +188,8 @@
             <i class="bi bi-person-fill" style="font-size: 2rem;"></i>
         </h1>
 
-        <form id="formUsuarios" method="POST" action="{{ route('users.store') }}">
-            @csrf
+        <form id="formUsuarios" method="POST" action="<?php echo e(route('users.store')); ?>">
+            <?php echo csrf_field(); ?>
 
             <div class="grid-2">
                 <div class="columna">
@@ -200,13 +199,20 @@
                         <label>Empleado:</label>
                         <div class="input-icon">
                             <i class="bi bi-search"></i>
-                            <input type="text" id="buscarEmpleado" name="empleado_nombre" placeholder="Buscar empleado..." value="{{ old('empleado_nombre') }}">
+                            <input type="text" id="buscarEmpleado" name="empleado_nombre" placeholder="Buscar empleado..." value="<?php echo e(old('empleado_nombre')); ?>">
                         </div>
                         <div class="results" id="results"></div>
                         <div class="error" id="error-empleado">
-                            @error('empleado_id') ⚠️ {{ $message }} @enderror
+                            <?php $__errorArgs = ['empleado_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> ⚠️ <?php echo e($message); ?> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         </div>
-                        <input type="hidden" name="empleado_id" id="empleado_id" value="{{ old('empleado_id') }}">
+                        <input type="hidden" name="empleado_id" id="empleado_id" value="<?php echo e(old('empleado_id')); ?>">
                     </div>
 
                     <div class="full">
@@ -224,7 +230,14 @@
                             <input type="email" name="email" id="email" placeholder="Correo" readonly>
                         </div>
                         <div class="error" id="error-email">
-                            @error('email') ⚠️ {{ $message }} @enderror
+                            <?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> ⚠️ <?php echo e($message); ?> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         </div>
                     </div>
                 </div>
@@ -239,7 +252,14 @@
                             <input type="text" name="usuario" id="usuario" placeholder="Usuario" readonly>
                         </div>
                         <div class="error" id="error-usuario">
-                            @error('usuario') ⚠️ {{ $message }} @enderror
+                            <?php $__errorArgs = ['usuario'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> ⚠️ <?php echo e($message); ?> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         </div>
                     </div>
 
@@ -258,20 +278,27 @@
                             <i class="bi bi-shield-lock-fill"></i>
                             <select name="rol" id="rol">
                                 <option value="">Seleccione un rol</option>
-                                @foreach($roles as $rol)
-                                    <option value="{{ $rol }}" {{ old('rol') == $rol ? 'selected' : '' }}>{{ $rol }}</option>
-                                @endforeach
+                                <?php $__currentLoopData = $roles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $rol): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($rol); ?>" <?php echo e(old('rol') == $rol ? 'selected' : ''); ?>><?php echo e($rol); ?></option>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                         </div>
                         <div class="error" id="error-rol">
-                            @error('rol') ⚠️ {{ $message }} @enderror
+                            <?php $__errorArgs = ['rol'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> ⚠️ <?php echo e($message); ?> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="botones">
-                <a href="{{ route('users.index') }}" class="btn btn-danger w-100">
+                <a href="<?php echo e(route('users.index')); ?>" class="btn btn-danger w-100">
                     <i class="bi bi-x-circle me-2"></i> Cancelar
                 </a>
                 <button type="button" class="btn btn-secondary w-100" id="btnLimpiar">
@@ -405,4 +432,6 @@
             }
         });
     </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\angel\PhpstormProjects\Centinela\resources\views/users/create.blade.php ENDPATH**/ ?>
