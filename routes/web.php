@@ -10,6 +10,7 @@ use App\Http\Controllers\PromocionController;
 use App\Http\Controllers\TurnoController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\RoleController;
 
 // Route::get('/', function () {
     // return redirect()->route('empleados.index');
@@ -192,3 +193,14 @@ Route::get('/index', function () {
 })->name('index')->middleware('auth');
 
 
+Route::get('ajax/empleados', [\App\Http\Controllers\UserController::class, 'searchEmpleados'])->name('ajax.empleados');
+Route::get('/ajax/check-user/{empleado}', [UserController::class, 'checkUser']);
+
+
+
+Route::get('/roles_permisos', [RoleController::class, 'index'])->name('roles_permisos.index');
+Route::get('/usuarios/{user}/asignar-rol', [RoleController::class, 'asignarRol'])->name('roles_permisos.asignar');
+Route::post('/usuarios/{user}/asignar-rol', [RoleController::class, 'guardarRol'])->name('roles_permisos.guardar');
+Route::get('/roles_permisos/{user}/ver', [RoleController::class, 'ver'])->name('roles_permisos.ver');
+Route::get('/roles_permisos/{user}/editar', [RoleController::class, 'editar'])->name('roles_permisos.editar');
+Route::put('/roles_permisos/{user}', [RoleController::class, 'actualizar'])->name('roles_permisos.actualizar');

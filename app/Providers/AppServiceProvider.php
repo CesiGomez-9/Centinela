@@ -8,12 +8,17 @@ use Illuminate\Support\Facades\Route; // Importar la fachada Route
 use Illuminate\Cache\RateLimiting\Limit; // Importar Limit para rate limiting
 use Illuminate\Support\Facades\RateLimiter; // Importar RateLimiter
 use Illuminate\Http\Request; // Importar Request para rate limiting
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class AppServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
      */
+
+
+
     public function register(): void
     {
         //
