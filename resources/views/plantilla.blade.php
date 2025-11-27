@@ -28,6 +28,11 @@
             font-size: 0.875rem;
             color: #212529; }
     }
+
+    .navbar-nav .nav-link {
+        font-size: 0.9rem; /* Ajusta a tu gusto */
+    }
+
     .dropdown-item:hover {
         background-color: #e9ecef;
     }
@@ -41,9 +46,31 @@
 
         <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
             <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link text-white d-flex align-items-center" href="{{ route('login') }}">Login</a>
-                </li>
+                @auth
+                    <li class="nav-item dropdown d-flex align-items-center">
+                        <a class="nav-link dropdown-toggle text-white fw-bold d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle me-2" style="font-size: 1.2rem;"></i>
+                            {{ Auth::user()->empleado->nombre ?? Auth::user()->name }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <form action="{{ route('logout') }}" method="POST">
+                                    @csrf
+                                    <button class="dropdown-item text-secondary fw-bold">
+                                        <i class="bi bi-box-arrow-right me-2"></i>
+                                        Cerrar sesión
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                @else
+                    <li class="nav-item">
+                        <a class="nav-link text-white d-flex align-items-center" href="{{ route('login') }}">Login</a>
+                    </li>
+                @endauth
+
+
                 <li class="nav-item">
                     <a class="nav-link text-white d-flex align-items-center" href="{{ route('users.create') }}">Regístrate</a>
                 </li>
