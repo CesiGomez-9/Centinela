@@ -18,7 +18,6 @@ class User extends Authenticatable
         'email',
         'password',
         'rol',
-        'identidad',
     ];
 
     protected $hidden = [
@@ -46,6 +45,8 @@ class User extends Authenticatable
                 $nombre = strtolower(explode(' ', $user->empleado->nombre)[0]);
                 $apellido = strtolower(explode(' ', $user->empleado->apellido)[0]);
                 $user->usuario = $nombre . '.' . $apellido;
+
+                // Evitar duplicados
                 $base = $user->usuario;
                 $contador = 1;
                 while (User::where('usuario', $user->usuario)->exists()) {
@@ -72,14 +73,5 @@ class User extends Authenticatable
     {
         return 'usuario';
     }
-
-    public function permissions()
-    {
-        return $this->belongsToMany(Permission::class, 'user_permissions');
-    }
-
-
-
-
 
 }

@@ -11,14 +11,14 @@
             text-align: center;
         }
 
-        .container {
+        .profile-container {
             max-width: 750px;
-            margin: 0 auto;
+            margin: 50px auto 0 auto;
             padding: 25px 30px;
             border-radius: 15px;
             background-color: #1a2340;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-            color: #ffffff;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            color: #fff;
         }
 
         h1 {
@@ -182,7 +182,7 @@
         }
     </style>
 
-    <div class="container">
+    <div class="profile-container">
         <h1 style="display: flex; align-items: center; justify-content: center; gap: 10px; color: #ffffff;">
             Registrar usuario
             <i class="bi bi-person-fill" style="font-size: 2rem;"></i>

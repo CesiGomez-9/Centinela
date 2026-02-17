@@ -51,18 +51,23 @@
             font-size: 1.05rem;
         }
 
-        /* Grid de permisos en 3 columnas con scroll */
+        .module-title {
+            font-weight: 500;
+            margin: 10px 0 5px;
+            color: #e0b44c;
+            font-size: 0.95rem;
+        }
+
         .permissions-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 8px 12px;
-            margin-top: 10px;
-            max-height: 250px; /* Altura fija con scroll */
+            margin-top: 5px;
+            max-height: 250px;
             overflow-y: auto;
             padding-right: 5px;
         }
 
-        /* Permisos tipo chip/burbuja */
         .permission-chip {
             display: flex;
             align-items: center;
@@ -78,7 +83,6 @@
             transition: none;
         }
 
-        /* Punto dorado delante del permiso */
         .permission-chip::before {
             content: '•';
             color: #cda34f;
@@ -91,14 +95,14 @@
             color: #cda34f;
         }
 
-        /* Botón regresar */
         .btn-center {
             display: flex;
             justify-content: center;
+            gap: 10px;
             margin-top: 25px;
         }
 
-        .btn-return {
+        .btn-return, .btn-edit {
             background-color: #cda34f;
             color: #1a2340;
             border: none;
@@ -106,60 +110,79 @@
             border-radius: 0.5rem;
             font-weight: 600;
             transition: all 0.2s ease-in-out;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
-        .btn-return:hover {
+        .btn-return:hover, .btn-edit:hover {
             background-color: #0d1b2a;
             color: #fff;
         }
+
         .permissions-grid::-webkit-scrollbar {
             width: 6px;
         }
 
         .permissions-grid::-webkit-scrollbar-track {
-            background: rgba(26, 35, 64, 0.3); /* color de fondo del track */
+            background: rgba(26, 35, 64, 0.3);
             border-radius: 3px;
         }
 
         .permissions-grid::-webkit-scrollbar-thumb {
-            background-color: #cda34f; /* color dorado del thumb */
+            background-color: #cda34f;
             border-radius: 3px;
-            border: 1px solid rgba(26, 35, 64, 0.5); /* borde suave */
+            border: 1px solid rgba(26, 35, 64, 0.5);
         }
 
         .permissions-grid::-webkit-scrollbar-thumb:hover {
-            background-color: #e0b44c; /* dorado más claro al pasar mouse */
+            background-color: #e0b44c;
+        }
+
+        /* Mensaje de sin permisos en blanco */
+        .no-permissions {
+            color: #fff;
+            font-style: italic;
         }
 
     </style>
 
     <div class="card">
         <div class="card-header">
-            <i class="bi bi-shield-lock-fill me-2"></i> Ver rol y permisos de {{ $user->empleado->nombre }} {{ $user->empleado->apellido }}
+            <i class="bi bi-shield-lock-fill me-2"></i> Ver rol y permisos de {{ $role->name }}
         </div>
 
         <div class="card-body">
             <div class="role-info">
-                <p><i class="bi bi-shield-fill-check"></i><strong>Rol asignado:</strong> {{ $user->roles->first()->name ?? 'Sin rol asignado' }}</p>
+                <p><i class="bi bi-shield-fill-check"></i><strong>Nombre del rol:</strong> {{ $role->name }}</p>
+                <p><i class="bi bi-calendar-fill"></i><strong>Creado:</strong> {{ \Carbon\Carbon::parse($role->created_at)->format('d/m/Y ') }}</p>
             </div>
 
             <div class="permissions-title">Permisos asignados</div>
-            <div class="permissions-grid">
-                @forelse($userPermissions as $perm)
-                    <div class="permission-chip">
-                        <i class="bi bi-key-fill"></i> {{ ucfirst($perm->name) }}
-                    </div>
-                @empty
-                    <p class="text-muted">No hay permisos asignados.</p>
-                @endforelse
-            </div>
+
+            @forelse($permisosPorModulo as $modulo => $perms)
+                <div class="module-title">{{ $modulo }}</div>
+                <div class="permissions-grid">
+                    @forelse($perms as $perm)
+                        <div class="permission-chip">
+                            <i class="bi bi-key-fill"></i> {{ ucfirst($perm->name) }}
+                        </div>
+                    @empty
+                        <div class="permission-chip no-permissions">Sin permisos en este módulo</div>
+                    @endforelse
+                </div>
+            @empty
+                <p class="no-permissions">No hay permisos asignados al rol.</p>
+            @endforelse
 
             <div class="btn-center">
-                <a href="{{ route('roles_permisos.index') }}" class="btn btn-return">
+                <a href="{{ route('roles_permisos.index') }}" class="btn-return">
                     <i class="bi bi-arrow-left me-2"></i> Volver
+                </a>
+                <a href="{{ route('roles_permisos.editar', $role->id) }}" class="btn-edit">
+                    <i class="bi bi-pencil-square me-2"></i> Editar
                 </a>
             </div>
         </div>
     </div>
-
 @endsection

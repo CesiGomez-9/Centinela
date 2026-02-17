@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
+
 
 class AuthController extends Controller
 {
@@ -12,6 +15,8 @@ class AuthController extends Controller
     {
         return view('auth.login');
     }
+
+
 
     public function login(Request $request)
     {
@@ -21,18 +26,31 @@ class AuthController extends Controller
         ], [
             'usuario.required'  => 'Debe ingresar su usuario.',
             'password.required' => 'Debe ingresar su contraseña.',
-            'password.max'=>'La contraseña no puede ser mayor a 20 caracteres.',
+            'password.max'      => 'La contraseña no puede ser mayor a 20 caracteres.',
         ]);
 
-        // Tomamos solo usuario y contraseña
+
         $credentials = $request->only('usuario', 'password');
 
-        // Intento de login
+
+        $user = User::where('usuario', $request->usuario)->first();
+
+        if (!$user) {
+            return back()->withErrors([
+                'usuario' => 'El usuario es incorrecto.',
+            ])->withInput($request->except('password'));
+        }
+
+
+        if (!Hash::check($request->password, $user->password)) {
+            return back()->withErrors([
+                'password' => 'La contraseña es incorrecta.',
+            ])->withInput($request->except('password'));
+        }
+
+
         if (Auth::attempt($credentials, $request->filled('remember'))) {
             $request->session()->regenerate();
-
-            // Redirigir al index
-
             return redirect()->route('index');
         }
 
@@ -41,6 +59,7 @@ class AuthController extends Controller
             'usuario' => 'Credenciales incorrectas.',
         ])->withInput($request->except('password'));
     }
+
 
     public function logout(Request $request)
     {

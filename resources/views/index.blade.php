@@ -1,13 +1,29 @@
 @extends('plantilla')
 @section('content')
 
-    <!-- Hero Section -->
-    <div class="hero-section text-white d-flex align-items-center justify-content-center" style="background-image: url('{{ asset('fondo2.jpg') }}'); background-size: cover; background-position: center; height: 450px; position: relative; text-align: center;">
-        <div style="position: relative; z-index: 2; background: linear-gradient(135deg, rgba(10,31,68,0.7), rgba(10,31,68,0.4)); padding: 2.5rem 3rem; border-radius: 15px; font-family: 'Poppins', sans-serif;">
-            <h1 style="font-size: 3rem; font-weight: 800;">Protección Total</h1>
-            <p style="font-size: 1.2rem;">Vigilancia profesional las 24 horas del día</p>
+    <!-- Hero Section PRO -->
+    <div class="hero-section d-flex align-items-center"
+         style="background-image: url('{{ asset('segufon.jpg') }}');">
+
+        <div class="hero-overlay"></div>
+
+        <div class="hero-content container text-white">
+            <div class="hero-box">
+                <h1>Protección total e inteligente</h1>
+                <p>Vigilancia profesional • Tecnología avanzada • Seguridad 24/7</p>
+
+                <div class="hero-buttons">
+                    <a href="#servicios" class="btn btn-primary btn-lg me-3">
+                        <i class="bi bi-shield-lock-fill"></i> Ver servicios
+                    </a>
+                    <a href="#contacto" class="btn btn-outline-light btn-lg">
+                        <i class="bi bi-telephone-fill"></i> Contáctanos
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
+
 
     <hr class="my-5 text-light">
 
@@ -158,6 +174,60 @@
         .card-text {
             font-size: 0.95rem;
         }
+
+        .hero-section{
+            height: 520px;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            position: relative;
+        }
+
+        .hero-overlay{
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                135deg,
+                rgba(10,31,68,0.85),
+                rgba(10,31,68,0.55),
+                rgba(0,0,0,0.4)
+            );
+            z-index: 1;
+        }
+
+        .hero-content{
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-box{
+            max-width: 650px;
+            padding: 2.5rem 3rem;
+            border-radius: 18px;
+            backdrop-filter: blur(6px);
+            background: rgba(15, 42, 92, 0.55);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        .hero-box h1{
+            font-size: 3.2rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            line-height: 1.1;
+        }
+
+        .hero-box p{
+            font-size: 1.25rem;
+            opacity: 0.9;
+            margin-bottom: 25px;
+        }
+
+        .hero-buttons .btn{
+            border-radius: 12px;
+            font-weight: 600;
+            padding: 12px 24px;
+        }
+
 
 
     </style>

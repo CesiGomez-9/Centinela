@@ -12,7 +12,7 @@
             text-align: center;
         }
 
-        .container {
+        .profile-container {
             max-width: 750px;
             margin: 0 auto;
             padding: 25px 30px;
@@ -21,6 +21,7 @@
             box-shadow: 0 8px 25px rgba(0,0,0,0.4);
             color: #fff;
         }
+
 
         h1 {
             font-size: 26px;
@@ -107,7 +108,7 @@
         }
     </style>
 
-    <div class="container">
+    <div class="profile-container">
         <h1>
             Perfil del usuario
             <i class="bi bi-person-fill" style="font-size:2rem;"></i>

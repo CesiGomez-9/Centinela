@@ -13,6 +13,7 @@ class Instalacion extends Model
     protected $fillable = [
         'cliente_id',
         'servicio_id',
+        'empleado_id',
         'descripcion',
         'direccion',
         'fecha_instalacion',

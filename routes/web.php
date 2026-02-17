@@ -198,9 +198,11 @@ Route::get('/ajax/check-user/{empleado}', [UserController::class, 'checkUser']);
 
 
 
-Route::get('/roles_permisos', [RoleController::class, 'index'])->name('roles_permisos.index');
-Route::get('/usuarios/{user}/asignar-rol', [RoleController::class, 'asignarRol'])->name('roles_permisos.asignar');
-Route::post('/usuarios/{user}/asignar-rol', [RoleController::class, 'guardarRol'])->name('roles_permisos.guardar');
-Route::get('/roles_permisos/{user}/ver', [RoleController::class, 'ver'])->name('roles_permisos.ver');
-Route::get('/roles_permisos/{user}/editar', [RoleController::class, 'editar'])->name('roles_permisos.editar');
-Route::put('/roles_permisos/{user}', [RoleController::class, 'actualizar'])->name('roles_permisos.actualizar');
+Route::prefix('roles')->name('roles_permisos.')->group(function () {
+    Route::get('/', [RoleController::class, 'index'])->name('index');
+    Route::get('/asignar', [RoleController::class, 'asignarRol'])->name('asignar');
+    Route::post('/guardar', [RoleController::class, 'guardarRol'])->name('guardar');
+    Route::get('/ver/{id}', [RoleController::class, 'ver'])->name('ver');
+    Route::get('/editar/{id}', [RoleController::class, 'editar'])->name('editar');
+    Route::put('/actualizar/{id}', [RoleController::class, 'actualizar'])->name('actualizar');
+});

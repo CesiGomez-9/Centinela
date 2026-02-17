@@ -7,6 +7,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <style>
+
+
         body {
             margin: 0;
             height: 100vh;
@@ -17,7 +19,11 @@
             position: relative;
             overflow: hidden;
             /* Fondo con degradado y glow radial */
-            background: linear-gradient(135deg, #0f2c5c, #1b3e80);
+            background: url('{{ asset("camara.jpg") }}') no-repeat center center fixed;
+            background-size: cover;
+
+
+
         }
 
         /* Glow radial detrás de la tarjeta */
@@ -125,7 +131,7 @@
     <i class="bi bi-shield-lock-fill icon"></i>
     <h2>Bienvenido</h2>
     <p>Grupo Centinela</p>
-    
+
 
     <form action="{{ route('login.process') }}" method="POST">
         @csrf

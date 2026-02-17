@@ -6,21 +6,21 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up()
     {
-        Schema::table('roles', function (Blueprint $table) {
-            $table->string('guard_name')->default('web')->after('name');
-        });
+        if (!Schema::hasColumn('roles', 'guard_name')) {
+            Schema::table('roles', function (Blueprint $table) {
+                $table->string('guard_name')->default('web')->after('name');
+            });
+        }
     }
 
     public function down()
     {
-        Schema::table('roles', function (Blueprint $table) {
-            $table->dropColumn('guard_name');
-        });
+        if (Schema::hasColumn('roles', 'guard_name')) {
+            Schema::table('roles', function (Blueprint $table) {
+                $table->dropColumn('guard_name');
+            });
+        }
     }
-
 };

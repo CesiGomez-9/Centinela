@@ -2,45 +2,38 @@
 
 @section('content')
     <div class="row justify-content-center py-5">
-        <div class="col-lg-7 col-md-8">
+        <div class="col-lg-8 col-md-10">
             <div class="card border-0 shadow-lg rounded-4">
                 <div class="card-header text-white rounded-top-4 py-3 text-center" style="background-color: #1a2340;">
-                    <h4 class="mb-0">
-                        <i class="bi bi-shield-lock-fill me-2"></i>Asignar rol
-                    </h4>
+                    <h4 class="mb-0"><i class="bi bi-shield-lock-fill me-2"></i>Asignar nuevo rol</h4>
                 </div>
 
-                <form id="formRoles" action="{{ route('roles_permisos.guardar', $user->id) }}" method="POST" class="p-4 bg-white rounded-bottom-4 text-start">
+                <form id="formRoles" action="{{ route('roles_permisos.guardar') }}" method="POST" class="p-4 bg-white rounded-bottom-4 text-start">
                     @csrf
 
-                    {{-- Seleccionar Rol --}}
+                    {{-- Nombre del rol --}}
                     <div class="mb-4 position-relative">
                         <label class="form-label fw-bold">Nombre del rol</label>
                         <div class="input-group shadow-sm rounded">
                         <span class="input-group-text bg-light border-0">
                             <i class="bi bi-person-badge-fill text-primary"></i>
                         </span>
-                            <select name="role" id="roleSelect" class="form-select border-0">
-                                <option value="">Seleccione un rol</option>
-                                @foreach($roles as $role)
-                                    @if($role->name !== 'super_admin')
-                                        <option value="{{ $role->name }}" {{ $user->hasRole($role->name) ? 'selected' : '' }}>
-                                            {{ ucfirst($role->name) }}
-                                        </option>
-                                    @endif
-                                @endforeach
-                            </select>
+                            <input
+                                name="role"
+                                id="roleSelect"
+                                class="form-control border-0"
+                                placeholder="Ingrese un rol"
+                                maxlength="75"
+                                required
+                            >
                         </div>
-                        <div id="alertaRol" class="form-text text-danger d-none mt-1">
-                            Debe seleccionar un rol antes de guardar.
-                        </div>
+                        <div id="alertaRol" class="form-text text-danger d-none mt-1">Debe ingresar un rol antes de guardar.</div>
                     </div>
 
                     {{-- Permisos --}}
                     <div class="mb-4 position-relative">
                         <label class="form-label fw-bold">Permisos de este rol</label>
 
-                        {{-- Checkbox "Seleccionar todos" --}}
                         <div class="form-check mb-2">
                             <input class="form-check-input" type="checkbox" id="selectAll">
                             <label class="form-check-label fw-bold" for="selectAll">
@@ -48,25 +41,32 @@
                             </label>
                         </div>
 
-                        <div class="border rounded-4 p-3 bg-light shadow-sm" style="max-height: 260px; overflow-y:auto; column-count:2;">
-                            @foreach($permissions as $permission)
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input permission-checkbox"
-                                           type="checkbox"
-                                           name="permissions[]"
-                                           value="{{ $permission->id }}"
-                                           id="perm-{{ $permission->id }}"
-                                            {{ in_array($permission->id, $userPermissions) ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="perm-{{ $permission->id }}">
-                                        <i class="bi bi-key-fill me-1 text-secondary"></i>
-                                        {{ ucfirst($permission->name) }}
-                                    </label>
+                        <div class="border rounded-4 p-3 bg-light shadow-sm" style="max-height: 450px; overflow-y:auto;">
+                            @foreach($permisosPorModulo as $modulo => $perms)
+                                <div class="mb-3 p-3 rounded" style="border: 2px solid #1a2340;">
+                                    <h6 class="fw-bold mb-2">{{ $modulo }}</h6>
+                                    <div style="column-count: 2;">
+                                        @foreach($perms as $perm)
+                                            @php
+                                                $tipo = Str::contains($perm->name, 'listado') ? 'listado' : (Str::contains($perm->name, 'ver') ? 'ver' : (Str::contains($perm->name, 'editar') ? 'editar' : 'otro'));
+                                            @endphp
+                                            <div class="form-check mb-1">
+                                                <input class="form-check-input permission-checkbox"
+                                                       type="checkbox"
+                                                       name="permissions[]"
+                                                       value="{{ $perm->id }}"
+                                                       id="perm-{{ $perm->id }}"
+                                                       data-tipo="{{ $tipo }}">
+                                                <label class="form-check-label" for="perm-{{ $perm->id }}">{{ ucfirst($perm->name) }}</label>
+                                            </div>
+                                        @endforeach
+                                    </div>
                                 </div>
                             @endforeach
                         </div>
-                        <div id="alertaPermisos" class="form-text text-danger d-none mt-1">
-                            Seleccione al menos un permiso.
-                        </div>
+
+                        <div id="alertaPermisos" class="form-text text-danger d-none mt-1">Seleccione al menos un permiso.</div>
+                        <div id="alertaListados" class="form-text text-danger d-none mt-1">Debe seleccionar "Listados" si ha marcado "Ver" o "Editar".</div>
                     </div>
 
                     {{-- Botones --}}
@@ -75,8 +75,8 @@
                             <i class="bi bi-x-circle me-2"></i> Cancelar
                         </a>
 
-                        <button type="button" class="btn btn-outline-secondary w-100 fw-bold hover-shadow" id="btnLimpiar">
-                            <i class="bi bi-eraser-fill me-2"></i> Limpiar
+                        <button type="button" class="btn btn-outline-secondary w-100 fw-bold hover-shadow" id="btnRestablecer">
+                            <i class="bi bi-arrow-counterclockwise me-2"></i> Restablecer
                         </button>
 
                         <button type="submit" class="btn btn-primary w-100 fw-bold hover-shadow text-white">
@@ -88,121 +88,135 @@
         </div>
     </div>
 
-    {{-- Estilos --}}
-    <style>
-        body {
-            background-color: #e6f0ff;
-            font-family: 'Segoe UI', Arial, sans-serif;
-        }
-
-        .form-check-input:checked {
-            background-color: #192e4c;
-            border-color: #03284c;
-        }
-
-        .form-select:focus, .form-check-input:focus {
-            box-shadow: 0 0 0 0.2rem rgba(25, 46, 76, 0.25);
-        }
-
-        .input-group {
-            border: 1px solid #ced4da;
-            border-radius: 0.5rem;
-            overflow: hidden;
-        }
-
-        .form-select {
-            border: none;
-        }
-
-        .form-text.text-danger {
-            font-size: 0.85rem;
-            text-align: left;
-        }
-
-        .btn:hover {
-            filter: brightness(0.95);
-            transition: 0.3s;
-        }
-
-        .hover-shadow:hover {
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-
-        .card {
-            border-radius: 1rem;
-        }
-
-        .bg-light {
-            background-color: #f7f9fc !important;
-        }
-
-        .card-header {
-            font-weight: 600;
-            font-size: 1.1rem;
-            letter-spacing: 0.5px;
-        }
-
-        /* Scroll elegante */
-        .border::-webkit-scrollbar {
-            width: 6px;
-        }
-        .border::-webkit-scrollbar-thumb {
-            background-color: rgba(25,46,76,0.5);
-            border-radius: 3px;
-        }
-    </style>
-
-    {{-- Scripts --}}
     <script>
         const form = document.getElementById('formRoles');
         const roleSelect = document.getElementById('roleSelect');
         const alertaRol = document.getElementById('alertaRol');
         const permisos = form.querySelectorAll('.permission-checkbox');
         const alertaPermisos = document.getElementById('alertaPermisos');
+        const alertaListados = document.getElementById('alertaListados');
         const selectAllCheckbox = document.getElementById('selectAll');
+        const btnRestablecer = document.getElementById('btnRestablecer');
 
-        // Validación del formulario
+        // Guardar estado inicial
+        const permisosIniciales = Array.from(permisos).map(cb => cb.checked);
+        const roleInicial = roleSelect.value;
+        const regexRol = /^[A-Za-z0-9áéíóúÁÉÍÓÚñÑ ]+$/;
+
+        function validarRol() {
+            const valor = roleSelect.value.trim();
+            if(valor === "") {
+                alertaRol.textContent = "Debe ingresar un rol antes de guardar.";
+                alertaRol.classList.remove('d-none');
+                return false;
+            } else if(!regexRol.test(valor)) {
+                alertaRol.textContent = "Solo se permiten letras, números, espacios y acentos.";
+                alertaRol.classList.remove('d-none');
+                return false;
+            } else if(valor.length > 75) {
+                alertaRol.textContent = "El rol no puede superar 75 caracteres.";
+                alertaRol.classList.remove('d-none');
+                return false;
+            }
+            alertaRol.classList.add('d-none');
+            return true;
+        }
+
+        roleSelect.addEventListener('input', validarRol);
+
+        // Restablecer
+        btnRestablecer.addEventListener('click', () => {
+            roleSelect.value = roleInicial;
+            permisos.forEach((cb, i) => cb.checked = permisosIniciales[i]);
+            selectAllCheckbox.checked = Array.from(permisos).every(cb => cb.checked);
+            [alertaRol, alertaPermisos, alertaListados].forEach(a => a.classList.add('d-none'));
+        });
+
+        // Seleccionar todos
+        selectAllCheckbox.addEventListener('change', function() {
+            permisos.forEach(cb => cb.checked = this.checked);
+            alertaPermisos.classList.add('d-none');
+        });
+
+        // Actualizar check "Seleccionar todos" y ocultar alertas
+        permisos.forEach(cb => {
+            cb.addEventListener('change', function () {
+                selectAllCheckbox.checked = Array.from(permisos).every(p => p.checked);
+                const permisosSeleccionados = Array.from(permisos).some(p => p.checked);
+                if (permisosSeleccionados) alertaPermisos.classList.add('d-none');
+            });
+        });
+
+        // Función para obtener módulo padre
+        function getModuloDiv(cb) {
+            return cb.closest('div[style*="border: 2px solid"]');
+        }
+
+        // Forzar listados
+        permisos.forEach(cb => {
+            if(cb.dataset.tipo === 'ver' || cb.dataset.tipo === 'editar') {
+                cb.addEventListener('change', function() {
+                    const moduloDiv = getModuloDiv(cb);
+                    const listadoCheckbox = moduloDiv.querySelector('.permission-checkbox[data-tipo="listado"]');
+                    if(this.checked && listadoCheckbox) {
+                        listadoCheckbox.checked = true;
+                        alertaListados.classList.add('d-none');
+                    }
+                });
+            }
+        });
+
+        // Evitar desmarcar listado si hay ver o editar
+        permisos.forEach(cb => {
+            if(cb.dataset.tipo === 'listado') {
+                cb.addEventListener('change', function() {
+                    const moduloDiv = getModuloDiv(cb);
+                    const verEditarSeleccionados = Array.from(moduloDiv.querySelectorAll('.permission-checkbox')).some(p =>
+                        (p.dataset.tipo === 'ver' || p.dataset.tipo === 'editar') && p.checked
+                    );
+                    if(!this.checked && verEditarSeleccionados) {
+                        this.checked = true;
+                        alertaListados.classList.remove('d-none');
+                    } else {
+                        alertaListados.classList.add('d-none');
+                    }
+                });
+            }
+        });
+
+        // Validación al enviar
         form.addEventListener('submit', function(e) {
             let valid = true;
 
-            if (roleSelect.value === "") {
-                e.preventDefault();
-                alertaRol.classList.remove('d-none');
-                valid = false;
-            } else {
-                alertaRol.classList.add('d-none');
-            }
+            if(!validarRol()) valid = false;
 
-            let anyChecked = Array.from(permisos).some(cb => cb.checked);
-            if (!anyChecked) {
-                e.preventDefault();
+            const permisosSeleccionados = Array.from(permisos).filter(cb => cb.checked);
+            if(permisosSeleccionados.length === 0) {
                 alertaPermisos.classList.remove('d-none');
                 valid = false;
             } else {
                 alertaPermisos.classList.add('d-none');
             }
 
-            return valid;
-        });
-
-        // Botón Limpiar
-        document.getElementById('btnLimpiar').addEventListener('click', function() {
-            form.reset();
-            permisos.forEach(cb => cb.checked = false);
-            selectAllCheckbox.checked = false;
-            alertaRol.classList.add('d-none');
-            alertaPermisos.classList.add('d-none');
-        });
-
-        // Lógica "Seleccionar todos"
-        selectAllCheckbox.addEventListener('change', function() {
-            permisos.forEach(cb => cb.checked = this.checked);
-        });
-
-        permisos.forEach(cb => {
-            cb.addEventListener('change', function() {
-                selectAllCheckbox.checked = Array.from(permisos).every(c => c.checked);
+            const moduloDivs = form.querySelectorAll('div[style*="border: 2px solid"]');
+            let listaValida = true;
+            moduloDivs.forEach(modulo => {
+                const verEditarSeleccionados = Array.from(modulo.querySelectorAll('.permission-checkbox')).some(p =>
+                    (p.dataset.tipo === 'ver' || p.dataset.tipo === 'editar') && p.checked
+                );
+                const listadoSeleccionado = Array.from(modulo.querySelectorAll('.permission-checkbox')).some(p =>
+                    p.dataset.tipo === 'listado' && p.checked
+                );
+                if(verEditarSeleccionados && !listadoSeleccionado) listaValida = false;
             });
+            if(!listaValida) {
+                alertaListados.classList.remove('d-none');
+                valid = false;
+            } else {
+                alertaListados.classList.add('d-none');
+            }
+
+            if(!valid) e.preventDefault();
         });
     </script>
 @endsection
