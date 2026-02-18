@@ -8,12 +8,12 @@
 
         <div class="hero-content container text-white">
             <div class="hero-box">
-                <h1>Protección total e Inteligente</h1>
+                <h1>Protección total e inteligente</h1>
                 <p>Vigilancia profesional • Tecnología avanzada • Seguridad 24/7</p>
 
                 <div class="hero-buttons">
-                    <a href="#servicios" class="btn btn-primary btn-lg me-3">
-                        <i class="bi bi-shield-lock-fill"></i> Ver servicios
+                    <a href="<?php echo e(route('quienes_somos')); ?>" class="btn btn-primary btn-lg me-3">
+                        <i class="bi bi-shield-lock-fill"></i> Quienes somos
                     </a>
                     <a href="#contacto" class="btn btn-outline-light btn-lg">
                         <i class="bi bi-telephone-fill"></i> Contáctanos

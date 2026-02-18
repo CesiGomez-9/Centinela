@@ -13,8 +13,8 @@
                 <p>Vigilancia profesional • Tecnología avanzada • Seguridad 24/7</p>
 
                 <div class="hero-buttons">
-                    <a href="#servicios" class="btn btn-primary btn-lg me-3">
-                        <i class="bi bi-shield-lock-fill"></i> Ver servicios
+                    <a href="{{ route('quienes_somos') }}" class="btn btn-primary btn-lg me-3">
+                        <i class="bi bi-shield-lock-fill"></i> Quienes somos
                     </a>
                     <a href="#contacto" class="btn btn-outline-light btn-lg">
                         <i class="bi bi-telephone-fill"></i> Contáctanos

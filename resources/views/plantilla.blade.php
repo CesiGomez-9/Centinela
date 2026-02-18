@@ -214,9 +214,7 @@
             </ul>
         </li>
 
-        <li class="nav-item">
-            <a class="nav-link" href="{{ route('quienes_somos') }}">¿Quiénes Somos?</a>
-        </li>
+
     </ul>
 </nav>
 
