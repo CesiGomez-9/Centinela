@@ -47,4 +47,13 @@ class Turno extends Model
     {
         return $this->belongsTo(Cliente::class);
     }
+
+    public function empleados()
+    {
+        return $this->belongsToMany(
+            Empleado::class,      // Modelo relacionado
+            'turno_empleado'      // Tabla pivot real
+        )->withPivot('tipo_turno', 'hora_inicio', 'hora_fin', 'costo')
+            ->withTimestamps();
+    }
 }

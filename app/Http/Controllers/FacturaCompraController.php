@@ -44,10 +44,15 @@ class FacturaCompraController extends Controller
         $formasPago = [ 'Cheque', 'Efectivo', 'Transferencia'];
 
         return view('facturas_compras.formulario', compact('proveedores', 'formasPago', 'empleados'));
+
+
     }
     public function store(Request $request)
 
+
     {
+
+
 
         $request->validate([
             'numero_factura' => ['required', 'string', 'max:20', Rule::unique('facturas_compras', 'numero_factura')],
@@ -58,7 +63,7 @@ class FacturaCompraController extends Controller
                 'before_or_equal:today'
             ],
             'proveedor_id' => ['required', 'exists:proveedores,id'],
-            'forma_pago' => ['required', 'in:Cheque, Efectivo,Transferencia'],
+            'forma_pago' => ['required', 'in:Cheque,Efectivo,Transferencia'],
             'responsable_id' => ['required', 'exists:empleados,id'],
             'productos' => ['required', 'array', 'min:1'],
             'productos.*.product_id' => ['required', 'exists:productos,id'],
@@ -113,7 +118,11 @@ class FacturaCompraController extends Controller
             'productos.*.cantidad.min' => 'La cantidad debe ser al menos 1.',
             'productos.*.cantidad.max' => 'La cantidad no debe exceder 999.',
             'productos.*.cantidad.digits_between' => 'La cantidad debe tener entre 1 y 3 dígitos.',
+
+
         ]);
+
+
 
         try {
             DB::transaction(function () use ($request) {

@@ -55,7 +55,7 @@ class TurnoController extends Controller
             'fecha_inicio' => 'required|date',
             'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
             'observaciones' => [
-                'nullable', // Añadido para aceptar nulo
+                'nullable',
                 'string',
                 'max:300',
                 'regex:/^[\pL0-9\s,.\-#()]*$/u',
@@ -73,25 +73,34 @@ class TurnoController extends Controller
             ]);
         }
 
-        foreach ($turnosData as $turnoData) {
-            $requestData = new Request($turnoData);
-            $requestData->validate([
-                'empleado_id' => 'required|exists:empleados,id',
-                'tipo_turno' => 'required|string',
-                'hora_inicio' => 'required|string',
-                'hora_fin' => 'required|string',
-                'costo' => 'required|numeric|min:0',
-            ]);
-        }
-
+        // Crear el turno principal
         $turno = Turno::create([
             'cliente_id' => $validated['cliente_id'],
             'servicio_id' => $validated['servicio_id'],
             'fecha_inicio' => $validated['fecha_inicio'],
             'fecha_fin' => $validated['fecha_fin'],
             'observaciones' => $validated['observaciones'],
-            'empleados_asignados' => $turnosData,
         ]);
+
+        // Guardar los empleados en la tabla pivot turno_empleado
+        foreach ($turnosData as $empleadoData) {
+            // Validación de cada empleado
+            $requestEmpleado = new Request($empleadoData);
+            $requestEmpleado->validate([
+                'empleado_id' => 'required|exists:empleados,id',
+                'tipo_turno' => 'required|string',
+                'hora_inicio' => 'required|string',
+                'hora_fin' => 'required|string',
+                'costo' => 'required|numeric|min:0',
+            ]);
+
+            $turno->empleados()->attach($empleadoData['empleado_id'], [
+                'tipo_turno' => $empleadoData['tipo_turno'],
+                'hora_inicio' => $empleadoData['hora_inicio'],
+                'hora_fin' => $empleadoData['hora_fin'],
+                'costo' => $empleadoData['costo'],
+            ]);
+        }
 
         return redirect()->route('turnos.index')->with('success', 'Turno asignado exitosamente.');
     }

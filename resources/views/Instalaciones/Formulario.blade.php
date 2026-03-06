@@ -162,11 +162,12 @@
                                 <input type="date" id="fecha_instalacion" name="fecha_instalacion"
                                        class="form-control @error('fecha_instalacion') is-invalid @enderror"
                                        value="{{ now()->format('Y-m-d') }}"
-                                       min="{{ now()->format('Y-m-d') }}" max="2025-10-31" required>
+                                       min="{{ now()->format('Y-m-d') }}" max="2026-10-31" required>
                                 @error('fecha_instalacion')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 <!-- No poner el div error-tecnicos aquí -->
                             </div>
                         </div>
+
 
                         <div class="col-md-6">
                             <label for="empleado_id" class="form-label">Técnicos</label>

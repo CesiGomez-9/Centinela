@@ -130,6 +130,8 @@ Route::get('/instalaciones/eventos', [\App\Http\Controllers\InstalacionControlle
 Route::get('/asistencias/index', [\App\Http\Controllers\AsistenciaController::class, 'index'])->name('asistencias.index');
 Route::get('/asistencias/crear', [\App\Http\Controllers\AsistenciaController::class, 'create'])->name('asistencias.crear');
 Route::post('/asistencias', [\App\Http\Controllers\AsistenciaController::class, 'store'])->name('asistencias.store');
+Route::get('asistencias/buscar', [\App\Http\Controllers\AsistenciaController::class, 'buscar'])
+    ->name('asistencias.buscar');
 Route::get('/asistencias/{id}', [\App\Http\Controllers\AsistenciaController::class, 'show'])->name('asistencias.show');
 Route::get('/asistencias/historial', [\App\Http\Controllers\AsistenciaController::class, 'historial'])->name('asistencias.historial');
 

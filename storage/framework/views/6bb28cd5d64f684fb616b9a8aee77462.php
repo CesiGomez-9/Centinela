@@ -1,6 +1,4 @@
-@extends('plantilla')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
     <head>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     </head>
@@ -115,32 +113,54 @@
         <div id="fecha" style="font-size:18px; margin-bottom:18px; color:#ffffff;"></div>
 
 
-        <form id="formAsistencia" method="POST" action="{{ route('asistencias.store') }}">
-            @csrf
-            <input type="text" name="nombre" id="nombre" value="{{ old('nombre') }}" placeholder="Buscar empleado por nombre">
+        <form id="formAsistencia" method="POST" action="<?php echo e(route('asistencias.store')); ?>">
+            <?php echo csrf_field(); ?>
+            <input type="text" name="nombre" id="nombre" value="<?php echo e(old('nombre')); ?>" placeholder="Buscar empleado por nombre">
             <div class="error" id="error-nombre">
-                @error('nombre') ⚠️ {{ $message }} @enderror
+                <?php $__errorArgs = ['nombre'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> ⚠️ <?php echo e($message); ?> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
             </div>
             <!-- Contenedor para lista de resultados por nombre -->
             <div id="listaEmpleadosNombre"></div>
 
-            <input type="text" name="apellido" id="apellido" value="{{ old('apellido') }}" placeholder="Buscar empleado por apellido">
+            <input type="text" name="apellido" id="apellido" value="<?php echo e(old('apellido')); ?>" placeholder="Buscar empleado por apellido">
             <div class="error" id="error-apellido">
-                @error('apellido') ⚠️ {{ $message }} @enderror
+                <?php $__errorArgs = ['apellido'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> ⚠️ <?php echo e($message); ?> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
             </div>
             <!-- Contenedor para lista de resultados por apellido -->
             <div id="listaEmpleadosApellido"></div>
 
 
-            <input type="text" name="identidad" id="identidad" maxlength="13" value="{{ old('identidad') }}" placeholder="DNI / Identidad">
+            <input type="text" name="identidad" id="identidad" maxlength="13" value="<?php echo e(old('identidad')); ?>" placeholder="DNI / Identidad">
             <div class="error" id="error-identidad">
-                @error('identidad')
-                ⚠️ {{ $message }}
-                @enderror
+                <?php $__errorArgs = ['identidad'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                ⚠️ <?php echo e($message); ?>
+
+                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
             </div>
 
             <div class="botones">
-                <a href="{{ route('asistencias.index') }}" class="btn btn-danger w-100">
+                <a href="<?php echo e(route('asistencias.index')); ?>" class="btn btn-danger w-100">
                     <i class="bi bi-x-circle me-2"></i> Cancelar
                 </a>
                 <button type="button" class="btn btn-secondary w-100" id="btnLimpiar">
@@ -155,11 +175,12 @@
 
 
 
-        @if(session('error'))
+        <?php if(session('error')): ?>
             <div id="alertaError" class="mensaje" style="color: #ff4d4d; margin-top:10px;">
-                ⚠️ {{ session('error') }}
+                ⚠️ <?php echo e(session('error')); ?>
+
             </div>
-        @endif
+        <?php endif; ?>
 
     </div>
 
@@ -291,7 +312,7 @@
             if (!query) return;
 
             try {
-                const response = await fetch(`{{ route('asistencias.buscar') }}?nombre=${encodeURIComponent(query)}`);
+                const response = await fetch(`<?php echo e(route('asistencias.buscar')); ?>?nombre=${encodeURIComponent(query)}`);
                 const empleados = await response.json();
 
                 if (!empleados.length) {
@@ -325,7 +346,7 @@
             if (!query) return;
 
             try {
-                const response = await fetch(`{{ route('asistencias.buscar') }}?apellido=${encodeURIComponent(query)}`);
+                const response = await fetch(`<?php echo e(route('asistencias.buscar')); ?>?apellido=${encodeURIComponent(query)}`);
                 const empleados = await response.json();
 
                 if (!empleados.length) {
@@ -353,4 +374,6 @@
         });
 
     </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\angel\PhpstormProjects\Centinela\resources\views/asistencias/crear.blade.php ENDPATH**/ ?>

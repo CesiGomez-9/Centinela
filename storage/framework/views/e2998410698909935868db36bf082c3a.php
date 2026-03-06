@@ -297,6 +297,8 @@ endif;
 unset($__errorArgs, $__bag); ?>
                             </div>
 
+
+
                             <div class="col-md-6">
                                 <label for="formaPago" class="form-label">Forma de Pago</label>
                                 <div class="input-group">

@@ -100,8 +100,8 @@ class InstalacionController extends Controller
     public function create()
     {
         $clientes = Cliente::all();
-        $tecnicos = Empleado::where('categoria', 'Tecnico')->get(); // Filtrar empleados por categoría 'tecnico'
-        $servicios = Servicio::where('categoria', 'tecnico')->get(); // Filtrar servicios por categoría 'tecnico'
+        $tecnicos = Empleado::where('categoria', 'Tecnico')->get(); // Empleados técnicos
+        $servicios = Servicio::whereIn('categoria', ['tecnico', 'vigilancia'])->get(); // Servicios técnicos o vigilancia
         $facturas = FacturaVenta::all();
 
         return view('instalaciones.formulario', compact('clientes', 'tecnicos', 'servicios', 'facturas'));
@@ -129,9 +129,8 @@ class InstalacionController extends Controller
             ],
             'servicio_id' => [
                 'required',
-                Rule::exists('servicios', 'id')->where(function ($query) {
-                    $query->where('categoria', 'tecnico');
-                })
+                Rule::exists('servicios', 'id')->whereIn('categoria', ['tecnico', 'vigilancia'])
+
             ],
             'fecha_instalacion' => 'required|date|after_or_equal:today',
             'costo_instalacion' => [

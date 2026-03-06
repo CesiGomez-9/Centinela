@@ -183,7 +183,7 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
                                        value="<?php echo e(now()->format('Y-m-d')); ?>"
-                                       min="<?php echo e(now()->format('Y-m-d')); ?>" max="2025-10-31" required>
+                                       min="<?php echo e(now()->format('Y-m-d')); ?>" max="2026-10-31" required>
                                 <?php $__errorArgs = ['fecha_instalacion'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -196,6 +196,7 @@ unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
+                        
                         <div class="col-md-6">
                             <label for="empleado_id" class="form-label">Técnicos</label>
                             <div class="border rounded p-2" id="tecnicos-container" style="max-height: 150px; overflow-y: auto;">
