@@ -3,16 +3,16 @@
 
     <style>
         body {
-            background-color: #BCD0E4FF; /* Fondo general azul */
+            background-color: #BCD0E4FF;
             font-family: 'Inter', sans-serif;
             color: #fff;
         }
 
         .card {
-            background-color: rgba(26, 35, 64, 0.95); /* Ventanita oscura */
+            background-color: rgba(26, 35, 64, 0.95);
             border-radius: 1rem;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-            max-width: 900px;
+            max-width: 950px;
             margin: 40px auto;
             padding: 25px;
             color: #fff;
@@ -44,30 +44,64 @@
             color: #cda34f;
         }
 
-        .permissions-grid {
+        .modulo-titulo {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #cda34f;
+            border-bottom: 1px solid #cda34f55;
+            padding-bottom: 6px;
+            margin-bottom: 10px;
+        }
+
+        .modulo-card {
+            background-color: #1e2b4a;
+            border: 1px solid #2a3357;
+            border-radius: 0.7rem;
+            padding: 14px;
+        }
+
+        .permiso-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.88rem;
+            padding: 4px 0;
+        }
+
+        .permiso-item .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .dot-activo  { background-color: #28a745; }
+        .dot-inactivo { background-color: #555; }
+
+        .text-inactivo { color: #666; }
+
+        .modulos-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
             margin-top: 20px;
         }
 
-        .permission-card {
-            background-color: #2a3357;
-            border: 1px solid #cda34f;
-            border-radius: 0.8rem;
-            padding: 12px;
-            text-align: center;
-            transition: all 0.3s ease;
-            color: #fff;
-            font-weight: 500;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        .roles-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 4px;
         }
 
-        .permission-card:hover {
+        .badge-rol {
             background-color: #cda34f;
             color: #1a2340;
-            cursor: pointer;
-            transform: translateY(-2px);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
         }
 
         .btn-center {
@@ -90,12 +124,6 @@
             background-color: #0d1b2a;
             color: #fff;
         }
-
-        @media (max-width: 767px) {
-            .permissions-grid {
-                grid-template-columns: 1fr;
-            }
-        }
     </style>
 
     <div class="card">
@@ -104,29 +132,55 @@
         </div>
 
         <div class="card-body">
-            <div class="user-info">
+            <div class="user-info mb-3">
                 <p><i class="bi bi-person-fill"></i><strong>Nombre:</strong> {{ $user->empleado->nombre }} {{ $user->empleado->apellido }}</p>
                 <p><i class="bi bi-envelope-fill"></i><strong>Correo:</strong> {{ $user->email }}</p>
                 <p><i class="bi bi-person-badge-fill"></i><strong>Usuario:</strong> {{ $user->usuario }}</p>
-                <p><i class="bi bi-shield-fill-check"></i><strong>Rol asignado:</strong> {{ $user->rol }}</p>
+                <p>
+                    <i class="bi bi-shield-fill-check"></i><strong>Roles asignados:</strong>
+                    <span class="roles-badges">
+                        @forelse($user->roles as $role)
+                            <span class="badge-rol">{{ $role->name }}</span>
+                        @empty
+                            <span class="text-warning">Sin rol asignado</span>
+                        @endforelse
+                    </span>
+                </p>
             </div>
 
-            <div class="permissions-grid">
-                @php
-                    $permisos = [];
-                    if($user->rol === 'Administrador') {
-                        $permisos = ['Gestionar todos los módulos', 'Crear/Editar/Eliminar entidades', 'Ver reportes completos'];
-                    } elseif($user->rol === 'Vigilante') {
-                        $permisos = ['Registrar asistencia', 'Ver turnos asignados'];
-                    } elseif($user->rol === 'Técnico') {
-                        $permisos = ['Ver instalaciones asignadas', 'Registrar asistencia', 'Ver turnos'];
-                    }
-                @endphp
+            <hr style="border-color: #cda34f55;">
+            <h6 class="mb-3" style="color: #cda34f;">Permisos por módulo</h6>
 
-                @foreach($permisos as $permiso)
-                    <div class="permission-card">{{ $permiso }}</div>
-                @endforeach
-            </div>
+            @if($user->roles->isEmpty())
+                <div class="text-center text-warning py-3">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    Este usuario no tiene roles asignados, por lo tanto no tiene permisos.
+                </div>
+            @else
+                <div class="modulos-grid">
+                    @foreach($permisosPorModulo as $modulo => $permisos)
+                        @php
+                            $tieneAlguno = collect($permisos)->some(fn($p) => $permisosDelUsuario->contains($p));
+                        @endphp
+                        <div class="modulo-card">
+                            <div class="modulo-titulo">{{ $modulo }}</div>
+                            @foreach($permisos as $permiso)
+                                @if($permisosDelUsuario->contains($permiso))
+                                    <div class="permiso-item">
+                                        <span class="dot dot-activo"></span>
+                                        <span>{{ ucfirst($permiso) }}</span>
+                                    </div>
+                                @else
+                                    <div class="permiso-item text-inactivo">
+                                        <span class="dot dot-inactivo"></span>
+                                        <span>{{ ucfirst($permiso) }}</span>
+                                    </div>
+                                @endif
+                            @endforeach
+                        </div>
+                    @endforeach
+                </div>
+            @endif
 
             <div class="btn-center">
                 <a href="{{ route('users.index') }}" class="btn btn-return">

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Empleado;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -15,10 +16,6 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        if (!in_array(auth()->user()->rol, ['Técnico', 'Vigilante'])) {
-            abort(403, 'No tienes permiso para ver esta página');
-        }
-
         $search = $request->input('search');
         $rolFilter = $request->input('rol');
         $fechaInicio = $request->input('fecha_inicio');
@@ -50,7 +47,7 @@ class UserController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        $roles = ['Administrador', 'Vigilante', 'Técnico'];
+        $roles = Role::orderBy('name')->pluck('name');
 
         return view('users.index', compact('users', 'search', 'rolFilter', 'roles', 'fechaInicio', 'fechaFin'));
     }
@@ -61,7 +58,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        $roles = ['Administrador', 'Vigilante', 'Técnico'];
+        $roles = Role::orderBy('name')->get();
         $empleados = Empleado::orderBy('nombre')->get();
 
         return view('users.create', compact('roles', 'empleados'));
@@ -77,27 +74,32 @@ class UserController extends Controller
     {
         $request->validate([
             'empleado_id' => 'required|unique:users,empleado_id',
-            'rol' => 'required|string',
-            'usuario' => 'required|unique:users,usuario',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6',
+            'rol'         => 'required|exists:roles,id',
+            'usuario'     => 'required|unique:users,usuario',
+            'email'       => 'required|email|unique:users,email',
+            'password'    => 'required|string|min:6',
         ], [
             'empleado_id.required' => 'Debe seleccionar un empleado.',
-            'empleado_id.unique' => 'Este empleado ya tiene un usuario.',
-            'rol.required' => 'Debe seleccionar un rol.',
-            'usuario.required' => 'El usuario es obligatorio.',
-            'usuario.unique' => 'Este usuario ya existe.',
-            'email.required' => 'El correo es obligatorio.',
-            'email.unique' => 'Este correo ya tiene un usuario.',
+            'empleado_id.unique'   => 'Este empleado ya tiene un usuario.',
+            'rol.required'         => 'Debe seleccionar un rol.',
+            'rol.exists'           => 'El rol seleccionado no es válido.',
+            'usuario.required'     => 'El usuario es obligatorio.',
+            'usuario.unique'       => 'Este usuario ya existe.',
+            'email.required'       => 'El correo es obligatorio.',
+            'email.unique'         => 'Este correo ya tiene un usuario.',
         ]);
+
+        $role = Role::findOrFail($request->rol);
 
         $user = User::create([
             'empleado_id' => $request->empleado_id,
             'email'       => $request->email,
             'usuario'     => $request->usuario,
             'password'    => Hash::make($request->password),
-            'rol'         => $request->rol,
+            'rol'         => $role->name,
         ]);
+
+        $user->syncRoles([$role->id]);
 
         return redirect()->route('users.index')
             ->with('success', "Usuario creado correctamente. Contraseña temporal: <strong>{$request->password}</strong>");
@@ -116,9 +118,9 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        $user = User::findOrFail($id);
+        $user = User::with('roles')->findOrFail($id);
         $empleados = Empleado::all();
-        $roles = ['Administrador', 'Vigilante', 'Técnico'];
+        $roles = Role::orderBy('name')->get();
 
         return view('users.edit', compact('user', 'empleados', 'roles'));
     }
@@ -131,22 +133,26 @@ class UserController extends Controller
         $user = User::findOrFail($id);
 
         $request->validate([
-            'empleado_id' => ['required', Rule::unique('users')->ignore($user->id)],
-            'rol' => 'required|string',
+            'empleado_id' => ['required', Rule::unique('users', 'empleado_id')->ignore($user->id)],
+            'rol'         => 'required|exists:roles,id',
         ], [
             'empleado_id.required' => 'Debe seleccionar un empleado.',
-            'empleado_id.unique' => 'Este empleado ya tiene un usuario.',
-            'rol.required' => 'Debe seleccionar un rol.',
+            'empleado_id.unique'   => 'Este empleado ya tiene un usuario.',
+            'rol.required'         => 'Debe seleccionar un rol.',
+            'rol.exists'           => 'El rol seleccionado no es válido.',
         ]);
 
+        $role = Role::findOrFail($request->rol);
+
         $user->empleado_id = $request->empleado_id;
-        $user->rol = $request->rol;
+        $user->rol = $role->name;
 
         if ($request->filled('password')) {
-            $user->password = \Illuminate\Support\Str::random(10); // o permitir cambiar manual
+            $user->password = Hash::make($request->password);
         }
 
         $user->save();
+        $user->syncRoles([$role->id]);
 
         return redirect()->route('users.index')->with('success', 'Usuario actualizado correctamente.');
     }
@@ -166,12 +172,27 @@ class UserController extends Controller
 
     public function verpermisos($id)
     {
-        $user = User::findOrFail($id);
+        $user = User::with(['roles.permissions', 'empleado'])->findOrFail($id);
 
-        // Por ahora como el rol está en users, solo mostramos el rol
-        $rol = $user->rol;
+        $permisosPorModulo = [
+            'Empleados'        => ['registrar empleados', 'listado de empleados', 'ver empleados', 'editar empleados'],
+            'Servicios'        => ['registrar servicio', 'listado de servicio', 'ver servicio', 'editar servicio'],
+            'Factura de compra'=> ['registrar factura de compra', 'listado de factura de compra', 'ver factura de compra'],
+            'Factura de venta' => ['registrar factura de venta', 'listado de factura de venta', 'ver factura de venta'],
+            'Venta de servicios'=>['venta de servicios', 'listado de venta de servicios', 'ver venta de servicios'],
+            'Incidencias'      => ['registrar incidencias', 'listado de incidencias', 'ver incidencias', 'editar incidencias'],
+            'Instalaciones'    => ['registrar instalación', 'listado de instalación', 'ver instalación'],
+            'Memorándum'       => ['registrar memorándum', 'listado de memorándum', 'ver memorándum'],
+            'Productos'        => ['registrar producto', 'listado de producto', 'inventario de producto'],
+            'Asistencias'      => ['registrar asistencias', 'listado de asistencias', 'ver asistencias'],
+            'Incapacidades'    => ['registrar incapacidad', 'listado de incapacidad', 'ver incapacidad', 'editar incapacidad'],
+            'Capacitaciones'   => ['registrar capacitación', 'listado de capacitación', 'ver capacitación', 'editar capacitación'],
+            'Promociones'      => ['registrar promociones', 'listado de promociones'],
+        ];
 
-        return view('users.verPermisos', compact('user', 'rol'));
+        $permisosDelUsuario = $user->getAllPermissions()->pluck('name');
+
+        return view('users.verPermisos', compact('user', 'permisosPorModulo', 'permisosDelUsuario'));
     }
 
     public function searchEmpleados(Request $request)
