@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-class ProductoController extends Controller
+class  ProductoController extends Controller
 {
     public function index(Request $request)
     {
@@ -38,6 +38,16 @@ class ProductoController extends Controller
 
     public function store(Request $request)
     {
+        // 🔥 NORMALIZAR (SIN QUITAR TUS VALIDACIONES)
+        $request->merge([
+            'codigo' => strtoupper(trim($request->codigo)),
+            'serie' => strtoupper(trim($request->serie)),
+            'marca' => strtolower(trim($request->marca)),
+            'modelo' => strtolower(trim($request->modelo)),
+            'nombre' => trim($request->nombre),
+            'descripcion' => trim($request->descripcion),
+        ]);
+
         $validated = $request->validate([
             'serie' => [
                 'required',
@@ -82,7 +92,6 @@ class ProductoController extends Controller
                 'required',
                 'string',
                 'max:50',
-
             ],
             'impuesto_id' => 'required|exists:impuestos,id',
             'descripcion' => [
@@ -94,8 +103,8 @@ class ProductoController extends Controller
                 'not_regex:/^0+$/'
             ],
         ], [
-            'serie.unique' => 'La serie ingresada ya está registrada.',
-            'codigo.unique' => 'El código ingresado ya está registrada.',
+            'serie.unique' => '⚠️ La serie ingresada ya está registrada.',
+            'codigo.unique' => '⚠️ El código ya existe, ingrese uno diferente.',
             'marca.required' => 'La marca del producto es obligatoria.',
             'modelo.required' => 'El modelo del producto es obligatoria.',
             'impuesto_id.required' => 'Debe seleccionar un tipo de impuesto para el producto.',
@@ -121,7 +130,6 @@ class ProductoController extends Controller
             return back()->withInput()->with('error', 'Error al guardar el producto');
         }
     }
-
     public function show(string $id)
     {
         $producto = Producto::with('impuesto')->findOrFail($id);

@@ -1,5 +1,4 @@
-@extends('plantilla')
-@section('content')
+<?php $__env->startSection('content'); ?>
 
     <style>
         body {
@@ -39,15 +38,16 @@
                 <i class="bi bi-shield-lock"></i>
             </div>
 
-            @if(session('success'))
+            <?php if(session('success')): ?>
                 <div class="alert alert-success alert-dismissible fade show py-2" role="alert" style="font-size: 0.85rem;">
-                    {{ session('success') }}
+                    <?php echo e(session('success')); ?>
+
                     <button type="button" class="btn-close btn-close-sm" data-bs-dismiss="alert" aria-label="Cerrar"></button>
                 </div>
-            @endif
+            <?php endif; ?>
 
-            <form id="servicioForm" action="{{ route('servicios.store') }}" method="POST" class="needs-validation" novalidate>
-                @csrf
+            <form id="servicioForm" action="<?php echo e(route('servicios.store')); ?>" method="POST" class="needs-validation" novalidate>
+                <?php echo csrf_field(); ?>
                 <div class="row g-3">
 
                     <!-- Nombre del servicio -->
@@ -56,7 +56,7 @@
                         <div class="input-group input-group-md">
                             <span class="input-group-text"><i class="bi bi-card-text"></i></span>
                             <input type="text" id="nombreServicio" name="nombreServicio" class="form-control form-control-md"
-                                   value="{{ old('nombreServicio') }}"
+                                   value="<?php echo e(old('nombreServicio')); ?>"
                                    maxlength="50" pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$"
                                    title="Solo letras, máximo 50 caracteres"
                                    onkeydown="bloquearEspacioAlInicio(event, this)"
@@ -66,11 +66,12 @@
                                 Ingrese un nombre válido (solo letras).
                             </div>
                         </div>
-                        @if ($errors->has('nombreServicio'))
+                        <?php if($errors->has('nombreServicio')): ?>
                             <div class="text-danger mt-1" style="font-size: 0.85rem;">
-                                {{ $errors->first('nombreServicio') }}
+                                <?php echo e($errors->first('nombreServicio')); ?>
+
                             </div>
-                        @endif
+                        <?php endif; ?>
                     </div>
 
                     <!-- Costo Diurno -->
@@ -79,14 +80,15 @@
                         <div class="input-group input-group-md">
                             <span class="input-group-text"><i class="bi bi-sun"></i></span>
                             <input type="number" id="costo_diurno" name="costo_diurno" class="form-control form-control-md"
-                                   value="{{ old('costo_diurno') }}" min="1" max="999999" oninput="limitarDigitos(this, 6)" required />
+                                   value="<?php echo e(old('costo_diurno')); ?>" min="1" max="999999" oninput="limitarDigitos(this, 6)" required />
                             <div class="invalid-feedback" style="font-size: 0.85rem;">Ingrese un costo diurno válido.</div>
                         </div>
-                        @if ($errors->has('costo_diurno'))
+                        <?php if($errors->has('costo_diurno')): ?>
                             <div class="text-danger mt-1" style="font-size: 0.85rem;">
-                                {{ $errors->first('costo_diurno') }}
+                                <?php echo e($errors->first('costo_diurno')); ?>
+
                             </div>
-                        @endif
+                        <?php endif; ?>
                     </div>
 
                     <!-- Costo Nocturno -->
@@ -95,14 +97,15 @@
                         <div class="input-group input-group-md">
                             <span class="input-group-text"><i class="bi bi-moon"></i></span>
                             <input type="number" id="costo_nocturno" name="costo_nocturno" class="form-control form-control-md"
-                                   value="{{ old('costo_nocturno') }}" min="1" max="999999" oninput="limitarDigitos(this, 6)" required />
+                                   value="<?php echo e(old('costo_nocturno')); ?>" min="1" max="999999" oninput="limitarDigitos(this, 6)" required />
                             <div class="invalid-feedback" style="font-size: 0.85rem;">Ingrese un costo nocturno válido.</div>
                         </div>
-                        @if ($errors->has('costo_nocturno'))
+                        <?php if($errors->has('costo_nocturno')): ?>
                             <div class="text-danger mt-1" style="font-size: 0.85rem;">
-                                {{ $errors->first('costo_nocturno') }}
+                                <?php echo e($errors->first('costo_nocturno')); ?>
+
                             </div>
-                        @endif
+                        <?php endif; ?>
                     </div>
 
                     <!-- Costo 24 Horas -->
@@ -111,14 +114,15 @@
                         <div class="input-group input-group-md">
                             <span class="input-group-text"><i class="bi bi-clock"></i></span>
                             <input type="number" step="0.01" id="costo_24_horas" name="costo_24_horas" class="form-control form-control-md"
-                                   value="{{ old('costo_24_horas') }}" min="1" max="999999" oninput="limitarDigitos(this, 6)" required />
+                                   value="<?php echo e(old('costo_24_horas')); ?>" min="1" max="999999" oninput="limitarDigitos(this, 6)" required />
                             <div class="invalid-feedback" style="font-size: 0.85rem;">Ingrese un costo de 24 horas válido.</div>
                         </div>
-                        @if ($errors->has('costo_24_horas'))
+                        <?php if($errors->has('costo_24_horas')): ?>
                             <div class="text-danger mt-1" style="font-size: 0.85rem;">
-                                {{ $errors->first('costo_24_horas') }}
+                                <?php echo e($errors->first('costo_24_horas')); ?>
+
                             </div>
-                        @endif
+                        <?php endif; ?>
                     </div>
 
                     <!-- Descripción -->
@@ -132,14 +136,15 @@
                                       oninput="eliminarEspaciosIniciales(this); autoExpand(this);"
                                       title="Solo letras, máximo 125 caracteres"
                                       rows="1" required
-                                      style="overflow:hidden; resize:none;">{{ old('descripcionServicio') }}</textarea>
+                                      style="overflow:hidden; resize:none;"><?php echo e(old('descripcionServicio')); ?></textarea>
                             <div class="invalid-feedback" style="font-size: 0.85rem;">Ingrese una descripción válida.</div>
                         </div>
-                        @if ($errors->has('descripcionServicio'))
+                        <?php if($errors->has('descripcionServicio')): ?>
                             <div class="text-danger mt-1" style="font-size: 0.85rem;">
-                                {{ $errors->first('descripcionServicio') }}
+                                <?php echo e($errors->first('descripcionServicio')); ?>
+
                             </div>
-                        @endif
+                        <?php endif; ?>
                     </div>
 
                     <!-- Productos requeridos -->
@@ -149,59 +154,62 @@
                             <span class="input-group-text"><i class="bi bi-box"></i></span>
                             <select class="form-select form-select-md" id="productosCategoria" name="productos_categoria" required>
                                 <option value="">Seleccione una categoría</option>
-                                <option value="vigilancia" {{ old('productos_categoria') == 'vigilancia' ? 'selected' : '' }}>Vigilancia</option>
-                                <option value="tecnico" {{ old('productos_categoria') == 'tecnico' ? 'selected' : '' }}>Técnico</option>
+                                <option value="vigilancia" <?php echo e(old('productos_categoria') == 'vigilancia' ? 'selected' : ''); ?>>Vigilancia</option>
+                                <option value="tecnico" <?php echo e(old('productos_categoria') == 'tecnico' ? 'selected' : ''); ?>>Técnico</option>
                             </select>
                             <div class="invalid-feedback" style="font-size: 0.85rem;">Seleccione una categoría de productos.</div>
                         </div>
-                        @if ($errors->has('productos_categoria'))
+                        <?php if($errors->has('productos_categoria')): ?>
                             <div class="text-danger mt-1" style="font-size: 0.85rem;">
-                                {{ $errors->first('productos_categoria') }}
+                                <?php echo e($errors->first('productos_categoria')); ?>
+
                             </div>
-                        @endif
+                        <?php endif; ?>
                     </div>
 
                     <!-- Productos de vigilancia -->
-                    <div class="col-12 {{ old('productos_categoria') != 'vigilancia' ? 'd-none' : '' }}" id="productos_vigilancia">
+                    <div class="col-12 <?php echo e(old('productos_categoria') != 'vigilancia' ? 'd-none' : ''); ?>" id="productos_vigilancia">
                         <label class="form-label fs-6 mb-2">Productos de vigilancia</label>
                         <div class="row g-2" style="font-size: 0.85rem;">
-                            @foreach($productosVigilancia as $producto)
+                            <?php $__currentLoopData = $productosVigilancia; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $producto): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <div class="col-md-6">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="productos[]" value="{{ $producto->id }}"
-                                               id="vig_{{ Str::slug($producto->nombre, '_') }}"
-                                            {{ is_array(old('productos')) && in_array($producto->id, old('productos')) ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="vig_{{ Str::slug($producto->nombre, '_') }}">
-                                            {{ $producto->nombre }}
+                                        <input class="form-check-input" type="checkbox" name="productos[]" value="<?php echo e($producto->id); ?>"
+                                               id="vig_<?php echo e(Str::slug($producto->nombre, '_')); ?>"
+                                            <?php echo e(is_array(old('productos')) && in_array($producto->id, old('productos')) ? 'checked' : ''); ?>>
+                                        <label class="form-check-label" for="vig_<?php echo e(Str::slug($producto->nombre, '_')); ?>">
+                                            <?php echo e($producto->nombre); ?>
+
                                         </label>
                                     </div>
                                 </div>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </div>
                     </div>
 
                     <!-- Productos técnicos -->
-                    <div class="col-12 {{ old('productos_categoria') != 'tecnico' ? 'd-none' : '' }}" id="productos_tecnico">
+                    <div class="col-12 <?php echo e(old('productos_categoria') != 'tecnico' ? 'd-none' : ''); ?>" id="productos_tecnico">
                         <label class="form-label fs-6 mb-2">Productos técnicos</label>
                         <div class="row g-2" style="font-size: 0.85rem;">
-                            @foreach($productosTecnico as $producto)
+                            <?php $__currentLoopData = $productosTecnico; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $producto): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <div class="col-md-6">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="productos[]" value="{{ $producto->id }}"
-                                               id="tec_{{ Str::slug($producto->nombre, '_') }}"
-                                            {{ is_array(old('productos')) && in_array($producto->id, old('productos')) ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="tec_{{ Str::slug($producto->nombre, '_') }}">
-                                            {{ $producto->nombre }}
+                                        <input class="form-check-input" type="checkbox" name="productos[]" value="<?php echo e($producto->id); ?>"
+                                               id="tec_<?php echo e(Str::slug($producto->nombre, '_')); ?>"
+                                            <?php echo e(is_array(old('productos')) && in_array($producto->id, old('productos')) ? 'checked' : ''); ?>>
+                                        <label class="form-check-label" for="tec_<?php echo e(Str::slug($producto->nombre, '_')); ?>">
+                                            <?php echo e($producto->nombre); ?>
+
                                         </label>
                                     </div>
                                 </div>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </div>
                     </div>
 
                     <!-- Botones -->
                     <div class="text-center mt-4">
-                        <a href="{{ route('servicios.catalogo') }}" class="btn btn-danger me-2" style="font-size: 0.85rem;">
+                        <a href="<?php echo e(route('servicios.catalogo')); ?>" class="btn btn-danger me-2" style="font-size: 0.85rem;">
                             <i class="bi bi-x-circle me-2"></i> Cancelar
                         </a>
 
@@ -307,4 +315,6 @@
     </script>
 
     </body>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Admin\PhpstormProjects\Centinela\resources\views/servicios/index.blade.php ENDPATH**/ ?>

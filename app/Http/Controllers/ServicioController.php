@@ -41,47 +41,55 @@ class ServicioController extends Controller
      */
     public function store(Request $request)
     {
+        // Validación inicial de formato y reglas básicas
         $validated = $request->validate([
             'nombreServicio'       => 'required|string|max:50|regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/',
             'descripcionServicio'  => 'required|string|max:125|regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/',
-            // *** ESTAS DEBEN SER 'required' Y 'max:9999' ***
-            'costo_diurno'         => 'required|numeric|min:1|max:9999',
-            'costo_nocturno'       => 'required|numeric|min:1|max:9999',
-            'costo_24_horas'       => 'required|numeric|min:1|max:9999',
+            'costo_diurno'         => 'required|numeric|min:1|max:999999',
+            'costo_nocturno'       => 'required|numeric|min:1|max:999999',
+            'costo_24_horas'       => 'required|numeric|min:1|max:999999',
             'productos_categoria'  => 'required|in:vigilancia,tecnico',
             'productos'            => 'nullable|array',
             'productos.*'          => 'integer|exists:productos,id'
         ], [
             'nombreServicio.regex'      => 'El nombre solo puede contener letras y espacios.',
             'descripcionServicio.regex' => 'La descripción solo puede contener letras y espacios.',
-            // *** MENSAJES PERSONALIZADOS PARA LOS COSTOS ***
             'costo_diurno.required'     => 'El costo diurno es obligatorio.',
             'costo_diurno.numeric'      => 'El costo diurno debe ser un número.',
             'costo_diurno.min'          => 'El costo diurno no puede ser 0.',
-            'costo_diurno.max'          => 'El costo diurno no puede exceder 9999.',
+            'costo_diurno.max'          => 'El costo diurno no puede exceder 999999.',
             'costo_nocturno.required'   => 'El costo nocturno es obligatorio.',
             'costo_nocturno.numeric'    => 'El costo nocturno debe ser un número.',
             'costo_nocturno.min'        => 'El costo nocturno no puede ser 0.',
-            'costo_nocturno.max'        => 'El costo nocturno no puede exceder 9999.',
+            'costo_nocturno.max'        => 'El costo nocturno no puede exceder 999999.',
             'costo_24_horas.required'   => 'El costo 24 horas es obligatorio.',
             'costo_24_horas.numeric'    => 'El costo 24 horas debe ser un número.',
             'costo_24_horas.min'        => 'El costo 24 horas no puede ser 0',
-            'costo_24_horas.max'        => 'El costo 24 horas no puede exceder 9999.',
+            'costo_24_horas.max'        => 'El costo 24 horas no puede exceder 999999.',
         ]);
 
+        // ✅ Validación manual de nombre único
+        $existing = Servicio::where('nombre', $validated['nombreServicio'])->first();
+        if ($existing) {
+            return redirect()->back()
+                ->withInput() // Mantiene los valores ingresados
+                ->withErrors(['nombreServicio' => 'Este  servicio ya existe.']);
+         }
+
+        // Guardar el servicio
         $servicio = new Servicio();
         $servicio->nombre          = $validated['nombreServicio'];
         $servicio->descripcion     = $validated['descripcionServicio'];
-         $servicio->costo_diurno    = $validated['costo_diurno'] ?? null;
+        $servicio->costo_diurno    = $validated['costo_diurno'] ?? null;
         $servicio->costo_nocturno  = $validated['costo_nocturno'] ?? null;
         $servicio->costo_24_horas  = $validated['costo_24_horas'] ?? null;
         $servicio->productos       = json_encode($validated['productos'] ?? []);
 
         $servicio->save();
 
-        return redirect()->route('servicios.catalogo')->with('success', 'Servicio registrado correctamente.');
+        return redirect()->route('servicios.catalogo')
+            ->with('success', 'Servicio registrado correctamente.');
     }
-
     /**
      * Display the specified resource.
      */
@@ -130,35 +138,51 @@ class ServicioController extends Controller
 
     public function update(Request $request, $id)
     {
+        // Validación inicial
         $validated = $request->validate([
             'nombreServicio'       => 'required|string|max:50|regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/',
             'descripcionServicio'  => 'required|string|max:125|regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/',
-             // *** ESTAS DEBEN SER 'required' Y 'max:9999' ***
-            'costo_diurno'         => 'required|numeric|min:1|max:9999',
-            'costo_nocturno'       => 'required|numeric|min:1|max:9999',
-            'costo_24_horas'       => 'required|numeric|min:1|max:9999',
+            'costo_diurno'         => 'required|numeric|min:1|max:999999',
+            'costo_nocturno'       => 'required|numeric|min:1|max:999999',
+            'costo_24_horas'       => 'required|numeric|min:1|max:999999',
+            'productos_categoria'  => 'required|in:vigilancia,tecnico',
             'productos'            => 'nullable|array',
             'productos.*'          => 'integer|exists:productos,id'
         ], [
             'nombreServicio.regex'      => 'El nombre solo puede contener letras y espacios.',
             'descripcionServicio.regex' => 'La descripción solo puede contener letras y espacios.',
-            // *** MENSAJES PERSONALIZADOS PARA LOS COSTOS ***
+
             'costo_diurno.required'     => 'El costo diurno es obligatorio.',
             'costo_diurno.numeric'      => 'El costo diurno debe ser un número.',
-            'costo_diurno.min'          => 'El costo diurno no puede ser negativo.',
-            'costo_diurno.max'          => 'El costo diurno no puede exceder 9999.',
+            'costo_diurno.min'          => 'El costo diurno no puede ser 0.',
+            'costo_diurno.max'          => 'El costo diurno no puede exceder 999999.',
+
             'costo_nocturno.required'   => 'El costo nocturno es obligatorio.',
             'costo_nocturno.numeric'    => 'El costo nocturno debe ser un número.',
-            'costo_nocturno.min'        => 'El costo nocturno no puede ser negativo.',
-            'costo_nocturno.max'        => 'El costo nocturno no puede exceder 9999.',
+            'costo_nocturno.min'        => 'El costo nocturno no puede ser 0.',
+            'costo_nocturno.max'        => 'El costo nocturno no puede exceder 999999.',
+
             'costo_24_horas.required'   => 'El costo 24 horas es obligatorio.',
             'costo_24_horas.numeric'    => 'El costo 24 horas debe ser un número.',
-            'costo_24_horas.min'        => 'El costo 24 horas no puede ser negativo.',
-            'costo_24_horas.max'        => 'El costo 24 horas no puede exceder 9999.',
+            'costo_24_horas.min'        => 'El costo 24 horas no puede ser 0.',
+            'costo_24_horas.max'        => 'El costo 24 horas no puede exceder 999999.',
         ]);
 
         $servicio = Servicio::findOrFail($id);
+
+        // Validación manual de nombre único ignorando el actual
+        $existing = Servicio::where('nombre', $validated['nombreServicio'])
+            ->where('id', '!=', $id)
+            ->first();
+        if ($existing) {
+            return redirect()->back()
+                ->withInput() // Mantiene los valores ingresados
+                ->withErrors(['nombreServicio' => 'Este servicio ya existe.']);
+        }
+
+        // Guardar los datos
         $servicio->nombre          = $validated['nombreServicio'];
+        $servicio->descripcion     = $validated['descripcionServicio'];
         $servicio->costo_diurno    = $validated['costo_diurno'] ?? null;
         $servicio->costo_nocturno  = $validated['costo_nocturno'] ?? null;
         $servicio->costo_24_horas  = $validated['costo_24_horas'] ?? null;
@@ -166,7 +190,8 @@ class ServicioController extends Controller
 
         $servicio->save();
 
-        return redirect()->route('servicios.catalogo')->with('success', 'Servicio actualizado correctamente.');
+        return redirect()->route('servicios.catalogo')
+            ->with('success', 'Servicio actualizado correctamente.');
     }
 
     public function destroy(string $id)

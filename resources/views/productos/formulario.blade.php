@@ -56,8 +56,13 @@
                                 <label for="serie" class="form-label">Serie del producto</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-upc-scan"></i></span>
-                                    <input type="text" name="serie" id="serie" class="form-control @error('serie') is-invalid @enderror" maxlength="10" value="{{ old('serie', $producto->serie ?? '') }}" onkeypress="validarTexto(event)" required>
-                                </div>
+                                    <input type="text" name="serie" id="serie"
+                                           class="form-control @error('serie') is-invalid @enderror"
+                                           maxlength="10"
+                                           value="{{ old('serie', $producto->serie ?? '') }}"
+                                           oninput="this.value = this.value.toUpperCase().trimStart()"
+                                           onkeypress="validarTexto(event)"
+                                           required></div>
                                 @error('serie')
                                 <div class="text-danger mt-1 small">{{ $message }}</div>
                                 @enderror
@@ -67,9 +72,13 @@
                                 <label for="codigo" class="form-label">Código del producto</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi-qr-code"></i></span>
-                                    <input type="text" name="codigo" id="codigo" class="form-control @error('codigo') is-invalid @enderror"
-                                           maxlength="10" value="{{ old('codigo', $producto->codigo ?? '') }}"
-                                           onkeypress="validarTexto(event)" required>
+                                    <input type="text" name="codigo" id="codigo"
+                                           class="form-control @error('codigo') is-invalid @enderror"
+                                           maxlength="10"
+                                           value="{{ old('codigo', $producto->codigo ?? '') }}"
+                                           oninput="this.value = this.value.toUpperCase().trimStart()"
+                                           onkeypress="validarTexto(event)"
+                                           required>
                                 </div>
                                 @error('codigo')
                                 <div class="text-danger mt-1 small">{{ $message }}</div>

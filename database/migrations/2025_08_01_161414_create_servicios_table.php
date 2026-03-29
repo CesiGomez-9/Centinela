@@ -15,8 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('nombre');
             $table->string('descripcion');
-            $table->enum('categoria', ['vigilancia', 'tecnico']); // Categoría del servicio
-
+            $table->enum('categoria', ['vigilancia', 'tecnico']);
             // Añadimos las nuevas columnas para los costos de cada turno
             $table->decimal('costo_diurno', 8, 2)->nullable()->comment('Costo para el turno diurno');
             $table->decimal('costo_nocturno', 8, 2)->nullable()->comment('Costo para el turno nocturno');
@@ -34,6 +33,8 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('servicios');
+        Schema::enableForeignKeyConstraints();
     }
 };
