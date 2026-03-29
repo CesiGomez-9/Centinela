@@ -122,7 +122,7 @@
     <form action="{{ route('password.email') }}" method="POST">
         @csrf
         <div class="mb-3">
-            <input type="email" name="email" class="form-control" placeholder="Correo electrónico" required>
+            <input type="email" name="email" class="form-control" placeholder="Correo electrónico" required autocomplete="email">
         </div>
         <button type="submit" class="btn btn-reset"><i class="bi bi-envelope-fill"></i> Enviar enlace</button>
     </form>

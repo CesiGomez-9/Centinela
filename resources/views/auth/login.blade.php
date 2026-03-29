@@ -133,7 +133,7 @@
     <p>Grupo Centinela</p>
 
 
-    <form action="{{ route('login.process') }}" method="POST">
+    <form action="{{ route('login.process') }}" method="POST" novalidate>
         @csrf
         <!-- Usuario -->
         <div class="mb-3">
@@ -142,9 +142,11 @@
                    class="form-control"
                    id="usuario"
                    name="usuario"
+                   minlength="3"
                    maxlength="50"
                    placeholder="Ingrese su usuario"
-                   value="{{ old('usuario') }}">
+                   value="{{ old('usuario') }}" required
+                   autocomplete="username">
             @error('usuario')
             <div class="text-danger mt-1" style="font-size: 0.9rem;">
                 {{ $message }}
@@ -159,8 +161,10 @@
                    class="form-control"
                    id="password"
                    name="password"
-                   maxlength="20"
-                   placeholder="Ingrese su contraseña">
+                   minlength="6"
+                   maxlength="64"
+                   placeholder="Ingrese su contraseña" required
+                   autocomplete="current-password">
             @error('password')
             <div class="text-danger mt-1" style="font-size: 0.9rem;">
                 {{ $message }}
