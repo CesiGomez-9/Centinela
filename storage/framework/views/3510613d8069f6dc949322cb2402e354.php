@@ -133,7 +133,7 @@
     <p>Grupo Centinela</p>
 
 
-    <form action="<?php echo e(route('login.process')); ?>" method="POST">
+    <form action="<?php echo e(route('login.process')); ?>" method="POST" novalidate>
         <?php echo csrf_field(); ?>
         <!-- Usuario -->
         <div class="mb-3">
@@ -142,9 +142,11 @@
                    class="form-control"
                    id="usuario"
                    name="usuario"
+                   minlength="3"
                    maxlength="50"
                    placeholder="Ingrese su usuario"
-                   value="<?php echo e(old('usuario')); ?>">
+                   value="<?php echo e(old('usuario')); ?>" required
+                   autocomplete="username">
             <?php $__errorArgs = ['usuario'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -167,8 +169,10 @@ unset($__errorArgs, $__bag); ?>
                    class="form-control"
                    id="password"
                    name="password"
-                   maxlength="20"
-                   placeholder="Ingrese su contraseña">
+                   minlength="6"
+                   maxlength="64"
+                   placeholder="Ingrese su contraseña" required
+                   autocomplete="current-password">
             <?php $__errorArgs = ['password'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :

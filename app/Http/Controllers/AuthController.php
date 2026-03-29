@@ -17,57 +17,41 @@ class AuthController extends Controller
     }
 
 
-
     public function login(Request $request)
     {
         $request->validate([
-            'usuario' => ['required', 'string'],
-            'password' => ['required', 'string', 'max:20'],
+            'usuario' => ['required', 'string', 'min:3', 'max:50'],
+            'password' => ['required', 'string', 'min:6', 'max:64'],
         ], [
-            'usuario.required'  => 'Debe ingresar su usuario.',
+            'usuario.required' => 'Debe ingresar su usuario.',
             'password.required' => 'Debe ingresar su contraseña.',
-            'password.max'      => 'La contraseña no puede ser mayor a 20 caracteres.',
+            'password.min' => 'La contraseña no puede ser menor de 6 caracteres.',
+            'password.max' => 'La contraseña no puede ser mayor a 64 caracteres.',
+            'usuario.min' => 'El usuario debe tener al menos 3 caracteres.',
+            'usuario.max' => 'El usuario no debe ser mas 50 caracteres.',
         ]);
 
 
         $credentials = $request->only('usuario', 'password');
 
-
-        $user = User::where('usuario', $request->usuario)->first();
-
-        if (!$user) {
-            return back()->withErrors([
-                'usuario' => 'El usuario es incorrecto.',
-            ])->withInput($request->except('password'));
-        }
-
-
-        if (!Hash::check($request->password, $user->password)) {
-            return back()->withErrors([
-                'password' => 'La contraseña es incorrecta.',
-            ])->withInput($request->except('password'));
-        }
-
-
+        // 2. Intento de Autenticación: Laravel busca al usuario y valida el Hash automáticamente
         if (Auth::attempt($credentials, $request->filled('remember'))) {
+
+            // CORRECCIÓN INCIDENCIA #2: Regenerar ID de sesión (Evita Session Hijacking)
             $request->session()->regenerate();
 
-            // Si el usuario tiene 2FA activo, pausar y pedir código
-            if ($user->hasTwoFactorEnabled()) {
-                $request->session()->put('two_factor_pending_user', $user->id);
-                Auth::logout();
-                return redirect()->route('two-factor.verify');
-            }
-
-            // Marcar sesión como verificada (sin 2FA)
-            $request->session()->put('two_factor_verified', true);
             return redirect()->route('index');
         }
 
+        // 3. Fallo de seguridad: Retraso intencional para mitigar ataques de fuerza bruta
+        usleep(500000);
+
+        // 4. Respuesta de error: No revelamos si falló el usuario o la contraseña por seguridad
         return back()->withErrors([
             'usuario' => 'Credenciales incorrectas.',
         ])->withInput($request->except('password'));
     }
+
 
 
     public function logout(Request $request)
