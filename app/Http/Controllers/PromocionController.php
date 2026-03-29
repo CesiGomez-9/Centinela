@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Promocion;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class PromocionController extends Controller
 {
@@ -60,7 +61,10 @@ class PromocionController extends Controller
             'nombre' => 'required|max:100|regex:/^[\p{L}\s]+$/u',
             'descripcion' => 'required|max:250|regex:/^[\p{L}\s]+$/u',
             'restriccion' => 'required|max:150|regex:/^[\p{L}\s]+$/u',
-            'fecha_inicio' => 'required|date',
+            'fecha_inicio' => [
+                'required', 'date',
+                Rule::unique('promociones')->where(fn($q) => $q->whereDate('fecha_inicio', $request->fecha_inicio)->where('nombre', $request->nombre)),
+            ],
             'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
             'imagen' => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
         ], [
@@ -71,6 +75,7 @@ class PromocionController extends Controller
             'restriccion.required' => 'Debe ingresar una restricción',
             'restriccion.regex' => 'La restricción solo puede contener letras y espacios',
             'fecha_inicio.required' => 'Debe seleccionar una fecha',
+            'fecha_inicio.unique' => 'Ya existe una promoción con ese nombre y fecha de inicio.',
             'fecha_fin.required' => 'Debe seleccionar una fecha',
             'fecha_fin.after_or_equal' => 'La fecha fin debe ser igual o posterior a la fecha inicio',
             'imagen.image' => 'El archivo debe ser una imagen válida (jpg, jpeg o png)',
@@ -121,7 +126,10 @@ class PromocionController extends Controller
             'nombre' => 'required|max:100|regex:/^[\p{L}\s]+$/u',
             'descripcion' => 'required|max:250|regex:/^[\p{L}\s]+$/u',
             'restriccion' => 'required|max:150|regex:/^[\p{L}\s]+$/u',
-            'fecha_inicio' => 'required|date',
+            'fecha_inicio' => [
+                'required', 'date',
+                Rule::unique('promociones')->where(fn($q) => $q->whereDate('fecha_inicio', $request->fecha_inicio)->where('nombre', $request->nombre))->ignore($id),
+            ],
             'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
             'imagen' => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
         ], [
@@ -132,6 +140,7 @@ class PromocionController extends Controller
             'restriccion.required' => 'Debe ingresar una restricción',
             'restriccion.regex' => 'La restricción solo puede contener letras y espacios',
             'fecha_inicio.required' => 'Debe seleccionar una fecha',
+            'fecha_inicio.unique' => 'Ya existe una promoción con ese nombre y fecha de inicio.',
             'fecha_fin.required' => 'Debe seleccionar una fecha',
             'fecha_fin.after_or_equal' => 'La fecha fin debe ser igual o posterior a la fecha inicio',
             'imagen.image' => 'El archivo debe ser una imagen válida (jpg, jpeg o png)',

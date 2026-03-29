@@ -43,16 +43,17 @@ class RolesSeeder extends Seeder
             'registrar promociones', 'listado de promociones',
         ];
 
-        // Crear permisos
+        // ✅ Crear permisos CON guard_name
         foreach ($permisos as $permiso) {
-            Permission::firstOrCreate(['name' => $permiso]);
+            Permission::firstOrCreate(
+                ['name' => $permiso, 'guard_name' => 'web']
+            );
         }
 
         // Crear roles y asignar permisos
         $roles = [
-            'super_admin' => $permisos, // Super admin tiene todos los permisos
+            'super_admin' => $permisos,
             'administrador' => [
-                // Ajusta según necesites
                 'registrar producto', 'listado de producto', 'inventario de producto',
                 'registrar factura de compra', 'listado de factura de compra', 'ver factura de compra',
                 'registrar factura de venta', 'listado de factura de venta', 'ver factura de venta',
@@ -69,8 +70,11 @@ class RolesSeeder extends Seeder
             ],
         ];
 
+        // ✅ Crear roles CON guard_name
         foreach ($roles as $roleName => $perms) {
-            $role = Role::firstOrCreate(['name' => $roleName]);
+            $role = Role::firstOrCreate(
+                ['name' => $roleName, 'guard_name' => 'web']
+            );
             $role->syncPermissions($perms);
         }
     }

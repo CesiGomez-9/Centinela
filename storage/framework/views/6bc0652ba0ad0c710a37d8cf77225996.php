@@ -1,6 +1,5 @@
-@extends('plantilla')
-@section('titulo', 'Factura de Compra')
-@section('content')
+<?php $__env->startSection('titulo', 'Factura de Compra'); ?>
+<?php $__env->startSection('content'); ?>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
@@ -340,29 +339,30 @@
                             <i class="bi bi-receipt-cutoff me-2"></i>Factura de Compra
                         </h5>
                         <small class="position-absolute top-50 end-0 translate-middle-y me-3">
-                            Creado {{ $factura->created_at->diffForHumans() }}
+                            Creado <?php echo e($factura->created_at->diffForHumans()); ?>
+
                         </small>
                     </div>
                     <div class="card-body">
                         <div class="invoice-header-info">
                             <div class="supplier-details">
                                 <div class="logo-and-name">
-                                    <strong>Proveedor: {{ $factura->proveedor->nombreEmpresa ?? 'N/A' }}</strong></div>
+                                    <strong>Proveedor: <?php echo e($factura->proveedor->nombreEmpresa ?? 'N/A'); ?></strong></div>
                                 <div class="supplier-address-contact">
-                                    <p><strong>Dirección:</strong> {{ $factura->proveedor->direccion ?? 'N/A' }}.</p>
-                                    <p><strong>Teléfono de la empresa:</strong> {{ $factura->proveedor->telefonodeempresa ?? 'N/A' }}.</p>
-                                    <p><strong>Email:</strong> {{ $factura->proveedor->correoempresa ?? 'N/A' }}.</p>
-                                    <p><strong>Representante:</strong> {{ $factura->proveedor->nombrerepresentante ?? 'N/A' }}.</p>
-                                    <p><strong>Teléfono Representante:</strong> {{ $factura->proveedor->telefonoderepresentante ?? 'N/A' }}.</p>
+                                    <p><strong>Dirección:</strong> <?php echo e($factura->proveedor->direccion ?? 'N/A'); ?>.</p>
+                                    <p><strong>Teléfono de la empresa:</strong> <?php echo e($factura->proveedor->telefonodeempresa ?? 'N/A'); ?>.</p>
+                                    <p><strong>Email:</strong> <?php echo e($factura->proveedor->correoempresa ?? 'N/A'); ?>.</p>
+                                    <p><strong>Representante:</strong> <?php echo e($factura->proveedor->nombrerepresentante ?? 'N/A'); ?>.</p>
+                                    <p><strong>Teléfono Representante:</strong> <?php echo e($factura->proveedor->telefonoderepresentante ?? 'N/A'); ?>.</p>
                                 </div>
                             </div>
                             <div class="invoice-details">
                                 <div class="invoice-details-grid">
-                                    <div><strong>Factura de compra N°:</strong> {{ $factura->numero_factura ?? 'N/A' }}.</div>
-                                    <div><strong>Fecha de la factura:</strong> {{ \Carbon\Carbon::parse($factura->fecha ?? now())->format('d/m/Y') }}.</div>
-                                    <div><strong>Proveedor:</strong> {{ $factura->proveedor->nombreEmpresa ?? 'N/A' }}</div>
-                                    <div><strong>Forma de pago:</strong> {{ $factura->forma_pago ?? 'N/A' }}.</div>
-                                    <div><strong>Responsable:</strong> {{ $factura->empleado->nombre ?? 'N/A' }} {{ $factura->empleado->apellido ?? 'N/A' }}.</div>
+                                    <div><strong>Factura de compra N°:</strong> <?php echo e($factura->numero_factura ?? 'N/A'); ?>.</div>
+                                    <div><strong>Fecha de la factura:</strong> <?php echo e(\Carbon\Carbon::parse($factura->fecha ?? now())->format('d/m/Y')); ?>.</div>
+                                    <div><strong>Proveedor:</strong> <?php echo e($factura->proveedor->nombreEmpresa ?? 'N/A'); ?></div>
+                                    <div><strong>Forma de pago:</strong> <?php echo e($factura->forma_pago ?? 'N/A'); ?>.</div>
+                                    <div><strong>Responsable:</strong> <?php echo e($factura->empleado->nombre ?? 'N/A'); ?> <?php echo e($factura->empleado->apellido ?? 'N/A'); ?>.</div>
                                 </div>
                             </div>
                         </div>
@@ -384,24 +384,24 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                @forelse ($factura->detalles ?? [] as $index => $detalle)
-                                    @php
+                                <?php $__empty_1 = true; $__currentLoopData = $factura->detalles ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $detalle): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                                    <?php
                                         $ivaPorcentaje = $detalle->productoInventario->impuesto->porcentaje ?? 0;
                                         $subtotalLinea = $detalle->precio_compra * $detalle->cantidad;
-                                    @endphp
+                                    ?>
                                     <tr>
-                                        <td>{{ $index + 1 }}</td>
-                                        <td>{{ $detalle->productoInventario->nombre ?? 'Producto Desconocido' }}</td>
-                                        <td>{{ number_format($detalle->precio_compra, 2) }}</td>
-                                        <td>{{ $detalle->cantidad }}</td>
-                                        <td>{{ number_format($ivaPorcentaje, 0) }}%</td>
-                                        <td>{{ number_format($subtotalLinea, 2) }}</td>
+                                        <td><?php echo e($index + 1); ?></td>
+                                        <td><?php echo e($detalle->productoInventario->nombre ?? 'Producto Desconocido'); ?></td>
+                                        <td><?php echo e(number_format($detalle->precio_compra, 2)); ?></td>
+                                        <td><?php echo e($detalle->cantidad); ?></td>
+                                        <td><?php echo e(number_format($ivaPorcentaje, 0)); ?>%</td>
+                                        <td><?php echo e(number_format($subtotalLinea, 2)); ?></td>
                                     </tr>
-                                @empty
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                                     <tr>
                                         <td colspan="6" class="text-muted fst-italic py-3">No hay productos agregados a esta factura.</td>
                                     </tr>
-                                @endforelse
+                                <?php endif; ?>
                                 </tbody>
                             </table>
                         </div>
@@ -412,31 +412,31 @@
                                     <div class="summary-box">
                                         <div class="summary-item">
                                             <strong>Importe Gravado (Lps):</strong>
-                                            <span>{{ number_format($factura->importe_gravado ?? 0, 2) }}</span>
+                                            <span><?php echo e(number_format($factura->importe_gravado ?? 0, 2)); ?></span>
                                         </div>
                                         <div class="summary-item">
                                             <strong>Importe Exento (Lps):</strong>
-                                            <span>{{ number_format($factura->importe_exento ?? 0, 2) }}</span>
+                                            <span><?php echo e(number_format($factura->importe_exento ?? 0, 2)); ?></span>
                                         </div>
                                         <div class="summary-item">
                                             <strong>Importe Exonerado (Lps):</strong>
-                                            <span>{{ number_format($factura->importe_exonerado ?? 0, 2) }}</span>
+                                            <span><?php echo e(number_format($factura->importe_exonerado ?? 0, 2)); ?></span>
                                         </div>
                                         <div class="summary-item">
                                             <strong>Subtotal (Lps):</strong>
-                                            <span>{{ number_format($factura->subtotal ?? 0, 2) }}</span>
+                                            <span><?php echo e(number_format($factura->subtotal ?? 0, 2)); ?></span>
                                         </div>
                                         <div class="summary-item">
                                             <strong>ISV 15% (Lps):</strong>
-                                            <span>{{ number_format($factura->isv_15 ?? 0, 2) }}</span>
+                                            <span><?php echo e(number_format($factura->isv_15 ?? 0, 2)); ?></span>
                                         </div>
                                         <div class="summary-item">
                                             <strong>ISV 18% (Lps):</strong>
-                                            <span>{{ number_format($factura->isv_18 ?? 0, 2) }}</span>
+                                            <span><?php echo e(number_format($factura->isv_18 ?? 0, 2)); ?></span>
                                         </div>
                                         <div class="summary-item total">
                                             <strong>Total Final (Lps):</strong>
-                                            <span>{{ number_format($factura->totalF ?? 0, 2) }}</span>
+                                            <span><?php echo e(number_format($factura->totalF ?? 0, 2)); ?></span>
                                         </div>
                                     </div>
                                 </div>
@@ -445,19 +445,21 @@
 
                     </div>
                     <div class="card-footer text-end">
-                        <small>Última actualización: {{ $factura->updated_at->diffForHumans() }}</small>
+                        <small>Última actualización: <?php echo e($factura->updated_at->diffForHumans()); ?></small>
                     </div>
                 </div>
 
                 <div class="d-flex justify-content-center align-items-center gap-3 mt-4 flex-wrap">
-                    <a href="{{ route('facturas_compras.index') }}" class="btn-return">
+                    <a href="<?php echo e(route('facturas_compras.index')); ?>" class="btn-return">
                         <i class="bi bi-arrow-left me-2"></i>Volver a la lista
                     </a>
-                    <a href="{{ route('facturas_compras.pdf', $factura->id) }}" class="btn-pdf">
+                    <a href="<?php echo e(route('facturas_compras.pdf', $factura->id)); ?>" class="btn-pdf">
                         <i class="bi bi-file-earmark-pdf me-2"></i>Guardar PDF
                     </a>
                 </div>
             </div>
         </div>
     </div>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\cesig\Herd\sistemadeseguridadcentinela\resources\views/facturas_compras/show.blade.php ENDPATH**/ ?>

@@ -18,19 +18,35 @@ class User extends Authenticatable
         'email',
         'password',
         'rol',
+        'two_factor_secret',
+        'two_factor_enabled',
+        'two_factor_recovery_codes',
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
     ];
 
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
+            'two_factor_enabled' => 'boolean',
         ];
+    }
+
+    public function hasTwoFactorEnabled(): bool
+    {
+        return $this->two_factor_enabled && !empty($this->two_factor_secret);
+    }
+
+    public function requiresTwoFactor(): bool
+    {
+        return in_array($this->rol, ['super_admin', 'administrador']);
     }
 
     public function empleado()

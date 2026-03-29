@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class FacturaCompraController extends Controller
 {
@@ -234,6 +235,14 @@ class FacturaCompraController extends Controller
     {
         $factura = FacturaCompra::with(['detalles.productoInventario.impuesto', 'proveedor', 'empleado'])->findOrFail($id);
         return view('facturas_compras.show', compact('factura'));
+    }
+
+    public function pdf(string $id)
+    {
+        $factura = FacturaCompra::with(['detalles.productoInventario.impuesto', 'proveedor', 'empleado'])->findOrFail($id);
+        $pdf = Pdf::loadView('facturas_compras.pdf', compact('factura'))
+            ->setPaper('a4', 'portrait');
+        return $pdf->download('factura-compra-' . ($factura->numero_factura ?? $id) . '.pdf');
     }
 
     public function edit(string $id)

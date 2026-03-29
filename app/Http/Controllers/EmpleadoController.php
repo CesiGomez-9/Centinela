@@ -374,7 +374,7 @@ class EmpleadoController extends Controller
 
         $empleados = Empleado::query();
 
-        if ($tipo === 'administración') {
+        if ($tipo === 'administracion' || $tipo === 'administración') {
             $empleados->where('categoria', 'Administración');
         }
 

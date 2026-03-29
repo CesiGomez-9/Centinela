@@ -51,9 +51,18 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials, $request->filled('remember'))) {
             $request->session()->regenerate();
+
+            // Si el usuario tiene 2FA activo, pausar y pedir código
+            if ($user->hasTwoFactorEnabled()) {
+                $request->session()->put('two_factor_pending_user', $user->id);
+                Auth::logout();
+                return redirect()->route('two-factor.verify');
+            }
+
+            // Marcar sesión como verificada (sin 2FA)
+            $request->session()->put('two_factor_verified', true);
             return redirect()->route('index');
         }
-
 
         return back()->withErrors([
             'usuario' => 'Credenciales incorrectas.',

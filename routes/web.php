@@ -19,6 +19,7 @@ use App\Http\Controllers\RoleController;
 
 
 
+Route::get('/buscar-empleados', [EmpleadoController::class, 'buscar'])->name('empleados.buscar');
 Route::get('/empleados', [EmpleadoController::class, 'index'])->name('empleados.index');
 Route::post('/empleados', [EmpleadoController::class, 'store'])->name('empleados.store');
 Route::get('/empleados/create', [EmpleadoController::class, 'create'])->name('empleados.create');
@@ -33,7 +34,6 @@ Route::get('/facturas_ventas/{factura_venta}/edit', [\App\Http\Controllers\Factu
 Route::put('/facturas_ventas/{factura_venta}', [\App\Http\Controllers\FacturaVentaController::class, 'update'])->name('facturas_ventas.update');
 
 Route::resource('memorandos', \App\Http\Controllers\MemorandoController::class);
-Route::get('/buscar-empleados', [EmpleadoController::class, 'buscar'])->name('empleados.buscar');
 Route::get('memorando/adjunto/{filename}', [\App\Http\Controllers\MemorandoController::class, 'descargarAdjunto'])->name('memorando.adjunto');
 Route::get('/memorandos/{memorando}', [\App\Http\Controllers\MemorandoController::class, 'show'])->name('memorandos.show');
 
@@ -95,6 +95,7 @@ Route::controller(FacturaCompraController::class)->group(function () {
     Route::post('/facturas_compras/crear', 'store')->name('facturas_compras.store');
     Route::get('/facturas_compras/{id}/editar', 'edit')->name('facturas_compras.edit')->whereNumber('id');
     Route::put('/facturas_compras/{id}/editar', 'update')->name('facturas_compras.update')->whereNumber('id');
+    Route::get('/facturas_compras/{id}/pdf', 'pdf')->name('facturas_compras.pdf')->whereNumber('id');
 });
 
 Route::controller(TurnoController::class)->group(function () {
@@ -165,11 +166,22 @@ Route::put('/capacitaciones/{id}', [CapacitacionController::class, 'update'])->n
 Route::get('/capacitaciones/{id}/detalle', [CapacitacionController::class, 'show'])->name('capacitaciones.detalle');
 Route::delete('/capacitaciones/{id}', [CapacitacionController::class, 'destroy'])->name('capacitaciones.destroy');
 
-Route::get('/empleados/buscar', [EmpleadoController::class, 'buscar'])->name('empleados.buscar');
-
 Route::get('/login', [\App\Http\Controllers\AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [\App\Http\Controllers\AuthController::class, 'login'])->name('login.process');
 Route::post('/logout', [\App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
+
+// Rutas de 2FA (verificación durante login — sin auth)
+Route::get('/two-factor/verify', [\App\Http\Controllers\TwoFactorController::class, 'showVerify'])->name('two-factor.verify');
+Route::post('/two-factor/verify', [\App\Http\Controllers\TwoFactorController::class, 'verify'])->name('two-factor.verify.post');
+
+// Rutas de 2FA (configuración — requiere auth)
+Route::middleware(['auth', 'two-factor'])->group(function () {
+    Route::get('/two-factor/setup', [\App\Http\Controllers\TwoFactorController::class, 'showSetup'])->name('two-factor.setup');
+    Route::post('/two-factor/enable', [\App\Http\Controllers\TwoFactorController::class, 'enable'])->name('two-factor.enable');
+    Route::get('/two-factor/manage', [\App\Http\Controllers\TwoFactorController::class, 'showManage'])->name('two-factor.manage');
+    Route::post('/two-factor/disable', [\App\Http\Controllers\TwoFactorController::class, 'disable'])->name('two-factor.disable');
+    Route::get('/two-factor/recovery-codes', [\App\Http\Controllers\TwoFactorController::class, 'showRecoveryCodes'])->name('two-factor.recovery-codes');
+});
 
 
 Route::get('/forgotpassword', [\App\Http\Controllers\PasswordResetController::class, 'showLinkForm'])->name('password.request');
@@ -192,7 +204,7 @@ Route::get('/', function () {
 
 Route::get('/index', function () {
     return view('index');
-})->name('index')->middleware('auth');
+})->name('index')->middleware(['auth', 'two-factor']);
 
 
 Route::get('ajax/empleados', [\App\Http\Controllers\UserController::class, 'searchEmpleados'])->name('ajax.empleados');
