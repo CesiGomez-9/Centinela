@@ -69,15 +69,20 @@ unset($__errorArgs, $__bag); ?>
                                 <label for="serie" class="form-label">Serie del producto</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-upc-scan"></i></span>
-                                    <input type="text" name="serie" id="serie" class="form-control <?php $__errorArgs = ['serie'];
+                                    <input type="text" name="serie" id="serie"
+                                           class="form-control <?php $__errorArgs = ['serie'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>" maxlength="10" value="<?php echo e(old('serie', $producto->serie ?? '')); ?>" onkeypress="validarTexto(event)" required>
-                                </div>
+unset($__errorArgs, $__bag); ?>"
+                                           maxlength="10"
+                                           value="<?php echo e(old('serie', $producto->serie ?? '')); ?>"
+                                           oninput="this.value = this.value.toUpperCase().trimStart()"
+                                           onkeypress="validarTexto(event)"
+                                           required></div>
                                 <?php $__errorArgs = ['serie'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -94,7 +99,8 @@ unset($__errorArgs, $__bag); ?>
                                 <label for="codigo" class="form-label">Código del producto</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi-qr-code"></i></span>
-                                    <input type="text" name="codigo" id="codigo" class="form-control <?php $__errorArgs = ['codigo'];
+                                    <input type="text" name="codigo" id="codigo"
+                                           class="form-control <?php $__errorArgs = ['codigo'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -102,8 +108,11 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                                           maxlength="10" value="<?php echo e(old('codigo', $producto->codigo ?? '')); ?>"
-                                           onkeypress="validarTexto(event)" required>
+                                           maxlength="10"
+                                           value="<?php echo e(old('codigo', $producto->codigo ?? '')); ?>"
+                                           oninput="this.value = this.value.toUpperCase().trimStart()"
+                                           onkeypress="validarTexto(event)"
+                                           required>
                                 </div>
                                 <?php $__errorArgs = ['codigo'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');

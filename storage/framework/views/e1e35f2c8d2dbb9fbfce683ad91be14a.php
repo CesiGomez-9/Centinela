@@ -342,7 +342,7 @@
             <?php endif; ?>
 
             
-            <?php if($isSuperAdmin || Auth::user()->can('registrar empleados')): ?>
+            <?php if($isSuperAdmin): ?>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
                     <i class="bi bi-person-badge me-2"></i>Usuarios
@@ -355,7 +355,7 @@
             <?php endif; ?>
 
             
-            <?php if($isSuperAdmin || Auth::user()->hasRole('administrador')): ?>
+            <?php if($isSuperAdmin): ?>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
                     <i class="bi bi-shield-lock-fill me-2"></i>Roles y permisos

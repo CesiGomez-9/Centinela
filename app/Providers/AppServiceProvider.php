@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\RateLimiter; // Importar RateLimiter
 use Illuminate\Http\Request; // Importar Request para rate limiting
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -29,6 +30,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // El super_admin pasa todos los permisos sin verificación
+        Gate::before(function ($user, $ability) {
+            if ($user->hasRole('super_admin')) {
+                return true;
+            }
+        });
+
         Paginator::useBootstrapFive();
 
         // --- INICIO: Lógica para cargar rutas API y Web ---

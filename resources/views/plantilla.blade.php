@@ -340,7 +340,7 @@
             @endif
 
             {{-- MÓDULO: USUARIOS --}}
-            @if($isSuperAdmin || Auth::user()->can('registrar empleados'))
+            @if($isSuperAdmin)
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
                     <i class="bi bi-person-badge me-2"></i>Usuarios
@@ -352,8 +352,8 @@
             </li>
             @endif
 
-            {{-- MÓDULO: ROLES Y PERMISOS (solo super_admin y administrador) --}}
-            @if($isSuperAdmin || Auth::user()->hasRole('administrador'))
+            {{-- MÓDULO: ROLES Y PERMISOS (solo super_admin) --}}
+            @if($isSuperAdmin)
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
                     <i class="bi bi-shield-lock-fill me-2"></i>Roles y permisos
