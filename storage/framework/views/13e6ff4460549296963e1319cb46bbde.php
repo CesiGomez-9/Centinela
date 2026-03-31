@@ -1,6 +1,4 @@
-@extends('plantilla')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 
     <!DOCTYPE html>
 <html lang="es">
@@ -63,9 +61,9 @@
                         <i class="bi bi-file-earmark-text-fill me-2"></i> Registrar una incidencia
                     </h3>
 
-                    {{-- FORMULARIO --}}
-                    <form action="{{ route('incidencias.store') }}" method="POST" id="form-incidencia" novalidate>
-                        @csrf
+                    
+                    <form action="<?php echo e(route('incidencias.store')); ?>" method="POST" id="form-incidencia" novalidate>
+                        <?php echo csrf_field(); ?>
 
                         <div class="row g-4">
 
@@ -77,18 +75,32 @@
                                     <input type="text"
                                            id="clienteInput"
                                            name="cliente_nombre"
-                                           class="form-control @error('cliente_id') is-invalid @enderror"
+                                           class="form-control <?php $__errorArgs = ['cliente_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                            placeholder="Buscar cliente"
                                            autocomplete="off"
-                                           value="{{ old('cliente_nombre', $clienteSeleccionado ?? '') }}"
+                                           value="<?php echo e(old('cliente_nombre', $clienteSeleccionado ?? '')); ?>"
                                            required>
 
-                                    <input type="hidden" name="cliente_id" id="cliente_id" value="{{ old('cliente_id') }}">
+                                    <input type="hidden" name="cliente_id" id="cliente_id" value="<?php echo e(old('cliente_id')); ?>">
                                 </div>
 
-                                @error('cliente_id')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
+                                <?php $__errorArgs = ['cliente_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <div class="invalid-feedback d-block"><?php echo e($message); ?></div>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
 
                                 <div id="clienteResults" class="list-group mt-1" style="max-height:200px; overflow-y:auto;"></div>
                             </div>
@@ -103,22 +115,36 @@
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-tag-fill"></i></span>
                                     <select id="tipo" name="tipo"
-                                            class="form-select @error('tipo') is-invalid @enderror"
+                                            class="form-select <?php $__errorArgs = ['tipo'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                             required>
-                                        <option value="" disabled {{ old('tipo') ? '' : 'selected' }}>Seleccione un tipo</option>
-                                        <option value="Accidentes laborales" {{ old('tipo') == 'Accidentes laborales' ? 'selected' : '' }}>Accidentes laborales</option>
-                                        <option value="Conflictos con clientes" {{ old('tipo') == 'Conflictos con clientes' ? 'selected' : '' }}>Conflictos con clientes</option>
-                                        <option value="Errores en la instalación" {{ old('tipo') == 'Errores en la instalación' ? 'selected' : '' }}>Errores en la instalación</option>
-                                        <option value="Fallas tecnicas" {{ old('tipo') == 'Fallas tecnicas' ? 'selected' : '' }}>Fallas técnicas</option>
-                                        <option value="Falla o retraso del personal" {{ old('tipo') == 'Falla o retraso del personal' ? 'selected' : '' }}>Falla o retraso del personal</option>
-                                        <option value="Incidentes de seguridad" {{ old('tipo') == 'Incidentes de seguridad' ? 'selected' : '' }}>Incidentes de seguridad</option>
-                                        <option value="Incumplimiento de protocolos" {{ old('tipo') == 'Incumplimiento de protocolos' ? 'selected' : '' }}>Incumplimiento de protocolos</option>
-                                        <option value="Otros" {{ old('tipo') == 'otros' ? 'selected' : '' }}>Otros</option>
+                                        <option value="" disabled <?php echo e(old('tipo') ? '' : 'selected'); ?>>Seleccione un tipo</option>
+                                        <option value="Accidentes laborales" <?php echo e(old('tipo') == 'Accidentes laborales' ? 'selected' : ''); ?>>Accidentes laborales</option>
+                                        <option value="Conflictos con clientes" <?php echo e(old('tipo') == 'Conflictos con clientes' ? 'selected' : ''); ?>>Conflictos con clientes</option>
+                                        <option value="Errores en la instalación" <?php echo e(old('tipo') == 'Errores en la instalación' ? 'selected' : ''); ?>>Errores en la instalación</option>
+                                        <option value="Fallas tecnicas" <?php echo e(old('tipo') == 'Fallas tecnicas' ? 'selected' : ''); ?>>Fallas técnicas</option>
+                                        <option value="Falla o retraso del personal" <?php echo e(old('tipo') == 'Falla o retraso del personal' ? 'selected' : ''); ?>>Falla o retraso del personal</option>
+                                        <option value="Incidentes de seguridad" <?php echo e(old('tipo') == 'Incidentes de seguridad' ? 'selected' : ''); ?>>Incidentes de seguridad</option>
+                                        <option value="Incumplimiento de protocolos" <?php echo e(old('tipo') == 'Incumplimiento de protocolos' ? 'selected' : ''); ?>>Incumplimiento de protocolos</option>
+                                        <option value="Otros" <?php echo e(old('tipo') == 'otros' ? 'selected' : ''); ?>>Otros</option>
                                     </select>
                                 </div>
-                                @error('tipo')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
+                                <?php $__errorArgs = ['tipo'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <div class="invalid-feedback d-block"><?php echo e($message); ?></div>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
 
 
@@ -130,28 +156,35 @@
                                 <div class="card">
                                     <div class="card-body" style="max-height: 200px; overflow-y: auto; overflow-x: hidden;">
                                         <div>
-                                            @foreach($empleados as $empleado)
-                                                @if(in_array($empleado->categoria, ['Técnico', 'Vigilancia']))
+                                            <?php $__currentLoopData = $empleados; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $empleado): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                <?php if(in_array($empleado->categoria, ['Técnico', 'Vigilancia'])): ?>
                                                     <div class="form-check mb-2">
                                                         <input class="form-check-input"
                                                                type="checkbox"
                                                                name="agente_id[]"
-                                                               value="{{ $empleado->id }}"
-                                                               id="agente_{{ $empleado->id }}"
-                                                            {{ (is_array(old('agente_id')) && in_array($empleado->id, old('agente_id'))) ? 'checked' : '' }}>
-                                                        <label class="form-check-label" for="agente_{{ $empleado->id }}">
-                                                            {{ $empleado->nombre }}  ({{ ucfirst($empleado->categoria) }})
+                                                               value="<?php echo e($empleado->id); ?>"
+                                                               id="agente_<?php echo e($empleado->id); ?>"
+                                                            <?php echo e((is_array(old('agente_id')) && in_array($empleado->id, old('agente_id'))) ? 'checked' : ''); ?>>
+                                                        <label class="form-check-label" for="agente_<?php echo e($empleado->id); ?>">
+                                                            <?php echo e($empleado->nombre); ?>  (<?php echo e(ucfirst($empleado->categoria)); ?>)
                                                         </label>
                                                     </div>
-                                                @endif
-                                            @endforeach
+                                                <?php endif; ?>
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                         </div>
                                     </div>
                                 </div>
 
-                                @error('agente_id')
-                                <div class="text-danger mt-1">{{ $message }}</div>
-                                @enderror
+                                <?php $__errorArgs = ['agente_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <div class="text-danger mt-1"><?php echo e($message); ?></div>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
 
 
@@ -166,18 +199,32 @@
                                     <input type="text"
                                            id="reportadoPorInput"
                                            name="reportado_por_nombre"
-                                           class="form-control @error('reportado_por') is-invalid @enderror"
+                                           class="form-control <?php $__errorArgs = ['reportado_por'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                            placeholder="Buscar empleado"
                                            autocomplete="off"
-                                           value="{{ old('reportado_por_nombre', $empleadoSeleccionado ?? '') }}"
+                                           value="<?php echo e(old('reportado_por_nombre', $empleadoSeleccionado ?? '')); ?>"
                                            required>
 
-                                    <input type="hidden" name="reportado_por" id="reportado_por" value="{{ old('reportado_por') }}">
+                                    <input type="hidden" name="reportado_por" id="reportado_por" value="<?php echo e(old('reportado_por')); ?>">
                                 </div>
 
-                                @error('reportado_por')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
+                                <?php $__errorArgs = ['reportado_por'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <div class="invalid-feedback d-block"><?php echo e($message); ?></div>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
 
                                 <div id="reportadoPorResults" class="list-group mt-1" style="max-height:200px; overflow-y:auto;"></div>
                             </div>
@@ -191,12 +238,26 @@
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
                                     <input type="date" id="fecha" name="fecha"
-                                           class="form-control @error('fecha') is-invalid @enderror"
-                                           value="{{ old('fecha') }}" required>
+                                           class="form-control <?php $__errorArgs = ['fecha'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                           value="<?php echo e(old('fecha')); ?>" required>
                                 </div>
-                                @error('fecha')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
+                                <?php $__errorArgs = ['fecha'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <div class="invalid-feedback d-block"><?php echo e($message); ?></div>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
 
                             <div class="col-md-6">
@@ -214,15 +275,29 @@
                                 <span class="input-group-text"><i class="bi bi-card-text"></i></span>
                                 <textarea id="descripcion"
                                           name="descripcion"
-                                          class="form-control auto-expand @error('descripcion') is-invalid @enderror"
+                                          class="form-control auto-expand <?php $__errorArgs = ['descripcion'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                           maxlength="250"
                                           onkeydown="bloquearEspacioAlInicio(event, this)"
                                           oninput="eliminarEspaciosIniciales(this); this.style.height=''; this.style.height=this.scrollHeight + 'px';"
-                                          required>{{ old('descripcion') }}</textarea>
+                                          required><?php echo e(old('descripcion')); ?></textarea>
                             </div>
-                            @error('descripcion')
-                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                            @enderror
+                            <?php $__errorArgs = ['descripcion'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <div class="invalid-feedback d-block"><?php echo e($message); ?></div>
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         </div>
 
 
@@ -236,15 +311,29 @@
                                     <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
                                     <textarea id="ubicacion"
                                               name="ubicacion"
-                                              class="form-control auto-expand @error('ubicacion') is-invalid @enderror"
+                                              class="form-control auto-expand <?php $__errorArgs = ['ubicacion'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                               maxlength="150"
                                               onkeydown="bloquearEspacioAlInicio(event, this)"
                                               oninput="eliminarEspaciosIniciales(this); this.style.height=''; this.style.height=this.scrollHeight + 'px';"
-                                              required>{{ old('ubicacion') }}</textarea>
+                                              required><?php echo e(old('ubicacion')); ?></textarea>
                                 </div>
-                                @error('ubicacion')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
+                                <?php $__errorArgs = ['ubicacion'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <div class="invalid-feedback d-block"><?php echo e($message); ?></div>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
 
                         </div>
@@ -255,7 +344,7 @@
 
                         <div class="text-center mt-5 d-flex justify-content-center gap-3">
                             <!-- Botón Cancelar -->
-                            <a href="{{ route('incidencias.index') }}" class="btn btn-danger">
+                            <a href="<?php echo e(route('incidencias.index')); ?>" class="btn btn-danger">
                                 <i class="bi bi-x-circle me-2"></i> Cancelar
                             </a>
                             <!-- Botón Limpiar -->
@@ -298,7 +387,7 @@
     <script>
 
 
-            const clientes = @json($clientes->map(fn($c) => ['id' => $c->id, 'nombre' => $c->nombre]));
+            const clientes = <?php echo json_encode($clientes->map(fn($c) => ['id' => $c->id, 'nombre' => $c->nombre]), 512) ?>;
 
             const clienteInput = document.getElementById('clienteInput');
             const clienteId = document.getElementById('cliente_id');
@@ -343,14 +432,12 @@
 
 
 
-                const empleadosAdministracion = @json(
+                const empleadosAdministracion = <?php echo json_encode(
         $empleados->filter(fn($e) => $e->categoria === 'Administración')
                   ->map(fn($e) => [
-                      'id' => $e->id,
-                      'nombre' => trim($e->nombre . ' ' . $e->apellido)
+                      'id' => $e->id, 'nombre' => trim($e->nombre . ' ' . $e->apellido)
                   ])
-                  ->values()
-    );
+                  ->values(), 512) ?>;
                 console.log('Empleados admins:', empleadosAdministracion);
 
                 const reportadoInput = document.getElementById('reportadoPorInput');
@@ -504,4 +591,6 @@
 
 
 
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\angel\PhpstormProjects\Centinela\resources\views/incidencias/formulario.blade.php ENDPATH**/ ?>

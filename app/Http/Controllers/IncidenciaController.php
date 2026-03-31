@@ -277,10 +277,18 @@ class IncidenciaController extends Controller
 
         $incidencias = $query->orderBy('fecha', 'asc')->get();
 
+        // Validar que haya registros antes de generar PDF
+        if ($incidencias->isEmpty()) {
+            return redirect()->back()->with('error', 'No hay incidencias para exportar.');
+        }
+
+
         $pdf = \PDF::loadView('incidencias.reportepdf', compact('incidencias', 'filtrosAplicados'));
 
         return $pdf->download('reporte_incidencias.pdf');
     }
+
+
 
 
 
