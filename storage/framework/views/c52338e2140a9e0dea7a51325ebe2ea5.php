@@ -1,5 +1,4 @@
-@extends('plantilla')
-@section('content')
+<?php $__env->startSection('content'); ?>
 
 
     <!DOCTYPE html>
@@ -61,8 +60,8 @@
                     }
                 </style>
 
-                <form action="{{ route('capacitaciones.store') }}"  method="POST" id="form-curso" novalidate>
-                    @csrf
+                <form action="<?php echo e(route('capacitaciones.store')); ?>"  method="POST" id="form-curso" novalidate>
+                    <?php echo csrf_field(); ?>
 
                     <div class="row g-4">
 
@@ -72,15 +71,29 @@
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-book-fill"></i></span>
                                 <input type="text" name="nombre"
-                                       class="form-control @error('nombre') is-invalid @enderror"
-                                       value="{{ old('nombre') }}"
+                                       class="form-control <?php $__errorArgs = ['nombre'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                       value="<?php echo e(old('nombre')); ?>"
                                        maxlength="50"
                                        onkeydown="soloLetrasNumeros(event);bloquearEspacioAlInicio(event, this)"
                                        oninput="eliminarEspaciosIniciales(this)"
                                        required>
-                                @error('nombre')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                <?php $__errorArgs = ['nombre'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
@@ -89,15 +102,29 @@
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
                                 <input type="email" name="correo"
-                                       class="form-control @error('correo') is-invalid @enderror"
-                                       value="{{ old('correo') }}"
+                                       class="form-control <?php $__errorArgs = ['correo'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                       value="<?php echo e(old('correo')); ?>"
                                        maxlength="50"
                                        onkeydown="bloquearEspacioAlInicio(event, this)"
                                        oninput="eliminarEspaciosIniciales(this)"
                                        required>
-                                @error('correo')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                <?php $__errorArgs = ['correo'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
@@ -107,16 +134,30 @@
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-person-badge-fill"></i></span>
                                 <input type="text" name="contacto"
-                                       class="form-control @error('contacto') is-invalid @enderror"
-                                       value="{{ old('contacto') }}"
+                                       class="form-control <?php $__errorArgs = ['contacto'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                       value="<?php echo e(old('contacto')); ?>"
                                        maxlength="60"
                                        onkeypress="soloLetras(event)"
                                        onkeydown="bloquearEspacioAlInicio(event, this)"
                                        oninput="eliminarEspaciosIniciales(this)"
                                        required>
-                                @error('contacto')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                <?php $__errorArgs = ['contacto'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
@@ -127,17 +168,31 @@
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-upc-scan"></i></span>
                                 <input type="text" name="telefono"
-                                       class="form-control @error('telefono') is-invalid @enderror"
-                                       value="{{ old('telefono') }}"
+                                       class="form-control <?php $__errorArgs = ['telefono'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                       value="<?php echo e(old('telefono')); ?>"
                                        maxlength="8"
                                        onkeypress="soloNumeros(event)"
                                        onkeydown="bloquearEspacioAlInicio(event, this)"
                                        oninput="eliminarEspaciosIniciales(this)"
                                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                        required>
-                                @error('telefono')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                <?php $__errorArgs = ['telefono'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
@@ -146,15 +201,29 @@
                             <label for="modalidad" class="form-label">Modalidad</label>
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-laptop"></i></span>
-                                <select name="modalidad" class="form-select @error('modalidad') is-invalid @enderror" required>
+                                <select name="modalidad" class="form-select <?php $__errorArgs = ['modalidad'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" required>
                                     <option value="">Seleccione una modalidad</option>
-                                    <option value="Presencial" {{ old('modalidad') == 'Presencial' ? 'selected' : '' }}>Presencial</option>
-                                    <option value="Virtual" {{ old('modalidad') == 'Virtual' ? 'selected' : '' }}>Virtual</option>
-                                    <option value="Mixta" {{ old('modalidad') == 'Mixta' ? 'selected' : '' }}>Mixta</option>
+                                    <option value="Presencial" <?php echo e(old('modalidad') == 'Presencial' ? 'selected' : ''); ?>>Presencial</option>
+                                    <option value="Virtual" <?php echo e(old('modalidad') == 'Virtual' ? 'selected' : ''); ?>>Virtual</option>
+                                    <option value="Mixta" <?php echo e(old('modalidad') == 'Mixta' ? 'selected' : ''); ?>>Mixta</option>
                                 </select>
-                                @error('modalidad')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                <?php $__errorArgs = ['modalidad'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
@@ -163,15 +232,29 @@
                             <label for="nivel" class="form-label">Nivel</label>
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-bar-chart-fill"></i></span>
-                                <select name="nivel" class="form-select @error('nivel') is-invalid @enderror" required>
+                                <select name="nivel" class="form-select <?php $__errorArgs = ['nivel'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" required>
                                     <option value="">Seleccione un nivel</option>
-                                    <option value="Básico" {{ old('nivel') == 'Básico' ? 'selected' : '' }}>Básico</option>
-                                    <option value="Intermedio" {{ old('nivel') == 'Intermedio' ? 'selected' : '' }}>Intermedio</option>
-                                    <option value="Avanzado" {{ old('nivel') == 'Avanzado' ? 'selected' : '' }}>Avanzado</option>
+                                    <option value="Básico" <?php echo e(old('nivel') == 'Básico' ? 'selected' : ''); ?>>Básico</option>
+                                    <option value="Intermedio" <?php echo e(old('nivel') == 'Intermedio' ? 'selected' : ''); ?>>Intermedio</option>
+                                    <option value="Avanzado" <?php echo e(old('nivel') == 'Avanzado' ? 'selected' : ''); ?>>Avanzado</option>
                                 </select>
-                                @error('nivel')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                <?php $__errorArgs = ['nivel'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
@@ -181,15 +264,29 @@
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-hourglass-split"></i></span>
                                 <input type="number" name="duracion"
-                                       class="form-control @error('duracion') is-invalid @enderror"
-                                       value="{{ old('duracion') }}"
+                                       class="form-control <?php $__errorArgs = ['duracion'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                       value="<?php echo e(old('duracion')); ?>"
                                        min="1" max="99"
                                        onkeypress="soloNumeros(event)"
                                        oninput="if(this.value.length > 2) this.value = this.value.slice(0,2)"
                                        required>
-                                @error('duracion')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                <?php $__errorArgs = ['duracion'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
@@ -202,12 +299,26 @@
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-calendar-event-fill"></i></span>
                                 <input type="date" name="fecha_inicio"
-                                       class="form-control @error('fecha_inicio') is-invalid @enderror"
-                                       value="{{ old('fecha_inicio') }}"
+                                       class="form-control <?php $__errorArgs = ['fecha_inicio'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                       value="<?php echo e(old('fecha_inicio')); ?>"
                                        required>
-                                @error('fecha_inicio')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                <?php $__errorArgs = ['fecha_inicio'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
@@ -217,12 +328,26 @@
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-calendar-check-fill"></i></span>
                                 <input type="date" name="fecha_fin"
-                                       class="form-control @error('fecha_fin') is-invalid @enderror"
-                                       value="{{ old('fecha_fin') }}"
+                                       class="form-control <?php $__errorArgs = ['fecha_fin'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                       value="<?php echo e(old('fecha_fin')); ?>"
                                        required>
-                                @error('fecha_fin')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                <?php $__errorArgs = ['fecha_fin'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
@@ -235,15 +360,29 @@
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-card-text"></i></span>
                                 <textarea name="descripcion"
-                                          class="form-control auto-expand @error('descripcion') is-invalid @enderror"
+                                          class="form-control auto-expand <?php $__errorArgs = ['descripcion'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                           maxlength="250"
                                           onkeydown="bloquearEspacioAlInicio(event, this)"
                                           oninput="eliminarEspaciosIniciales(this)"
                                           required
-                                          style="overflow:hidden; min-height:80px; resize:none;">{{ old('descripcion') }}</textarea>
-                                @error('descripcion')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                          style="overflow:hidden; min-height:80px; resize:none;"><?php echo e(old('descripcion')); ?></textarea>
+                                <?php $__errorArgs = ['descripcion'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
@@ -253,15 +392,29 @@
                             <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-journal-text"></i></span>
                                 <textarea name="direccion"
-                                          class="form-control auto-expand @error('direccion') is-invalid @enderror"
+                                          class="form-control auto-expand <?php $__errorArgs = ['direccion'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                           maxlength="250"
                                           onkeydown="bloquearEspacioAlInicio(event, this)"
                                           oninput="eliminarEspaciosIniciales(this)"
                                           required
-                                          style="overflow:hidden; min-height:80px; resize:none;">{{ old('direccion') }}</textarea>
-                                @error('direccion')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                          style="overflow:hidden; min-height:80px; resize:none;"><?php echo e(old('direccion')); ?></textarea>
+                                <?php $__errorArgs = ['direccion'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
@@ -283,7 +436,7 @@
         <div class="text-center mt-5 d-flex justify-content-center gap-3">
 
             <!-- Botón Cancelar -->
-            <a href="{{ route('capacitaciones.index') }}" class="btn btn-danger">
+            <a href="<?php echo e(route('capacitaciones.index')); ?>" class="btn btn-danger">
                 <i class="bi bi-x-circle me-2"></i> Cancelar
             </a>
 
@@ -604,4 +757,6 @@
 </body>
 </html>
 
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('plantilla', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\angel\PhpstormProjects\Centinela\resources\views/capacitaciones/formulario.blade.php ENDPATH**/ ?>

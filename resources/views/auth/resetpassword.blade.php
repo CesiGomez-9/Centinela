@@ -120,10 +120,10 @@
             <input type="email" name="email" class="form-control" placeholder="Correo electrónico" required>
         </div>
         <div class="mb-3">
-            <input type="password" name="password" class="form-control" placeholder="Nueva contraseña" required maxlength="64" autocomplete="new-password" >
+            <input type="password" name="password" class="form-control" placeholder="Nueva contraseña" minlength="8"  maxlength="64" required autocomplete="new-password" >
         </div>
         <div class="mb-3">
-            <input type="password" name="password_confirmation" class="form-control" placeholder="Confirmar contraseña" required maxlength="64" >
+            <input type="password" name="password_confirmation" class="form-control" placeholder="Confirmar contraseña" minlength="8" maxlength="64" required >
         </div>
         <button type="submit" class="btn btn-reset"> Restablecer</button>
     </form>

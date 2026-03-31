@@ -52,7 +52,16 @@ class ProveedorController extends Controller
     {
         $request->validate([
 
-            'nombreEmpresa' => ['required', 'string', 'max:50', 'regex:/^[\p{L}\s]+$/u'],
+            'nombreEmpresa' => [
+                'required',
+                'string',
+                'max:50',
+                'regex:/^[\p{L}\s]+$/u',
+                // Validación única por departamento
+                Rule::unique('proveedores')->where(function ($query) use ($request) {
+                    return $query->where('departamento', $request->departamento);
+                }),
+            ],
             'direccion' => ['required', 'string','max:250'],
             'telefonodeempresa' => ['required', 'regex:/^[2389][0-9]{7}$/', 'size:8', 'unique:proveedores,telefonodeempresa'],
             'correoempresa' => ['required', 'string', 'email', 'max:50', 'unique:proveedores,correoempresa'],
@@ -64,6 +73,7 @@ class ProveedorController extends Controller
         ], [
             'nombreEmpresa.required' => 'Debe ingresar el nombre de la empresa.',
             'nombreEmpresa.regex' => 'El nombre de la empresa solo debe contener letras, espacios y tildes.',
+            'nombreEmpresa.unique' => 'Ya existe un proveedor con este nombre en el mismo departamento.',
             'direccion.required' => 'Debe ingresar la dirección.',
 
             'telefonodeempresa.required' => 'Debe ingresar el teléfono de la empresa.',
@@ -145,9 +155,20 @@ class ProveedorController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $proveedor = Proveedor::findOrFail($id);
 
         $request->validate([
-            'nombreEmpresa' => ['required', 'string', 'max:50', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/u'],
+            'nombreEmpresa' => [
+                'required',
+                'string',
+                'max:50',
+                'regex:/^[\p{L}\s]+$/u',
+                Rule::unique('proveedores')
+                    ->where(function ($query) use ($request) {
+                        return $query->where('departamento', $request->departamento);
+                    })
+                    ->ignore($proveedor->id),
+            ],
             'direccion' => ['required', 'string', 'max:250'],
             'telefonodeempresa' => [
                 'required',
@@ -174,6 +195,7 @@ class ProveedorController extends Controller
         ], [
             'nombreEmpresa.required' => 'Debe ingresar el nombre de la empresa.',
             'nombreEmpresa.regex' => 'El nombre de la empresa solo debe contener letras y espacios.',
+            'nombreEmpresa.unique' => 'Ya existe un proveedor con este nombre en el mismo departamento.',
             'direccion.required' => 'Debe ingresar la dirección.',
             'telefonodeempresa.required' => 'Debe ingresar el teléfono de la empresa.',
             'telefonodeempresa.regex' => 'El teléfono debe comenzar con 2, 3, 8 o 9 y tener 8 dígitos.',
@@ -192,7 +214,7 @@ class ProveedorController extends Controller
             'departamento.required' => 'Debe seleccionar una categoría o rubro.',
         ]);
 
-        $proveedor = Proveedor::findOrFail($id); // ✅ Actualizar el existente
+        // ✅ Actualizar el existente
         $proveedor->nombreEmpresa = $request->input('nombreEmpresa');
         $proveedor->direccion = $request->input('direccion');
         $proveedor->telefonodeempresa = $request->input('telefonodeempresa');

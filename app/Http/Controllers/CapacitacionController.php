@@ -182,6 +182,9 @@ class CapacitacionController extends Controller
 // Actualizar los datos de la capacitación
     public function update(Request $request, $id)
     {
+
+
+
         $capacitacion = Capacitacion::findOrFail($id);
 
         $request->validate([
@@ -204,10 +207,41 @@ class CapacitacionController extends Controller
             'modalidad' => ['required', 'string'],
             'nivel' => ['required', 'string'],
             'duracion' => ['required','numeric','min:1','max:99'],
-            'fecha_inicio' => ['required', 'date', 'after_or_equal:' . now()->format('Y-m-d')],
-            'fecha_fin' => ['required', 'date', 'after_or_equal:fecha_inicio'],
+            'fecha_inicio' => [
+                'required',
+                'date',
+                function($attribute, $value, $fail) use ($capacitacion) {
+                    // Solo validar si el usuario cambió la fecha
+                    if ($value != $capacitacion->fecha_inicio) {
+                        $fecha = \Carbon\Carbon::parse($value);
+                        $hoy = \Carbon\Carbon::today();
+                        $inicioMin = $hoy->subDays(15); // no más de 15 días antes
+                        if ($fecha < $inicioMin) {
+                            $fail('La fecha de inicio no puede ser más de 15 días antes de hoy.');
+                        }
+                    }
+                }
+            ],
+            'fecha_fin' => [
+                'required',
+                'date',
+                'after_or_equal:fecha_inicio',
+                function($attribute, $value, $fail) use ($request, $capacitacion) {
+                    // Solo validar si el usuario cambió la fecha fin
+                    if ($value != $capacitacion->fecha_fin) {
+                        $fechaInicio = \Carbon\Carbon::parse($request->fecha_inicio);
+                        $fechaFin = \Carbon\Carbon::parse($value);
+                        $dias = $fechaInicio->diffInDays($fechaFin) + 1;
+                        if ($dias > 99) {
+                            $fail('La duración máxima permitida es 99 días.');
+                        }
+                    }
+                }
+            ],
             'descripcion' => ['required', 'string','max:250'],
             'direccion' => ['nullable', 'string', 'max:250', 'required_if:modalidad,Presencial,Mixto'],
+
+
         ], [
             'nombre.required' => 'Debe ingresar el nombre la institución.',
             'nombre.regex' => 'El nombre de la empresa solo debe contener letras, espacios y tildes.',
@@ -237,7 +271,11 @@ class CapacitacionController extends Controller
             'fecha_fin.after_or_equal' => 'La fecha de finalización debe ser igual o posterior a la fecha de inicio.',
             'fecha_inicio.required' => 'Debe ingresar la fecha de inicio.',
             'fecha_fin.required' => 'Debe ingresar la fecha de finalización.',
+
+
         ]);
+
+
 
         $capacitacion->nombre = $request->input('nombre');
         $capacitacion->correo = $request->input('correo');
@@ -251,8 +289,13 @@ class CapacitacionController extends Controller
         $capacitacion->descripcion = $request->input('descripcion');
         $capacitacion->direccion = $request->input('direccion');
 
+        $capacitacion->save();
+
+
         return redirect()->route('capacitaciones.index')
             ->with('success', 'El curso se actualizó exitosamente.');
+
+
 
     }
 
