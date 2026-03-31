@@ -133,7 +133,7 @@
     <p>Grupo Centinela</p>
 
 
-    <form action="{{ route('login.process') }}" method="POST" novalidate>
+    <form action="{{ route('login.process') }}" method="POST" novalidate autocomplete="off">
         @csrf
         <!-- Usuario -->
         <div class="mb-3">
@@ -146,7 +146,7 @@
                    maxlength="50"
                    placeholder="Ingrese su usuario"
                    value="{{ old('usuario') }}" required
-                   autocomplete="username">
+                   autocomplete="off">
             @error('usuario')
             <div class="text-danger mt-1" style="font-size: 0.9rem;">
                 {{ $message }}
@@ -164,7 +164,7 @@
                    minlength="8"
                    maxlength="64"
                    placeholder="Ingrese su contraseña" required
-                   autocomplete="current-password">
+                   autocomplete="new-password">
             @error('password')
             <div class="text-danger mt-1" style="font-size: 0.9rem;">
                 {{ $message }}
@@ -185,7 +185,18 @@
 </div>
 
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js
-"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Evitar que el navegador guarde esta página en bfcache
+    window.addEventListener('beforeunload', function () {});
+
+    // Si la página se restaura desde bfcache (por si acaso), limpiar los campos
+    window.addEventListener('pageshow', function (event) {
+        if (event.persisted) {
+            document.getElementById('usuario').value = '';
+            document.getElementById('password').value = '';
+        }
+    });
+</script>
 </body>
 </html>

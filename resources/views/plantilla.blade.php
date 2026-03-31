@@ -381,5 +381,12 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Impide que el navegador guarde esta página en bfcache.
+    // Sin bfcache, al presionar atrás el navegador hace una nueva petición al
+    // servidor, que detecta que no hay sesión y redirige al login.
+    window.addEventListener('beforeunload', function () {});
+</script>
 </body>
 </html>

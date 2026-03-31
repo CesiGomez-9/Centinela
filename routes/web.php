@@ -18,13 +18,15 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-Route::get('/login', [\App\Http\Controllers\AuthController::class, 'showLogin'])->name('login');
+Route::get('/login', [\App\Http\Controllers\AuthController::class, 'showLogin'])->name('login')->middleware('prevent.back');
 Route::post('/login', [\App\Http\Controllers\AuthController::class, 'login'])->name('login.process');
 Route::post('/logout', [\App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
 
 // Rutas de 2FA (verificación durante login — sin auth)
-Route::get('/two-factor/verify', [\App\Http\Controllers\TwoFactorController::class, 'showVerify'])->name('two-factor.verify');
-Route::post('/two-factor/verify', [\App\Http\Controllers\TwoFactorController::class, 'verify'])->name('two-factor.verify.post');
+Route::middleware('prevent.back')->group(function () {
+    Route::get('/two-factor/verify', [\App\Http\Controllers\TwoFactorController::class, 'showVerify'])->name('two-factor.verify');
+    Route::post('/two-factor/verify', [\App\Http\Controllers\TwoFactorController::class, 'verify'])->name('two-factor.verify.post');
+});
 
 Route::get('/forgotpassword', [\App\Http\Controllers\PasswordResetController::class, 'showLinkForm'])->name('password.request');
 Route::post('/forgotpassword', [\App\Http\Controllers\PasswordResetController::class, 'sendResetLink'])->name('password.email');
@@ -33,7 +35,7 @@ Route::post('/resetpassword', [\App\Http\Controllers\PasswordResetController::cl
 
 
 // Rutas protegidas (requieren autenticación + 2FA)
-Route::middleware(['auth', 'two-factor'])->group(function () {
+Route::middleware(['auth', 'two-factor', 'prevent.back'])->group(function () {
 
     Route::get('/index', function () {
         return view('index');

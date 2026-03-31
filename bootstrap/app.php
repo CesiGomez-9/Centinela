@@ -12,9 +12,10 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-            'role' => \App\Http\Middleware\RoleMiddleware::class,
-            'two-factor' => \App\Http\Middleware\TwoFactorMiddleware::class,
-            'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+            'role'         => \App\Http\Middleware\RoleMiddleware::class,
+            'two-factor'   => \App\Http\Middleware\TwoFactorMiddleware::class,
+            'permission'   => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+            'prevent.back' => \App\Http\Middleware\PreventBackHistory::class,
         ]);
 
         $middleware->append(\App\Http\Middleware\SecureHeaders::class);

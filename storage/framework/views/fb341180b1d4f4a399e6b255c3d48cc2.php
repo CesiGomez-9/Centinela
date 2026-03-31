@@ -133,7 +133,7 @@
     <p>Grupo Centinela</p>
 
 
-    <form action="<?php echo e(route('login.process')); ?>" method="POST">
+    <form action="<?php echo e(route('login.process')); ?>" method="POST" novalidate autocomplete="off">
         <?php echo csrf_field(); ?>
         <!-- Usuario -->
         <div class="mb-3">
@@ -142,9 +142,11 @@
                    class="form-control"
                    id="usuario"
                    name="usuario"
+                   minlength="3"
                    maxlength="50"
                    placeholder="Ingrese su usuario"
-                   value="<?php echo e(old('usuario')); ?>">
+                   value="<?php echo e(old('usuario')); ?>" required
+                   autocomplete="off">
             <?php $__errorArgs = ['usuario'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -167,8 +169,10 @@ unset($__errorArgs, $__bag); ?>
                    class="form-control"
                    id="password"
                    name="password"
-                   maxlength="20"
-                   placeholder="Ingrese su contraseña">
+                   minlength="8"
+                   maxlength="64"
+                   placeholder="Ingrese su contraseña" required
+                   autocomplete="new-password">
             <?php $__errorArgs = ['password'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -197,8 +201,19 @@ unset($__errorArgs, $__bag); ?>
 </div>
 
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js
-"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Evitar que el navegador guarde esta página en bfcache
+    window.addEventListener('beforeunload', function () {});
+
+    // Si la página se restaura desde bfcache (por si acaso), limpiar los campos
+    window.addEventListener('pageshow', function (event) {
+        if (event.persisted) {
+            document.getElementById('usuario').value = '';
+            document.getElementById('password').value = '';
+        }
+    });
+</script>
 </body>
 </html>
 <?php /**PATH C:\Users\cesig\Herd\sistemadeseguridadcentinela\resources\views/auth/login.blade.php ENDPATH**/ ?>

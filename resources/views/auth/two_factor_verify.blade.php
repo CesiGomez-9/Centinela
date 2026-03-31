@@ -154,6 +154,8 @@
     document.querySelector('input[inputmode="numeric"]').addEventListener('input', function() {
         this.value = this.value.replace(/\D/g, '').slice(0, 6);
     });
+    // Evitar que el navegador guarde esta página en bfcache
+    window.addEventListener('beforeunload', function () {});
 </script>
 </body>
 </html>
