@@ -593,6 +593,58 @@ unset($__errorArgs, $__bag); ?>
         });
     }
 
+    // ── Variables de bloqueo
+    let lockCountdownInterval = null;
+
+    // ── Formatea segundos a mm:ss
+    function formatTime(s) {
+        const m = Math.floor(s / 60);
+        const sec = s % 60;
+        return (m > 0 ? m + 'm ' : '') + String(sec).padStart(2, '0') + 's';
+    }
+
+    // ── Inicia el contador visual de bloqueo
+    function startLockCountdown(seconds) {
+        const btn = document.getElementById('btn-open-captcha');
+        btn.disabled = true;
+        clearCredentialError();
+
+        showCredentialError('');
+        const errorEl = document.getElementById('credential-error');
+        errorEl.style.color = '#fb923c';
+
+        if (lockCountdownInterval) clearInterval(lockCountdownInterval);
+
+        let remaining = seconds;
+
+        function tick() {
+            if (remaining <= 0) {
+                clearInterval(lockCountdownInterval);
+                lockCountdownInterval = null;
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-box-arrow-in-right"></i> Ingresar';
+                errorEl.textContent = '';
+                return;
+            }
+            errorEl.innerHTML =
+                '<i class="bi bi-lock-fill me-1"></i> Demasiados intentos fallidos. Espera <strong>' +
+                formatTime(remaining) + '</strong> para intentarlo de nuevo.';
+            remaining--;
+        }
+
+        tick();
+        lockCountdownInterval = setInterval(tick, 1000);
+    }
+
+    // ── Verificar si ya hay bloqueo activo al cargar la página
+    fetch('<?php echo e(route("login.lock-status")); ?>')
+        .then(r => r.json())
+        .then(data => {
+            if (data.locked && data.seconds > 0) {
+                startLockCountdown(data.seconds);
+            }
+        });
+
     // ── Abrir modal al presionar "Ingresar"
     document.getElementById('btn-open-captcha').addEventListener('click', function () {
         const usuario  = document.getElementById('usuario').value.trim();
@@ -619,6 +671,11 @@ unset($__errorArgs, $__bag); ?>
         })
         .then(r => r.json().then(data => ({ status: r.status, data })))
         .then(({ status, data }) => {
+            if (data.locked && data.seconds > 0) {
+                startLockCountdown(data.seconds);
+                return;
+            }
+
             btn.disabled = false;
             btn.innerHTML = '<i class="bi bi-box-arrow-in-right"></i> Ingresar';
 
@@ -645,12 +702,13 @@ unset($__errorArgs, $__bag); ?>
             el.style.cssText = 'color:#f87171;font-size:0.9rem;margin-bottom:0.75rem;';
             document.getElementById('btn-open-captcha').insertAdjacentElement('beforebegin', el);
         }
+        el.style.color = '#f87171';
         el.textContent = msg;
     }
 
     function clearCredentialError() {
         const el = document.getElementById('credential-error');
-        if (el) el.textContent = '';
+        if (el) { el.textContent = ''; el.style.color = '#f87171'; }
     }
 
     // ── Botón "Nuevo desafío"

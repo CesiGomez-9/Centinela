@@ -5,20 +5,75 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use App\Models\LoginAttempt;
 
 class AuthController extends Controller
 {
+    // ── Obtener o crear el registro de intentos para esta IP
+    private function getAttemptRecord(Request $request): LoginAttempt
+    {
+        return LoginAttempt::firstOrCreate(
+            ['ip' => $request->ip()],
+            ['attempts' => 0]
+        );
+    }
+
+    // ── Registrar un fallo y aplicar bloqueo si corresponde
+    private function registerFailure(LoginAttempt $record): void
+    {
+        $record->attempts++;
+        $record->last_attempt_at = now();
+
+        // Aplicar bloqueo en los umbrales: 5, 10, 15
+        if ($record->attempts === 5 || $record->attempts === 10 || $record->attempts >= 15) {
+            $record->locked_until = now()->addSeconds($record->getLockDurationSeconds());
+        }
+
+        $record->save();
+    }
+
+    // ── Limpiar intentos tras login exitoso
+    private function clearAttempts(LoginAttempt $record): void
+    {
+        $record->attempts     = 0;
+        $record->locked_until = null;
+        $record->save();
+    }
+
     public function showLogin()
     {
         return view('auth.login');
     }
 
-    /**
-     * Verifica credenciales vía AJAX antes de mostrar el captcha.
-     * NO inicia sesión, solo confirma que usuario y contraseña son válidos.
-     */
+    // ── Devuelve los segundos de bloqueo restantes para esta IP (polling del JS)
+    public function lockStatus(Request $request)
+    {
+        $record = LoginAttempt::where('ip', $request->ip())->first();
+
+        if (! $record || ! $record->isLocked()) {
+            return response()->json(['locked' => false, 'seconds' => 0]);
+        }
+
+        return response()->json([
+            'locked'  => true,
+            'seconds' => $record->secondsRemaining(),
+        ]);
+    }
+
+    // ── Verifica credenciales vía AJAX antes de mostrar el captcha
     public function checkCredentials(Request $request)
     {
+        $record = $this->getAttemptRecord($request);
+
+        if ($record->isLocked()) {
+            return response()->json([
+                'ok'      => false,
+                'locked'  => true,
+                'seconds' => $record->secondsRemaining(),
+                'message' => 'IP bloqueada temporalmente.',
+            ], 429);
+        }
+
         $request->validate([
             'usuario'  => ['required', 'string', 'min:3', 'max:50'],
             'password' => ['required', 'string', 'min:8', 'max:64'],
@@ -28,14 +83,20 @@ class AuthController extends Controller
             return response()->json(['ok' => true]);
         }
 
+        $this->registerFailure($record);
+
+        $response = ['ok' => false, 'locked' => false, 'message' => 'Credenciales incorrectas.'];
+
+        if ($record->isLocked()) {
+            $response['locked']  = true;
+            $response['seconds'] = $record->secondsRemaining();
+        }
+
         usleep(500000);
-        return response()->json(['ok' => false, 'message' => 'Credenciales incorrectas.'], 422);
+        return response()->json($response, 422);
     }
 
-    /**
-     * Genera un token firmado de captcha y lo guarda en sesión.
-     * El JS lo llama cuando el usuario completa el desafío visual.
-     */
+    // ── Emite token de captcha (se llama tras pasar el desafío visual)
     public function issueCaptchaToken(Request $request)
     {
         $token = Str::random(40);
@@ -59,14 +120,13 @@ class AuthController extends Controller
             'captcha_token.required' => 'Debe completar la verificación de seguridad.',
         ]);
 
-        // Validar token de captcha: debe existir en sesión, coincidir y tener menos de 5 minutos
+        // Validar token de captcha
         $sessionToken = session('captcha_token');
         $tokenAt      = session('captcha_token_at', 0);
         $tokenValid   = $sessionToken
             && hash_equals($sessionToken, $request->captcha_token)
             && (now()->timestamp - $tokenAt) < 300;
 
-        // Invalidar el token para que no se reutilice
         session()->forget(['captcha_token', 'captcha_token_at']);
 
         if (! $tokenValid) {
@@ -75,18 +135,18 @@ class AuthController extends Controller
             ])->withInput($request->except('password', 'captcha_token'));
         }
 
-        $credentials = $request->only('usuario', 'password');
+        $record = $this->getAttemptRecord($request);
 
-        if (Auth::validate($credentials)) {
+        if (Auth::validate($request->only('usuario', 'password'))) {
+            $this->clearAttempts($record);
+
             $user = \App\Models\User::where('usuario', $request->usuario)->first();
 
             if ($user->two_factor_enabled) {
                 session(['two_factor_pending_user' => $user->id]);
-
                 if ($request->filled('remember')) {
                     session(['two_factor_remember' => true]);
                 }
-
                 return redirect()->route('two-factor.verify');
             }
 
