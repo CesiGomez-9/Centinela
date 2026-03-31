@@ -34,19 +34,32 @@ class AuthController extends Controller
 
         $credentials = $request->only('usuario', 'password');
 
-        // 2. Intento de Autenticación: Laravel busca al usuario y valida el Hash automáticamente
-        if (Auth::attempt($credentials, $request->filled('remember'))) {
+        $user = User::where('usuario', $request->usuario)->first();
 
-            // CORRECCIÓN INCIDENCIA #2: Regenerar ID de sesión (Evita Session Hijacking)
+        if (!$user) {
+            return back()->withErrors([
+                'usuario' => 'El usuario es incorrecto.',
+            ])->withInput($request->except('password'));
+        }
+
+        if (Auth::attempt($credentials, $request->filled('remember'))) {
             $request->session()->regenerate();
 
+            // Si el usuario tiene 2FA activo, pausar y pedir código
+            if ($user->hasTwoFactorEnabled()) {
+                $request->session()->put('two_factor_pending_user', $user->id);
+                Auth::logout();
+                return redirect()->route('two-factor.verify');
+            }
+
+            // Marcar sesión como verificada (sin 2FA)
+            $request->session()->put('two_factor_verified', true);
             return redirect()->route('index');
         }
 
-        // 3. Fallo de seguridad: Retraso intencional para mitigar ataques de fuerza bruta
+        // Retraso intencional para mitigar ataques de fuerza bruta
         usleep(500000);
 
-        // 4. Respuesta de error: No revelamos si falló el usuario o la contraseña por seguridad
         return back()->withErrors([
             'usuario' => 'Credenciales incorrectas.',
         ])->withInput($request->except('password'));
