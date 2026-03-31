@@ -21,43 +21,45 @@ class AuthController extends Controller
     {
         $request->validate([
             'usuario' => ['required', 'string', 'min:3', 'max:50'],
-            'password' => ['required', 'string', 'min:6', 'max:64'],
+            'password' => ['required', 'string', 'min:8', 'max:64'],
         ], [
             'usuario.required' => 'Debe ingresar su usuario.',
             'password.required' => 'Debe ingresar su contraseña.',
-            'password.min' => 'La contraseña no puede ser menor de 6 caracteres.',
+            'password.min' => 'La contraseña no puede ser menor de 8 caracteres.',
             'password.max' => 'La contraseña no puede ser mayor a 64 caracteres.',
             'usuario.min' => 'El usuario debe tener al menos 3 caracteres.',
             'usuario.max' => 'El usuario no debe ser mas 50 caracteres.',
         ]);
 
-
         $credentials = $request->only('usuario', 'password');
 
-        $user = User::where('usuario', $request->usuario)->first();
+        // 1. Validamos credenciales SIN iniciar sesión
+        if (Auth::validate($credentials)) {
+            $user = \App\Models\User::where('usuario', $request->usuario)->first();
 
-        if (!$user) {
-            return back()->withErrors([
-                'usuario' => 'El usuario es incorrecto.',
-            ])->withInput($request->except('password'));
-        }
+            // 2. ¿Tiene el 2FA activado?
+            if ($user->two_factor_enabled) {
+                // Guardamos el ID en sesión temporal para el TwoFactorController
+                session(['two_factor_pending_user' => $user->id]);
 
-        if (Auth::attempt($credentials, $request->filled('remember'))) {
-            $request->session()->regenerate();
+                // Opcional: Guardar si quería "recordarme" para aplicarlo después del 2FA
+                if ($request->filled('remember')) {
+                    session(['two_factor_remember' => true]);
+                }
 
-            // Si el usuario tiene 2FA activo, pausar y pedir código
-            if ($user->hasTwoFactorEnabled()) {
-                $request->session()->put('two_factor_pending_user', $user->id);
-                Auth::logout();
                 return redirect()->route('two-factor.verify');
             }
 
-            // Marcar sesión como verificada (sin 2FA)
-            $request->session()->put('two_factor_verified', true);
+            // 3. Si NO tiene 2FA, iniciamos sesión normalmente
+            Auth::login($user, $request->filled('remember'));
+
+            // CORRECCIÓN INCIDENCIA #2: Regenerar ID de sesión
+            $request->session()->regenerate();
+
             return redirect()->route('index');
         }
 
-        // Retraso intencional para mitigar ataques de fuerza bruta
+        // 4. Fallo de seguridad: Retraso intencional
         usleep(500000);
 
         return back()->withErrors([
