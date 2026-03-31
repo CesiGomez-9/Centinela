@@ -19,12 +19,28 @@ class PasswordResetController extends Controller
     public function sendResetLink(Request $request)
     {
         $request->validate([
-            'email' => 'required|email|exists:users,email',
+            'email'         => 'required|email|exists:users,email',
+            'captcha_token' => 'required|string',
         ], [
-            'email.required' => 'Debes ingresar tu correo',
-            'email.email' => 'El correo debe ser válido',
-            'email.exists' => 'No existe un usuario con este correo',
+            'email.required'         => 'Debes ingresar tu correo',
+            'email.email'            => 'El correo debe ser válido',
+            'email.exists'           => 'No existe un usuario con este correo',
+            'captcha_token.required' => 'Debes completar la verificación de seguridad.',
         ]);
+
+        $sessionToken = session('captcha_token');
+        $tokenAt      = session('captcha_token_at', 0);
+        $tokenValid   = $sessionToken
+            && hash_equals($sessionToken, $request->captcha_token)
+            && (now()->timestamp - $tokenAt) < 300;
+
+        session()->forget(['captcha_token', 'captcha_token_at']);
+
+        if (! $tokenValid) {
+            return back()->withErrors([
+                'captcha_token' => 'La verificación de seguridad expiró o es inválida. Inténtelo de nuevo.',
+            ])->withInput($request->except('captcha_token'));
+        }
 
         $status = Password::sendResetLink($request->only('email'));
 
