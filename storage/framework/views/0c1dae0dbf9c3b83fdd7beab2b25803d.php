@@ -155,7 +155,9 @@
     document.querySelector('input[inputmode="numeric"]').addEventListener('input', function() {
         this.value = this.value.replace(/\D/g, '').slice(0, 6);
     });
+    // Evitar que el navegador guarde esta página en bfcache
+    window.addEventListener('beforeunload', function () {});
 </script>
 </body>
 </html>
-<?php /**PATH C:\Users\Admin\PhpstormProjects\Centinela\resources\views/auth/two_factor_verify.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\laragon\www\Centinela\resources\views/auth/two_factor_verify.blade.php ENDPATH**/ ?>
