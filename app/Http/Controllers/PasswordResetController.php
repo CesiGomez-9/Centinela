@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 
 class PasswordResetController extends Controller
@@ -42,11 +43,31 @@ class PasswordResetController extends Controller
             ])->withInput($request->except('captcha_token'));
         }
 
+        $key = 'password-reset:' . $request->ip();
+
+        if (RateLimiter::tooManyAttempts($key, 5)) {
+            $seconds = RateLimiter::availableIn($key);
+            $minutes = ceil($seconds / 60);
+            return back()->withErrors([
+                'email' => "Demasiados intentos. Intenta de nuevo en {$minutes} minuto(s).",
+            ])->withInput($request->except('captcha_token'));
+        }
+
+        RateLimiter::hit($key, 20 * 60);
+
         $status = Password::sendResetLink($request->only('email'));
 
-        return $status === Password::RESET_LINK_SENT
-            ? back()->with('status', 'Se ha enviado un enlace de recuperación a tu correo')
-            : back()->withErrors(['email' => 'Error al enviar el enlace. Intenta de nuevo']);
+        if ($status === Password::RESET_LINK_SENT) {
+            return back()->with('status', 'Se ha enviado un enlace de recuperación a tu correo');
+        }
+
+        if ($status === Password::RESET_THROTTLED) {
+            return back()->withErrors([
+                'email' => 'Ya se envió un enlace recientemente. Revisa tu correo o espera unos minutos antes de intentarlo de nuevo.',
+            ])->withInput($request->except('captcha_token'));
+        }
+
+        return back()->withErrors(['email' => 'Error al enviar el enlace. Intenta de nuevo']);
     }
 
     public function showResetForm($token)
