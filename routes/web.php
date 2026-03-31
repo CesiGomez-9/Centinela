@@ -22,6 +22,7 @@ Route::get('/login', [\App\Http\Controllers\AuthController::class, 'showLogin'])
 Route::post('/login', [\App\Http\Controllers\AuthController::class, 'login'])->name('login.process');
 Route::post('/logout', [\App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
 Route::post('/captcha/token', [\App\Http\Controllers\AuthController::class, 'issueCaptchaToken'])->name('captcha.token');
+Route::post('/login/check-credentials', [\App\Http\Controllers\AuthController::class, 'checkCredentials'])->name('login.check');
 
 // Rutas de 2FA (verificación durante login — sin auth)
 Route::middleware('prevent.back')->group(function () {

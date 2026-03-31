@@ -242,32 +242,39 @@
     <h2>Recuperar Contraseña</h2>
     <p>Ingresa tu correo registrado</p>
 
-    @if (session('status'))
-        <div class="alert alert-success">{{ session('status') }}</div>
-    @endif
+    <?php if(session('status')): ?>
+        <div class="alert alert-success"><?php echo e(session('status')); ?></div>
+    <?php endif; ?>
 
-    @if ($errors->has('email'))
-        <div class="alert alert-danger">{{ $errors->first('email') }}</div>
-    @endif
+    <?php if($errors->has('email')): ?>
+        <div class="alert alert-danger"><?php echo e($errors->first('email')); ?></div>
+    <?php endif; ?>
 
-    @error('captcha_token')
-        <div class="alert alert-danger">{{ $message }}</div>
-    @enderror
+    <?php $__errorArgs = ['captcha_token'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+        <div class="alert alert-danger"><?php echo e($message); ?></div>
+    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
 
-    <form id="forgot-form" action="{{ route('password.email') }}" method="POST" novalidate>
-        @csrf
+    <form id="forgot-form" action="<?php echo e(route('password.email')); ?>" method="POST" novalidate>
+        <?php echo csrf_field(); ?>
         <input type="hidden" name="captcha_token" id="captcha_token">
         <div class="mb-3">
             <input type="email" name="email" id="email" class="form-control"
                    placeholder="Correo electrónico" required autocomplete="email"
-                   value="{{ old('email') }}">
+                   value="<?php echo e(old('email')); ?>">
         </div>
         <button type="button" class="btn btn-reset" id="btn-open-captcha">
             <i class="bi bi-envelope-fill"></i> Enviar enlace
         </button>
     </form>
 
-    <p class="text-small"><a href="{{ route('login') }}" style="color:#3b82f6;">Volver al login</a></p>
+    <p class="text-small"><a href="<?php echo e(route('login')); ?>" style="color:#3b82f6;">Volver al login</a></p>
 </div>
 
 
@@ -398,7 +405,7 @@
 
     function captchaSuccess() {
         setFeedback('Verificado ✓', 'ok');
-        fetch('{{ route("captcha.token") }}', {
+        fetch('<?php echo e(route("captcha.token")); ?>', {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN':     document.querySelector('input[name="_token"]').value,
@@ -445,3 +452,4 @@
 </script>
 </body>
 </html>
+<?php /**PATH C:\laragon\www\Centinela\resources\views/auth/forgotpassword.blade.php ENDPATH**/ ?>

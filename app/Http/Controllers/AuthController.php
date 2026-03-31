@@ -14,6 +14,25 @@ class AuthController extends Controller
     }
 
     /**
+     * Verifica credenciales vía AJAX antes de mostrar el captcha.
+     * NO inicia sesión, solo confirma que usuario y contraseña son válidos.
+     */
+    public function checkCredentials(Request $request)
+    {
+        $request->validate([
+            'usuario'  => ['required', 'string', 'min:3', 'max:50'],
+            'password' => ['required', 'string', 'min:8', 'max:64'],
+        ]);
+
+        if (Auth::validate($request->only('usuario', 'password'))) {
+            return response()->json(['ok' => true]);
+        }
+
+        usleep(500000);
+        return response()->json(['ok' => false, 'message' => 'Credenciales incorrectas.'], 422);
+    }
+
+    /**
      * Genera un token firmado de captcha y lo guarda en sesión.
      * El JS lo llama cuando el usuario completa el desafío visual.
      */

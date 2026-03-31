@@ -263,6 +263,66 @@
         .captcha-dot.active {
             background: #3b82f6;
         }
+
+        /* ───── PANTALLA DE BIENVENIDA ───── */
+        .welcome-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            padding: 2rem;
+            text-align: center;
+            color: #fff;
+        }
+
+        .welcome-screen.active {
+            display: flex;
+        }
+
+        .welcome-shield {
+            font-size: 4rem;
+            animation: pulse-shield 1.2s ease-in-out infinite;
+            color: #3b82f6;
+        }
+
+        @keyframes pulse-shield {
+            0%, 100% { transform: scale(1);    opacity: 1;   }
+            50%       { transform: scale(1.12); opacity: 0.8; }
+        }
+
+        .welcome-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .welcome-sub {
+            font-size: 0.95rem;
+            color: #94a3b8;
+        }
+
+        .welcome-bar-wrap {
+            width: 100%;
+            background: #1e3a6e;
+            border-radius: 999px;
+            height: 6px;
+            overflow: hidden;
+        }
+
+        .welcome-bar {
+            height: 6px;
+            width: 0%;
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            border-radius: 999px;
+            animation: fill-bar 2.2s ease-in-out forwards;
+        }
+
+        @keyframes fill-bar {
+            0%   { width: 0%; }
+            80%  { width: 90%; }
+            100% { width: 100%; }
+        }
     </style>
 </head>
 <body>
@@ -329,19 +389,34 @@
 <!-- ───── MODAL CAPTCHA ───── -->
 <div class="captcha-overlay" id="captcha-overlay">
     <div class="captcha-modal">
-        <p class="captcha-title"><i class="bi bi-shield-check" style="color:#3b82f6;"></i> Verificación de seguridad</p>
-        <div class="captcha-instruction" id="captcha-instruction">Cargando...</div>
 
-        <div class="captcha-grid" id="captcha-grid"></div>
+        <!-- Vista del captcha -->
+        <div id="captcha-view">
+            <p class="captcha-title"><i class="bi bi-shield-check" style="color:#3b82f6;"></i> Verificación de seguridad</p>
+            <div class="captcha-instruction" id="captcha-instruction">Cargando...</div>
 
-        <div class="captcha-feedback" id="captcha-feedback"></div>
+            <div class="captcha-grid" id="captcha-grid"></div>
 
-        <div class="captcha-footer">
-            <button type="button" class="btn-captcha-refresh" id="btn-captcha-refresh">
-                <i class="bi bi-arrow-clockwise"></i> Nuevo desafío
-            </button>
-            <div class="captcha-dots" id="captcha-dots"></div>
+            <div class="captcha-feedback" id="captcha-feedback"></div>
+
+            <div class="captcha-footer">
+                <button type="button" class="btn-captcha-refresh" id="btn-captcha-refresh">
+                    <i class="bi bi-arrow-clockwise"></i> Nuevo desafío
+                </button>
+                <div class="captcha-dots" id="captcha-dots"></div>
+            </div>
         </div>
+
+        <!-- Pantalla de bienvenida (se muestra tras pasar el captcha) -->
+        <div class="welcome-screen" id="welcome-screen">
+            <div class="welcome-shield"><i class="bi bi-shield-fill-check"></i></div>
+            <div class="welcome-name" id="welcome-name">Bienvenido</div>
+            <div class="welcome-sub">Accediendo al sistema, por favor espere...</div>
+            <div class="welcome-bar-wrap">
+                <div class="welcome-bar" id="welcome-bar"></div>
+            </div>
+        </div>
+
     </div>
 </div>
 
@@ -461,7 +536,7 @@
         el.className = 'captcha-feedback' + (type ? ' ' + type : '');
     }
 
-    // ── Éxito: generar token firmado en servidor y enviar
+    // ── Éxito: mostrar bienvenida y enviar form
     function captchaSuccess() {
         setFeedback('Verificado ✓', 'ok');
 
@@ -476,10 +551,24 @@
         .then(r => r.json())
         .then(data => {
             document.getElementById('captcha_token').value = data.token;
+
+            // Cambiar a pantalla de bienvenida
+            const usuario = document.getElementById('usuario').value.trim();
+            document.getElementById('welcome-name').textContent = '¡Bienvenido, ' + usuario + '!';
+
+            // Reiniciar animación de la barra
+            const bar = document.getElementById('welcome-bar');
+            bar.style.animation = 'none';
+            bar.offsetHeight; // reflow
+            bar.style.animation = '';
+
+            document.getElementById('captcha-view').style.display = 'none';
+            document.getElementById('welcome-screen').classList.add('active');
+
+            // Enviar el form después de que la barra termine (~2.2s)
             setTimeout(() => {
-                document.getElementById('captcha-overlay').classList.remove('active');
                 document.getElementById('login-form').submit();
-            }, 500);
+            }, 2400);
         });
     }
 
@@ -489,15 +578,59 @@
         const password = document.getElementById('password').value;
 
         if (usuario.length < 3 || password.length < 8) {
-            // Dejar que el form muestre sus propias validaciones
             document.getElementById('login-form').reportValidity();
             return;
         }
 
-        generateCaptcha();
-        renderRound();
-        document.getElementById('captcha-overlay').classList.add('active');
+        const btn = this;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Verificando...';
+        clearCredentialError();
+
+        fetch('{{ route("login.check") }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+                'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ usuario, password }),
+        })
+        .then(r => r.json().then(data => ({ status: r.status, data })))
+        .then(({ status, data }) => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-box-arrow-in-right"></i> Ingresar';
+
+            if (status === 200 && data.ok) {
+                generateCaptcha();
+                renderRound();
+                document.getElementById('captcha-overlay').classList.add('active');
+            } else {
+                showCredentialError(data.message || 'Credenciales incorrectas.');
+            }
+        })
+        .catch(() => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-box-arrow-in-right"></i> Ingresar';
+            showCredentialError('Error de conexión, intente de nuevo.');
+        });
     });
+
+    function showCredentialError(msg) {
+        let el = document.getElementById('credential-error');
+        if (!el) {
+            el = document.createElement('div');
+            el.id = 'credential-error';
+            el.style.cssText = 'color:#f87171;font-size:0.9rem;margin-bottom:0.75rem;';
+            document.getElementById('btn-open-captcha').insertAdjacentElement('beforebegin', el);
+        }
+        el.textContent = msg;
+    }
+
+    function clearCredentialError() {
+        const el = document.getElementById('credential-error');
+        if (el) el.textContent = '';
+    }
 
     // ── Botón "Nuevo desafío"
     document.getElementById('btn-captcha-refresh').addEventListener('click', function () {
